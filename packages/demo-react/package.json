@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "feather-icons": "^4.29.0",
-    "framer-motion": "^7.3.2",
+    "framer-motion": "^10.11.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-modal": "^3.15.0",
