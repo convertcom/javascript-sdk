@@ -11,6 +11,10 @@ This repository contains the **JavaScript SDK (nodeJs and browser)** needed to i
 
 See [CONTRIBUTING](./CONTRIBUTING.md) for details on how to submit your contribution.
 
+## Documentation
+
+See [JavaScript SDK Documentation](https://convertcom.github.io/javascript-sdk/) for details on the SDK modules, in addition to practical tutorials.
+
 ## Requirements
 
 Fullstack projects are slightly different compared to web-based projects, so that
