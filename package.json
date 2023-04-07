@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "sdk:lint": "cd packages/js-sdk && yarn lint",
+    "sdk:build": "cd packages/js-sdk && yarn build",
+    "sdk:test": "cd packages/js-sdk && yarn test",
+    "sdk:docs": "cd packages/js-sdk/docs && yarn docs",
+    "demo:react:start": "cd packages/demo-react && yarn start",
+    "demo:nodejs:start": "cd packages/demo-nodejs && yarn start"
+  },
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}

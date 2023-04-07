@@ -1,0 +1,13 @@
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.image img {
+  max-height: 15px;
+}
+
+.tag:not(body) {
+  background-color: initial;
+  color: #f5f5f5;
+}

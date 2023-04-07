@@ -1,0 +1,46 @@
+name: Running QA automated checks agains the PR before merging it
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  #push:
+   # branches: [ main]
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  # This workflow contains a single job called "build"
+  pass-qa:
+    if: github.event.pull_request.draft == false
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [16]
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          # The Node.js version to configure
+          node-version: ${{ matrix.node }}
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: Install needed libraries and packages 
+        run: |
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
+          sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Runs the SDK QA checks
+        run: | 
+          yarn install
+          cd packages/js-sdk
+          yarn lint
+          yarn test
+
+      

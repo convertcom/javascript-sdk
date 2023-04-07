@@ -1,0 +1,29 @@
+[
+  [
+    [
+      {
+        "key": "age",
+        "matching": "equal",
+        "data": "20"
+      },
+      {
+        "key": "age",
+        "matching": "!equal",
+        "data": "50"
+      }
+    ],
+    [
+      {
+        "key": "device",
+        "matching": "contains",
+        "data": "phone"
+      },
+      {
+        "key": "device",
+        "matching": "equal",
+        "data": "device_name"
+      }
+    ]
+  ],
+  []
+]

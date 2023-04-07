@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  .container
+    .page-header
+      .row
+        .col-md-7.col-sm-6
+          h1= title
+        .col-md-5.col-sm-6
+          .list-group
+            a.list-group-item.list-group-item-action.flex-column.align-items-start.active(href="#")
+              .d-flex.w-100.justify-content-between
+                h5.mb-1 List of variations
+                small #{variations.length}
+              small Donec id elit non mi porta.
+            each variation, index in variations
+              a.list-group-item.list-group-item-action.flex-column.align-items-start(href="#")
+                .d-flex.w-100.justify-content-between
+                  h5.mb-1 #{variation.name}
+                  small.text-muted #{variation.id}
+                small.text-muted 
+                  | Experience Key: 
+                  em #{variation.experienceKey}
+                  br
+                  | Variation Key: 
+                  em #{variation.key}
+
+    .row.mt-4
+      .col-sm-12
+        if feature
+          .alert.alert-dismissible.alert-warning
+            button.btn-close(type="button", data-bs-dismiss="alert")
+            h4.alert-heading Feature Enabled!
+            p.mb-0 This component is showing only when the feature #{feature.name} is enabled.
+  

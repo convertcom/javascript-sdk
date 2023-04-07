@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@convertcom/js-sdk": ["../../js-sdk/src"],
+      "@convertcom/js-sdk/*": ["../../js-sdk/src/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

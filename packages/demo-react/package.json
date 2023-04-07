@@ -1,0 +1,61 @@
+{
+  "name": "@convertcom/js-sdk-demo-react",
+  "version": "1.0.0",
+  "author": "Convert Insights, Inc",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "feather-icons": "^4.29.0",
+    "framer-motion": "^7.3.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-modal": "^3.15.0",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "5.0.1",
+    "styled-components": "^5.3.5",
+    "tailwindcss": "^3.0.0",
+    "twin.macro": "^3.0.0-rc.4"
+  },
+  "peerDependencies": {
+    "@convertcom/js-sdk": "1.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "."
+      ],
+      "ignore": "build",
+      "extensions": "*",
+      "quiet": false
+    }
+  },
+  "eslintConfig": {
+    "extends": "react-app",
+    "overrides": [
+      {
+        "files": [
+          "src/**/*.js"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off",
+          "react-hooks/exhaustive-deps": "off"
+        }
+      }
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

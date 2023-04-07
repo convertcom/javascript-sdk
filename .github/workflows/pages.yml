@@ -1,0 +1,58 @@
+name: Updating Github pages
+
+on:
+  push:
+    branches: [ main]
+
+jobs:
+  # This workflow contains a single job called "build"
+  update-pages:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [16]
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          # The Node.js version to configure
+          node-version: ${{ matrix.node }}
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Install needed libraries and packages 
+        run: |
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
+          sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Installing npm packages
+        run: yarn install
+
+      - name: Generating coverage and docs
+        run: | 
+          cd packages/js-sdk
+          yarn test
+          yarn build
+      
+      - name: Checkout gh-pages
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: gh-pages
+      
+      - name: Copy docs to gh-pages
+        run: cp -r packages/js-sdk/docs gh-pages/
+      
+      - name: Commit changes to gh-pages Badges
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Updating pages..."
+          skip_fetch: true
+          skip_checkout: true
+          repository: gh-pages
+
+      

@@ -1,0 +1,61 @@
+{
+  "plugins": [
+    "../../node_modules/better-docs/typescript",
+    "../../node_modules/better-docs/category"
+  ],
+  "recurseDepth": 10,
+  "source": {
+    "include": ["."],
+    "exclude": [
+      "docs",
+      "lib",
+      "node_modules",
+      "structure-sample",
+      "tests",
+      "src/utils"
+    ],
+    "includePattern": "\\.(jsx|js|ts|tsx)$",
+    "excludePattern": ".+\\.(test|spec|config).(js|ts)"
+  },
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc", "closure"]
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "search": true,
+    "default": {
+      "staticFiles": {
+        "include": ["./docs-src/statics"]
+      }
+    },
+    "better-docs": {
+      "name": "JavaScript SDK Documentation",
+      "logo": "convert.png",
+      "title": "Convert Insights, Inc JavaScript SDK",
+      "css": "convert.css",
+      "trackingCode": "",
+      "hideGenerator": true,
+      "navLinks": [
+        {
+          "label": "Github",
+          "href": "https://github.com/convertcom/javascript-sdk"
+        },
+        {
+          "label": "Convert Insights, Inc",
+          "href": "https://convert.com"
+        }
+      ]
+    }
+  },
+  "opts": {
+    "encoding": "utf8",
+    "destination": "docs/",
+    "recurse": true,
+    "verbose": false,
+    "readme": "README.md",
+    "template": "../../node_modules/better-docs",
+    "tutorials": "./docs-src/tutorials"
+  }
+}
