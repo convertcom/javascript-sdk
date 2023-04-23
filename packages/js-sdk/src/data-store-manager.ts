@@ -4,15 +4,14 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {objectDeepMerge} from './utils/object-utils';
+import {objectDeepMerge} from '@convertcom/utils';
 
 import {DataStoreManagerInterface} from './interfaces/data-store-manager';
-import {LogManagerInterface} from './interfaces/log-manager';
+import {LogManagerInterface} from '@convertcom/logger';
 import {EventManagerInterface} from './interfaces/event-manager';
-import {Config} from './types/Config';
-import {SystemEvents} from './enums/system-events';
+import {Config} from '@convertcom/types';
 
-import {ERROR_MESSAGES} from './enums/dictionary';
+import {ERROR_MESSAGES, SystemEvents} from '@convertcom/enums';
 
 const DEFAULT_BATCH_SIZE = 1;
 const DEFAULT_RELEASE_INTERVAL = 5000;

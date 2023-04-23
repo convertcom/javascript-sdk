@@ -11,15 +11,13 @@ import {DataManagerInterface} from './interfaces/data-manager';
 import {EventManagerInterface} from './interfaces/event-manager';
 import {ExperienceManagerInterface} from './interfaces/experience-manager';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from './interfaces/log-manager';
+import {LogManagerInterface} from '@convertcom/logger';
 import {SegmentsManagerInterface} from './interfaces/segments-manager';
 
-import {Config, ConfigData} from './types/Config';
-import {Id} from './types/Id';
+import {Config, ConfigData, Id} from '@convertcom/types';
 
-import {ERROR_MESSAGES, MESSAGES} from './enums/dictionary';
-import {SystemEvents} from './enums/system-events';
-import {objectNotEmpty} from './utils/object-utils';
+import {ERROR_MESSAGES, MESSAGES, SystemEvents} from '@convertcom/enums';
+import {objectNotEmpty} from '@convertcom/utils';
 import {Context} from './context';
 
 const DEFAULT_DATA_REFRESH_INTERVAL = 300000; // in milliseconds (5 minutes)

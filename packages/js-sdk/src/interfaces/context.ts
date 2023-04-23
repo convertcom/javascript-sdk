@@ -5,13 +5,15 @@
  * License Apache-2.0
  */
 
-import {BucketedFeature} from '../types/BucketedFeature';
-import {BucketedVariation} from '../types/BucketedVariation';
-import {BucketingAttributes} from '../types/BucketingAttributes';
-import {ConversionAttributes} from '../types/ConversionAttributes';
-import {Id} from '../types/Id';
-import {SegmentsAttributes} from '../types/SegmentsAttributes';
-import {SegmentsData} from '../types/SegmentsData';
+import {
+  BucketedFeature,
+  BucketedVariation,
+  BucketingAttributes,
+  ConversionAttributes,
+  Id,
+  SegmentsAttributes,
+  SegmentsData
+} from '@convertcom/types';
 
 export interface ContextInterface {
   runExperience(

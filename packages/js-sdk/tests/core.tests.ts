@@ -3,8 +3,8 @@ import {expect} from 'chai';
 import {assert} from 'chai';
 import http from 'http';
 
-import {BucketingManager as bm} from '../src/bucketing-manager';
-import {RuleManager as rm} from '../src/rule-manager';
+import {BucketingManager as bm} from '@convertcom/bucketing';
+import {RuleManager as rm} from '@convertcom/rules';
 import {EventManager as em} from '../src/event-manager';
 import {ApiManager as am} from '../src/api-manager';
 import {DataManager as dm} from '../src/data-manager';
@@ -15,8 +15,7 @@ import {Core as c} from '../src/core';
 import {Context} from '../src/context';
 import testConfig from './test-config.json';
 import {Config} from '../src/config';
-import {SystemEvents} from '../src/enums/system-events';
-import {ERROR_MESSAGES} from '../src/enums/dictionary';
+import {SystemEvents, ERROR_MESSAGES} from '@convertcom/enums';
 
 const host = 'http://localhost';
 const port = 8090;

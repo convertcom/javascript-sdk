@@ -4,15 +4,17 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Entity} from '../types/Entity';
-import {ConfigData} from '../types/Config';
-import {Id} from '../types/Id';
-import {IdentityField} from '../types/IndentityField';
-import {BucketedVariation} from '../types/BucketedVariation';
+import {
+  Entity,
+  ConfigData,
+  Id,
+  IdentityField,
+  BucketedVariation,
+  StoreData,
+  SegmentsData
+} from '@convertcom/types';
 import {DataStoreManagerInterface} from './data-store-manager';
-import {StoreData} from '../types/StoreData';
-import {SegmentsData} from '../types/SegmentsData';
-import {GoalDataKey} from '../enums/goal-data-key';
+import {GoalDataKey} from '@convertcom/enums';
 
 export interface DataManagerInterface {
   data: ConfigData;

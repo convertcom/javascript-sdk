@@ -4,10 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Variation} from '../types/Variation';
-import {Id} from '../types/Id';
-import {Experience} from '../types/Experience';
-import {BucketedVariation} from '../types/BucketedVariation';
+import {Variation, Id, Experience, BucketedVariation} from '@convertcom/types';
 
 export interface ExperienceManagerInterface {
   getList(): Array<Experience>;

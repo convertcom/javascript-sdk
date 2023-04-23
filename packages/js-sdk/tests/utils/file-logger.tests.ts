@@ -6,7 +6,7 @@ const {assert} = chai;
 import fs from 'fs';
 import util from 'util';
 
-import {FileLogger} from '../../src/utils/file-logger';
+import {FileLogger} from '@convertcom/utils';
 const readFile = util.promisify(fs.readFile);
 const testFile = '/tmp/test.log';
 const DEBUG_MODE = process.env.DEBUG;

@@ -6,14 +6,16 @@
  */
 import {DataManagerInterface} from './interfaces/data-manager';
 import {ExperienceManagerInterface} from './interfaces/experience-manager';
-import {LogManagerInterface} from './interfaces/log-manager';
+import {LogManagerInterface} from '@convertcom/logger';
 
-import {Config} from './types/Config';
-import {Experience} from './types/Experience';
-import {Id} from './types/Id';
-import {Variation} from './types/Variation';
-import {MESSAGES} from './enums/dictionary';
-import {BucketedVariation} from './types/BucketedVariation';
+import {
+  Config,
+  Experience,
+  Id,
+  Variation,
+  BucketedVariation
+} from '@convertcom/types';
+import {MESSAGES} from '@convertcom/enums';
 
 /**
  * Provides experiences specific logic

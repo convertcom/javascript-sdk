@@ -40,6 +40,14 @@
   "engines": {
     "node": ">=8.0.0"
   },
+  "peerDependencies": {
+    "@convertcom/bucketing": "1.0.0",
+    "@convertcom/enums": "1.0.0",
+    "@convertcom/logger": "1.0.0",
+    "@convertcom/rules": "1.0.0",
+    "@convertcom/types": "1.0.0",
+    "@convertcom/utils": "1.0.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.17.10",
     "@babel/preset-env": "^7.17.10",

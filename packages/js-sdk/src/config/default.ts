@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {LogLevel} from '../enums/log-level';
+import {LogLevel} from '@convertcom/enums';
 
 export const DEFAULT_CONFIG_ENDPOINT =
   process.env.CONFIG_ENDPOINT || 'https://cdn-4.convertexperiments.com/api/v1/';

@@ -4,8 +4,8 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {SystemEvents} from '../enums/system-events';
-import {Id} from '../types/Id';
+import {SystemEvents} from '@convertcom/enums';
+import {Id} from '@convertcom/types';
 import {ContextInterface} from './context';
 
 export interface CoreInterface {

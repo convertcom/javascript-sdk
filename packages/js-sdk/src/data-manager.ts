@@ -4,39 +4,47 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {arrayNotEmpty} from './utils/array-utils';
-import {objectDeepValue, objectNotEmpty} from './utils/object-utils';
+import {
+  arrayNotEmpty,
+  objectDeepValue,
+  objectNotEmpty
+} from '@convertcom/utils';
 
 import {ApiManagerInterface} from './interfaces/api-manager';
-import {BucketingManagerInterface} from './interfaces/bucketing-manager';
+import {BucketingManagerInterface} from '@convertcom/bucketing';
 import {DataStoreManagerInterface} from './interfaces/data-store-manager';
 import {DataManagerInterface} from './interfaces/data-manager';
 import {EventManagerInterface} from './interfaces/event-manager';
-import {LogManagerInterface} from './interfaces/log-manager';
-import {RuleManagerInterface} from './interfaces/rule-manager';
-import {Entity} from './types/Entity';
-import {Variation} from './types/Variation';
-import {Id} from './types/Id';
-import {Audience} from './types/Audience';
-import {Location} from './types/Location';
-import {Config, ConfigData} from './types/Config';
+import {LogManagerInterface} from '@convertcom/logger';
+import {RuleManagerInterface} from '@convertcom/rules';
+import {
+  Entity,
+  Variation,
+  Id,
+  Audience,
+  Location,
+  Config,
+  ConfigData,
+  Experience,
+  IdentityField,
+  BucketedVariation,
+  StoreData,
+  BucketingEvent,
+  VisitorEvent,
+  ConversionEvent,
+  Goal,
+  SegmentsData
+} from '@convertcom/types';
 
-import {DATA_ENTITIES} from './enums/data-enitites';
-import {ERROR_MESSAGES, MESSAGES} from './enums/dictionary';
-import {EventType} from './enums/event-type';
-import {Experience} from './types/Experience';
-import {IdentityField} from './types/IndentityField';
-import {BucketedVariation} from './types/BucketedVariation';
-import {StoreData} from './types/StoreData';
-import {BucketingEvent} from './types/tracking/BucketingEvent';
-import {VisitorEvent} from './types/tracking/VisitorEvent';
+import {
+  DATA_ENTITIES,
+  ERROR_MESSAGES,
+  MESSAGES,
+  EventType,
+  GoalDataKey
+} from '@convertcom/enums';
 
 import {DataStoreManager} from './data-store-manager';
-import {ConversionEvent} from './types/tracking/ConversionEvent';
-import {Goal} from './types/Goal';
-import {GoalDataKey} from './enums/goal-data-key';
-import {SegmentsData} from './types/SegmentsData';
-import {Project} from './types/Project';
 const LOCAL_STORE_LIMIT = 10000;
 /**
  * Provides logic for data. Stores bucket with help of dataStore if it's provided

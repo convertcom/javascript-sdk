@@ -1,0 +1,8 @@
+{
+  "check-coverage": true,
+  "statements": 93,
+  "branches": 65,
+  "functions": 96,
+  "lines": 92,
+  "exclude": ["tests"]
+}

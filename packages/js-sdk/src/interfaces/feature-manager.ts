@@ -4,10 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Id} from '../types/Id';
-import {Feature} from '../types/Feature';
-import {IdentityField} from '../types/IndentityField';
-import {BucketedFeature} from '../types/BucketedFeature';
+import {Id, Feature, IdentityField, BucketedFeature} from '@convertcom/types';
 
 export interface FeatureManagerInterface {
   getList(): Array<Feature>;

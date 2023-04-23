@@ -1,10 +1,9 @@
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
-import {BucketingManager as bm} from '../src/bucketing-manager';
-import testConfig from './test-config.json';
-import {Config} from '../src/config';
-const configuration = Config(testConfig);
+import {BucketingManager as bm} from '@convertcom/bucketing';
+import configuration from './test-config.json';
+import {Config} from '@convertcom/types';
 
 const testsAmount = 10000;
 const DEFAULT_MAX_TRAFFIC = 10000;
@@ -47,7 +46,7 @@ describe('BucketingManager tests', function () {
       .which.equal('BucketingManager');
   });
   it('Should create new BucketingManager instance with provided config', function () {
-    bucketingManager = new bm(configuration);
+    bucketingManager = new bm(configuration as unknown as Config);
     expect(bucketingManager)
       .to.be.an('object')
       .that.has.property('constructor')

@@ -9,19 +9,19 @@
  * Module dependencies
  */
 import {ApiManager} from './src/api-manager';
-import {BucketingManager} from './src/bucketing-manager';
+import {BucketingManager} from '@convertcom/bucketing';
 import {Core} from './src/core';
 import {DataManager} from './src/data-manager';
 import {EventManager} from './src/event-manager';
 import {ExperienceManager} from './src/experience-manager';
 import {FeatureManager} from './src/feature-manager';
-import {RuleManager} from './src/rule-manager';
+import {RuleManager} from '@convertcom/rules';
 import {SegmentsManager} from './src/segments-manager';
-import {LogManager} from './src/log-manager';
+import {LogManager} from '@convertcom/logger';
 
 import {Config} from './src/config';
-import {ERROR_MESSAGES} from './src/enums/dictionary';
-import {Config as ConfigType} from './src/types/Config';
+import {ERROR_MESSAGES} from '@convertcom/enums';
+import {Config as ConfigType} from '@convertcom/types';
 
 //todo: add config attributes definition
 /**
@@ -126,7 +126,5 @@ class ConvertSDK extends Core {
 
 export default ConvertSDK;
 
-export * from './src/enums/log-level';
-export * from './src/utils/file-logger';
-export * from './src/utils/data-store';
-export {SystemEvents} from './src/enums/system-events';
+export {LogLevel, SystemEvents} from '@convertcom/enums';
+export {FileLogger, DataStore} from '@convertcom/utils';

@@ -6,21 +6,20 @@
  */
 import {DataManagerInterface} from './interfaces/data-manager';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from './interfaces/log-manager';
+import {LogManagerInterface} from '@convertcom/logger';
 
-import {Config} from './types/Config';
-import {Id} from './types/Id';
-import {Feature} from './types/Feature';
-import {MESSAGES} from './enums/dictionary';
+import {
+  Config,
+  Id,
+  Feature,
+  BucketedFeature,
+  IdentityField,
+  VariableType,
+  Entity
+} from '@convertcom/types';
+import {MESSAGES, FeatureStatus, VariationType} from '@convertcom/enums';
 
-import {BucketedFeature} from './types/BucketedFeature';
-import {FeatureStatus} from './enums/feature-status';
-import {IdentityField} from './types/IndentityField';
-import {VariableType} from './types/VariableType';
-import {castType} from './utils/types-utils';
-import {arrayNotEmpty} from './utils/array-utils';
-import {Entity} from './types/Entity';
-import {VariationType} from './enums/variation-type';
+import {castType, arrayNotEmpty} from '@convertcom/utils';
 
 /**
  * Provides features specific logic

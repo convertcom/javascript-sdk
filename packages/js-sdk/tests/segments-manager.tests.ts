@@ -2,8 +2,8 @@ import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
 
-import {BucketingManager as bm} from '../src/bucketing-manager';
-import {RuleManager as rm} from '../src/rule-manager';
+import {BucketingManager as bm} from '@convertcom/bucketing';
+import {RuleManager as rm} from '@convertcom/rules';
 import {EventManager as em} from '../src/event-manager';
 import {ApiManager as am} from '../src/api-manager';
 import {DataManager as dm} from '../src/data-manager';

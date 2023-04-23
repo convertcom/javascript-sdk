@@ -5,11 +5,13 @@
  * License Apache-2.0
  */
 
-import {Id} from '../types/Id';
-import {SegmentsData} from '../types/SegmentsData';
-import {VisitorEvent} from '../types/tracking/VisitorEvent';
-import {ConfigData} from '../types/Config';
-import {Path} from '../types/Path';
+import {
+  Id,
+  SegmentsData,
+  VisitorEvent,
+  ConfigData,
+  Path
+} from '@convertcom/types';
 
 export interface ApiManagerInterface {
   readonly batchSize: number;

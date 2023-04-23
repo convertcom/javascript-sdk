@@ -6,9 +6,9 @@
  */
 
 import {EventManagerInterface} from './interfaces/event-manager';
-import {Config} from './types/Config';
-import {SystemEvents} from './enums/system-events';
-import {LogManagerInterface} from './interfaces/log-manager';
+import {Config} from '@convertcom/types';
+import {SystemEvents} from '@convertcom/enums';
+import {LogManagerInterface} from '@convertcom/logger';
 
 /**
  * Event wrapper

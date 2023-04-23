@@ -8,22 +8,22 @@ import {ContextInterface} from './interfaces/context';
 import {EventManagerInterface} from './interfaces/event-manager';
 import {ExperienceManagerInterface} from './interfaces/experience-manager';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from './interfaces/log-manager';
+import {LogManagerInterface} from '@convertcom/logger';
 import {DataManagerInterface} from './interfaces/data-manager';
 
-import {Config} from './types/Config';
-import {Id} from './types/Id';
+import {
+  Config,
+  Id,
+  BucketedFeature,
+  BucketedVariation,
+  BucketingAttributes,
+  ConversionAttributes,
+  SegmentsData,
+  SegmentsAttributes
+} from '@convertcom/types';
 
-import {ERROR_MESSAGES} from './enums/dictionary';
-import {SystemEvents} from './enums/system-events';
-import {BucketedFeature} from './types/BucketedFeature';
-import {BucketedVariation} from './types/BucketedVariation';
-import {BucketingAttributes} from './types/BucketingAttributes';
-import {ConversionAttributes} from './types/ConversionAttributes';
-import {objectDeepMerge} from './utils/object-utils';
-import {SegmentsKeys} from './enums/segments/segments-keys';
-import {SegmentsData} from './types/SegmentsData';
-import {SegmentsAttributes} from './types/SegmentsAttributes';
+import {ERROR_MESSAGES, SystemEvents, SegmentsKeys} from '@convertcom/enums';
+import {objectDeepMerge} from '@convertcom/utils';
 import {SegmentsManagerInterface} from './interfaces/segments-manager';
 
 /**

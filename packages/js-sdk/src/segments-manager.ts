@@ -6,17 +6,19 @@
  */
 
 import {SegmentsManagerInterface} from './interfaces/segments-manager';
-import {Config, ConfigData} from './types/Config';
-import {LogManagerInterface} from './interfaces/log-manager';
-import {Id} from './types/Id';
-import {objectDeepValue} from './utils/object-utils';
-import {SegmentsData} from './types/SegmentsData';
+import {
+  Config,
+  ConfigData,
+  Id,
+  Segments,
+  SegmentsData,
+  StoreData
+} from '@convertcom/types';
+import {MESSAGES, SegmentsKeys} from '@convertcom/enums';
+import {LogManagerInterface} from '@convertcom/logger';
+import {objectDeepValue} from '@convertcom/utils';
 import {DataManagerInterface} from './interfaces/data-manager';
-import {SegmentsKeys} from './enums/segments/segments-keys';
-import {StoreData} from './types/StoreData';
-import {Segments} from './types/Segments';
-import {MESSAGES} from './enums/dictionary';
-import {RuleManagerInterface} from './interfaces/rule-manager';
+import {RuleManagerInterface} from '@convertcom/rules';
 
 /**
  * Provides segments specific logic

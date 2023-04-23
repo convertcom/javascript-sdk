@@ -7,7 +7,7 @@ import spies from 'chai-spies';
 
 import {EventManager as em} from '../src/event-manager';
 
-import {Config as ConfigType} from '../src/types/Config';
+import {Config as ConfigType} from '@convertcom/types';
 
 import testConfig from './test-config.json';
 import {Config} from '../src/config';

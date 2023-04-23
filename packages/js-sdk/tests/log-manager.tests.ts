@@ -3,13 +3,9 @@ import chai from 'chai';
 import chaiString from 'chai-string';
 chai.use(chaiString);
 const {expect, assert} = chai;
-import fs from 'fs';
 
-import {LogManager as lm} from '../src/log-manager';
-import {LogLevel as lv} from '../src/enums/log-level';
-import testConfig from './test-config.json';
-import {Config} from '../src/config';
-const configuration = Config(testConfig);
+import {LogManager as lm} from '@convertcom/logger';
+import {LogLevel as lv} from '@convertcom/enums';
 
 const DEBUG_MODE = process.env.DEBUG;
 

@@ -6,24 +6,28 @@
  */
 import {ApiManagerInterface} from './interfaces/api-manager';
 
-import {Config, ConfigData} from './types/Config';
-import {objectDeepValue} from './utils/object-utils';
-import {LogManagerInterface} from './interfaces/log-manager';
-import {SystemEvents} from './enums/system-events';
+import {
+  Config,
+  ConfigData,
+  Id,
+  TrackingEvent,
+  SegmentsData,
+  Visitor,
+  VisitorEvent,
+  VisitorsQueue,
+  Path
+} from '@convertcom/types';
+import {SystemEvents} from '@convertcom/enums';
+import {objectDeepValue} from '@convertcom/utils';
+import {LogManagerInterface} from '@convertcom/logger';
 import {EventManagerInterface} from './interfaces/event-manager';
-import {Id} from './types/Id';
-import {TrackingEvent} from './types/TrackingEvent';
-import {SegmentsData} from './types/SegmentsData';
-import {Visitor} from './types/tracking/Visitor';
-import {VisitorEvent} from './types/tracking/VisitorEvent';
-import {VisitorsQueue} from './types/VisitorsQueue';
-import {Path} from './types/Path';
-import httpClient, {
+import {
+  HttpClient,
   HttpMethod,
   HttpResponse,
   HttpResponseType,
   HttpRequest
-} from './utils/http-client';
+} from '@convertcom/utils';
 
 import {
   DEFAULT_CONFIG_ENDPOINT,
@@ -165,7 +169,7 @@ export class ApiManager implements ApiManagerInterface {
       data: data,
       responseType: <HttpResponseType>'json'
     };
-    return httpClient.request(requestConfig);
+    return HttpClient.request(requestConfig);
   }
 
   /**
