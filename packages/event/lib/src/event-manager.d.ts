@@ -23,7 +23,7 @@ export declare class EventManager implements EventManagerInterface {
      * @param {Object} dependencies
      * @param {LogManagerInterface=} dependencies.loggerManager
      */
-    constructor(config: Config, { loggerManager }?: {
+    constructor(config?: Config, { loggerManager }?: {
         loggerManager?: LogManagerInterface;
     });
     /**
