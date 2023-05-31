@@ -28,7 +28,7 @@ export class EventManager implements EventManagerInterface {
    * @param {LogManagerInterface=} dependencies.loggerManager
    */
   constructor(
-    config: Config,
+    config?: Config,
     {loggerManager}: {loggerManager?: LogManagerInterface} = {}
   ) {
     this._listeners = {};
