@@ -8,7 +8,7 @@ import {ApiManagerInterface} from './interfaces/api-manager';
 import {ContextInterface} from './interfaces/context';
 import {CoreInterface} from './interfaces/core';
 import {DataManagerInterface} from './interfaces/data-manager';
-import {EventManagerInterface} from './interfaces/event-manager';
+import {EventManagerInterface} from '@convertcom/event';
 import {ExperienceManagerInterface} from './interfaces/experience-manager';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
 import {LogManagerInterface} from '@convertcom/logger';

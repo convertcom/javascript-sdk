@@ -3,7 +3,7 @@ import {expect} from 'chai';
 import {assert} from 'chai';
 import http from 'http';
 import {ApiManager as am} from '../src/api-manager';
-import {EventManager as em} from '../src/event-manager';
+import {EventManager as em} from '@convertcom/event';
 import {SystemEvents} from '@convertcom/enums';
 import testConfig from './test-config.json';
 import {Config} from '../src/config';

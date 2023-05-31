@@ -20,7 +20,7 @@ import {
 import {SystemEvents} from '@convertcom/enums';
 import {objectDeepValue} from '@convertcom/utils';
 import {LogManagerInterface} from '@convertcom/logger';
-import {EventManagerInterface} from './interfaces/event-manager';
+import {EventManagerInterface} from '@convertcom/event';
 import {
   HttpClient,
   HttpMethod,

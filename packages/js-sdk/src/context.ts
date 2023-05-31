@@ -5,7 +5,7 @@
  * License Apache-2.0
  */
 import {ContextInterface} from './interfaces/context';
-import {EventManagerInterface} from './interfaces/event-manager';
+import {EventManagerInterface} from '@convertcom/event';
 import {ExperienceManagerInterface} from './interfaces/experience-manager';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
 import {LogManagerInterface} from '@convertcom/logger';

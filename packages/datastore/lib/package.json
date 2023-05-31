@@ -1,0 +1,18 @@
+{
+  "name": "@convertcom/datastore",
+  "main": "index.min.js",
+  "module": "index.min.mjs",
+  "browser": "index.umd.min.js",
+  "types": "index.d.ts",
+  "files": [
+    "**/**/*"
+  ],
+  "author": "Convert Insights, Inc",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/convertcom/javascript-sdk.git",
+    "directory": "packages/datastore"
+  },
+  "license": "Apache-2.0",
+  "version": "1.0.0"
+}

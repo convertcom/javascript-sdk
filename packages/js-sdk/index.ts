@@ -12,7 +12,7 @@ import {ApiManager} from './src/api-manager';
 import {BucketingManager} from '@convertcom/bucketing';
 import {Core} from './src/core';
 import {DataManager} from './src/data-manager';
-import {EventManager} from './src/event-manager';
+import {EventManager} from '@convertcom/event';
 import {ExperienceManager} from './src/experience-manager';
 import {FeatureManager} from './src/feature-manager';
 import {RuleManager} from '@convertcom/rules';

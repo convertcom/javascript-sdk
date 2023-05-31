@@ -1,0 +1,8 @@
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020-2022 Convert Insights, Inc
+ * License Apache-2.0
+ */
+class e{constructor(e,{loggerManager:r}={}){this._listeners={},this._deferred={},this._loggerManager=r}on(e,r){var t,s;(this._listeners[e]=this._listeners[e]||[]).push(r),null===(s=null===(t=this._loggerManager)||void 0===t?void 0:t.trace)||void 0===s||s.call(t,"EventManage.on()",{event:e}),Object.hasOwnProperty.call(this._deferred,e)&&this.fire(e,this._deferred[e].args,this._deferred[e].err)}removeListeners(e){Object.hasOwnProperty.call(this._listeners,e)&&delete this._listeners[e],Object.hasOwnProperty.call(this._deferred,e)&&delete this._deferred[e]}fire(e,r=null,t=null,s=!1){var l,i;null===(i=null===(l=this._loggerManager)||void 0===l?void 0:l.trace)||void 0===i||i.call(l,"EventManage.fire()",{event:e,args:r,err:t,deferred:s});for(const s in this._listeners[e]||[])Object.hasOwnProperty.call(this._listeners,e)&&"function"==typeof this._listeners[e][s]&&this._listeners[e][s].apply(null,[r,t]);s&&!Object.hasOwnProperty.call(this._deferred,e)&&(this._deferred[e]={args:r,err:t})}}export{e as EventManager};
+//# sourceMappingURL=index.min.mjs.map

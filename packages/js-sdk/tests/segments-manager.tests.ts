@@ -4,7 +4,7 @@ import {assert} from 'chai';
 
 import {BucketingManager as bm} from '@convertcom/bucketing';
 import {RuleManager as rm} from '@convertcom/rules';
-import {EventManager as em} from '../src/event-manager';
+import {EventManager as em} from '@convertcom/event';
 import {ApiManager as am} from '../src/api-manager';
 import {DataManager as dm} from '../src/data-manager';
 import {SegmentsManager as sm} from '../src/segments-manager';

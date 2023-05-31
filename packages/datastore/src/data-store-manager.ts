@@ -8,7 +8,7 @@ import {objectDeepMerge} from '@convertcom/utils';
 
 import {DataStoreManagerInterface} from './interfaces/data-store-manager';
 import {LogManagerInterface} from '@convertcom/logger';
-import {EventManagerInterface} from './interfaces/event-manager';
+import {EventManagerInterface} from '@convertcom/event';
 import {Config} from '@convertcom/types';
 
 import {ERROR_MESSAGES, SystemEvents} from '@convertcom/enums';

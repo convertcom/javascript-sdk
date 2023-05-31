@@ -5,7 +5,7 @@ import {assert} from 'chai';
 import chai from 'chai';
 import spies from 'chai-spies';
 
-import {EventManager as em} from '../src/event-manager';
+import {EventManager as em} from '@convertcom/event';
 
 import {Config as ConfigType} from '@convertcom/types';
 

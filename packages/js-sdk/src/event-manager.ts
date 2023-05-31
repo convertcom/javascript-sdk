@@ -5,7 +5,7 @@
  * License Apache-2.0
  */
 
-import {EventManagerInterface} from './interfaces/event-manager';
+import {EventManagerInterface} from '@convertcom/event';
 import {Config} from '@convertcom/types';
 import {SystemEvents} from '@convertcom/enums';
 import {LogManagerInterface} from '@convertcom/logger';
