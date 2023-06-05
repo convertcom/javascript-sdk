@@ -9,11 +9,11 @@ export interface DataStoreManagerInterface {
   readonly batchSize: number;
   readonly releaseInterval: number;
 
-  set(key: string, data: any): void;
+  set(key: string, data: any, expire?: number): void;
 
   get(key: string): any;
 
-  enqueue(key: string, data: any): void;
+  enqueue(key: string, data: any, expire?: number): void;
 
   releaseQueue(reason?: string): any;
 

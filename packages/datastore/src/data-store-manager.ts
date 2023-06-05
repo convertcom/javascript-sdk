@@ -23,7 +23,7 @@ const DEFAULT_RELEASE_INTERVAL = 5000;
  * @implements {DataStoreManagerInterface}
  */
 export class DataStoreManager implements DataStoreManagerInterface {
-  private _requestsQueue: Record<string, any>;
+  private _requestsQueue: Array<Record<string, any>>;
   private _requestsQueueTimerID: number;
 
   private _loggerManager: LogManagerInterface | null;
@@ -65,12 +65,12 @@ export class DataStoreManager implements DataStoreManagerInterface {
       // Number(objectDeepValue(config, 'events.release_interval')).valueOf() ||
       DEFAULT_RELEASE_INTERVAL;
     this.dataStore = dataStore;
-    this._requestsQueue = {};
+    this._requestsQueue = [];
   }
 
-  set(key: string, data: any) {
+  set(key: string, data: any, expire?: number) {
     try {
-      this.dataStore?.set?.(key, data);
+      this.dataStore?.set?.(key, data, expire);
     } catch (error) {
       this._loggerManager?.error?.('DataStoreManager.set()', {
         error: error.message
@@ -89,18 +89,19 @@ export class DataStoreManager implements DataStoreManagerInterface {
     return null;
   }
 
-  enqueue(key: string, data: any) {
+  enqueue(key: string, data: any, expire?: number) {
     this._loggerManager?.trace?.('DataStoreManager.enqueue()', {
       key: key,
-      data: data
+      data: data,
+      expire: expire
     });
-    const addData = {};
-    addData[key] = data;
-    this._requestsQueue = objectDeepMerge(this._requestsQueue, addData);
-    if (Object.keys(this._requestsQueue).length >= this.batchSize) {
+    const addData: any = {key, data};
+    if (expire) addData.expire = expire;
+    this._requestsQueue.push(addData);
+    if (this._requestsQueue.length >= this.batchSize) {
       this.releaseQueue('size');
     } else {
-      if (Object.keys(this._requestsQueue).length === 1) {
+      if (this._requestsQueue.length === 1) {
         this.startQueue();
       }
     }
@@ -111,8 +112,8 @@ export class DataStoreManager implements DataStoreManagerInterface {
       reason: reason || ''
     });
     this.stopQueue();
-    for (const key in this._requestsQueue) {
-      this.set(key, this._requestsQueue[key]);
+    for (const {key, data, expire = null} of this._requestsQueue) {
+      this.set(key, data, expire);
     }
     this._eventManager?.fire?.(SystemEvents.DATA_STORE_QUEUE_RELEASED, {
       reason: reason || ''
