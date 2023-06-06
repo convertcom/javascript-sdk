@@ -10,8 +10,9 @@ import {DataStoreManagerInterface} from './interfaces/data-store-manager';
 import {LogManagerInterface} from '@convertcom/logger';
 import {EventManagerInterface} from '@convertcom/event';
 import {Config} from '@convertcom/types';
+import {SystemEvents} from '@convertcom/enums';
 
-import {ERROR_MESSAGES, SystemEvents} from '@convertcom/enums';
+import {ERROR_MESSAGES} from '@convertcom/enums';
 
 const DEFAULT_BATCH_SIZE = 1;
 const DEFAULT_RELEASE_INTERVAL = 5000;
@@ -23,7 +24,7 @@ const DEFAULT_RELEASE_INTERVAL = 5000;
  * @implements {DataStoreManagerInterface}
  */
 export class DataStoreManager implements DataStoreManagerInterface {
-  private _requestsQueue: Array<Record<string, any>>;
+  private _requestsQueue: Record<string, any>;
   private _requestsQueueTimerID: number;
 
   private _loggerManager: LogManagerInterface | null;
@@ -65,12 +66,12 @@ export class DataStoreManager implements DataStoreManagerInterface {
       // Number(objectDeepValue(config, 'events.release_interval')).valueOf() ||
       DEFAULT_RELEASE_INTERVAL;
     this.dataStore = dataStore;
-    this._requestsQueue = [];
+    this._requestsQueue = {};
   }
 
-  set(key: string, data: any, expire?: number) {
+  set(key: string, data: any) {
     try {
-      this.dataStore?.set?.(key, data, expire);
+      this.dataStore?.set?.(key, data);
     } catch (error) {
       this._loggerManager?.error?.('DataStoreManager.set()', {
         error: error.message
@@ -89,19 +90,18 @@ export class DataStoreManager implements DataStoreManagerInterface {
     return null;
   }
 
-  enqueue(key: string, data: any, expire?: number) {
+  enqueue(key: string, data: any) {
     this._loggerManager?.trace?.('DataStoreManager.enqueue()', {
       key: key,
-      data: data,
-      expire: expire
+      data: data
     });
-    const addData: any = {key, data};
-    if (expire) addData.expire = expire;
-    this._requestsQueue.push(addData);
-    if (this._requestsQueue.length >= this.batchSize) {
+    const addData = {};
+    addData[key] = data;
+    this._requestsQueue = objectDeepMerge(this._requestsQueue, addData);
+    if (Object.keys(this._requestsQueue).length >= this.batchSize) {
       this.releaseQueue('size');
     } else {
-      if (this._requestsQueue.length === 1) {
+      if (Object.keys(this._requestsQueue).length === 1) {
         this.startQueue();
       }
     }
@@ -112,8 +112,8 @@ export class DataStoreManager implements DataStoreManagerInterface {
       reason: reason || ''
     });
     this.stopQueue();
-    for (const {key, data, expire = null} of this._requestsQueue) {
-      this.set(key, data, expire);
+    for (const key in this._requestsQueue) {
+      this.set(key, this._requestsQueue[key]);
     }
     this._eventManager?.fire?.(SystemEvents.DATA_STORE_QUEUE_RELEASED, {
       reason: reason || ''

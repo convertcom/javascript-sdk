@@ -13,7 +13,7 @@ import {
   StoreData,
   SegmentsData
 } from '@convertcom/types';
-import {DataStoreManagerInterface} from '@convertcom/datastore';
+import {DataStoreManagerInterface} from './data-store-manager';
 import {GoalDataKey} from '@convertcom/enums';
 
 export interface DataManagerInterface {

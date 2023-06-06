@@ -43,6 +43,7 @@
   "peerDependencies": {
     "@convertcom/bucketing": "1.0.0",
     "@convertcom/enums": "1.0.0",
+    "@convertcom/event": "1.0.0",
     "@convertcom/logger": "1.0.0",
     "@convertcom/rules": "1.0.0",
     "@convertcom/types": "1.0.0",

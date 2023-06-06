@@ -12,7 +12,7 @@ import {
 
 import {ApiManagerInterface} from './interfaces/api-manager';
 import {BucketingManagerInterface} from '@convertcom/bucketing';
-import {DataStoreManagerInterface} from '@convertcom/datastore';
+import {DataStoreManagerInterface} from './interfaces/data-store-manager';
 import {DataManagerInterface} from './interfaces/data-manager';
 import {EventManagerInterface} from '@convertcom/event';
 import {LogManagerInterface} from '@convertcom/logger';
@@ -44,7 +44,7 @@ import {
   GoalDataKey
 } from '@convertcom/enums';
 
-import {DataStoreManager} from '@convertcom/datastore';
+import {DataStoreManager} from './data-store-manager';
 const LOCAL_STORE_LIMIT = 10000;
 /**
  * Provides logic for data. Stores bucket with help of dataStore if it's provided
