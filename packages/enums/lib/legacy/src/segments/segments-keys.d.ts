@@ -5,6 +5,7 @@
  * License Apache-2.0
  */
 export declare enum SegmentsKeys {
+    COUNTRY = "country",
     BROWSER = "browser",
     DEVICES = "devices",
     SOURCE = "source",

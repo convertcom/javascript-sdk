@@ -303,6 +303,7 @@ exports.DeviceType = void 0;
  */
 exports.SegmentsKeys = void 0;
 (function (SegmentsKeys) {
+    SegmentsKeys["COUNTRY"] = "country";
     SegmentsKeys["BROWSER"] = "browser";
     SegmentsKeys["DEVICES"] = "devices";
     SegmentsKeys["SOURCE"] = "source";

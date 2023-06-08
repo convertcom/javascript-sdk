@@ -301,6 +301,7 @@ var DeviceType;
  */
 var SegmentsKeys;
 (function (SegmentsKeys) {
+    SegmentsKeys["COUNTRY"] = "country";
     SegmentsKeys["BROWSER"] = "browser";
     SegmentsKeys["DEVICES"] = "devices";
     SegmentsKeys["SOURCE"] = "source";
