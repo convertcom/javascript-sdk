@@ -13,6 +13,7 @@ import {
 } from '@convertcom/enums';
 
 export type SegmentsData = {
+  [SegmentsKeys.COUNTRY]?: string;
   [SegmentsKeys.BROWSER]?: BrowserType;
   [SegmentsKeys.DEVICES]?: Array<DeviceType>;
   [SegmentsKeys.SOURCE]?: SourceType;
