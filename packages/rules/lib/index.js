@@ -36,7 +36,7 @@ class RuleManager {
     }
     /**
      * Setter for comparison processor
-     * @param {object} comparisonProcessor
+     * @param {Record<string, any>} comparisonProcessor
      */
     set comparisonProcessor(comparisonProcessor) {
         this._comparisonProcessor = comparisonProcessor;
@@ -56,7 +56,7 @@ class RuleManager {
     }
     /**
      * Check input data matching to rule set
-     * @param {Record<string, string | number> | string | number} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleSet} ruleSet
      * @return {boolean}
      */
@@ -82,7 +82,7 @@ class RuleManager {
     }
     /**
      * Check is rule object valid
-     * @param {object} rule
+     * @param {Rule} rule
      * @return {boolean}
      */
     isValidRule(rule) {
@@ -101,7 +101,7 @@ class RuleManager {
     }
     /**
      * Process AND block of rule set. Return first false if found
-     * @param {object | string | number | boolean} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleAnd} rulesSubset
      * @return {boolean}
      * @private
@@ -125,7 +125,7 @@ class RuleManager {
     }
     /**
      * Process OR block of rule set. Return first true if found
-     * @param {object | string | number | boolean} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleOrWhen} rulesSubset
      * @return {boolean}
      * @private
@@ -148,7 +148,7 @@ class RuleManager {
     }
     /**
      * Process single rule
-     * @param {object | string | number | boolean} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {Rule} rule A single rule to compare
      * @return {boolean} Comparison result
      * @private
@@ -160,21 +160,10 @@ class RuleManager {
                 const negation = rule.matching.negated || false;
                 const matching = rule.matching.match_type;
                 if (this.getComparisonProcessorMethods().indexOf(matching) !== -1) {
-                    const dataType = typeof data;
-                    switch (dataType) {
-                        // Validate direct value. Rule object `key` field is ignored or not present
-                        // case 'boolean':
-                        // case 'number':
-                        // case 'bigint':
-                        // case 'string':
-                        //   return this._comparisonProcessor[matching](
-                        //     data,
-                        //     rule.value,
-                        //     negation
-                        //   );
-                        //   break;
-                        // Validate data key-value set. Rule object has to have `key` field
-                        case 'object':
+                    if (typeof data === 'object') {
+                        // Validate data key-value set.
+                        if (data.constructor === Object) {
+                            // Rule object has to have `key` field
                             for (const key of Object.keys(data)) {
                                 const k = this._keys_case_sensitive ? key : key.toLowerCase();
                                 const rule_k = this._keys_case_sensitive
@@ -184,11 +173,23 @@ class RuleManager {
                                     return this._comparisonProcessor[matching](data[key], rule.value, negation);
                                 }
                             }
-                            break;
-                        default:
-                            (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.warn) === null || _b === void 0 ? void 0 : _b.call(_a, 'RuleManager._processRule()', {
-                                warn: enums.ERROR_MESSAGES.RULE_DATA_NOT_VALID
-                            });
+                        }
+                        else if (rule === null || rule === void 0 ? void 0 : rule.rule_type) {
+                            // Rule object has to have `rule_type` field
+                            for (const method of Object.getOwnPropertyNames(data.constructor.prototype)) {
+                                if (method === 'constructor')
+                                    continue;
+                                const rule_method = utils.camelCase(`get ${rule.rule_type.replace(/_/g, ' ')}`);
+                                if (method === rule_method) {
+                                    return this._comparisonProcessor[matching](data[method](), rule.value, negation);
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.warn) === null || _b === void 0 ? void 0 : _b.call(_a, 'RuleManager._processRule()', {
+                            warn: enums.ERROR_MESSAGES.RULE_DATA_NOT_VALID
+                        });
                     }
                 }
             }

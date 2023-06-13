@@ -26,6 +26,10 @@ var _a;
  */
 class Comparisons {
     static equals(value, testAgainst, negation) {
+        if (Array.isArray(value))
+            return this._returnNegationCheck(value.includes(testAgainst), negation);
+        if (value.constructor === Object && typeof testAgainst === 'string')
+            return this._returnNegationCheck(Object.keys(value).includes(testAgainst), negation);
         return this._returnNegationCheck(value === testAgainst, negation);
     }
     static less(value, testAgainst, negation) {
@@ -638,6 +642,18 @@ function stringFormat(template, ...args) {
     }
     return String(template);
 }
+/**
+ * String formatter tool. Transforms a space-separated string into camelCase
+ * @param {string} input
+ * @return {string}
+ */
+function camelCase(input) {
+    return input
+        .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+        return index == 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+        .replace(/\s+/g, '');
+}
 
 /*!
  * Convert JS SDK
@@ -695,5 +711,5 @@ function castType(value, type) {
     }
 }
 
-export { Comparisons, DataStore, FileLogger, HttpClient, arrayNotEmpty, castType, objectDeepMerge, objectDeepValue, objectNotEmpty, stringFormat };
+export { Comparisons, DataStore, FileLogger, HttpClient, arrayNotEmpty, camelCase, castType, objectDeepMerge, objectDeepValue, objectNotEmpty, stringFormat };
 //# sourceMappingURL=index.mjs.map

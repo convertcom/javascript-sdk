@@ -22,7 +22,7 @@ export declare class RuleManager implements RuleManagerInterface {
     });
     /**
      * Setter for comparison processor
-     * @param {object} comparisonProcessor
+     * @param {Record<string, any>} comparisonProcessor
      */
     set comparisonProcessor(comparisonProcessor: Record<string, any>);
     /**
@@ -36,20 +36,20 @@ export declare class RuleManager implements RuleManagerInterface {
     getComparisonProcessorMethods(): Array<string>;
     /**
      * Check input data matching to rule set
-     * @param {Record<string, string | number> | string | number} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleSet} ruleSet
      * @return {boolean}
      */
-    isRuleMatched(data: Record<string, string | number> | string | number, ruleSet: RuleSet): boolean;
+    isRuleMatched(data: Record<string, any>, ruleSet: RuleSet): boolean;
     /**
      * Check is rule object valid
-     * @param {object} rule
+     * @param {Rule} rule
      * @return {boolean}
      */
     isValidRule(rule: Rule): boolean;
     /**
      * Process AND block of rule set. Return first false if found
-     * @param {object | string | number | boolean} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleAnd} rulesSubset
      * @return {boolean}
      * @private
@@ -57,7 +57,7 @@ export declare class RuleManager implements RuleManagerInterface {
     private _processAND;
     /**
      * Process OR block of rule set. Return first true if found
-     * @param {object | string | number | boolean} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleOrWhen} rulesSubset
      * @return {boolean}
      * @private
@@ -65,7 +65,7 @@ export declare class RuleManager implements RuleManagerInterface {
     private _processORWHEN;
     /**
      * Process single rule
-     * @param {object | string | number | boolean} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {Rule} rule A single rule to compare
      * @return {boolean} Comparison result
      * @private

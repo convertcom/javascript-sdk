@@ -11,3 +11,9 @@
  * @return {string}
  */
 export declare function stringFormat(template: string, ...args: any[]): string;
+/**
+ * String formatter tool. Transforms a space-separated string into camelCase
+ * @param {string} input
+ * @return {string}
+ */
+export declare function camelCase(input: string): string;

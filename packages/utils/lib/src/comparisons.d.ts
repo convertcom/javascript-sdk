@@ -8,7 +8,7 @@
  * Comparison Processor. Provides comparison methods for rules validation
  */
 export declare class Comparisons {
-    static equals(value: string | number | boolean, testAgainst: string | number | boolean, negation?: boolean): boolean;
+    static equals(value: string | number | boolean | Array<string | number | boolean> | Record<string, string | number | boolean>, testAgainst: string | number | boolean, negation?: boolean): boolean;
     static equalsNumber: typeof Comparisons.equals;
     static matches: typeof Comparisons.equals;
     static less(value: string | number, testAgainst: string | number, negation?: boolean): boolean;

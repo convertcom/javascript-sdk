@@ -6,6 +6,7 @@
  */
 import {
   arrayNotEmpty,
+  camelCase,
   Comparisons as DEFAULT_COMPARISON_PROCESSOR,
   objectDeepValue
 } from '@convertcom/utils';
@@ -61,7 +62,7 @@ export class RuleManager implements RuleManagerInterface {
 
   /**
    * Setter for comparison processor
-   * @param {object} comparisonProcessor
+   * @param {Record<string, any>} comparisonProcessor
    */
   set comparisonProcessor(comparisonProcessor: Record<string, any>) {
     this._comparisonProcessor = comparisonProcessor;
@@ -86,14 +87,11 @@ export class RuleManager implements RuleManagerInterface {
 
   /**
    * Check input data matching to rule set
-   * @param {Record<string, string | number> | string | number} data Single value or key-value data set to compare
+   * @param {Record<string, any>} data Single value or key-value data set to compare
    * @param {RuleSet} ruleSet
    * @return {boolean}
    */
-  isRuleMatched(
-    data: Record<string, string | number> | string | number,
-    ruleSet: RuleSet
-  ): boolean {
+  isRuleMatched(data: Record<string, any>, ruleSet: RuleSet): boolean {
     this._loggerManager?.debug?.('RuleManager.isRuleMatched()', {
       data: data,
       ruleSet: ruleSet
@@ -116,7 +114,7 @@ export class RuleManager implements RuleManagerInterface {
 
   /**
    * Check is rule object valid
-   * @param {object} rule
+   * @param {Rule} rule
    * @return {boolean}
    */
   isValidRule(rule: Rule): boolean {
@@ -137,13 +135,13 @@ export class RuleManager implements RuleManagerInterface {
 
   /**
    * Process AND block of rule set. Return first false if found
-   * @param {object | string | number | boolean} data Single value or key-value data set to compare
+   * @param {Record<string, any>} data Single value or key-value data set to compare
    * @param {RuleAnd} rulesSubset
    * @return {boolean}
    * @private
    */
   private _processAND(
-    data: Record<string, string | number> | string | number,
+    data: Record<string, any>,
     rulesSubset: RuleAnd
   ): boolean {
     // Second AND level
@@ -165,13 +163,13 @@ export class RuleManager implements RuleManagerInterface {
 
   /**
    * Process OR block of rule set. Return first true if found
-   * @param {object | string | number | boolean} data Single value or key-value data set to compare
+   * @param {Record<string, any>} data Single value or key-value data set to compare
    * @param {RuleOrWhen} rulesSubset
    * @return {boolean}
    * @private
    */
   private _processORWHEN(
-    data: Record<string, string | number> | string | number,
+    data: Record<string, any>,
     rulesSubset: RuleOrWhen
   ): boolean {
     // Third OR level. Called OR_WHEN.
@@ -192,35 +190,21 @@ export class RuleManager implements RuleManagerInterface {
 
   /**
    * Process single rule
-   * @param {object | string | number | boolean} data Single value or key-value data set to compare
+   * @param {Record<string, any>} data Single value or key-value data set to compare
    * @param {Rule} rule A single rule to compare
    * @return {boolean} Comparison result
    * @private
    */
-  private _processRule(
-    data: Record<string, string | number> | string | number,
-    rule: Rule
-  ): boolean {
+  private _processRule(data: Record<string, any>, rule: Rule): boolean {
     if (this.isValidRule(rule)) {
       try {
         const negation = rule.matching.negated || false;
         const matching = rule.matching.match_type;
         if (this.getComparisonProcessorMethods().indexOf(matching) !== -1) {
-          const dataType = typeof data;
-          switch (dataType) {
-            // Validate direct value. Rule object `key` field is ignored or not present
-            // case 'boolean':
-            // case 'number':
-            // case 'bigint':
-            // case 'string':
-            //   return this._comparisonProcessor[matching](
-            //     data,
-            //     rule.value,
-            //     negation
-            //   );
-            //   break;
-            // Validate data key-value set. Rule object has to have `key` field
-            case 'object':
+          if (typeof data === 'object') {
+            // Validate data key-value set.
+            if (data.constructor === Object) {
+              // Rule object has to have `key` field
               for (const key of Object.keys(data)) {
                 const k = this._keys_case_sensitive ? key : key.toLowerCase();
                 const rule_k = this._keys_case_sensitive
@@ -234,11 +218,28 @@ export class RuleManager implements RuleManagerInterface {
                   );
                 }
               }
-              break;
-            default:
-              this._loggerManager?.warn?.('RuleManager._processRule()', {
-                warn: ERROR_MESSAGES.RULE_DATA_NOT_VALID
-              });
+            } else if (rule?.rule_type) {
+              // Rule object has to have `rule_type` field
+              for (const method of Object.getOwnPropertyNames(
+                data.constructor.prototype
+              )) {
+                if (method === 'constructor') continue;
+                const rule_method = camelCase(
+                  `get ${rule.rule_type.replace(/_/g, ' ')}`
+                );
+                if (method === rule_method) {
+                  return this._comparisonProcessor[matching](
+                    data[method](),
+                    rule.value,
+                    negation
+                  );
+                }
+              }
+            }
+          } else {
+            this._loggerManager?.warn?.('RuleManager._processRule()', {
+              warn: ERROR_MESSAGES.RULE_DATA_NOT_VALID
+            });
           }
         }
       } catch (error) {

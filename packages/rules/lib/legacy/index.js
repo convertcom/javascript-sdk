@@ -65,7 +65,7 @@ var RuleManager = /** @class */ (function () {
         },
         /**
          * Setter for comparison processor
-         * @param {object} comparisonProcessor
+         * @param {Record<string, any>} comparisonProcessor
          */
         set: function (comparisonProcessor) {
             this._comparisonProcessor = comparisonProcessor;
@@ -83,7 +83,7 @@ var RuleManager = /** @class */ (function () {
     };
     /**
      * Check input data matching to rule set
-     * @param {Record<string, string | number> | string | number} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleSet} ruleSet
      * @return {boolean}
      */
@@ -109,7 +109,7 @@ var RuleManager = /** @class */ (function () {
     };
     /**
      * Check is rule object valid
-     * @param {object} rule
+     * @param {Rule} rule
      * @return {boolean}
      */
     RuleManager.prototype.isValidRule = function (rule) {
@@ -128,7 +128,7 @@ var RuleManager = /** @class */ (function () {
     };
     /**
      * Process AND block of rule set. Return first false if found
-     * @param {object | string | number | boolean} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleAnd} rulesSubset
      * @return {boolean}
      * @private
@@ -152,7 +152,7 @@ var RuleManager = /** @class */ (function () {
     };
     /**
      * Process OR block of rule set. Return first true if found
-     * @param {object | string | number | boolean} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleOrWhen} rulesSubset
      * @return {boolean}
      * @private
@@ -175,37 +175,26 @@ var RuleManager = /** @class */ (function () {
     };
     /**
      * Process single rule
-     * @param {object | string | number | boolean} data Single value or key-value data set to compare
+     * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {Rule} rule A single rule to compare
      * @return {boolean} Comparison result
      * @private
      */
     RuleManager.prototype._processRule = function (data, rule) {
-        var e_1, _a;
-        var _b, _c, _d, _e, _f, _g;
+        var e_1, _a, e_2, _b;
+        var _c, _d, _e, _f, _g, _h;
         if (this.isValidRule(rule)) {
             try {
                 var negation = rule.matching.negated || false;
                 var matching = rule.matching.match_type;
                 if (this.getComparisonProcessorMethods().indexOf(matching) !== -1) {
-                    var dataType = typeof data;
-                    switch (dataType) {
-                        // Validate direct value. Rule object `key` field is ignored or not present
-                        // case 'boolean':
-                        // case 'number':
-                        // case 'bigint':
-                        // case 'string':
-                        //   return this._comparisonProcessor[matching](
-                        //     data,
-                        //     rule.value,
-                        //     negation
-                        //   );
-                        //   break;
-                        // Validate data key-value set. Rule object has to have `key` field
-                        case 'object':
+                    if (typeof data === 'object') {
+                        // Validate data key-value set.
+                        if (data.constructor === Object) {
                             try {
-                                for (var _h = __values(Object.keys(data)), _j = _h.next(); !_j.done; _j = _h.next()) {
-                                    var key = _j.value;
+                                // Rule object has to have `key` field
+                                for (var _j = __values(Object.keys(data)), _k = _j.next(); !_k.done; _k = _j.next()) {
+                                    var key = _k.value;
                                     var k = this._keys_case_sensitive ? key : key.toLowerCase();
                                     var rule_k = this._keys_case_sensitive
                                         ? rule.key
@@ -218,26 +207,48 @@ var RuleManager = /** @class */ (function () {
                             catch (e_1_1) { e_1 = { error: e_1_1 }; }
                             finally {
                                 try {
-                                    if (_j && !_j.done && (_a = _h.return)) _a.call(_h);
+                                    if (_k && !_k.done && (_a = _j.return)) _a.call(_j);
                                 }
                                 finally { if (e_1) throw e_1.error; }
                             }
-                            break;
-                        default:
-                            (_c = (_b = this._loggerManager) === null || _b === void 0 ? void 0 : _b.warn) === null || _c === void 0 ? void 0 : _c.call(_b, 'RuleManager._processRule()', {
-                                warn: enums.ERROR_MESSAGES.RULE_DATA_NOT_VALID
-                            });
+                        }
+                        else if (rule === null || rule === void 0 ? void 0 : rule.rule_type) {
+                            try {
+                                // Rule object has to have `rule_type` field
+                                for (var _l = __values(Object.getOwnPropertyNames(data.constructor.prototype)), _m = _l.next(); !_m.done; _m = _l.next()) {
+                                    var method = _m.value;
+                                    if (method === 'constructor')
+                                        continue;
+                                    var rule_method = utils.camelCase("get ".concat(rule.rule_type.replace(/_/g, ' ')));
+                                    if (method === rule_method) {
+                                        return this._comparisonProcessor[matching](data[method](), rule.value, negation);
+                                    }
+                                }
+                            }
+                            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+                            finally {
+                                try {
+                                    if (_m && !_m.done && (_b = _l.return)) _b.call(_l);
+                                }
+                                finally { if (e_2) throw e_2.error; }
+                            }
+                        }
+                    }
+                    else {
+                        (_d = (_c = this._loggerManager) === null || _c === void 0 ? void 0 : _c.warn) === null || _d === void 0 ? void 0 : _d.call(_c, 'RuleManager._processRule()', {
+                            warn: enums.ERROR_MESSAGES.RULE_DATA_NOT_VALID
+                        });
                     }
                 }
             }
             catch (error) {
-                (_e = (_d = this._loggerManager) === null || _d === void 0 ? void 0 : _d.error) === null || _e === void 0 ? void 0 : _e.call(_d, 'RuleManager._processRule()', {
+                (_f = (_e = this._loggerManager) === null || _e === void 0 ? void 0 : _e.error) === null || _f === void 0 ? void 0 : _f.call(_e, 'RuleManager._processRule()', {
                     error: error.message
                 });
             }
         }
         else {
-            (_g = (_f = this._loggerManager) === null || _f === void 0 ? void 0 : _f.warn) === null || _g === void 0 ? void 0 : _g.call(_f, enums.ERROR_MESSAGES.RULE_NOT_VALID);
+            (_h = (_g = this._loggerManager) === null || _g === void 0 ? void 0 : _g.warn) === null || _h === void 0 ? void 0 : _h.call(_g, enums.ERROR_MESSAGES.RULE_NOT_VALID);
         }
         return false;
     };

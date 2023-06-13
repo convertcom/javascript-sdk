@@ -29,6 +29,10 @@ var Comparisons = /** @class */ (function () {
     function Comparisons() {
     }
     Comparisons.equals = function (value, testAgainst, negation) {
+        if (Array.isArray(value))
+            return this._returnNegationCheck(value.includes(testAgainst), negation);
+        if (value.constructor === Object && typeof testAgainst === 'string')
+            return this._returnNegationCheck(Object.keys(value).includes(testAgainst), negation);
         return this._returnNegationCheck(value === testAgainst, negation);
     };
     Comparisons.less = function (value, testAgainst, negation) {
@@ -784,6 +788,18 @@ function stringFormat(template) {
     }
     return String(template);
 }
+/**
+ * String formatter tool. Transforms a space-separated string into camelCase
+ * @param {string} input
+ * @return {string}
+ */
+function camelCase(input) {
+    return input
+        .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+        return index == 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+        .replace(/\s+/g, '');
+}
 
 /*!
  * Convert JS SDK
@@ -846,6 +862,7 @@ exports.DataStore = DataStore;
 exports.FileLogger = FileLogger;
 exports.HttpClient = HttpClient;
 exports.arrayNotEmpty = arrayNotEmpty;
+exports.camelCase = camelCase;
 exports.castType = castType;
 exports.objectDeepMerge = objectDeepMerge;
 exports.objectDeepValue = objectDeepValue;

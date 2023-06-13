@@ -10,10 +10,22 @@
  */
 export class Comparisons {
   static equals(
-    value: string | number | boolean,
+    value:
+      | string
+      | number
+      | boolean
+      | Array<string | number | boolean>
+      | Record<string, string | number | boolean>,
     testAgainst: string | number | boolean,
     negation?: boolean
   ): boolean {
+    if (Array.isArray(value))
+      return this._returnNegationCheck(value.includes(testAgainst), negation);
+    if (value.constructor === Object && typeof testAgainst === 'string')
+      return this._returnNegationCheck(
+        Object.keys(value).includes(testAgainst),
+        negation
+      );
     return this._returnNegationCheck(value === testAgainst, negation);
   }
 

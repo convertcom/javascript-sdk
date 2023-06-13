@@ -477,7 +477,7 @@ describe('RuleManager tests', function () {
       }
     );
     it(
-      'isRuleMatched should return true checking single string value "' +
+      'isRuleMatched should return false checking single string value "' +
         data21 +
         '" against rule ' +
         JSON.stringify(testRuleSet2),

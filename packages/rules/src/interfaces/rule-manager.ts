@@ -11,10 +11,7 @@ export interface RuleManagerInterface {
 
   getComparisonProcessorMethods(): Array<string>;
 
-  isRuleMatched(
-    data: Record<string, string | number> | string | number,
-    ruleSet: RuleSet
-  ): boolean;
+  isRuleMatched(data: Record<string, any>, ruleSet: RuleSet): boolean;
 
   isValidRule(rule: Rule): boolean;
 }

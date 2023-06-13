@@ -35,3 +35,16 @@ export function stringFormat(template: string, ...args: any[]): string {
   }
   return String(template);
 }
+
+/**
+ * String formatter tool. Transforms a space-separated string into camelCase
+ * @param {string} input
+ * @return {string}
+ */
+export function camelCase(input: string): string {
+  return input
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+      return index == 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+    .replace(/\s+/g, '');
+}
