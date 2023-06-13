@@ -8,7 +8,7 @@ import { SystemEvents } from '@convertcom/enums';
 export interface EventManagerInterface {
     _listeners: Record<string, Array<any>>;
     _deferred: Record<string, Record<string, unknown>>;
-    on(event: SystemEvents | string, fn: () => void): void;
+    on(event: SystemEvents | string, fn: (args: any, err: any) => void): void;
     fire(event: SystemEvents | string, args: Record<string, unknown>, err?: Error | unknown, deferred?: boolean): void;
     removeListeners(event: string): void;
 }
