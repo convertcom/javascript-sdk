@@ -90,8 +90,7 @@ class RuleManager {
         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.debug) === null || _b === void 0 ? void 0 : _b.call(_a, 'RuleManager.isValidRule()', {
             rule: rule
         });
-        return (Object.prototype.hasOwnProperty.call(rule, 'key') && // comment when supporting direct value on _processRule()
-            Object.prototype.hasOwnProperty.call(rule, 'matching') &&
+        return (Object.prototype.hasOwnProperty.call(rule, 'matching') &&
             typeof rule.matching === 'object' &&
             Object.prototype.hasOwnProperty.call(rule.matching, 'match_type') &&
             typeof rule.matching.match_type === 'string' &&

@@ -122,7 +122,6 @@ export class RuleManager implements RuleManagerInterface {
       rule: rule
     });
     return (
-      Object.prototype.hasOwnProperty.call(rule, 'key') && // comment when supporting direct value on _processRule()
       Object.prototype.hasOwnProperty.call(rule, 'matching') &&
       typeof rule.matching === 'object' &&
       Object.prototype.hasOwnProperty.call(rule.matching, 'match_type') &&
