@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {DataManagerInterface} from './interfaces/data-manager';
+import {DataManagerInterface} from '@convertcom/data';
 import {ExperienceManagerInterface} from './interfaces/experience-manager';
 import {LogManagerInterface} from '@convertcom/logger';
 
@@ -15,7 +15,7 @@ import {
   Variation,
   BucketedVariation
 } from '@convertcom/types';
-import {MESSAGES} from '@convertcom/enums';
+import {MESSAGES, RuleError} from '@convertcom/enums';
 
 /**
  * Provides experiences specific logic
@@ -92,18 +92,18 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * Select variation for specific visitor
    * @param {Id} visitorId
    * @param {string} experienceKey
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {string=} environment
-   * @return {BucketedVariation | null}
+   * @return {BucketedVariation | RuleError}
    */
   selectVariation(
     visitorId: Id,
     experienceKey: string,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     environment?: string
-  ): BucketedVariation | null {
+  ): BucketedVariation | RuleError {
     return this._dataManager.getBucketing(
       visitorId,
       experienceKey,
@@ -117,18 +117,18 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * Select variation for specific visitor
    * @param {Id} visitorId
    * @param {Id} experienceId
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {string=} environment
-   * @return {BucketedVariation | null}
+   * @return {BucketedVariation | RuleError}
    */
   selectVariationById(
     visitorId: Id,
     experienceId: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null, // TODO: proceed if null as if visitorProperties matched
+    locationProperties: Record<string, any> | null, // TODO: proceed if null as if locationProperties matched
     environment?: string
-  ): BucketedVariation | null {
+  ): BucketedVariation | RuleError {
     return this._dataManager.getBucketingById(
       visitorId,
       experienceId,
@@ -141,17 +141,17 @@ export class ExperienceManager implements ExperienceManagerInterface {
   /**
    * Select all variations across all experiences for specific visitor
    * @param {Id} visitorId
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {string=} environment
-   * @return {Array<BucketedVariation>}
+   * @return {Array<BucketedVariation | RuleError>}
    */
   selectVariations(
     visitorId: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     environment?: string
-  ): Array<BucketedVariation> {
+  ): Array<BucketedVariation | RuleError> {
     return this.getList()
       .map((experience) => {
         return this.selectVariation(

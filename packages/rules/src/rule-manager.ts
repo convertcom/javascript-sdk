@@ -15,7 +15,7 @@ import {RuleManagerInterface} from './interfaces/rule-manager';
 
 import {Config, Rule, RuleAnd, RuleOrWhen, RuleSet} from '@convertcom/types';
 import {LogManagerInterface} from '@convertcom/logger';
-import {ERROR_MESSAGES, MESSAGES} from '@convertcom/enums';
+import {ERROR_MESSAGES, MESSAGES, RuleError} from '@convertcom/enums';
 
 const DEFAULT_KEYS_CASE_SENSITIVE = true;
 const DEFAULT_NEGATION = '!';
@@ -89,21 +89,26 @@ export class RuleManager implements RuleManagerInterface {
    * Check input data matching to rule set
    * @param {Record<string, any>} data Single value or key-value data set to compare
    * @param {RuleSet} ruleSet
-   * @return {boolean}
+   * @return {boolean | RuleError}
    */
-  isRuleMatched(data: Record<string, any>, ruleSet: RuleSet): boolean {
+  isRuleMatched(
+    data: Record<string, any>,
+    ruleSet: RuleSet
+  ): boolean | RuleError {
     this._loggerManager?.debug?.('RuleManager.isRuleMatched()', {
       data: data,
       ruleSet: ruleSet
     });
     // Top OR level
+    let match;
     if (
       Object.prototype.hasOwnProperty.call(ruleSet, 'OR') &&
       arrayNotEmpty(ruleSet?.OR)
     ) {
       for (let i = 0, l = ruleSet.OR.length; i < l; i++) {
-        if (this._processAND(data, ruleSet.OR[i])) {
-          return true;
+        match = this._processAND(data, ruleSet.OR[i]);
+        if (match !== false) {
+          return match;
         }
       }
     } else {
@@ -136,24 +141,26 @@ export class RuleManager implements RuleManagerInterface {
    * Process AND block of rule set. Return first false if found
    * @param {Record<string, any>} data Single value or key-value data set to compare
    * @param {RuleAnd} rulesSubset
-   * @return {boolean}
+   * @return {boolean | RuleError}
    * @private
    */
   private _processAND(
     data: Record<string, any>,
     rulesSubset: RuleAnd
-  ): boolean {
+  ): boolean | RuleError {
     // Second AND level
+    let match;
     if (
       Object.prototype.hasOwnProperty.call(rulesSubset, 'AND') &&
       arrayNotEmpty(rulesSubset?.AND)
     ) {
       for (let i = 0, l = rulesSubset.AND.length; i < l; i++) {
-        if (this._processORWHEN(data, rulesSubset.AND[i]) === false) {
+        match = this._processORWHEN(data, rulesSubset.AND[i]);
+        if (match === false) {
           return false;
         }
       }
-      return true;
+      return match;
     } else {
       this._loggerManager?.warn?.(ERROR_MESSAGES.RULE_NOT_VALID);
     }
@@ -164,21 +171,23 @@ export class RuleManager implements RuleManagerInterface {
    * Process OR block of rule set. Return first true if found
    * @param {Record<string, any>} data Single value or key-value data set to compare
    * @param {RuleOrWhen} rulesSubset
-   * @return {boolean}
+   * @return {boolean | RuleError}
    * @private
    */
   private _processORWHEN(
     data: Record<string, any>,
     rulesSubset: RuleOrWhen
-  ): boolean {
+  ): boolean | RuleError {
     // Third OR level. Called OR_WHEN.
+    let match;
     if (
       Object.prototype.hasOwnProperty.call(rulesSubset, 'OR_WHEN') &&
       arrayNotEmpty(rulesSubset?.OR_WHEN)
     ) {
       for (let i = 0, l = rulesSubset.OR_WHEN.length; i < l; i++) {
-        if (this._processRule(data, rulesSubset.OR_WHEN[i])) {
-          return true;
+        match = this._processRuleItem(data, rulesSubset.OR_WHEN[i]);
+        if (match !== false) {
+          return match;
         }
       }
     } else {
@@ -188,13 +197,16 @@ export class RuleManager implements RuleManagerInterface {
   }
 
   /**
-   * Process single rule
+   * Process single rule item
    * @param {Record<string, any>} data Single value or key-value data set to compare
    * @param {Rule} rule A single rule to compare
-   * @return {boolean} Comparison result
+   * @return {boolean | RuleError} Comparison result
    * @private
    */
-  private _processRule(data: Record<string, any>, rule: Rule): boolean {
+  private _processRuleItem(
+    data: Record<string, any>,
+    rule: Rule
+  ): boolean | RuleError {
     if (this.isValidRule(rule)) {
       try {
         const negation = rule.matching.negated || false;
@@ -227,8 +239,11 @@ export class RuleManager implements RuleManagerInterface {
                   `get ${rule.rule_type.replace(/_/g, ' ')}`
                 );
                 if (method === rule_method) {
+                  const dataValue = data[method](rule);
+                  if (Object.values(RuleError).includes(dataValue as RuleError))
+                    return dataValue as RuleError;
                   return this._comparisonProcessor[matching](
-                    data[method](),
+                    dataValue,
                     rule.value,
                     negation
                   );

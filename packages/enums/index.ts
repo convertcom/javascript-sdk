@@ -16,6 +16,7 @@ export * from './src/goal-data-key';
 export * from './src/log-level';
 export * from './src/log-method';
 export * from './src/project-type';
+export * from './src/rule-error';
 export * from './src/system-events';
 export * from './src/variable-types';
 export * from './src/variation-status';

@@ -198,6 +198,18 @@ exports.ProjectType = void 0;
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
+exports.RuleError = void 0;
+(function (RuleError) {
+    RuleError["NO_DATA_FOUND"] = "convert.com_no_data_found";
+    RuleError["NEED_MORE_DATA"] = "convert.com_need_more_data";
+})(exports.RuleError || (exports.RuleError = {}));
+
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020 Convert Insights, Inc
+ * License Apache-2.0
+ */
 /**
  * SDK system events. Possible values: 'ready' | 'queue-released'
  * or custom visitor's event

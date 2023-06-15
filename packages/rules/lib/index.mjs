@@ -1,5 +1,5 @@
 import { Comparisons, objectDeepValue, arrayNotEmpty, camelCase } from '@convertcom/utils';
-import { MESSAGES, ERROR_MESSAGES } from '@convertcom/enums';
+import { MESSAGES, ERROR_MESSAGES, RuleError } from '@convertcom/enums';
 
 /*!
  * Convert JS SDK
@@ -56,7 +56,7 @@ class RuleManager {
      * Check input data matching to rule set
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleSet} ruleSet
-     * @return {boolean}
+     * @return {boolean | RuleError}
      */
     isRuleMatched(data, ruleSet) {
         var _a, _b, _c, _d;
@@ -65,11 +65,13 @@ class RuleManager {
             ruleSet: ruleSet
         });
         // Top OR level
+        let match;
         if (Object.prototype.hasOwnProperty.call(ruleSet, 'OR') &&
             arrayNotEmpty(ruleSet === null || ruleSet === void 0 ? void 0 : ruleSet.OR)) {
             for (let i = 0, l = ruleSet.OR.length; i < l; i++) {
-                if (this._processAND(data, ruleSet.OR[i])) {
-                    return true;
+                match = this._processAND(data, ruleSet.OR[i]);
+                if (match !== false) {
+                    return match;
                 }
             }
         }
@@ -100,20 +102,22 @@ class RuleManager {
      * Process AND block of rule set. Return first false if found
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleAnd} rulesSubset
-     * @return {boolean}
+     * @return {boolean | RuleError}
      * @private
      */
     _processAND(data, rulesSubset) {
         var _a, _b;
         // Second AND level
+        let match;
         if (Object.prototype.hasOwnProperty.call(rulesSubset, 'AND') &&
             arrayNotEmpty(rulesSubset === null || rulesSubset === void 0 ? void 0 : rulesSubset.AND)) {
             for (let i = 0, l = rulesSubset.AND.length; i < l; i++) {
-                if (this._processORWHEN(data, rulesSubset.AND[i]) === false) {
+                match = this._processORWHEN(data, rulesSubset.AND[i]);
+                if (match === false) {
                     return false;
                 }
             }
-            return true;
+            return match;
         }
         else {
             (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.warn) === null || _b === void 0 ? void 0 : _b.call(_a, ERROR_MESSAGES.RULE_NOT_VALID);
@@ -124,17 +128,19 @@ class RuleManager {
      * Process OR block of rule set. Return first true if found
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleOrWhen} rulesSubset
-     * @return {boolean}
+     * @return {boolean | RuleError}
      * @private
      */
     _processORWHEN(data, rulesSubset) {
         var _a, _b;
         // Third OR level. Called OR_WHEN.
+        let match;
         if (Object.prototype.hasOwnProperty.call(rulesSubset, 'OR_WHEN') &&
             arrayNotEmpty(rulesSubset === null || rulesSubset === void 0 ? void 0 : rulesSubset.OR_WHEN)) {
             for (let i = 0, l = rulesSubset.OR_WHEN.length; i < l; i++) {
-                if (this._processRule(data, rulesSubset.OR_WHEN[i])) {
-                    return true;
+                match = this._processRuleItem(data, rulesSubset.OR_WHEN[i]);
+                if (match !== false) {
+                    return match;
                 }
             }
         }
@@ -144,13 +150,13 @@ class RuleManager {
         return false;
     }
     /**
-     * Process single rule
+     * Process single rule item
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {Rule} rule A single rule to compare
-     * @return {boolean} Comparison result
+     * @return {boolean | RuleError} Comparison result
      * @private
      */
-    _processRule(data, rule) {
+    _processRuleItem(data, rule) {
         var _a, _b, _c, _d, _e, _f;
         if (this.isValidRule(rule)) {
             try {
@@ -178,7 +184,10 @@ class RuleManager {
                                     continue;
                                 const rule_method = camelCase(`get ${rule.rule_type.replace(/_/g, ' ')}`);
                                 if (method === rule_method) {
-                                    return this._comparisonProcessor[matching](data[method](), rule.value, negation);
+                                    const dataValue = data[method](rule);
+                                    if (Object.values(RuleError).includes(dataValue))
+                                        return dataValue;
+                                    return this._comparisonProcessor[matching](dataValue, rule.value, negation);
                                 }
                             }
                         }

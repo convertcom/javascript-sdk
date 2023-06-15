@@ -41,9 +41,12 @@
     "node": ">=8.0.0"
   },
   "peerDependencies": {
+    "@convertcom/api": "1.0.0",
     "@convertcom/bucketing": "1.0.0",
+    "@convertcom/data": "1.0.0",
     "@convertcom/enums": "1.0.0",
     "@convertcom/event": "1.0.0",
+    "@convertcom/experience": "1.0.0",
     "@convertcom/logger": "1.0.0",
     "@convertcom/rules": "1.0.0",
     "@convertcom/types": "1.0.0",

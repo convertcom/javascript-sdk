@@ -14,28 +14,33 @@ import {
   SegmentsAttributes,
   SegmentsData
 } from '@convertcom/types';
+import {RuleError} from '@convertcom/enums';
 
 export interface ContextInterface {
   runExperience(
     experienceKey: string,
     attributes?: BucketingAttributes
-  ): BucketedVariation | null;
+  ): BucketedVariation | RuleError;
 
-  runExperiences(attributes?: BucketingAttributes): Array<BucketedVariation>;
+  runExperiences(
+    attributes?: BucketingAttributes
+  ): Array<BucketedVariation | RuleError>;
 
   runFeature(
     key: string,
     attributes?: BucketingAttributes
-  ): BucketedFeature | Array<BucketedFeature>;
+  ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError>;
 
-  runFeatures(attributes?: BucketingAttributes): Array<BucketedFeature>;
+  runFeatures(
+    attributes?: BucketingAttributes
+  ): Array<BucketedFeature | RuleError>;
 
-  trackConversion(goalKey: Id, attributes?: ConversionAttributes): void;
+  trackConversion(goalKey: Id, attributes?: ConversionAttributes): RuleError;
 
   setDefaultSegments(segments: SegmentsData): void;
 
   setCustomSegments(
     segmentKeys: Array<string>,
     attributes?: SegmentsAttributes
-  ): void;
+  ): RuleError;
 }

@@ -6,11 +6,11 @@ import http from 'http';
 import {BucketingManager as bm} from '@convertcom/bucketing';
 import {RuleManager as rm} from '@convertcom/rules';
 import {EventManager as em} from '@convertcom/event';
-import {ApiManager as am} from '../src/api-manager';
-import {DataManager as dm} from '../src/data-manager';
-import {ExperienceManager as exm} from '../src/experience-manager';
+import {ApiManager as am} from '@convertcom/api';
+import {DataManager as dm} from '@convertcom/data';
+import {ExperienceManager as exm} from '@convertcom/experience';
 import testConfig from './test-config.json';
-import {Config} from '../src/config';
+import {Config} from '@convertcom/types';
 
 const host = 'http://localhost';
 const port = 8090;
@@ -18,7 +18,7 @@ const release_timeout = 1000;
 const test_timeout = release_timeout + 1000;
 const batch_size = 5;
 
-const configuration = Config({
+const configuration = {
   ...testConfig,
   api: {
     endpoint: {
@@ -30,7 +30,7 @@ const configuration = Config({
     batch_size: batch_size,
     release_interval: release_timeout
   }
-});
+} as unknown as Config;
 const bucketingManager = new bm(configuration);
 const ruleManager = new rm(configuration);
 const eventManager = new em(configuration);

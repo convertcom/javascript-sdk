@@ -5,6 +5,7 @@
  * License Apache-2.0
  */
 import {Id, Feature, IdentityField, BucketedFeature} from '@convertcom/types';
+import {RuleError} from '@convertcom/enums';
 
 export interface FeatureManagerInterface {
   getList(): Array<Feature>;
@@ -18,17 +19,17 @@ export interface FeatureManagerInterface {
   runFeature(
     visitorId: Id,
     featureKey: string,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     typeCasting?: boolean,
     experienceKeys?: Array<string>,
     environment?: string
-  ): BucketedFeature | Array<BucketedFeature>;
+  ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError>;
   isFeatureEnabled(
     visitorId: Id,
     featureKey: string,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     experienceKeys?: Array<string>,
     environment?: string
   ): boolean;
@@ -36,12 +37,12 @@ export interface FeatureManagerInterface {
   runFeatureById(
     visitorId: Id,
     featureId: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     typeCasting?: boolean,
     experienceIds?: Array<Id>,
     environment?: string
-  ): BucketedFeature | Array<BucketedFeature>;
+  ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError>;
   runFeatures(
     visitorId: Id,
     visitorProperties: Record<string, any>,
@@ -49,5 +50,5 @@ export interface FeatureManagerInterface {
     typeCasting?: boolean,
     filter?: Record<string, Array<string>>,
     environment?: string
-  ): Array<BucketedFeature>;
+  ): Array<BucketedFeature | RuleError>;
 }

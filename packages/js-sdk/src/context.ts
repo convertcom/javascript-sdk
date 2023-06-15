@@ -6,10 +6,10 @@
  */
 import {ContextInterface} from './interfaces/context';
 import {EventManagerInterface} from '@convertcom/event';
-import {ExperienceManagerInterface} from './interfaces/experience-manager';
+import {ExperienceManagerInterface} from '@convertcom/experience';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
 import {LogManagerInterface} from '@convertcom/logger';
-import {DataManagerInterface} from './interfaces/data-manager';
+import {DataManagerInterface} from '@convertcom/data';
 
 import {
   Config,
@@ -22,7 +22,12 @@ import {
   SegmentsAttributes
 } from '@convertcom/types';
 
-import {ERROR_MESSAGES, SystemEvents, SegmentsKeys} from '@convertcom/enums';
+import {
+  ERROR_MESSAGES,
+  RuleError,
+  SystemEvents,
+  SegmentsKeys
+} from '@convertcom/enums';
 import {objectDeepMerge} from '@convertcom/utils';
 import {SegmentsManagerInterface} from './interfaces/segments-manager';
 
@@ -100,12 +105,12 @@ export class Context implements ContextInterface {
    * @param {Record<any, any>=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
    * @param {string=} attributes.environment Overwrite the environment
-   * @return {BucketedVariation | null}
+   * @return {BucketedVariation}
    */
   runExperience(
     experienceKey: string,
     attributes?: BucketingAttributes
-  ): BucketedVariation | null {
+  ): BucketedVariation | RuleError {
     if (!this._visitorId) {
       this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
       return;
@@ -120,19 +125,21 @@ export class Context implements ContextInterface {
       attributes?.locationProperties, // represents site_area/locations
       attributes?.environment || this._environment
     );
+    if (Object.values(RuleError).includes(bucketedVariation as RuleError))
+      return bucketedVariation as RuleError;
     if (bucketedVariation) {
       this._eventManager.fire(
         SystemEvents.BUCKETING,
         {
           visitorId: this._visitorId,
           experienceKey,
-          variationKey: bucketedVariation.key
+          variationKey: (bucketedVariation as BucketedVariation).key
         },
         null,
         true
       );
     }
-    return bucketedVariation;
+    return bucketedVariation as BucketedVariation;
   }
 
   /**
@@ -141,9 +148,11 @@ export class Context implements ContextInterface {
    * @param {string=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
    * @param {string=} attributes.environment Overwrite the environment
-   * @return {Array<BucketedVariation>}
+   * @return {Array<BucketedVariatio | RuleError>}
    */
-  runExperiences(attributes?: BucketingAttributes): Array<BucketedVariation> {
+  runExperiences(
+    attributes?: BucketingAttributes
+  ): Array<BucketedVariation | RuleError> {
     if (!this._visitorId) {
       this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
       return;
@@ -157,19 +166,27 @@ export class Context implements ContextInterface {
       attributes?.locationProperties,
       attributes?.environment || this._environment
     );
-    bucketedVariations.forEach(({experienceKey, key}) => {
-      this._eventManager.fire(
-        SystemEvents.BUCKETING,
-        {
-          visitorId: this._visitorId,
-          experienceKey,
-          variationKey: key
-        },
-        null,
-        true
-      );
-    });
-    return bucketedVariations;
+    // Return rule errors if present
+    const matchedErrors = bucketedVariations.filter((match) =>
+      Object.values(RuleError).includes(match as RuleError)
+    );
+    if (matchedErrors.length) return matchedErrors as Array<RuleError>;
+
+    (bucketedVariations as Array<BucketedVariation>).forEach(
+      ({experienceKey, key}) => {
+        this._eventManager.fire(
+          SystemEvents.BUCKETING,
+          {
+            visitorId: this._visitorId,
+            experienceKey,
+            variationKey: key
+          },
+          null,
+          true
+        );
+      }
+    );
+    return bucketedVariations as Array<BucketedVariation>;
   }
 
   /**
@@ -181,12 +198,12 @@ export class Context implements ContextInterface {
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
    * @param {Array<string>=} attributes.experienceKeys Use only specific experiences
-   * @return {BucketedFeature | Array<BucketedFeature>}
+   * @return {BucketedFeature | RuleError | Array<BucketedFeature | RuleError>}
    */
   runFeature(
     key: string,
     attributes?: BucketingAttributes
-  ): BucketedFeature | Array<BucketedFeature> {
+  ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError> {
     if (!this._visitorId) {
       this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
       return;
@@ -206,33 +223,46 @@ export class Context implements ContextInterface {
       attributes?.environment || this._environment
     );
     if (Array.isArray(bucketedFeature)) {
-      bucketedFeature.forEach(({experienceKey, status}) => {
+      // Return rule errors if present
+      const matchedErrors = bucketedFeature.filter((match) =>
+        Object.values(RuleError).includes(match as RuleError)
+      );
+      if (matchedErrors.length) return matchedErrors as Array<RuleError>;
+
+      (bucketedFeature as Array<BucketedFeature>).forEach(
+        ({experienceKey, status}) => {
+          this._eventManager.fire(
+            SystemEvents.BUCKETING,
+            {
+              visitorId: this._visitorId,
+              experienceKey,
+              featureKey: key,
+              status
+            },
+            null,
+            true
+          );
+        }
+      );
+    } else {
+      if (Object.values(RuleError).includes(bucketedFeature as RuleError))
+        return bucketedFeature as RuleError;
+
+      if (bucketedFeature) {
         this._eventManager.fire(
           SystemEvents.BUCKETING,
           {
             visitorId: this._visitorId,
-            experienceKey,
+            experienceKey: (bucketedFeature as BucketedFeature).experienceKey,
             featureKey: key,
-            status
+            status: (bucketedFeature as BucketedFeature).status
           },
           null,
           true
         );
-      });
-    } else if (bucketedFeature) {
-      this._eventManager.fire(
-        SystemEvents.BUCKETING,
-        {
-          visitorId: this._visitorId,
-          experienceKey: bucketedFeature.experienceKey,
-          featureKey: key,
-          status: bucketedFeature.status
-        },
-        null,
-        true
-      );
+      }
     }
-    return bucketedFeature;
+    return bucketedFeature as BucketedFeature;
   }
 
   /**
@@ -242,9 +272,11 @@ export class Context implements ContextInterface {
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
-   * @return {Array<BucketedFeature>}
+   * @return {Array<BucketedFeature | RuleError>}
    */
-  runFeatures(attributes?: BucketingAttributes): Array<BucketedFeature> {
+  runFeatures(
+    attributes?: BucketingAttributes
+  ): Array<BucketedFeature | RuleError> {
     if (!this._visitorId) {
       this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
       return;
@@ -262,20 +294,28 @@ export class Context implements ContextInterface {
       null,
       attributes?.environment || this._environment
     );
-    bucketedFeatures.forEach(({experienceKey, key, status}) => {
-      this._eventManager.fire(
-        SystemEvents.BUCKETING,
-        {
-          visitorId: this._visitorId,
-          experienceKey,
-          featureKey: key,
-          status
-        },
-        null,
-        true
-      );
-    });
-    return bucketedFeatures;
+    // Return rule errors if present
+    const matchedErrors = bucketedFeatures.filter((match) =>
+      Object.values(RuleError).includes(match as RuleError)
+    );
+    if (matchedErrors.length) return matchedErrors as Array<RuleError>;
+
+    (bucketedFeatures as Array<BucketedFeature>).forEach(
+      ({experienceKey, key, status}) => {
+        this._eventManager.fire(
+          SystemEvents.BUCKETING,
+          {
+            visitorId: this._visitorId,
+            experienceKey,
+            featureKey: key,
+            status
+          },
+          null,
+          true
+        );
+      }
+    );
+    return bucketedFeatures as Array<BucketedFeature>;
   }
 
   /**
@@ -284,8 +324,9 @@ export class Context implements ContextInterface {
    * @param {ConversionAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<string, any>=} attributes.ruleData An object of key-value pairs that are used for goal matching
    * @param {Array<Record<GoalDataKey, number>>=} attributes.conversionData An object of key-value pairs that are used for audience targeting
+   * @return {RuleError}
    */
-  trackConversion(goalKey: Id, attributes?: ConversionAttributes): void {
+  trackConversion(goalKey: Id, attributes?: ConversionAttributes): RuleError {
     if (!this._visitorId) {
       this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
       return;
@@ -301,13 +342,14 @@ export class Context implements ContextInterface {
     }
 
     const segments = this._segmentsManager.getSegments(this._visitorId);
-    this._dataManager.convert(
+    const error = this._dataManager.convert(
       this._visitorId,
       goalKey,
       goalRule,
       goalData,
       segments
     );
+    if (error) return error as RuleError;
 
     this._eventManager.fire(
       SystemEvents.CONVERSION,
@@ -318,6 +360,8 @@ export class Context implements ContextInterface {
       null,
       true
     );
+
+    return;
   }
 
   /**
@@ -333,21 +377,25 @@ export class Context implements ContextInterface {
    * @param {Array<string>} segmentKeys A list of segment keys
    * @param {SegmentsAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<string, any>=} attributes.ruleData An object of key-value pairs that are used for segments matching
+   * @return {RuleError}
    */
   setCustomSegments(
     segmentKeys: Array<string>,
     attributes?: SegmentsAttributes
-  ): void {
+  ): RuleError {
     if (!this._visitorId) {
       this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
       return;
     }
     const segmentsRule = this.getVisitorAttributes(attributes?.ruleData);
-    this._segmentsManager.selectCustomSegments(
+    const error = this._segmentsManager.selectCustomSegments(
       this._visitorId,
       segmentKeys,
       segmentsRule
     );
+    if (error) return error as RuleError;
+
+    return;
   }
 
   /**

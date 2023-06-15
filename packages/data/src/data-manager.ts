@@ -10,7 +10,7 @@ import {
   objectNotEmpty
 } from '@convertcom/utils';
 
-import {ApiManagerInterface} from './interfaces/api-manager';
+import {ApiManagerInterface} from '@convertcom/api';
 import {BucketingManagerInterface} from '@convertcom/bucketing';
 import {DataStoreManagerInterface} from './interfaces/data-store-manager';
 import {DataManagerInterface} from './interfaces/data-manager';
@@ -40,6 +40,7 @@ import {
   DATA_ENTITIES,
   ERROR_MESSAGES,
   MESSAGES,
+  RuleError,
   EventType,
   GoalDataKey
 } from '@convertcom/enums';
@@ -146,21 +147,21 @@ export class DataManager implements DataManagerInterface {
    * Retrieve variation for visitor
    * @param {string} visitorId
    * @param {string|Id} identity Value of the field which name is provided in identityField
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {IdentityField=} identityField Defaults to 'key'
    * @param {string=} environment
-   * @return {BucketedVariation|null}
+   * @return {BucketedVariation | RuleError}
    * @private
    */
   private _getBucketingByField(
     visitorId: string,
     identity: string | Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     identityField: IdentityField = 'key',
     environment: string = this._environment
-  ): BucketedVariation | null {
+  ): BucketedVariation | RuleError {
     this._loggerManager?.trace?.('DataManager._getBucketingByField()', {
       visitorId: visitorId,
       identity: identity,
@@ -189,7 +190,7 @@ export class DataManager implements DataManagerInterface {
       !isArchivedExperience &&
       experience.environments.includes(environment)
     ) {
-      let locationMatched = false;
+      let locationMatched: boolean | RuleError = false;
       if (experience?.locations) {
         // Get attached locations
         const locations = this.getItemsByIds(
@@ -201,6 +202,11 @@ export class DataManager implements DataManagerInterface {
           locations,
           locationProperties
         );
+        // Return rule errors if present
+        const matchedErrors = matchedLocations.filter((match) =>
+          Object.values(RuleError).includes(match as RuleError)
+        );
+        if (matchedErrors.length) return matchedErrors[0] as RuleError;
         // If there are some matched locations
         locationMatched = Boolean(
           !locationProperties || matchedLocations.length
@@ -210,6 +216,9 @@ export class DataManager implements DataManagerInterface {
           locationProperties,
           experience?.site_area
         );
+        // Return rule errors if present
+        if (Object.values(RuleError).includes(locationMatched as RuleError))
+          return locationMatched as RuleError;
       }
       // Validate locationProperties against site area rules
       if (!locationProperties || locationMatched) {
@@ -226,6 +235,11 @@ export class DataManager implements DataManagerInterface {
             audiences,
             visitorProperties
           );
+          // Return rule errors if present
+          const matchedErrors = matchedAudiences.filter((match) =>
+            Object.values(RuleError).includes(match as RuleError)
+          );
+          if (matchedErrors.length) return matchedErrors[0] as RuleError;
         }
         // If there are some matched audiences
         if (!visitorProperties || matchedAudiences.length) {
@@ -261,13 +275,13 @@ export class DataManager implements DataManagerInterface {
    * Retrieve bucketing for Visitor
    * @param {Id} visitorId
    * @param {Experience} experience
-   * @return {BucketedVariation | null}
+   * @return {BucketedVariation}
    * @private
    */
   private _retrieveBucketing(
     visitorId: Id,
     experience: Experience
-  ): BucketedVariation | null {
+  ): BucketedVariation {
     if (!visitorId || !experience) return null;
     if (!experience?.id) return null;
     let variation = null;
@@ -406,10 +420,10 @@ export class DataManager implements DataManagerInterface {
 
   /**
    * @param {Id} visitorId
-   * @return {StoreData | null} variation id
+   * @return {StoreData} variation id
    * @private
    */
-  getLocalStore(visitorId: Id): StoreData | null {
+  getLocalStore(visitorId: Id): StoreData {
     const storeKey = this.getStoreKey(visitorId);
     return this._bucketedVisitors.get(storeKey) || null;
   }
@@ -427,18 +441,18 @@ export class DataManager implements DataManagerInterface {
    * Retrieve variation for visitor
    * @param {string} visitorId
    * @param {string} key
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {string=} environment
-   * @return {BucketedVariation | null}
+   * @return {BucketedVariation | RuleError}
    */
   getBucketing(
     visitorId: string,
     key: string,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     environment: string = this._environment
-  ): BucketedVariation | null {
+  ): BucketedVariation | RuleError {
     return this._getBucketingByField(
       visitorId,
       key,
@@ -453,18 +467,18 @@ export class DataManager implements DataManagerInterface {
    * Retrieve variation for Visitor
    * @param {string} visitorId
    * @param {Id} id
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {string=} environment
-   * @return {BucketedVariation | null}
+   * @return {BucketedVariation | RuleError}
    */
   getBucketingById(
     visitorId: string,
     id: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     environment: string = this._environment
-  ): BucketedVariation | null {
+  ): BucketedVariation | RuleError {
     return this._getBucketingByField(
       visitorId,
       id,
@@ -489,7 +503,7 @@ export class DataManager implements DataManagerInterface {
     goalRule?: Record<string, any>,
     goalData?: Array<Record<GoalDataKey, number>>,
     segments?: SegmentsData
-  ): void {
+  ): RuleError {
     const goal =
       typeof goalId === 'string'
         ? (this.getEntity(goalId as string, 'goals') as Goal)
@@ -505,6 +519,9 @@ export class DataManager implements DataManagerInterface {
         goalRule,
         goal?.rules
       );
+      // Return rule errors if present
+      if (Object.values(RuleError).includes(ruleMatched as RuleError))
+        return ruleMatched as RuleError;
       if (!ruleMatched) {
         this._loggerManager?.error?.(MESSAGES.GOAL_RULE_NOT_MATCH);
         return;
@@ -541,25 +558,31 @@ export class DataManager implements DataManagerInterface {
   /**
    * Get audiences that meet the visitorProperties
    * @param {Array<Record<any, any>>} items
-   * @param {Object} visitorProperties
-   * @return {Array<Record<string, any>>}
+   * @param {Record<string, any>} visitorProperties
+   * @return {Array<Record<string, any> | RuleError>}
    */
   filterMatchedRecordsWithRule(
     items: Array<Record<string, any>>,
     visitorProperties: Record<string, any>
-  ): Array<Record<string, any>> {
+  ): Array<Record<string, any> | RuleError> {
     this._loggerManager?.trace?.('DataManager.filterMatchedRecordsWithRule()', {
       items: items,
       visitorProperties: visitorProperties
     });
     const matchedRecords = [];
+    let match;
     if (arrayNotEmpty(items)) {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
-        if (
-          this._ruleManager.isRuleMatched(visitorProperties, items?.[i]?.rules)
-        ) {
+        match = this._ruleManager.isRuleMatched(
+          visitorProperties,
+          items?.[i]?.rules
+        );
+        if (match === true) {
           matchedRecords.push(items[i]);
+        } else if (match !== false) {
+          // catch rule errors
+          matchedRecords.push(match);
         }
       }
     }
@@ -635,7 +658,7 @@ export class DataManager implements DataManagerInterface {
    * Find the entity in list by id
    * @param {string} key
    * @param {string} entityType
-   * @return {Entity|null}
+   * @return {Entity}
    */
   getEntity(key: string, entityType: string): Entity {
     return this._getEntityByField(key, entityType, 'key');
@@ -655,7 +678,7 @@ export class DataManager implements DataManagerInterface {
    * Find the entity in list by id
    * @param {Id} id
    * @param {string} entityType
-   * @return {Entity|null}
+   * @return {Entity}
    */
   getEntityById(id: Id, entityType: string): Entity {
     return this._getEntityByField(id, entityType, 'id');
@@ -726,7 +749,7 @@ export class DataManager implements DataManagerInterface {
    * @param {string|number} subEntityIdentity
    * @param {IdentityField} identityField
    * @param {IdentityField} subIdentityField
-   * @return {Record<any, any> | null}
+   * @return {Record<any, any>}
    */
   getSubItem(
     entityType: string,
@@ -735,7 +758,7 @@ export class DataManager implements DataManagerInterface {
     subEntityIdentity: string | number,
     identityField: IdentityField,
     subIdentityField: IdentityField
-  ): Record<any, any> | null {
+  ): Record<any, any> {
     const entity = this._getEntityByField(
       entityIdentity,
       entityType,

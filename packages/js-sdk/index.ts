@@ -8,12 +8,12 @@
 /**
  * Module dependencies
  */
-import {ApiManager} from './src/api-manager';
+import {ApiManager} from '@convertcom/api';
 import {BucketingManager} from '@convertcom/bucketing';
 import {Core} from './src/core';
-import {DataManager} from './src/data-manager';
+import {DataManager} from '@convertcom/data';
 import {EventManager} from '@convertcom/event';
-import {ExperienceManager} from './src/experience-manager';
+import {ExperienceManager} from '@convertcom/experience';
 import {FeatureManager} from './src/feature-manager';
 import {RuleManager} from '@convertcom/rules';
 import {SegmentsManager} from './src/segments-manager';

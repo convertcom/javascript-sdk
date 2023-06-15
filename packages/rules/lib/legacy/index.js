@@ -17,6 +17,8 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
+/* global Reflect, Promise */
+
 
 function __values(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
@@ -85,7 +87,7 @@ var RuleManager = /** @class */ (function () {
      * Check input data matching to rule set
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleSet} ruleSet
-     * @return {boolean}
+     * @return {boolean | RuleError}
      */
     RuleManager.prototype.isRuleMatched = function (data, ruleSet) {
         var _a, _b, _c, _d;
@@ -94,11 +96,13 @@ var RuleManager = /** @class */ (function () {
             ruleSet: ruleSet
         });
         // Top OR level
+        var match;
         if (Object.prototype.hasOwnProperty.call(ruleSet, 'OR') &&
             utils.arrayNotEmpty(ruleSet === null || ruleSet === void 0 ? void 0 : ruleSet.OR)) {
             for (var i = 0, l = ruleSet.OR.length; i < l; i++) {
-                if (this._processAND(data, ruleSet.OR[i])) {
-                    return true;
+                match = this._processAND(data, ruleSet.OR[i]);
+                if (match !== false) {
+                    return match;
                 }
             }
         }
@@ -129,20 +133,22 @@ var RuleManager = /** @class */ (function () {
      * Process AND block of rule set. Return first false if found
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleAnd} rulesSubset
-     * @return {boolean}
+     * @return {boolean | RuleError}
      * @private
      */
     RuleManager.prototype._processAND = function (data, rulesSubset) {
         var _a, _b;
         // Second AND level
+        var match;
         if (Object.prototype.hasOwnProperty.call(rulesSubset, 'AND') &&
             utils.arrayNotEmpty(rulesSubset === null || rulesSubset === void 0 ? void 0 : rulesSubset.AND)) {
             for (var i = 0, l = rulesSubset.AND.length; i < l; i++) {
-                if (this._processORWHEN(data, rulesSubset.AND[i]) === false) {
+                match = this._processORWHEN(data, rulesSubset.AND[i]);
+                if (match === false) {
                     return false;
                 }
             }
-            return true;
+            return match;
         }
         else {
             (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.warn) === null || _b === void 0 ? void 0 : _b.call(_a, enums.ERROR_MESSAGES.RULE_NOT_VALID);
@@ -153,17 +159,19 @@ var RuleManager = /** @class */ (function () {
      * Process OR block of rule set. Return first true if found
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleOrWhen} rulesSubset
-     * @return {boolean}
+     * @return {boolean | RuleError}
      * @private
      */
     RuleManager.prototype._processORWHEN = function (data, rulesSubset) {
         var _a, _b;
         // Third OR level. Called OR_WHEN.
+        var match;
         if (Object.prototype.hasOwnProperty.call(rulesSubset, 'OR_WHEN') &&
             utils.arrayNotEmpty(rulesSubset === null || rulesSubset === void 0 ? void 0 : rulesSubset.OR_WHEN)) {
             for (var i = 0, l = rulesSubset.OR_WHEN.length; i < l; i++) {
-                if (this._processRule(data, rulesSubset.OR_WHEN[i])) {
-                    return true;
+                match = this._processRuleItem(data, rulesSubset.OR_WHEN[i]);
+                if (match !== false) {
+                    return match;
                 }
             }
         }
@@ -173,13 +181,13 @@ var RuleManager = /** @class */ (function () {
         return false;
     };
     /**
-     * Process single rule
+     * Process single rule item
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {Rule} rule A single rule to compare
-     * @return {boolean} Comparison result
+     * @return {boolean | RuleError} Comparison result
      * @private
      */
-    RuleManager.prototype._processRule = function (data, rule) {
+    RuleManager.prototype._processRuleItem = function (data, rule) {
         var e_1, _a, e_2, _b;
         var _c, _d, _e, _f, _g, _h;
         if (this.isValidRule(rule)) {
@@ -220,7 +228,10 @@ var RuleManager = /** @class */ (function () {
                                         continue;
                                     var rule_method = utils.camelCase("get ".concat(rule.rule_type.replace(/_/g, ' ')));
                                     if (method === rule_method) {
-                                        return this._comparisonProcessor[matching](data[method](), rule.value, negation);
+                                        var dataValue = data[method](rule);
+                                        if (Object.values(enums.RuleError).includes(dataValue))
+                                            return dataValue;
+                                        return this._comparisonProcessor[matching](dataValue, rule.value, negation);
                                     }
                                 }
                             }

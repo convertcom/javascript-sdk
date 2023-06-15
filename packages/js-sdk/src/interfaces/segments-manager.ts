@@ -5,6 +5,7 @@
  * License Apache-2.0
  */
 import {Id, SegmentsData} from '@convertcom/types';
+import {RuleError} from '@convertcom/enums';
 
 export interface SegmentsManagerInterface {
   getSegments(visitorId: Id): SegmentsData;
@@ -13,5 +14,5 @@ export interface SegmentsManagerInterface {
     visitorId: Id,
     segmentKeys: Array<string>,
     segmentRule?: Record<string, any>
-  ): SegmentsData | null;
+  ): SegmentsData | RuleError;
 }

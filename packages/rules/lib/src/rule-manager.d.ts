@@ -1,6 +1,7 @@
 import { RuleManagerInterface } from './interfaces/rule-manager';
 import { Config, Rule, RuleSet } from '@convertcom/types';
 import { LogManagerInterface } from '@convertcom/logger';
+import { RuleError } from '@convertcom/enums';
 /**
  * Provides rule processing calculations with corresponding comparisons methods
  * @category Modules
@@ -38,9 +39,9 @@ export declare class RuleManager implements RuleManagerInterface {
      * Check input data matching to rule set
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleSet} ruleSet
-     * @return {boolean}
+     * @return {boolean | RuleError}
      */
-    isRuleMatched(data: Record<string, any>, ruleSet: RuleSet): boolean;
+    isRuleMatched(data: Record<string, any>, ruleSet: RuleSet): boolean | RuleError;
     /**
      * Check is rule object valid
      * @param {Rule} rule
@@ -51,7 +52,7 @@ export declare class RuleManager implements RuleManagerInterface {
      * Process AND block of rule set. Return first false if found
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleAnd} rulesSubset
-     * @return {boolean}
+     * @return {boolean | RuleError}
      * @private
      */
     private _processAND;
@@ -59,16 +60,16 @@ export declare class RuleManager implements RuleManagerInterface {
      * Process OR block of rule set. Return first true if found
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {RuleOrWhen} rulesSubset
-     * @return {boolean}
+     * @return {boolean | RuleError}
      * @private
      */
     private _processORWHEN;
     /**
-     * Process single rule
+     * Process single rule item
      * @param {Record<string, any>} data Single value or key-value data set to compare
      * @param {Rule} rule A single rule to compare
-     * @return {boolean} Comparison result
+     * @return {boolean | RuleError} Comparison result
      * @private
      */
-    private _processRule;
+    private _processRuleItem;
 }

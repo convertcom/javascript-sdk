@@ -31,6 +31,7 @@ const terserConfig = {
 };
 
 const commonJSBundle = {
+  cache: false,
   input: './index.ts',
   output: [
     {
@@ -75,6 +76,7 @@ const commonJSBundle = {
 };
 
 const commonJSLegacyBundle = {
+  cache: false,
   input: './index.ts',
   output: [
     {
@@ -104,6 +106,7 @@ const commonJSLegacyBundle = {
 };
 
 const esmBundle = {
+  cache: false,
   input: './index.ts',
   output: [
     {

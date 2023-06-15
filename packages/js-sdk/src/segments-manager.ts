@@ -14,10 +14,10 @@ import {
   SegmentsData,
   StoreData
 } from '@convertcom/types';
-import {MESSAGES, SegmentsKeys} from '@convertcom/enums';
+import {MESSAGES, SegmentsKeys, RuleError} from '@convertcom/enums';
 import {LogManagerInterface} from '@convertcom/logger';
 import {objectDeepValue} from '@convertcom/utils';
-import {DataManagerInterface} from './interfaces/data-manager';
+import {DataManagerInterface} from '@convertcom/data';
 import {RuleManagerInterface} from '@convertcom/rules';
 
 /**
@@ -88,13 +88,13 @@ export class SegmentsManager implements SegmentsManagerInterface {
    * @param {Array<string>} segmentKeys A list of segment keys
    * @param {Record<string, any>=} segmentRule An object of key-value pairs that are used for segments matching
    * @param {string=} environment
-   * @return {SegmentsData}
+   * @return {SegmentsData | RuleError}
    */
   selectCustomSegments(
     visitorId: Id,
     segmentKeys: Array<string>,
     segmentRule?: Record<string, any>
-  ): SegmentsData {
+  ): SegmentsData | RuleError {
     const segments = this._dataManager.getEntities(
       segmentKeys,
       'segments'
@@ -109,13 +109,16 @@ export class SegmentsManager implements SegmentsManagerInterface {
 
     const segmentIds = [];
 
-    let segmentsMatched = false;
+    let segmentsMatched: boolean | RuleError = false;
     for (const segment of segments) {
       if (segmentRule && !segmentsMatched) {
         segmentsMatched = this._ruleManager.isRuleMatched(
           segmentRule,
           segment?.rules
         );
+        // Return rule errors if present
+        if (Object.values(RuleError).includes(segmentsMatched as RuleError))
+          return segmentsMatched as RuleError;
       }
 
       if (!segmentRule || segmentsMatched) {

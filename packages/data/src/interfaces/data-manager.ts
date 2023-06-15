@@ -14,36 +14,36 @@ import {
   SegmentsData
 } from '@convertcom/types';
 import {DataStoreManagerInterface} from './data-store-manager';
-import {GoalDataKey} from '@convertcom/enums';
+import {GoalDataKey, RuleError} from '@convertcom/enums';
 
 export interface DataManagerInterface {
   data: ConfigData;
   dataStoreManager: DataStoreManagerInterface;
 
   putLocalStore(storeKey: Id, storeData: StoreData);
-  getLocalStore(storeKey: Id): StoreData | null;
+  getLocalStore(storeKey: Id): StoreData;
   getStoreKey(visitorId: Id): string;
   getBucketing(
     visitorId: Id,
     experienceKey: string,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     environment?: string
-  ): BucketedVariation | null;
+  ): BucketedVariation | RuleError;
   getBucketingById(
     visitorId: Id,
     experienceId: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     environment?: string
-  ): BucketedVariation | null;
+  ): BucketedVariation | RuleError;
   convert(
     visitorId: Id,
     goalId: Id,
     goalRule?: Record<string, any>,
     goalData?: Array<Record<GoalDataKey, number>>,
     segments?: SegmentsData
-  ): void;
+  ): RuleError;
   getEntitiesList(entityType: string): Array<Entity | Id>;
   getEntitiesListObject(
     entityType: string,

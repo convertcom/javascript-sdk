@@ -4,12 +4,12 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {ApiManagerInterface} from './interfaces/api-manager';
+import {ApiManagerInterface} from '@convertcom/api';
 import {ContextInterface} from './interfaces/context';
 import {CoreInterface} from './interfaces/core';
-import {DataManagerInterface} from './interfaces/data-manager';
+import {DataManagerInterface} from '@convertcom/data';
 import {EventManagerInterface} from '@convertcom/event';
-import {ExperienceManagerInterface} from './interfaces/experience-manager';
+import {ExperienceManagerInterface} from '@convertcom/experience';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
 import {LogManagerInterface} from '@convertcom/logger';
 import {SegmentsManagerInterface} from './interfaces/segments-manager';

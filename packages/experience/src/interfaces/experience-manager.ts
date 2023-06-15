@@ -5,6 +5,7 @@
  * License Apache-2.0
  */
 import {Variation, Id, Experience, BucketedVariation} from '@convertcom/types';
+import {RuleError} from '@convertcom/enums';
 
 export interface ExperienceManagerInterface {
   getList(): Array<Experience>;
@@ -16,25 +17,25 @@ export interface ExperienceManagerInterface {
   selectVariation(
     visitorId: Id,
     experienceKey: string,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     environment?: string
-  ): BucketedVariation | null;
+  ): BucketedVariation | RuleError;
 
   selectVariationById(
     visitorId: Id,
     experienceId: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     environment?: string
-  ): BucketedVariation | null;
+  ): BucketedVariation | RuleError;
 
   selectVariations(
     visitorId: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     environment?: string
-  ): Array<BucketedVariation>;
+  ): Array<BucketedVariation | RuleError>;
 
   getVariation(experienceKey: string, variationKey: string): Variation;
 
