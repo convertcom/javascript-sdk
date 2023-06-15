@@ -11,7 +11,7 @@ export type Rule = {
         match_type: string;
         negated?: boolean;
     };
-    value: string | number;
+    value: string | number | boolean | ((...args: any) => void);
 };
 export type RuleOrWhen = {
     OR_WHEN: Array<Rule>;
