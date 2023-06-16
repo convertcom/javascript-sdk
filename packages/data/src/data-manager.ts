@@ -192,10 +192,10 @@ export class DataManager implements DataManagerInterface {
 
     if (experience && !isArchivedExperience && isEnvironmentMatch) {
       let locationMatched: boolean | RuleError = false;
-      if (experience?.locations) {
+      if (Array.isArray(experience?.locations) && experience.locations.length) {
         // Get attached locations
         const locations = this.getItemsByIds(
-          experience?.locations,
+          experience.locations,
           'locations'
         ) as Array<Location>;
         // Validate locationProperties against locations rules
@@ -215,7 +215,7 @@ export class DataManager implements DataManagerInterface {
       } else if (experience?.site_area) {
         locationMatched = this._ruleManager.isRuleMatched(
           locationProperties,
-          experience?.site_area
+          experience.site_area
         );
         // Return rule errors if present
         if (Object.values(RuleError).includes(locationMatched as RuleError))
@@ -228,7 +228,7 @@ export class DataManager implements DataManagerInterface {
         if (experience?.audiences) {
           // Get attached audiences
           audiences = this.getItemsByIds(
-            experience?.audiences,
+            experience.audiences,
             'audiences'
           ) as Array<Audience>;
           // Validate visitorProperties against audiences rules
@@ -516,10 +516,7 @@ export class DataManager implements DataManagerInterface {
 
     if (goalRule) {
       if (!goal?.rules) return;
-      const ruleMatched = this._ruleManager.isRuleMatched(
-        goalRule,
-        goal?.rules
-      );
+      const ruleMatched = this._ruleManager.isRuleMatched(goalRule, goal.rules);
       // Return rule errors if present
       if (Object.values(RuleError).includes(ruleMatched as RuleError))
         return ruleMatched as RuleError;
@@ -529,7 +526,7 @@ export class DataManager implements DataManagerInterface {
       }
     }
     const data: ConversionEvent = {
-      goalId: goal?.id
+      goalId: goal.id
     };
     const {bucketing: bucketingData} = this.getLocalStore(visitorId) || {};
     if (bucketingData) data.bucketingData = bucketingData;
@@ -541,7 +538,7 @@ export class DataManager implements DataManagerInterface {
     // Split transaction events
     if (goalData) {
       const data: ConversionEvent = {
-        goalId: goal?.id,
+        goalId: goal.id,
         goalData
       };
       if (bucketingData) data.bucketingData = bucketingData;
@@ -577,7 +574,7 @@ export class DataManager implements DataManagerInterface {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
           visitorProperties,
-          items?.[i]?.rules
+          items[i].rules
         );
         if (match === true) {
           matchedRecords.push(items[i]);

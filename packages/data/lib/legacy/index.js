@@ -312,9 +312,9 @@ var DataManager = /** @class */ (function () {
             : true; // skip environment check if not supported yet
         if (experience && !isArchivedExperience && isEnvironmentMatch) {
             var locationMatched = false;
-            if (experience === null || experience === void 0 ? void 0 : experience.locations) {
+            if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.locations) && experience.locations.length) {
                 // Get attached locations
-                var locations = this.getItemsByIds(experience === null || experience === void 0 ? void 0 : experience.locations, 'locations');
+                var locations = this.getItemsByIds(experience.locations, 'locations');
                 // Validate locationProperties against locations rules
                 var matchedLocations = this.filterMatchedRecordsWithRule(locations, locationProperties);
                 // Return rule errors if present
@@ -327,7 +327,7 @@ var DataManager = /** @class */ (function () {
                 locationMatched = Boolean(!locationProperties || matchedLocations.length);
             }
             else if (experience === null || experience === void 0 ? void 0 : experience.site_area) {
-                locationMatched = this._ruleManager.isRuleMatched(locationProperties, experience === null || experience === void 0 ? void 0 : experience.site_area);
+                locationMatched = this._ruleManager.isRuleMatched(locationProperties, experience.site_area);
                 // Return rule errors if present
                 if (Object.values(enums.RuleError).includes(locationMatched))
                     return locationMatched;
@@ -337,7 +337,7 @@ var DataManager = /** @class */ (function () {
                 var audiences = void 0, matchedAudiences = [];
                 if (experience === null || experience === void 0 ? void 0 : experience.audiences) {
                     // Get attached audiences
-                    audiences = this.getItemsByIds(experience === null || experience === void 0 ? void 0 : experience.audiences, 'audiences');
+                    audiences = this.getItemsByIds(experience.audiences, 'audiences');
                     // Validate visitorProperties against audiences rules
                     matchedAudiences = this.filterMatchedRecordsWithRule(audiences, visitorProperties);
                     // Return rule errors if present
@@ -569,7 +569,7 @@ var DataManager = /** @class */ (function () {
         if (goalRule) {
             if (!(goal === null || goal === void 0 ? void 0 : goal.rules))
                 return;
-            var ruleMatched = this._ruleManager.isRuleMatched(goalRule, goal === null || goal === void 0 ? void 0 : goal.rules);
+            var ruleMatched = this._ruleManager.isRuleMatched(goalRule, goal.rules);
             // Return rule errors if present
             if (Object.values(enums.RuleError).includes(ruleMatched))
                 return ruleMatched;
@@ -579,7 +579,7 @@ var DataManager = /** @class */ (function () {
             }
         }
         var data = {
-            goalId: goal === null || goal === void 0 ? void 0 : goal.id
+            goalId: goal.id
         };
         var bucketingData = (this.getLocalStore(visitorId) || {}).bucketing;
         if (bucketingData)
@@ -592,7 +592,7 @@ var DataManager = /** @class */ (function () {
         // Split transaction events
         if (goalData) {
             var data_1 = {
-                goalId: goal === null || goal === void 0 ? void 0 : goal.id,
+                goalId: goal.id,
                 goalData: goalData
             };
             if (bucketingData)
@@ -614,7 +614,7 @@ var DataManager = /** @class */ (function () {
      * @return {Array<Record<string, any> | RuleError>}
      */
     DataManager.prototype.filterMatchedRecordsWithRule = function (items, visitorProperties) {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e;
         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager.filterMatchedRecordsWithRule()', {
             items: items,
             visitorProperties: visitorProperties
@@ -625,7 +625,7 @@ var DataManager = /** @class */ (function () {
             for (var i = 0, length_1 = items.length; i < length_1; i++) {
                 if (!((_c = items === null || items === void 0 ? void 0 : items[i]) === null || _c === void 0 ? void 0 : _c.rules))
                     continue;
-                match = this._ruleManager.isRuleMatched(visitorProperties, (_d = items === null || items === void 0 ? void 0 : items[i]) === null || _d === void 0 ? void 0 : _d.rules);
+                match = this._ruleManager.isRuleMatched(visitorProperties, items[i].rules);
                 if (match === true) {
                     matchedRecords.push(items[i]);
                 }
@@ -635,7 +635,7 @@ var DataManager = /** @class */ (function () {
                 }
             }
         }
-        (_f = (_e = this._loggerManager) === null || _e === void 0 ? void 0 : _e.debug) === null || _f === void 0 ? void 0 : _f.call(_e, 'DataManager.filterMatchedRecordsWithRule()', {
+        (_e = (_d = this._loggerManager) === null || _d === void 0 ? void 0 : _d.debug) === null || _e === void 0 ? void 0 : _e.call(_d, 'DataManager.filterMatchedRecordsWithRule()', {
             matchedRecords: matchedRecords
         });
         return matchedRecords;
