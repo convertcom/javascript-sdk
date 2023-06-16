@@ -6,7 +6,7 @@
  */
 export declare enum VariationStatus {
     STOPPED = "stopped",
+    ACTIVE = "active",
     RUNNING = "running",
-    STOPPED_2 = "_stopped",
-    RUNNING_2 = "_running"
+    ARCHIVED = "archived"
 }

@@ -5,12 +5,8 @@
  * License Apache-2.0
  */
 export enum VariationStatus {
-  // 'stopped' = '0',
-  // 'active' = '1',
-  // 'archived' = '4',
-  // 'running' = '6'
   STOPPED = 'stopped',
+  ACTIVE = 'active',
   RUNNING = 'running',
-  STOPPED_2 = '_stopped',
-  RUNNING_2 = '_running'
+  ARCHIVED = 'archived'
 }

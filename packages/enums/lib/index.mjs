@@ -245,14 +245,10 @@ const VARIABLE_TYPES = [
  */
 var VariationStatus;
 (function (VariationStatus) {
-    // 'stopped' = '0',
-    // 'active' = '1',
-    // 'archived' = '4',
-    // 'running' = '6'
     VariationStatus["STOPPED"] = "stopped";
+    VariationStatus["ACTIVE"] = "active";
     VariationStatus["RUNNING"] = "running";
-    VariationStatus["STOPPED_2"] = "_stopped";
-    VariationStatus["RUNNING_2"] = "_running";
+    VariationStatus["ARCHIVED"] = "archived";
 })(VariationStatus || (VariationStatus = {}));
 
 /*!
