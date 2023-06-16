@@ -335,7 +335,8 @@ var DataManager = /** @class */ (function () {
             // Validate locationProperties against site area rules
             if (!locationProperties || locationMatched) {
                 var audiences = void 0, matchedAudiences = [];
-                if (experience === null || experience === void 0 ? void 0 : experience.audiences) {
+                if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.audiences) &&
+                    experience.audiences.length) {
                     // Get attached audiences
                     audiences = this.getItemsByIds(experience.audiences, 'audiences');
                     // Validate visitorProperties against audiences rules

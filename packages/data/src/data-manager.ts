@@ -225,7 +225,10 @@ export class DataManager implements DataManagerInterface {
       if (!locationProperties || locationMatched) {
         let audiences,
           matchedAudiences = [];
-        if (experience?.audiences) {
+        if (
+          Array.isArray(experience?.audiences) &&
+          experience.audiences.length
+        ) {
           // Get attached audiences
           audiences = this.getItemsByIds(
             experience.audiences,
