@@ -240,6 +240,7 @@ class DataManager {
         const isEnvironmentMatch = environment && Array.isArray(experience === null || experience === void 0 ? void 0 : experience.environments)
             ? experience.environments.includes(environment)
             : true; // skip environment check if not supported yet
+        let matchedErrors = [];
         if (experience && !isArchivedExperience && isEnvironmentMatch) {
             let locationMatched = false;
             if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.locations) && experience.locations.length) {
@@ -248,7 +249,7 @@ class DataManager {
                 // Validate locationProperties against locations rules
                 const matchedLocations = this.filterMatchedRecordsWithRule(locations, locationProperties);
                 // Return rule errors if present
-                const matchedErrors = matchedLocations.filter((match) => Object.values(enums.RuleError).includes(match));
+                matchedErrors = matchedLocations.filter((match) => Object.values(enums.RuleError).includes(match));
                 if (matchedErrors.length)
                     return matchedErrors[0];
                 // If there are some matched locations
@@ -262,20 +263,34 @@ class DataManager {
             }
             // Validate locationProperties against site area rules
             if (!locationProperties || locationMatched) {
-                let audiences, matchedAudiences = [];
+                let audiences, segmentations, matchedAudiences = [], matchedSegmentations = [];
                 if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.audiences) &&
                     experience.audiences.length) {
-                    // Get attached audiences
+                    // Get attached transient and/or permnent audiences
                     audiences = this.getItemsByIds(experience.audiences, 'audiences');
-                    // Validate visitorProperties against audiences rules
-                    matchedAudiences = this.filterMatchedRecordsWithRule(audiences, visitorProperties);
-                    // Return rule errors if present
-                    const matchedErrors = matchedAudiences.filter((match) => Object.values(enums.RuleError).includes(match));
-                    if (matchedErrors.length)
-                        return matchedErrors[0];
+                    if (audiences.length) {
+                        // Validate visitorProperties against audiences rules
+                        matchedAudiences = this.filterMatchedRecordsWithRule(audiences, visitorProperties);
+                        // Return rule errors if present
+                        matchedErrors = matchedAudiences.filter((match) => Object.values(enums.RuleError).includes(match));
+                        if (matchedErrors.length)
+                            return matchedErrors[0];
+                    }
+                    // Get attached segmentation audiences
+                    segmentations = this.getItemsByIds(experience.audiences, 'segments');
+                    if (segmentations.length) {
+                        // Validate visitorProperties against segmentations rules
+                        matchedSegmentations = this.filterMatchedRecordsWithRule(segmentations, visitorProperties);
+                        // Return rule errors if present
+                        matchedErrors = matchedSegmentations.filter((match) => Object.values(enums.RuleError).includes(match));
+                        if (matchedErrors.length)
+                            return matchedErrors[0];
+                    }
                 }
                 // If there are some matched audiences
-                if (!visitorProperties || matchedAudiences.length) {
+                if (!visitorProperties ||
+                    matchedSegmentations.length ||
+                    matchedAudiences.length) {
                     // And experience has variations
                     if ((experience === null || experience === void 0 ? void 0 : experience.variations) && ((_c = experience === null || experience === void 0 ? void 0 : experience.variations) === null || _c === void 0 ? void 0 : _c.length)) {
                         return this._retrieveBucketing(visitorId, experience);
@@ -290,7 +305,8 @@ class DataManager {
                 else {
                     (_g = (_f = this._loggerManager) === null || _f === void 0 ? void 0 : _f.debug) === null || _g === void 0 ? void 0 : _g.call(_f, enums.MESSAGES.RULES_NOT_MATCH, {
                         visitorProperties: visitorProperties,
-                        audiences: audiences
+                        audiences: audiences,
+                        segmentations: segmentations
                     });
                 }
             }

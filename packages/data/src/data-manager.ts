@@ -42,7 +42,8 @@ import {
   MESSAGES,
   RuleError,
   EventType,
-  GoalDataKey
+  GoalDataKey,
+  AudienceType
 } from '@convertcom/enums';
 
 import {DataStoreManager} from './data-store-manager';
@@ -190,6 +191,7 @@ export class DataManager implements DataManagerInterface {
         ? experience.environments.includes(environment)
         : true; // skip environment check if not supported yet
 
+    let matchedErrors = [];
     if (experience && !isArchivedExperience && isEnvironmentMatch) {
       let locationMatched: boolean | RuleError = false;
       if (Array.isArray(experience?.locations) && experience.locations.length) {
@@ -204,7 +206,7 @@ export class DataManager implements DataManagerInterface {
           locationProperties
         );
         // Return rule errors if present
-        const matchedErrors = matchedLocations.filter((match) =>
+        matchedErrors = matchedLocations.filter((match) =>
           Object.values(RuleError).includes(match as RuleError)
         );
         if (matchedErrors.length) return matchedErrors[0] as RuleError;
@@ -224,29 +226,54 @@ export class DataManager implements DataManagerInterface {
       // Validate locationProperties against site area rules
       if (!locationProperties || locationMatched) {
         let audiences,
-          matchedAudiences = [];
+          segmentations,
+          matchedAudiences = [],
+          matchedSegmentations = [];
         if (
           Array.isArray(experience?.audiences) &&
           experience.audiences.length
         ) {
-          // Get attached audiences
+          // Get attached transient and/or permnent audiences
           audiences = this.getItemsByIds(
             experience.audiences,
             'audiences'
           ) as Array<Audience>;
-          // Validate visitorProperties against audiences rules
-          matchedAudiences = this.filterMatchedRecordsWithRule(
-            audiences,
-            visitorProperties
-          );
-          // Return rule errors if present
-          const matchedErrors = matchedAudiences.filter((match) =>
-            Object.values(RuleError).includes(match as RuleError)
-          );
-          if (matchedErrors.length) return matchedErrors[0] as RuleError;
+          if (audiences.length) {
+            // Validate visitorProperties against audiences rules
+            matchedAudiences = this.filterMatchedRecordsWithRule(
+              audiences,
+              visitorProperties
+            );
+            // Return rule errors if present
+            matchedErrors = matchedAudiences.filter((match) =>
+              Object.values(RuleError).includes(match as RuleError)
+            );
+            if (matchedErrors.length) return matchedErrors[0] as RuleError;
+          }
+          // Get attached segmentation audiences
+          segmentations = this.getItemsByIds(
+            experience.audiences,
+            'segments'
+          ) as Array<Audience>;
+          if (segmentations.length) {
+            // Validate visitorProperties against segmentations rules
+            matchedSegmentations = this.filterMatchedRecordsWithRule(
+              segmentations,
+              visitorProperties
+            );
+            // Return rule errors if present
+            matchedErrors = matchedSegmentations.filter((match) =>
+              Object.values(RuleError).includes(match as RuleError)
+            );
+            if (matchedErrors.length) return matchedErrors[0] as RuleError;
+          }
         }
         // If there are some matched audiences
-        if (!visitorProperties || matchedAudiences.length) {
+        if (
+          !visitorProperties ||
+          matchedSegmentations.length ||
+          matchedAudiences.length
+        ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
             return this._retrieveBucketing(visitorId, experience);
@@ -259,7 +286,8 @@ export class DataManager implements DataManagerInterface {
         } else {
           this._loggerManager?.debug?.(MESSAGES.RULES_NOT_MATCH, {
             visitorProperties: visitorProperties,
-            audiences: audiences
+            audiences: audiences,
+            segmentations: segmentations
           });
         }
       } else {

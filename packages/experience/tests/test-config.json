@@ -6,7 +6,7 @@
       {
         "id": 100299433,
         "name": "Adv Audience",
-        "type": "segmentation",
+        "type": "transient",
         "status": "active",
         "key": "adv-audience",
         "preset": false,
