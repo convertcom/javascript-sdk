@@ -306,9 +306,11 @@ var DataManager = /** @class */ (function () {
         var archivedExperiences = this.getEntitiesList('archived_experiences');
         // Check whether the experience is archived
         var isArchivedExperience = !!archivedExperiences.find(function (id) { return (experience === null || experience === void 0 ? void 0 : experience.id) == id; });
-        if (experience &&
-            !isArchivedExperience &&
-            experience.environments.includes(environment)) {
+        // Check environment
+        var isEnvironmentMatch = environment && Array.isArray(experience === null || experience === void 0 ? void 0 : experience.environments)
+            ? experience.environments.includes(environment)
+            : true; // skip environment check if not supported yet
+        if (experience && !isArchivedExperience && isEnvironmentMatch) {
             var locationMatched = false;
             if (experience === null || experience === void 0 ? void 0 : experience.locations) {
                 // Get attached locations
