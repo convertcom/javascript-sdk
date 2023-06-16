@@ -150,23 +150,22 @@ export class LogManager implements LogManagerInterface {
    * @param {any=} client
    */
   setClientLevel(level: LogLevel, client?: any): void {
-    if (!client) {
-      // throw new Error('Invalid Client SDK');
-      console.error('Invalid Client SDK');
-      return;
-    }
     if (!this._isValidLevel(level)) {
       // throw new Error('Invalid Log Level');
       console.error('Invalid Log Level');
       return;
     }
 
-    const clientIndex = this._clients.findIndex(({sdk}) => sdk === client);
-    if (clientIndex === -1) {
-      console.error('Client SDK not found');
-      return;
+    if (client) {
+      const clientIndex = this._clients.findIndex(({sdk}) => sdk === client);
+      if (clientIndex === -1) {
+        console.error('Client SDK not found');
+        return;
+      }
+      this._clients[clientIndex].level = level;
+    } else {
+      for (let i = 0, max = this._clients.length; i < max; i++)
+        this._clients[i].level = level;
     }
-
-    this._clients[clientIndex].level = level;
   }
 }

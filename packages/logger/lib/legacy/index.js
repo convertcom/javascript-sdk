@@ -207,25 +207,26 @@ var LogManager = /** @class */ (function () {
      * @param {any=} client
      */
     LogManager.prototype.setClientLevel = function (level, client) {
-        if (!client) {
-            // throw new Error('Invalid Client SDK');
-            console.error('Invalid Client SDK');
-            return;
-        }
         if (!this._isValidLevel(level)) {
             // throw new Error('Invalid Log Level');
             console.error('Invalid Log Level');
             return;
         }
-        var clientIndex = this._clients.findIndex(function (_a) {
-            var sdk = _a.sdk;
-            return sdk === client;
-        });
-        if (clientIndex === -1) {
-            console.error('Client SDK not found');
-            return;
+        if (client) {
+            var clientIndex = this._clients.findIndex(function (_a) {
+                var sdk = _a.sdk;
+                return sdk === client;
+            });
+            if (clientIndex === -1) {
+                console.error('Client SDK not found');
+                return;
+            }
+            this._clients[clientIndex].level = level;
         }
-        this._clients[clientIndex].level = level;
+        else {
+            for (var i = 0, max = this._clients.length; i < max; i++)
+                this._clients[i].level = level;
+        }
     };
     return LogManager;
 }());
