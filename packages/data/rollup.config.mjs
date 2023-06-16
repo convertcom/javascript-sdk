@@ -4,6 +4,8 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 
+const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
+
 const exclude = [
   '**/*.conf.js',
   '**/*.tests.js',
@@ -31,7 +33,7 @@ const terserConfig = {
 };
 
 const commonJSBundle = {
-  cache: false,
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
@@ -76,7 +78,7 @@ const commonJSBundle = {
 };
 
 const commonJSLegacyBundle = {
-  cache: false,
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
@@ -99,6 +101,7 @@ const commonJSLegacyBundle = {
     }),
     commonjs(),
     babel({
+      babelHelpers: 'bundled',
       exclude: 'node_modules/**',
       presets: [['@babel/preset-env', {targets: 'defaults'}]]
     })
@@ -106,7 +109,7 @@ const commonJSLegacyBundle = {
 };
 
 const esmBundle = {
-  cache: false,
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {

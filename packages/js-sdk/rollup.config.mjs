@@ -12,6 +12,8 @@ import replace from '@rollup/plugin-replace';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
+
 const ENV_OPTIONS = {
   values: {
     'process.env.CONFIG_ENDPOINT': `'${process.env.CONFIG_ENDPOINT || ''}'`,
@@ -52,7 +54,7 @@ const terserConfig = {
 };
 
 const commonJSBundle = {
-  cache: false,
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
@@ -110,7 +112,7 @@ const commonJSBundle = {
 };
 
 const commonJSLegacyBundle = {
-  cache: false,
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
@@ -138,6 +140,7 @@ const commonJSLegacyBundle = {
     }),
     commonjs(),
     babel({
+      babelHelpers: 'bundled',
       exclude: 'node_modules/**',
       presets: [['@babel/preset-env', {targets: 'defaults'}]]
     }),
@@ -146,7 +149,7 @@ const commonJSLegacyBundle = {
 };
 
 const esmBundle = {
-  cache: false,
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
@@ -178,7 +181,7 @@ const esmBundle = {
 };
 
 const umdBundle = {
-  cache: false,
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
