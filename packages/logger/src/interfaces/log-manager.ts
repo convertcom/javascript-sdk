@@ -5,7 +5,6 @@
  * License Apache-2.0
  */
 import {LogLevel} from '@convertcom/enums';
-import {LogClientInterface} from './log-client';
 import {LogMethodMapInterface} from './log-method-map';
 export interface LogManagerInterface {
   log(level: LogLevel, ...args: any[]): void;
@@ -21,8 +20,10 @@ export interface LogManagerInterface {
   error(...args: any[]): void;
 
   addClient(
-    client: LogClientInterface,
+    client?: any,
     level?: LogLevel,
     methodMap?: LogMethodMapInterface
   ): void;
+
+  setClientLevel(level: LogLevel, client?: any): void;
 }

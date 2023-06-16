@@ -66,13 +66,13 @@ var DEFAULT_LOG_LEVEL = enums.LogLevel.TRACE;
  */
 var LogManager = /** @class */ (function () {
     /**
-     * @param {Record<any, any>=} sdk
+     * @param {any} client
      * @param {LogLevel=} level
      * @param {LogMethodMapInterface=} mapper
      */
-    function LogManager(sdk, level, mapper) {
+    function LogManager(client, level, mapper) {
         var _a;
-        if (sdk === void 0) { sdk = console; }
+        if (client === void 0) { client = console; }
         if (level === void 0) { level = DEFAULT_LOG_LEVEL; }
         this._defaultMapper = (_a = {},
             _a[enums.LogMethod.LOG] = enums.LogMethod.LOG,
@@ -82,7 +82,7 @@ var LogManager = /** @class */ (function () {
             _a[enums.LogMethod.ERROR] = enums.LogMethod.ERROR,
             _a);
         this._clients = [];
-        this.addClient(sdk, level, mapper);
+        this.addClient(client, level, mapper);
     }
     LogManager.prototype._isValidLevel = function (level) {
         return Object.values(enums.LogLevel).includes(level);
@@ -175,14 +175,14 @@ var LogManager = /** @class */ (function () {
         this._log.apply(this, __spreadArray([enums.LogMethod.ERROR, enums.LogLevel.ERROR], __read(args), false));
     };
     /**
-     * @param {Record<any, any>=} sdk
+     * @param {any=} client
      * @param {LogLevel=} level
      * @param {LogMethodMapInterface=} methodMap
      */
-    LogManager.prototype.addClient = function (sdk, level, methodMap) {
-        if (sdk === void 0) { sdk = console; }
+    LogManager.prototype.addClient = function (client, level, methodMap) {
+        if (client === void 0) { client = console; }
         if (level === void 0) { level = DEFAULT_LOG_LEVEL; }
-        if (!sdk) {
+        if (!client) {
             // throw new Error('Invalid Client SDK');
             console.error('Invalid Client SDK');
             return;
@@ -200,7 +200,32 @@ var LogManager = /** @class */ (function () {
                 mapper[method] = methodMap[method];
             });
         }
-        this._clients.push({ sdk: sdk, level: level, mapper: mapper });
+        this._clients.push({ sdk: client, level: level, mapper: mapper });
+    };
+    /**
+     * @param {LogLevel=} level
+     * @param {any=} client
+     */
+    LogManager.prototype.setClientLevel = function (level, client) {
+        if (!client) {
+            // throw new Error('Invalid Client SDK');
+            console.error('Invalid Client SDK');
+            return;
+        }
+        if (!this._isValidLevel(level)) {
+            // throw new Error('Invalid Log Level');
+            console.error('Invalid Log Level');
+            return;
+        }
+        var clientIndex = this._clients.findIndex(function (_a) {
+            var sdk = _a.sdk;
+            return sdk === client;
+        });
+        if (clientIndex === -1) {
+            console.error('Client SDK not found');
+            return;
+        }
+        this._clients[clientIndex].level = level;
     };
     return LogManager;
 }());

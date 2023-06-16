@@ -15,11 +15,11 @@ const DEFAULT_LOG_LEVEL = LogLevel.TRACE;
  */
 class LogManager {
     /**
-     * @param {Record<any, any>=} sdk
+     * @param {any} client
      * @param {LogLevel=} level
      * @param {LogMethodMapInterface=} mapper
      */
-    constructor(sdk = console, level = DEFAULT_LOG_LEVEL, mapper) {
+    constructor(client = console, level = DEFAULT_LOG_LEVEL, mapper) {
         this._defaultMapper = {
             [LogMethod.LOG]: LogMethod.LOG,
             [LogMethod.DEBUG]: LogMethod.DEBUG,
@@ -28,7 +28,7 @@ class LogManager {
             [LogMethod.ERROR]: LogMethod.ERROR
         };
         this._clients = [];
-        this.addClient(sdk, level, mapper);
+        this.addClient(client, level, mapper);
     }
     _isValidLevel(level) {
         return Object.values(LogLevel).includes(level);
@@ -93,12 +93,12 @@ class LogManager {
         this._log(LogMethod.ERROR, LogLevel.ERROR, ...args);
     }
     /**
-     * @param {Record<any, any>=} sdk
+     * @param {any=} client
      * @param {LogLevel=} level
      * @param {LogMethodMapInterface=} methodMap
      */
-    addClient(sdk = console, level = DEFAULT_LOG_LEVEL, methodMap) {
-        if (!sdk) {
+    addClient(client = console, level = DEFAULT_LOG_LEVEL, methodMap) {
+        if (!client) {
             // throw new Error('Invalid Client SDK');
             console.error('Invalid Client SDK');
             return;
@@ -116,7 +116,29 @@ class LogManager {
                 mapper[method] = methodMap[method];
             });
         }
-        this._clients.push({ sdk, level, mapper });
+        this._clients.push({ sdk: client, level, mapper });
+    }
+    /**
+     * @param {LogLevel=} level
+     * @param {any=} client
+     */
+    setClientLevel(level, client) {
+        if (!client) {
+            // throw new Error('Invalid Client SDK');
+            console.error('Invalid Client SDK');
+            return;
+        }
+        if (!this._isValidLevel(level)) {
+            // throw new Error('Invalid Log Level');
+            console.error('Invalid Log Level');
+            return;
+        }
+        const clientIndex = this._clients.findIndex(({ sdk }) => sdk === client);
+        if (clientIndex === -1) {
+            console.error('Client SDK not found');
+            return;
+        }
+        this._clients[clientIndex].level = level;
     }
 }
 

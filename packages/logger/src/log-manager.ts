@@ -28,17 +28,17 @@ export class LogManager implements LogManagerInterface {
   };
 
   /**
-   * @param {Record<any, any>=} sdk
+   * @param {any} client
    * @param {LogLevel=} level
    * @param {LogMethodMapInterface=} mapper
    */
   constructor(
-    sdk: Record<any, any> = console,
+    client: any = console,
     level: LogLevel = DEFAULT_LOG_LEVEL,
     mapper?: LogMethodMapInterface
   ) {
     this._clients = [];
-    this.addClient(sdk, level, mapper);
+    this.addClient(client, level, mapper);
   }
 
   private _isValidLevel(level: any): boolean {
@@ -115,16 +115,16 @@ export class LogManager implements LogManagerInterface {
   }
 
   /**
-   * @param {Record<any, any>=} sdk
+   * @param {any=} client
    * @param {LogLevel=} level
    * @param {LogMethodMapInterface=} methodMap
    */
   addClient(
-    sdk: Record<any, any> = console,
+    client: any = console,
     level: LogLevel = DEFAULT_LOG_LEVEL,
     methodMap?: LogMethodMapInterface
   ): void {
-    if (!sdk) {
+    if (!client) {
       // throw new Error('Invalid Client SDK');
       console.error('Invalid Client SDK');
       return;
@@ -142,6 +142,31 @@ export class LogManager implements LogManagerInterface {
           mapper[method] = methodMap[method];
         });
     }
-    this._clients.push(<LogClientInterface>{sdk, level, mapper});
+    this._clients.push(<LogClientInterface>{sdk: client, level, mapper});
+  }
+
+  /**
+   * @param {LogLevel=} level
+   * @param {any=} client
+   */
+  setClientLevel(level: LogLevel, client?: any): void {
+    if (!client) {
+      // throw new Error('Invalid Client SDK');
+      console.error('Invalid Client SDK');
+      return;
+    }
+    if (!this._isValidLevel(level)) {
+      // throw new Error('Invalid Log Level');
+      console.error('Invalid Log Level');
+      return;
+    }
+
+    const clientIndex = this._clients.findIndex(({sdk}) => sdk === client);
+    if (clientIndex === -1) {
+      console.error('Client SDK not found');
+      return;
+    }
+
+    this._clients[clientIndex].level = level;
   }
 }

@@ -17,11 +17,11 @@ export declare class LogManager implements LogManagerInterface {
     private _clients;
     private _defaultMapper;
     /**
-     * @param {Record<any, any>=} sdk
+     * @param {any} client
      * @param {LogLevel=} level
      * @param {LogMethodMapInterface=} mapper
      */
-    constructor(sdk?: Record<any, any>, level?: LogLevel, mapper?: LogMethodMapInterface);
+    constructor(client?: any, level?: LogLevel, mapper?: LogMethodMapInterface);
     private _isValidLevel;
     private _isValidMethod;
     private _log;
@@ -51,9 +51,14 @@ export declare class LogManager implements LogManagerInterface {
      */
     error(...args: any[]): void;
     /**
-     * @param {Record<any, any>=} sdk
+     * @param {any=} client
      * @param {LogLevel=} level
      * @param {LogMethodMapInterface=} methodMap
      */
-    addClient(sdk?: Record<any, any>, level?: LogLevel, methodMap?: LogMethodMapInterface): void;
+    addClient(client?: any, level?: LogLevel, methodMap?: LogMethodMapInterface): void;
+    /**
+     * @param {LogLevel=} level
+     * @param {any=} client
+     */
+    setClientLevel(level: LogLevel, client?: any): void;
 }
