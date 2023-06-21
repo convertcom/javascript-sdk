@@ -41,4 +41,5 @@ export declare const MESSAGES: {
     SEGMENTS_NOT_FOUND: string;
     SEGMENTS_RULE_NOT_MATCH: string;
     CUSTOM_SEGMENTS_KEY_FOUND: string;
+    SEND_BEACON_SUCCESS: string;
 };

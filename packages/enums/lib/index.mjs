@@ -72,7 +72,8 @@ const MESSAGES = {
     GOAL_RULE_NOT_MATCH: 'Goal rule do not match',
     SEGMENTS_NOT_FOUND: 'Segments not found',
     SEGMENTS_RULE_NOT_MATCH: 'Segments rule do not match',
-    CUSTOM_SEGMENTS_KEY_FOUND: 'Custom segments key already set'
+    CUSTOM_SEGMENTS_KEY_FOUND: 'Custom segments key already set',
+    SEND_BEACON_SUCCESS: 'The user agent successfully queued the data for transfer'
 };
 
 /*!

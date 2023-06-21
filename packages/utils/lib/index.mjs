@@ -1,4 +1,4 @@
-import { LogMethod, ERROR_MESSAGES } from '@convertcom/enums';
+import { LogMethod, MESSAGES, ERROR_MESSAGES } from '@convertcom/enums';
 
 /*!
  * Convert JS SDK
@@ -378,7 +378,7 @@ const supportsRequestBody = (method) => !['GET', 'HEAD', 'DELETE', 'TRACE', 'OPT
 const serialize = (params, method) => {
     let query = '';
     if (params && params.constructor === Object && !supportsRequestBody(method)) {
-        if (typeof XMLHttpRequest !== 'undefined') {
+        if (typeof navigator !== 'undefined') {
             query = Object.keys(params)
                 .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
                 .join('&');
@@ -408,7 +408,7 @@ const HttpClient = {
             : config.baseURL;
         const responseType = (config === null || config === void 0 ? void 0 : config.responseType) || 'json';
         return new Promise((resolve, reject) => {
-            if (typeof XMLHttpRequest !== 'undefined') {
+            if (typeof navigator !== 'undefined') {
                 const options = {
                     method
                 };
@@ -417,45 +417,79 @@ const HttpClient = {
                 if ((config === null || config === void 0 ? void 0 : config.data) && supportsRequestBody(method)) {
                     options.body = JSON.stringify(config.data);
                 }
-                fetch(`${baseURL}${path}${serialize(config === null || config === void 0 ? void 0 : config.data, method)}`, options)
-                    .then((res) => {
-                    if (res.status === HttpStatusCode.Ok) {
-                        const output = {
-                            status: res.status,
-                            statusText: res.statusText,
-                            headers: res.headers,
-                            data: null
-                        };
-                        switch (responseType) {
-                            case 'json':
-                                output.data = res.json();
-                                break;
-                            case 'arraybuffer':
-                                output.data = res.arrayBuffer();
-                                break;
-                            case 'text':
-                                output.data = res;
-                                break;
-                            default:
-                                reject({
-                                    message: ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
-                                });
-                                return;
-                        }
-                        resolve(output);
+                const url = `${baseURL}${path}${serialize(config === null || config === void 0 ? void 0 : config.data, method)}`;
+                if (method.toLowerCase() === 'post' && (navigator === null || navigator === void 0 ? void 0 : navigator.sendBeacon)) {
+                    /**
+                     * navigator.sendBeacon method is intended for analytics
+                     * and diagnostics code to send data to a server,
+                     * given that analytics data are often sent to different
+                     * subdomains or even different domains:
+                     * 1. The browser drops CORS restraints resulted in omitting
+                     * the OPTIONS request and allowing relevant cookies to be sent.
+                     * 2. The browser will not abort the requests upon page unload,
+                     * instead completes them in the background while the next page
+                     * requests was already being processed.
+                     * 3. The browser cannot decide whether the request has failed,
+                     * the function only returns a boolean.
+                     * 4. The specification does not define body size limitations,
+                     * vendors may choose to limit the size of the request.
+                     * 5. Only supports requests with POST method.
+                     * 6. The following browsers cannot send Blob data: Chrome, Chrome Android, Opera, Opera Android, and WebView Android.
+                     */
+                    if (navigator.sendBeacon(url, options.body)) {
+                        resolve({
+                            data: true,
+                            status: HttpStatusCode.Ok,
+                            statusText: MESSAGES.SEND_BEACON_SUCCESS
+                        });
                     }
                     else {
                         reject({
-                            message: res.statusText,
-                            status: res.status
+                            message: ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
                         });
                     }
-                })
-                    .catch((err) => reject({
-                    message: err === null || err === void 0 ? void 0 : err.message,
-                    status: err === null || err === void 0 ? void 0 : err.status,
-                    statusText: err === null || err === void 0 ? void 0 : err.statusText
-                }));
+                }
+                else {
+                    fetch(url, options)
+                        .then((res) => {
+                        if (res.status === HttpStatusCode.Ok) {
+                            const output = {
+                                status: res.status,
+                                statusText: res.statusText,
+                                headers: res.headers,
+                                data: null
+                            };
+                            switch (responseType) {
+                                case 'json':
+                                    output.data = res.json();
+                                    break;
+                                case 'arraybuffer':
+                                    output.data = res.arrayBuffer();
+                                    break;
+                                case 'text':
+                                    output.data = res;
+                                    break;
+                                default:
+                                    reject({
+                                        message: ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
+                                    });
+                                    return;
+                            }
+                            resolve(output);
+                        }
+                        else {
+                            reject({
+                                message: res.statusText,
+                                status: res.status
+                            });
+                        }
+                    })
+                        .catch((err) => reject({
+                        message: err === null || err === void 0 ? void 0 : err.message,
+                        status: err === null || err === void 0 ? void 0 : err.status,
+                        statusText: err === null || err === void 0 ? void 0 : err.statusText
+                    }));
+                }
             }
             else if (url && https && http) {
                 // Fallback to CommonJS if not targeting a browser

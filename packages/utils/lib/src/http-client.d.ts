@@ -85,7 +85,7 @@ export type HttpResponse = {
     data: any;
     status: HttpStatusCode;
     statusText: string;
-    headers: {
+    headers?: {
         [x: string]: any;
     };
 };
