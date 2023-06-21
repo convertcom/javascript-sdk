@@ -13,6 +13,7 @@ export * from './src/experience-status';
 export * from './src/experience-type';
 export * from './src/feature-status';
 export * from './src/goal-data-key';
+export * from './src/goal-type';
 export * from './src/log-level';
 export * from './src/log-method';
 export * from './src/project-type';

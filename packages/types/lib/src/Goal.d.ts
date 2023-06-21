@@ -6,9 +6,11 @@
  */
 import { RuleSet } from './Rule';
 import { Id } from './Id';
+import { GoalType } from '@convertcom/enums';
 export type Goal = {
     id: Id;
     rules?: RuleSet;
+    type: GoalType;
     name: string;
     key: string;
 };

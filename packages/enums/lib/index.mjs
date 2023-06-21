@@ -153,6 +153,21 @@ var GoalDataKey;
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
+var GoalType;
+(function (GoalType) {
+    GoalType["ADVANCED"] = "advanced";
+    GoalType["DOM_INTERACTION"] = "dom_interaction";
+    GoalType["SCROLL_PERCENTAGE"] = "scroll_percentage";
+    GoalType["CODE_TRIGGER"] = "code_trigger";
+    GoalType["REVENUE"] = "revenue";
+})(GoalType || (GoalType = {}));
+
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020 Convert Insights, Inc
+ * License Apache-2.0
+ */
 var LogLevel;
 (function (LogLevel) {
     LogLevel[LogLevel["TRACE"] = 0] = "TRACE";
@@ -345,5 +360,5 @@ var VisitorType;
     VisitorType["RETURNING"] = "returning";
 })(VisitorType || (VisitorType = {}));
 
-export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, ERROR_MESSAGES, EventType, ExperienceStatus, ExperienceType, FeatureStatus, GoalDataKey, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationStatus, VariationType, VisitorType };
+export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, ERROR_MESSAGES, EventType, ExperienceStatus, ExperienceType, FeatureStatus, GoalDataKey, GoalType, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationStatus, VariationType, VisitorType };
 //# sourceMappingURL=index.mjs.map

@@ -155,6 +155,21 @@ exports.GoalDataKey = void 0;
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
+exports.GoalType = void 0;
+(function (GoalType) {
+    GoalType["ADVANCED"] = "advanced";
+    GoalType["DOM_INTERACTION"] = "dom_interaction";
+    GoalType["SCROLL_PERCENTAGE"] = "scroll_percentage";
+    GoalType["CODE_TRIGGER"] = "code_trigger";
+    GoalType["REVENUE"] = "revenue";
+})(exports.GoalType || (exports.GoalType = {}));
+
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020 Convert Insights, Inc
+ * License Apache-2.0
+ */
 exports.LogLevel = void 0;
 (function (LogLevel) {
     LogLevel[LogLevel["TRACE"] = 0] = "TRACE";
