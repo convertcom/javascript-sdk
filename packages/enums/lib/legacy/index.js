@@ -163,6 +163,11 @@ exports.GoalType = void 0;
     GoalType["CODE_TRIGGER"] = "code_trigger";
     GoalType["REVENUE"] = "revenue";
 })(exports.GoalType || (exports.GoalType = {}));
+exports.GoalRevenueTriggeringType = void 0;
+(function (GoalRevenueTriggeringType) {
+    GoalRevenueTriggeringType["MANUAL"] = "manual";
+    GoalRevenueTriggeringType["GOOGLE_ANALYTICS"] = "ga";
+})(exports.GoalRevenueTriggeringType || (exports.GoalRevenueTriggeringType = {}));
 
 /*!
  * Convert JS SDK

@@ -11,3 +11,8 @@ export enum GoalType {
   CODE_TRIGGER = 'code_trigger',
   REVENUE = 'revenue'
 }
+
+export enum GoalRevenueTriggeringType {
+  MANUAL = 'manual',
+  GOOGLE_ANALYTICS = 'ga'
+}

@@ -161,6 +161,11 @@ var GoalType;
     GoalType["CODE_TRIGGER"] = "code_trigger";
     GoalType["REVENUE"] = "revenue";
 })(GoalType || (GoalType = {}));
+var GoalRevenueTriggeringType;
+(function (GoalRevenueTriggeringType) {
+    GoalRevenueTriggeringType["MANUAL"] = "manual";
+    GoalRevenueTriggeringType["GOOGLE_ANALYTICS"] = "ga";
+})(GoalRevenueTriggeringType || (GoalRevenueTriggeringType = {}));
 
 /*!
  * Convert JS SDK
@@ -360,5 +365,5 @@ var VisitorType;
     VisitorType["RETURNING"] = "returning";
 })(VisitorType || (VisitorType = {}));
 
-export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, ERROR_MESSAGES, EventType, ExperienceStatus, ExperienceType, FeatureStatus, GoalDataKey, GoalType, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationStatus, VariationType, VisitorType };
+export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, ERROR_MESSAGES, EventType, ExperienceStatus, ExperienceType, FeatureStatus, GoalDataKey, GoalRevenueTriggeringType, GoalType, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationStatus, VariationType, VisitorType };
 //# sourceMappingURL=index.mjs.map

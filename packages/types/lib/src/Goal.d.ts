@@ -6,11 +6,21 @@
  */
 import { RuleSet } from './Rule';
 import { Id } from './Id';
-import { GoalType } from '@convertcom/enums';
+import { GoalType, GoalRevenueTriggeringType } from '@convertcom/enums';
+export type GoalTrackedItem = {
+    event: string;
+    selector: string;
+};
+export type GoalSettings = {
+    percentage?: number;
+    tracked_items?: Array<GoalTrackedItem>;
+    triggering_type?: GoalRevenueTriggeringType;
+};
 export type Goal = {
     id: Id;
     rules?: RuleSet;
     type: GoalType;
+    settings?: GoalSettings;
     name: string;
     key: string;
 };
