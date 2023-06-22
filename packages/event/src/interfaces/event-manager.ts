@@ -14,7 +14,7 @@ export interface EventManagerInterface {
 
   fire(
     event: SystemEvents | string,
-    args: Record<string, unknown>,
+    args?: Record<string, unknown>,
     err?: Error | unknown,
     deferred?: boolean
   ): void;
