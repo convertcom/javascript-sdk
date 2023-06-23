@@ -5,7 +5,7 @@
  * License Apache-2.0
  */
 import {Id} from './Id';
-import {ProjectType} from '@convertcom/enums';
+import {DoNotTrack, ProjectType} from '@convertcom/enums';
 export type Project = {
   id: Id;
   name: string;
@@ -23,7 +23,7 @@ export type Project = {
   settings: {
     auto_link: boolean;
     data_anonymization: boolean;
-    do_not_track: string;
+    do_not_track: DoNotTrack;
     include_jquery: boolean;
     integrations?: {
       ga?: {

@@ -82,6 +82,18 @@ const MESSAGES = {
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
+var DoNotTrack;
+(function (DoNotTrack) {
+    DoNotTrack["WEB"] = "web";
+    DoNotTrack["FULLSTACK"] = "fullstack";
+})(DoNotTrack || (DoNotTrack = {}));
+
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020 Convert Insights, Inc
+ * License Apache-2.0
+ */
 var EventType;
 (function (EventType) {
     EventType["BUCKETING"] = "bucketing";
@@ -365,5 +377,5 @@ var VisitorType;
     VisitorType["RETURNING"] = "returning";
 })(VisitorType || (VisitorType = {}));
 
-export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, ERROR_MESSAGES, EventType, ExperienceStatus, ExperienceType, FeatureStatus, GoalDataKey, GoalRevenueTriggeringType, GoalType, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationStatus, VariationType, VisitorType };
+export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, DoNotTrack, ERROR_MESSAGES, EventType, ExperienceStatus, ExperienceType, FeatureStatus, GoalDataKey, GoalRevenueTriggeringType, GoalType, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationStatus, VariationType, VisitorType };
 //# sourceMappingURL=index.mjs.map

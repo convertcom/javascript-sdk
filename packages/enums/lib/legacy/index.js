@@ -84,6 +84,18 @@ var MESSAGES = {
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
+exports.DoNotTrack = void 0;
+(function (DoNotTrack) {
+    DoNotTrack["WEB"] = "web";
+    DoNotTrack["FULLSTACK"] = "fullstack";
+})(exports.DoNotTrack || (exports.DoNotTrack = {}));
+
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020 Convert Insights, Inc
+ * License Apache-2.0
+ */
 exports.EventType = void 0;
 (function (EventType) {
     EventType["BUCKETING"] = "bucketing";
