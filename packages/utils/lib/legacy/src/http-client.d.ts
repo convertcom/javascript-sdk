@@ -92,6 +92,7 @@ export type HttpResponse = {
 interface HttpClientInterface {
     request(config: HttpRequest): Promise<HttpResponse>;
 }
+export declare const serialize: (params: Record<string, any>, method: string) => string;
 /**
  * Provide http client for newtork requests
  * @param {HttpRequest}

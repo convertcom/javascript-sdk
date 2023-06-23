@@ -903,5 +903,6 @@ exports.castType = castType;
 exports.objectDeepMerge = objectDeepMerge;
 exports.objectDeepValue = objectDeepValue;
 exports.objectNotEmpty = objectNotEmpty;
+exports.serialize = serialize;
 exports.stringFormat = stringFormat;
 //# sourceMappingURL=index.js.map

@@ -122,7 +122,7 @@ try {
 const supportsRequestBody = (method: string) =>
   !['GET', 'HEAD', 'DELETE', 'TRACE', 'OPTIONS'].includes(method.toUpperCase());
 
-const serialize = (params: Record<string, any>, method: string) => {
+export const serialize = (params: Record<string, any>, method: string) => {
   let query = '';
   if (params && params.constructor === Object && !supportsRequestBody(method)) {
     if (typeof navigator !== 'undefined') {

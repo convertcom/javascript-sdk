@@ -747,5 +747,5 @@ function castType(value, type) {
     }
 }
 
-export { Comparisons, DataStore, FileLogger, HttpClient, arrayNotEmpty, camelCase, castType, objectDeepMerge, objectDeepValue, objectNotEmpty, stringFormat };
+export { Comparisons, DataStore, FileLogger, HttpClient, arrayNotEmpty, camelCase, castType, objectDeepMerge, objectDeepValue, objectNotEmpty, serialize, stringFormat };
 //# sourceMappingURL=index.mjs.map
