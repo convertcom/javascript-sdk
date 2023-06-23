@@ -19,6 +19,8 @@ export type Project = {
         data_anonymization: boolean;
         do_not_track: DoNotTrack;
         include_jquery: boolean;
+        min_order_value?: number;
+        max_order_value?: number;
         integrations?: {
             ga?: {
                 enabled: boolean;

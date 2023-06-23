@@ -24,4 +24,8 @@ export type Experience = {
     variations: Array<Variation>;
     status: ExperienceStatus;
     environments: Array<string>;
+    settings?: {
+        min_order_value?: number;
+        max_order_value?: number;
+    };
 };
