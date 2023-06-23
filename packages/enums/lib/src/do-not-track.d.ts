@@ -5,6 +5,8 @@
  * License Apache-2.0
  */
 export declare enum DoNotTrack {
-    WEB = "web",
-    FULLSTACK = "fullstack"
+    OFF = "OFF",
+    EU_ONLY = "EU ONLY",
+    EEA_ONLY = "EEA ONLY",
+    WORLDWIDE = "Worldwide"
 }

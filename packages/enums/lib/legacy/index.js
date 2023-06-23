@@ -86,8 +86,10 @@ var MESSAGES = {
  */
 exports.DoNotTrack = void 0;
 (function (DoNotTrack) {
-    DoNotTrack["WEB"] = "web";
-    DoNotTrack["FULLSTACK"] = "fullstack";
+    DoNotTrack["OFF"] = "OFF";
+    DoNotTrack["EU_ONLY"] = "EU ONLY";
+    DoNotTrack["EEA_ONLY"] = "EEA ONLY";
+    DoNotTrack["WORLDWIDE"] = "Worldwide";
 })(exports.DoNotTrack || (exports.DoNotTrack = {}));
 
 /*!

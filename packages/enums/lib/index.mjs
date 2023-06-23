@@ -84,8 +84,10 @@ const MESSAGES = {
  */
 var DoNotTrack;
 (function (DoNotTrack) {
-    DoNotTrack["WEB"] = "web";
-    DoNotTrack["FULLSTACK"] = "fullstack";
+    DoNotTrack["OFF"] = "OFF";
+    DoNotTrack["EU_ONLY"] = "EU ONLY";
+    DoNotTrack["EEA_ONLY"] = "EEA ONLY";
+    DoNotTrack["WORLDWIDE"] = "Worldwide";
 })(DoNotTrack || (DoNotTrack = {}));
 
 /*!
