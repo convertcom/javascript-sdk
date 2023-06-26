@@ -16,6 +16,7 @@ export enum IntegrationProvider {
   GO_SQUARED = 'gosquared',
   HEAP_ANALYTICS = 'heapanalytics',
   HOT_JAR = 'hotjar',
+  KISS_METRICS = 'kissmetrics',
   MIX_PANEL = 'mixpanel',
   MOUSE_FLOW = 'mouseflow',
   PIWIK = 'piwik',

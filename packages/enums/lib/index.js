@@ -197,6 +197,7 @@ exports.IntegrationProvider = void 0;
     IntegrationProvider["GO_SQUARED"] = "gosquared";
     IntegrationProvider["HEAP_ANALYTICS"] = "heapanalytics";
     IntegrationProvider["HOT_JAR"] = "hotjar";
+    IntegrationProvider["KISS_METRICS"] = "kissmetrics";
     IntegrationProvider["MIX_PANEL"] = "mixpanel";
     IntegrationProvider["MOUSE_FLOW"] = "mouseflow";
     IntegrationProvider["PIWIK"] = "piwik";
