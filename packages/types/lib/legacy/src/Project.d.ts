@@ -25,7 +25,8 @@ export type Project = {
             google_analytics?: {
                 enabled: boolean;
                 type: GoogleAnalyticsType;
-                property_UA: string;
+                measurementId?: string;
+                property_UA?: string;
                 auto_revenue_tracking: boolean;
             };
             kissmetrics?: {

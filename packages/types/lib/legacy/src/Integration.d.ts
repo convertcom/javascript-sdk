@@ -10,5 +10,7 @@ export type Integration = {
     enabled?: boolean;
     custom_dimension?: string;
     type?: GoogleAnalyticsType;
+    measurementId?: string;
+    property_UA?: string;
     evar?: string;
 };
