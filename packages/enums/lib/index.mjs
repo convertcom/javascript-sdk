@@ -108,23 +108,6 @@ var EventType;
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-var ExperienceStatus;
-(function (ExperienceStatus) {
-    ExperienceStatus["DRAFT"] = "draft";
-    ExperienceStatus["ACTIVE"] = "active";
-    ExperienceStatus["PAUSED"] = "paused";
-    ExperienceStatus["COMPLETED"] = "completed";
-    ExperienceStatus["SCHEDULED"] = "scheduled";
-    ExperienceStatus["ARCHIVED"] = "archived";
-    ExperienceStatus["DELETED"] = "deleted";
-})(ExperienceStatus || (ExperienceStatus = {}));
-
-/*!
- * Convert JS SDK
- * Version 1.0.0
- * Copyright(c) 2020 Convert Insights, Inc
- * License Apache-2.0
- */
 var ExperienceType;
 (function (ExperienceType) {
     ExperienceType["AB"] = "a/b";
@@ -148,6 +131,18 @@ var FeatureStatus;
     FeatureStatus["ENABLED"] = "enabled";
     FeatureStatus["DISABLED"] = "disabled";
 })(FeatureStatus || (FeatureStatus = {}));
+
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020 Convert Insights, Inc
+ * License Apache-2.0
+ */
+var GoogleAnalyticsType;
+(function (GoogleAnalyticsType) {
+    GoogleAnalyticsType["UNIVERSAL"] = "universal";
+    GoogleAnalyticsType["CLASSIC"] = "classic";
+})(GoogleAnalyticsType || (GoogleAnalyticsType = {}));
 
 /*!
  * Convert JS SDK
@@ -278,20 +273,6 @@ const VARIABLE_TYPES = [
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-var VariationStatus;
-(function (VariationStatus) {
-    VariationStatus["STOPPED"] = "stopped";
-    VariationStatus["ACTIVE"] = "active";
-    VariationStatus["RUNNING"] = "running";
-    VariationStatus["ARCHIVED"] = "archived";
-})(VariationStatus || (VariationStatus = {}));
-
-/*!
- * Convert JS SDK
- * Version 1.0.0
- * Copyright(c) 2020 Convert Insights, Inc
- * License Apache-2.0
- */
 var VariationType;
 (function (VariationType) {
     VariationType["RICH_STRUCTURE"] = "richStructure";
@@ -379,5 +360,5 @@ var VisitorType;
     VisitorType["RETURNING"] = "returning";
 })(VisitorType || (VisitorType = {}));
 
-export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, DoNotTrack, ERROR_MESSAGES, EventType, ExperienceStatus, ExperienceType, FeatureStatus, GoalDataKey, GoalRevenueTriggeringType, GoalType, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationStatus, VariationType, VisitorType };
+export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, DoNotTrack, ERROR_MESSAGES, EventType, ExperienceType, FeatureStatus, GoalDataKey, GoalRevenueTriggeringType, GoalType, GoogleAnalyticsType, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationType, VisitorType };
 //# sourceMappingURL=index.mjs.map

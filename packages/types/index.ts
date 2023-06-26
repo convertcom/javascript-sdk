@@ -17,6 +17,7 @@ export * from './src/Feature';
 export * from './src/Goal';
 export * from './src/Id';
 export * from './src/IndentityField';
+export * from './src/Integration';
 export * from './src/Location';
 export * from './src/Path';
 export * from './src/Project';

@@ -4,14 +4,12 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {VariationStatus} from '@convertcom/enums';
 import {Id} from './Id';
 
 export type Variation = {
   id: Id;
   key: string;
   name: string;
-  status: VariationStatus;
   changes: Array<Record<string, any>>;
   traffic_allocation?: number;
 };

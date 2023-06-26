@@ -110,23 +110,6 @@ exports.EventType = void 0;
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-exports.ExperienceStatus = void 0;
-(function (ExperienceStatus) {
-    ExperienceStatus["DRAFT"] = "draft";
-    ExperienceStatus["ACTIVE"] = "active";
-    ExperienceStatus["PAUSED"] = "paused";
-    ExperienceStatus["COMPLETED"] = "completed";
-    ExperienceStatus["SCHEDULED"] = "scheduled";
-    ExperienceStatus["ARCHIVED"] = "archived";
-    ExperienceStatus["DELETED"] = "deleted";
-})(exports.ExperienceStatus || (exports.ExperienceStatus = {}));
-
-/*!
- * Convert JS SDK
- * Version 1.0.0
- * Copyright(c) 2020 Convert Insights, Inc
- * License Apache-2.0
- */
 exports.ExperienceType = void 0;
 (function (ExperienceType) {
     ExperienceType["AB"] = "a/b";
@@ -150,6 +133,18 @@ exports.FeatureStatus = void 0;
     FeatureStatus["ENABLED"] = "enabled";
     FeatureStatus["DISABLED"] = "disabled";
 })(exports.FeatureStatus || (exports.FeatureStatus = {}));
+
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020 Convert Insights, Inc
+ * License Apache-2.0
+ */
+exports.GoogleAnalyticsType = void 0;
+(function (GoogleAnalyticsType) {
+    GoogleAnalyticsType["UNIVERSAL"] = "universal";
+    GoogleAnalyticsType["CLASSIC"] = "classic";
+})(exports.GoogleAnalyticsType || (exports.GoogleAnalyticsType = {}));
 
 /*!
  * Convert JS SDK
@@ -273,20 +268,6 @@ const VARIABLE_TYPES = [
     'integer',
     'string'
 ];
-
-/*!
- * Convert JS SDK
- * Version 1.0.0
- * Copyright(c) 2020 Convert Insights, Inc
- * License Apache-2.0
- */
-exports.VariationStatus = void 0;
-(function (VariationStatus) {
-    VariationStatus["STOPPED"] = "stopped";
-    VariationStatus["ACTIVE"] = "active";
-    VariationStatus["RUNNING"] = "running";
-    VariationStatus["ARCHIVED"] = "archived";
-})(exports.VariationStatus || (exports.VariationStatus = {}));
 
 /*!
  * Convert JS SDK

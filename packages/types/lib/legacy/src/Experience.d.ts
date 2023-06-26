@@ -4,10 +4,11 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import { ExperienceStatus, ExperienceType } from '@convertcom/enums';
+import { ExperienceType } from '@convertcom/enums';
 import { Id } from './Id';
 import { RuleSet } from './Rule';
 import { Variation } from './Variation';
+import { Integration } from './Integration';
 export type Experience = {
     id: Id;
     name: string;
@@ -22,10 +23,10 @@ export type Experience = {
     global_js?: string;
     global_css?: string;
     variations: Array<Variation>;
-    status: ExperienceStatus;
     environments: Array<string>;
     settings?: {
         min_order_value?: number;
         max_order_value?: number;
     };
+    integrations?: Array<Integration>;
 };
