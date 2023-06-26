@@ -5,7 +5,7 @@
  * License Apache-2.0
  */
 import { Id } from './Id';
-import { DoNotTrack, ProjectType } from '@convertcom/enums';
+import { DoNotTrack, GoogleAnalyticsType, ProjectType } from '@convertcom/enums';
 export type Project = {
     id: Id;
     name: string;
@@ -22,8 +22,9 @@ export type Project = {
         min_order_value?: number;
         max_order_value?: number;
         integrations?: {
-            ga?: {
+            google_analytics?: {
                 enabled: boolean;
+                type: GoogleAnalyticsType;
                 property_UA: string;
                 auto_revenue_tracking: boolean;
             };

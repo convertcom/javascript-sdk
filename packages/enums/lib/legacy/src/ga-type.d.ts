@@ -5,6 +5,6 @@
  * License Apache-2.0
  */
 export declare enum GoogleAnalyticsType {
-    UNIVERSAL = "universal",
-    CLASSIC = "classic"
+    GA3 = "ga3",
+    GA4 = "ga4"
 }

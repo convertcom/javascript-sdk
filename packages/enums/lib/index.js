@@ -142,8 +142,8 @@ exports.FeatureStatus = void 0;
  */
 exports.GoogleAnalyticsType = void 0;
 (function (GoogleAnalyticsType) {
-    GoogleAnalyticsType["UNIVERSAL"] = "universal";
-    GoogleAnalyticsType["CLASSIC"] = "classic";
+    GoogleAnalyticsType["GA3"] = "ga3";
+    GoogleAnalyticsType["GA4"] = "ga4";
 })(exports.GoogleAnalyticsType || (exports.GoogleAnalyticsType = {}));
 
 /*!

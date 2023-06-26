@@ -9,6 +9,6 @@ export type Integration = {
     provider: IntegrationProvider;
     enabled?: boolean;
     custom_dimension?: string;
-    ga_type?: GoogleAnalyticsType;
+    type?: GoogleAnalyticsType;
     evar?: string;
 };

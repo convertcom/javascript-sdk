@@ -140,8 +140,8 @@ var FeatureStatus;
  */
 var GoogleAnalyticsType;
 (function (GoogleAnalyticsType) {
-    GoogleAnalyticsType["UNIVERSAL"] = "universal";
-    GoogleAnalyticsType["CLASSIC"] = "classic";
+    GoogleAnalyticsType["GA3"] = "ga3";
+    GoogleAnalyticsType["GA4"] = "ga4";
 })(GoogleAnalyticsType || (GoogleAnalyticsType = {}));
 
 /*!
