@@ -5,10 +5,10 @@
  * License Apache-2.0
  */
 
-import {GoogleAnalyticsType} from '@convertcom/enums';
+import {GoogleAnalyticsType, IntegrationProvider} from '@convertcom/enums';
 
 export type Integration = {
-  provider: string;
+  provider: IntegrationProvider;
   enabled?: boolean;
   custom_dimension?: string;
   ga_type?: GoogleAnalyticsType;

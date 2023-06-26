@@ -182,6 +182,34 @@ var GoalRevenueTriggeringType;
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
+var IntegrationProvider;
+(function (IntegrationProvider) {
+    IntegrationProvider["BAIDU"] = "baidu";
+    IntegrationProvider["CLICK_TALE"] = "clicktale";
+    IntegrationProvider["CLICKY"] = "clicky";
+    IntegrationProvider["CNZZ"] = "cnzz";
+    IntegrationProvider["CRAZY_EGG"] = "crazyegg";
+    IntegrationProvider["ECONDA"] = "econda";
+    IntegrationProvider["EULERIAN"] = "eulerian";
+    IntegrationProvider["GOOGLE_ANALYTICS"] = "google_analytics";
+    IntegrationProvider["GO_SQUARED"] = "gosquared";
+    IntegrationProvider["HEAP_ANALYTICS"] = "heapanalytics";
+    IntegrationProvider["HOT_JAR"] = "hotjar";
+    IntegrationProvider["MIX_PANEL"] = "mixpanel";
+    IntegrationProvider["MOUSE_FLOW"] = "mouseflow";
+    IntegrationProvider["PIWIK"] = "piwik";
+    IntegrationProvider["SEGMENTIO"] = "segmentio";
+    IntegrationProvider["SITE_CATALYST"] = "sitecatalyst";
+    IntegrationProvider["WOOPRA"] = "woopra";
+    IntegrationProvider["YSANCE"] = "ysance";
+})(IntegrationProvider || (IntegrationProvider = {}));
+
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020 Convert Insights, Inc
+ * License Apache-2.0
+ */
 var LogLevel;
 (function (LogLevel) {
     LogLevel[LogLevel["TRACE"] = 0] = "TRACE";
@@ -360,5 +388,5 @@ var VisitorType;
     VisitorType["RETURNING"] = "returning";
 })(VisitorType || (VisitorType = {}));
 
-export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, DoNotTrack, ERROR_MESSAGES, EventType, ExperienceType, FeatureStatus, GoalDataKey, GoalRevenueTriggeringType, GoalType, GoogleAnalyticsType, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationType, VisitorType };
+export { AudienceType, BrowserType, DATA_ENTITIES, DeviceType, DoNotTrack, ERROR_MESSAGES, EventType, ExperienceType, FeatureStatus, GoalDataKey, GoalRevenueTriggeringType, GoalType, GoogleAnalyticsType, IntegrationProvider, LogLevel, LogMethod, MESSAGES, ProjectType, RuleError, SegmentsKeys, SourceType, SystemEvents, VARIABLE_TYPES, VariationType, VisitorType };
 //# sourceMappingURL=index.mjs.map

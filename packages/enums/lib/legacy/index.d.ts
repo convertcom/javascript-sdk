@@ -14,6 +14,7 @@ export * from './src/feature-status';
 export * from './src/ga-type';
 export * from './src/goal-data-key';
 export * from './src/goal-type';
+export * from './src/integration-provider';
 export * from './src/log-level';
 export * from './src/log-method';
 export * from './src/project-type';
