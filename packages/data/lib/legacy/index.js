@@ -1,7 +1,7 @@
 'use strict';
 
-var utils = require('@convertcom/utils');
-var enums = require('@convertcom/enums');
+var jsSdkUtils = require('@convertcom/js-sdk-utils');
+var jsSdkEnums = require('@convertcom/js-sdk-enums');
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -17,7 +17,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 
 var __assign = function() {
@@ -59,6 +59,11 @@ function __read(o, n) {
     }
     return ar;
 }
+
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
 
 /*!
  * Convert JS SDK
@@ -129,7 +134,7 @@ var DataStoreManager = /** @class */ (function () {
         });
         var addData = {};
         addData[key] = data;
-        this._requestsQueue = utils.objectDeepMerge(this._requestsQueue, addData);
+        this._requestsQueue = jsSdkUtils.objectDeepMerge(this._requestsQueue, addData);
         if (Object.keys(this._requestsQueue).length >= this.batchSize) {
             this.releaseQueue('size');
         }
@@ -148,7 +153,7 @@ var DataStoreManager = /** @class */ (function () {
         for (var key in this._requestsQueue) {
             this.set(key, this._requestsQueue[key]);
         }
-        (_d = (_c = this._eventManager) === null || _c === void 0 ? void 0 : _c.fire) === null || _d === void 0 ? void 0 : _d.call(_c, enums.SystemEvents.DATA_STORE_QUEUE_RELEASED, {
+        (_d = (_c = this._eventManager) === null || _c === void 0 ? void 0 : _c.fire) === null || _d === void 0 ? void 0 : _d.call(_c, jsSdkEnums.SystemEvents.DATA_STORE_QUEUE_RELEASED, {
             reason: reason || ''
         });
     };
@@ -178,7 +183,7 @@ var DataStoreManager = /** @class */ (function () {
                 this._dataStore = dataStore;
             }
             else {
-                (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.call(_a, enums.ERROR_MESSAGES.DATA_STORE_NOT_VALID);
+                (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.call(_a, jsSdkEnums.ERROR_MESSAGES.DATA_STORE_NOT_VALID);
             }
         },
         enumerable: false,
@@ -217,7 +222,7 @@ var DataManager = /** @class */ (function () {
     function DataManager(config, _a) {
         var bucketingManager = _a.bucketingManager, ruleManager = _a.ruleManager, eventManager = _a.eventManager, apiManager = _a.apiManager, loggerManager = _a.loggerManager;
         var _b, _c, _d, _e, _f;
-        this._dataEntities = enums.DATA_ENTITIES;
+        this._dataEntities = jsSdkEnums.DATA_ENTITIES;
         this._localStoreLimit = LOCAL_STORE_LIMIT;
         this._bucketedVisitors = new Map();
         this._environment = config === null || config === void 0 ? void 0 : config.environment;
@@ -227,11 +232,11 @@ var DataManager = /** @class */ (function () {
         this._loggerManager = loggerManager;
         this._eventManager = eventManager;
         this._config = config;
-        this._data = utils.objectDeepValue(config, 'data');
+        this._data = jsSdkUtils.objectDeepValue(config, 'data');
         this._accountId = (_b = this._data) === null || _b === void 0 ? void 0 : _b.account_id;
         this._projectId = (_d = (_c = this._data) === null || _c === void 0 ? void 0 : _c.project) === null || _d === void 0 ? void 0 : _d.id;
-        this.dataStoreManager = utils.objectDeepValue(config, 'dataStore');
-        (_f = (_e = this._loggerManager) === null || _e === void 0 ? void 0 : _e.trace) === null || _f === void 0 ? void 0 : _f.call(_e, enums.MESSAGES.DATA_CONSTRUCTOR, this);
+        this.dataStoreManager = jsSdkUtils.objectDeepValue(config, 'dataStore');
+        (_f = (_e = this._loggerManager) === null || _e === void 0 ? void 0 : _e.trace) === null || _f === void 0 ? void 0 : _f.call(_e, jsSdkEnums.MESSAGES.DATA_CONSTRUCTOR, this);
     }
     Object.defineProperty(DataManager.prototype, "data", {
         /**
@@ -248,7 +253,7 @@ var DataManager = /** @class */ (function () {
                 this._projectId = (_a = data === null || data === void 0 ? void 0 : data.project) === null || _a === void 0 ? void 0 : _a.id;
             }
             else {
-                (_c = (_b = this._loggerManager) === null || _b === void 0 ? void 0 : _b.error) === null || _c === void 0 ? void 0 : _c.call(_b, enums.ERROR_MESSAGES.CONFIG_DATA_NOT_VALID);
+                (_c = (_b = this._loggerManager) === null || _b === void 0 ? void 0 : _b.error) === null || _c === void 0 ? void 0 : _c.call(_b, jsSdkEnums.ERROR_MESSAGES.CONFIG_DATA_NOT_VALID);
             }
         },
         enumerable: false,
@@ -320,7 +325,7 @@ var DataManager = /** @class */ (function () {
                 var matchedLocations = this.filterMatchedRecordsWithRule(locations, locationProperties);
                 // Return rule errors if present
                 matchedErrors = matchedLocations.filter(function (match) {
-                    return Object.values(enums.RuleError).includes(match);
+                    return Object.values(jsSdkEnums.RuleError).includes(match);
                 });
                 if (matchedErrors.length)
                     return matchedErrors[0];
@@ -330,7 +335,7 @@ var DataManager = /** @class */ (function () {
             else if (experience === null || experience === void 0 ? void 0 : experience.site_area) {
                 locationMatched = this._ruleManager.isRuleMatched(locationProperties, experience.site_area);
                 // Return rule errors if present
-                if (Object.values(enums.RuleError).includes(locationMatched))
+                if (Object.values(jsSdkEnums.RuleError).includes(locationMatched))
                     return locationMatched;
             }
             // Validate locationProperties against site area rules
@@ -345,7 +350,7 @@ var DataManager = /** @class */ (function () {
                         matchedAudiences = this.filterMatchedRecordsWithRule(audiences, visitorProperties);
                         // Return rule errors if present
                         matchedErrors = matchedAudiences.filter(function (match) {
-                            return Object.values(enums.RuleError).includes(match);
+                            return Object.values(jsSdkEnums.RuleError).includes(match);
                         });
                         if (matchedErrors.length)
                             return matchedErrors[0];
@@ -357,7 +362,7 @@ var DataManager = /** @class */ (function () {
                         matchedSegmentations = this.filterMatchedRecordsWithRule(segmentations, visitorProperties);
                         // Return rule errors if present
                         matchedErrors = matchedSegmentations.filter(function (match) {
-                            return Object.values(enums.RuleError).includes(match);
+                            return Object.values(jsSdkEnums.RuleError).includes(match);
                         });
                         if (matchedErrors.length)
                             return matchedErrors[0];
@@ -372,14 +377,14 @@ var DataManager = /** @class */ (function () {
                         return this._retrieveBucketing(visitorId, experience);
                     }
                     else {
-                        (_f = (_e = this._loggerManager) === null || _e === void 0 ? void 0 : _e.debug) === null || _f === void 0 ? void 0 : _f.call(_e, enums.MESSAGES.VARIATIONS_NOT_FOUND, {
+                        (_f = (_e = this._loggerManager) === null || _e === void 0 ? void 0 : _e.debug) === null || _f === void 0 ? void 0 : _f.call(_e, jsSdkEnums.MESSAGES.VARIATIONS_NOT_FOUND, {
                             visitorProperties: visitorProperties,
                             audiences: audiences
                         });
                     }
                 }
                 else {
-                    (_h = (_g = this._loggerManager) === null || _g === void 0 ? void 0 : _g.debug) === null || _h === void 0 ? void 0 : _h.call(_g, enums.MESSAGES.RULES_NOT_MATCH, {
+                    (_h = (_g = this._loggerManager) === null || _g === void 0 ? void 0 : _g.debug) === null || _h === void 0 ? void 0 : _h.call(_g, jsSdkEnums.MESSAGES.RULES_NOT_MATCH, {
                         visitorProperties: visitorProperties,
                         audiences: audiences,
                         segmentations: segmentations
@@ -387,7 +392,7 @@ var DataManager = /** @class */ (function () {
                 }
             }
             else {
-                (_k = (_j = this._loggerManager) === null || _j === void 0 ? void 0 : _j.debug) === null || _k === void 0 ? void 0 : _k.call(_j, enums.MESSAGES.LOCATION_NOT_MATCH, (_a = {
+                (_k = (_j = this._loggerManager) === null || _j === void 0 ? void 0 : _j.debug) === null || _k === void 0 ? void 0 : _k.call(_j, jsSdkEnums.MESSAGES.LOCATION_NOT_MATCH, (_a = {
                         locationProperties: locationProperties
                     },
                     _a[(experience === null || experience === void 0 ? void 0 : experience.locations)
@@ -420,7 +425,7 @@ var DataManager = /** @class */ (function () {
         if (variationId &&
             (variation = this.retrieveVariation(experience.id, variationId))) {
             // If it's found log debug info. The return value will be formed next step
-            (_d = (_c = this._loggerManager) === null || _c === void 0 ? void 0 : _c.debug) === null || _d === void 0 ? void 0 : _d.call(_c, enums.MESSAGES.BUCKETED_VISITOR_FOUND, {
+            (_d = (_c = this._loggerManager) === null || _c === void 0 ? void 0 : _c.debug) === null || _d === void 0 ? void 0 : _d.call(_c, jsSdkEnums.MESSAGES.BUCKETED_VISITOR_FOUND, {
                 storeKey: storeKey,
                 visitorId: visitorId,
                 variationId: variationId
@@ -434,7 +439,7 @@ var DataManager = /** @class */ (function () {
                 // Store the data in local variable
                 this.putLocalStore(visitorId, __assign({ bucketing: (_a = {}, _a[experience.id.toString()] = variationId_1, _a) }, (segments ? { segments: segments } : {})));
                 // If it's found log debug info. The return value will be formed next step
-                (_h = (_g = this._loggerManager) === null || _g === void 0 ? void 0 : _g.debug) === null || _h === void 0 ? void 0 : _h.call(_g, enums.MESSAGES.BUCKETED_VISITOR_FOUND, {
+                (_h = (_g = this._loggerManager) === null || _g === void 0 ? void 0 : _g.debug) === null || _h === void 0 ? void 0 : _h.call(_g, jsSdkEnums.MESSAGES.BUCKETED_VISITOR_FOUND, {
                     storeKey: storeKey,
                     visitorId: visitorId,
                     variationId: variationId_1
@@ -461,7 +466,7 @@ var DataManager = /** @class */ (function () {
                         variationId: variationId_1
                     };
                     var visitorEvent = {
-                        eventType: enums.EventType.BUCKETING,
+                        eventType: jsSdkEnums.EventType.BUCKETING,
                         data: bucketingEvent
                     };
                     this._apiManager.enqueue(visitorId, visitorEvent, segments);
@@ -472,7 +477,7 @@ var DataManager = /** @class */ (function () {
                     variation = this.retrieveVariation(experience.id, variationId_1);
                 }
                 else {
-                    (_m = (_l = this._loggerManager) === null || _l === void 0 ? void 0 : _l.error) === null || _m === void 0 ? void 0 : _m.call(_l, enums.ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR, {
+                    (_m = (_l = this._loggerManager) === null || _l === void 0 ? void 0 : _l.error) === null || _m === void 0 ? void 0 : _m.call(_l, jsSdkEnums.ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR, {
                         visitorId: visitorId,
                         experience: experience
                     });
@@ -582,7 +587,7 @@ var DataManager = /** @class */ (function () {
             ? this.getEntity(goalId, 'goals')
             : this.getEntityById(goalId, 'goals');
         if (!(goal === null || goal === void 0 ? void 0 : goal.id)) {
-            (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.call(_a, enums.MESSAGES.GOAL_NOT_FOUND);
+            (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.call(_a, jsSdkEnums.MESSAGES.GOAL_NOT_FOUND);
             return;
         }
         if (goalRule) {
@@ -590,10 +595,10 @@ var DataManager = /** @class */ (function () {
                 return;
             var ruleMatched = this._ruleManager.isRuleMatched(goalRule, goal.rules);
             // Return rule errors if present
-            if (Object.values(enums.RuleError).includes(ruleMatched))
+            if (Object.values(jsSdkEnums.RuleError).includes(ruleMatched))
                 return ruleMatched;
             if (!ruleMatched) {
-                (_d = (_c = this._loggerManager) === null || _c === void 0 ? void 0 : _c.error) === null || _d === void 0 ? void 0 : _d.call(_c, enums.MESSAGES.GOAL_RULE_NOT_MATCH);
+                (_d = (_c = this._loggerManager) === null || _c === void 0 ? void 0 : _c.error) === null || _d === void 0 ? void 0 : _d.call(_c, jsSdkEnums.MESSAGES.GOAL_RULE_NOT_MATCH);
                 return;
             }
         }
@@ -604,7 +609,7 @@ var DataManager = /** @class */ (function () {
         if (bucketingData)
             data.bucketingData = bucketingData;
         var event = {
-            eventType: enums.EventType.CONVERSION,
+            eventType: jsSdkEnums.EventType.CONVERSION,
             data: data
         };
         this._apiManager.enqueue(visitorId, event, segments);
@@ -617,7 +622,7 @@ var DataManager = /** @class */ (function () {
             if (bucketingData)
                 data_1.bucketingData = bucketingData;
             var event_1 = {
-                eventType: enums.EventType.CONVERSION,
+                eventType: jsSdkEnums.EventType.CONVERSION,
                 data: data_1
             };
             this._apiManager.enqueue(visitorId, event_1, segments);
@@ -640,7 +645,7 @@ var DataManager = /** @class */ (function () {
         });
         var matchedRecords = [];
         var match;
-        if (utils.arrayNotEmpty(items)) {
+        if (jsSdkUtils.arrayNotEmpty(items)) {
             for (var i = 0, length_1 = items.length; i < length_1; i++) {
                 if (!((_c = items === null || items === void 0 ? void 0 : items[i]) === null || _c === void 0 ? void 0 : _c.rules))
                     continue;
@@ -668,7 +673,7 @@ var DataManager = /** @class */ (function () {
         var _a, _b;
         var list = [];
         if (this._dataEntities.indexOf(entityType) !== -1) {
-            list = utils.objectDeepValue(this._data, entityType) || [];
+            list = jsSdkUtils.objectDeepValue(this._data, entityType) || [];
         }
         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager.getEntitiesList()', {
             entityType: entityType,
@@ -706,7 +711,7 @@ var DataManager = /** @class */ (function () {
             identityField: identityField
         });
         var list = this.getEntitiesList(entityType);
-        if (utils.arrayNotEmpty(list)) {
+        if (jsSdkUtils.arrayNotEmpty(list)) {
             for (var i = 0, length_2 = list.length; i < length_2; i++) {
                 if (list[i] && ((_c = list[i]) === null || _c === void 0 ? void 0 : _c[identityField]) === identity) {
                     return list[i];
@@ -761,7 +766,7 @@ var DataManager = /** @class */ (function () {
         var _a;
         var list = this.getEntitiesList(path);
         var items = [];
-        if (utils.arrayNotEmpty(list)) {
+        if (jsSdkUtils.arrayNotEmpty(list)) {
             for (var i = 0, length_3 = list.length; i < length_3; i++) {
                 if (keys.indexOf((_a = list[i]) === null || _a === void 0 ? void 0 : _a.key) !== -1) {
                     items.push(list[i]);
@@ -783,9 +788,9 @@ var DataManager = /** @class */ (function () {
             path: path
         });
         var items = [];
-        if (utils.arrayNotEmpty(ids)) {
+        if (jsSdkUtils.arrayNotEmpty(ids)) {
             var list = this.getEntitiesList(path);
-            if (utils.arrayNotEmpty(list)) {
+            if (jsSdkUtils.arrayNotEmpty(list)) {
                 for (var i = 0, length_4 = list.length; i < length_4; i++) {
                     if (ids.indexOf((_c = list[i]) === null || _c === void 0 ? void 0 : _c.id) !== -1) {
                         items.push(list[i]);
@@ -822,7 +827,7 @@ var DataManager = /** @class */ (function () {
      */
     DataManager.prototype.isValidConfigData = function (data) {
         var _a;
-        return utils.objectNotEmpty(data) && !!(data === null || data === void 0 ? void 0 : data.account_id) && !!((_a = data === null || data === void 0 ? void 0 : data.project) === null || _a === void 0 ? void 0 : _a.id);
+        return jsSdkUtils.objectNotEmpty(data) && !!(data === null || data === void 0 ? void 0 : data.account_id) && !!((_a = data === null || data === void 0 ? void 0 : data.project) === null || _a === void 0 ? void 0 : _a.id);
     };
     return DataManager;
 }());

@@ -5,8 +5,8 @@
  * License Apache-2.0
  */
 import { BucketingManagerInterface } from './interfaces/bucketing-manager';
-import { Config, Id } from '@convertcom/types';
-import { LogManagerInterface } from '@convertcom/logger';
+import { Config, Id } from '@convertcom/js-sdk-types';
+import { LogManagerInterface } from '@convertcom/js-sdk-logger';
 /**
  * Provides logic for bucketing for specific visitor (by visitorId) or randomly
  * @category Modules

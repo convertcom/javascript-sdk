@@ -1,6 +1,6 @@
 'use strict';
 
-var enums = require('@convertcom/enums');
+var jsSdkEnums = require('@convertcom/js-sdk-enums');
 
 /*!
  * Convert JS SDK
@@ -212,7 +212,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 
 function __awaiter(thisArg, _arguments, P, generator) {
@@ -280,6 +280,11 @@ function __spreadArray(to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 }
 
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
+
 /**
  * @param {string} file
  * @param {module} fs
@@ -333,7 +338,7 @@ var FileLogger = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([enums.LogMethod.LOG], __read(args), false))];
+                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([jsSdkEnums.LogMethod.LOG], __read(args), false))];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -352,7 +357,7 @@ var FileLogger = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([enums.LogMethod.INFO], __read(args), false))];
+                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([jsSdkEnums.LogMethod.INFO], __read(args), false))];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -371,7 +376,7 @@ var FileLogger = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([enums.LogMethod.DEBUG], __read(args), false))];
+                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([jsSdkEnums.LogMethod.DEBUG], __read(args), false))];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -390,7 +395,7 @@ var FileLogger = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([enums.LogMethod.WARN], __read(args), false))];
+                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([jsSdkEnums.LogMethod.WARN], __read(args), false))];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -409,7 +414,7 @@ var FileLogger = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([enums.LogMethod.ERROR], __read(args), false))];
+                    case 0: return [4 /*yield*/, this._write.apply(this, __spreadArray([jsSdkEnums.LogMethod.ERROR], __read(args), false))];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -573,12 +578,12 @@ var HttpClient = {
                         resolve({
                             data: true,
                             status: HttpStatusCode.Ok,
-                            statusText: enums.MESSAGES.SEND_BEACON_SUCCESS
+                            statusText: jsSdkEnums.MESSAGES.SEND_BEACON_SUCCESS
                         });
                     }
                     else {
                         reject({
-                            message: enums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
+                            message: jsSdkEnums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
                         });
                     }
                 }
@@ -604,7 +609,7 @@ var HttpClient = {
                                     break;
                                 default:
                                     reject({
-                                        message: enums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
+                                        message: jsSdkEnums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
                                     });
                                     return;
                             }
@@ -680,7 +685,7 @@ var HttpClient = {
                                     break;
                                 default:
                                     reject({
-                                        message: enums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
+                                        message: jsSdkEnums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
                                     });
                                     return;
                             }
@@ -707,7 +712,7 @@ var HttpClient = {
             }
             else {
                 reject({
-                    message: enums.ERROR_MESSAGES.UNABLE_TO_PERFORM_NETWORK_REQUEST
+                    message: jsSdkEnums.ERROR_MESSAGES.UNABLE_TO_PERFORM_NETWORK_REQUEST
                 });
             }
         });

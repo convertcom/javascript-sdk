@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import { Id, SegmentsData, VisitorEvent, ConfigData, Path } from '@convertcom/types';
+import { Id, SegmentsData, VisitorEvent, ConfigData, Path } from '@convertcom/js-sdk-types';
 export interface ApiManagerInterface {
     readonly batchSize: number;
     readonly releaseInterval: number;

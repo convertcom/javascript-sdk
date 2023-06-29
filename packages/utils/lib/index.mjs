@@ -1,4 +1,4 @@
-import { LogMethod, MESSAGES, ERROR_MESSAGES } from '@convertcom/enums';
+import { LogMethod, MESSAGES, ERROR_MESSAGES } from '@convertcom/js-sdk-enums';
 
 /*!
  * Convert JS SDK
@@ -203,7 +203,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 
 function __awaiter(thisArg, _arguments, P, generator) {
@@ -215,6 +215,11 @@ function __awaiter(thisArg, _arguments, P, generator) {
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 }
+
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
 
 /**
  * @param {string} file

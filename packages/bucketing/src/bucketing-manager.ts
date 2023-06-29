@@ -9,10 +9,10 @@ import Murmurhash from 'murmurhash';
 
 import {BucketingManagerInterface} from './interfaces/bucketing-manager';
 
-import {Config, Id} from '@convertcom/types';
-import {objectDeepValue} from '@convertcom/utils';
-import {LogManagerInterface} from '@convertcom/logger';
-import {MESSAGES} from '@convertcom/enums';
+import {Config, Id} from '@convertcom/js-sdk-types';
+import {objectDeepValue} from '@convertcom/js-sdk-utils';
+import {LogManagerInterface} from '@convertcom/js-sdk-logger';
+import {MESSAGES} from '@convertcom/js-sdk-enums';
 
 //default hash seed
 const DEFAULT_HASH_SEED = 9999;

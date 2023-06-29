@@ -1,6 +1,6 @@
 'use strict';
 
-var enums = require('@convertcom/enums');
+var jsSdkEnums = require('@convertcom/js-sdk-enums');
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -16,7 +16,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 
 var __assign = function() {
@@ -57,7 +57,12 @@ function __spreadArray(to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 }
 
-var DEFAULT_LOG_LEVEL = enums.LogLevel.TRACE;
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
+
+var DEFAULT_LOG_LEVEL = jsSdkEnums.LogLevel.TRACE;
 /**
  * Provides logging logic
  * @category Modules
@@ -75,20 +80,20 @@ var LogManager = /** @class */ (function () {
         if (client === void 0) { client = console; }
         if (level === void 0) { level = DEFAULT_LOG_LEVEL; }
         this._defaultMapper = (_a = {},
-            _a[enums.LogMethod.LOG] = enums.LogMethod.LOG,
-            _a[enums.LogMethod.DEBUG] = enums.LogMethod.DEBUG,
-            _a[enums.LogMethod.INFO] = enums.LogMethod.INFO,
-            _a[enums.LogMethod.WARN] = enums.LogMethod.WARN,
-            _a[enums.LogMethod.ERROR] = enums.LogMethod.ERROR,
+            _a[jsSdkEnums.LogMethod.LOG] = jsSdkEnums.LogMethod.LOG,
+            _a[jsSdkEnums.LogMethod.DEBUG] = jsSdkEnums.LogMethod.DEBUG,
+            _a[jsSdkEnums.LogMethod.INFO] = jsSdkEnums.LogMethod.INFO,
+            _a[jsSdkEnums.LogMethod.WARN] = jsSdkEnums.LogMethod.WARN,
+            _a[jsSdkEnums.LogMethod.ERROR] = jsSdkEnums.LogMethod.ERROR,
             _a);
         this._clients = [];
         this.addClient(client, level, mapper);
     }
     LogManager.prototype._isValidLevel = function (level) {
-        return Object.values(enums.LogLevel).includes(level);
+        return Object.values(jsSdkEnums.LogLevel).includes(level);
     };
     LogManager.prototype._isValidMethod = function (method) {
-        return Object.values(enums.LogMethod).includes(method);
+        return Object.values(jsSdkEnums.LogMethod).includes(method);
     };
     LogManager.prototype._log = function (method, level) {
         var args = [];
@@ -96,7 +101,7 @@ var LogManager = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         this._clients.forEach(function (client) {
-            if (level >= client.level && enums.LogLevel.SILENT !== level) {
+            if (level >= client.level && jsSdkEnums.LogLevel.SILENT !== level) {
                 var fn = client.sdk[client.mapper[method]];
                 if (fn) {
                     fn.call.apply(fn, __spreadArray([client.sdk], __read(args), false));
@@ -122,7 +127,7 @@ var LogManager = /** @class */ (function () {
             console.error('Invalid Log Level');
             return;
         }
-        this._log.apply(this, __spreadArray([enums.LogMethod.LOG, level], __read(args), false));
+        this._log.apply(this, __spreadArray([jsSdkEnums.LogMethod.LOG, level], __read(args), false));
     };
     /**
      * @param {Array<any>} args
@@ -132,7 +137,7 @@ var LogManager = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this._log.apply(this, __spreadArray([enums.LogMethod.LOG, enums.LogLevel.TRACE], __read(args), false));
+        this._log.apply(this, __spreadArray([jsSdkEnums.LogMethod.LOG, jsSdkEnums.LogLevel.TRACE], __read(args), false));
     };
     /**
      * @param {Array<any>} args
@@ -142,7 +147,7 @@ var LogManager = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this._log.apply(this, __spreadArray([enums.LogMethod.DEBUG, enums.LogLevel.DEBUG], __read(args), false));
+        this._log.apply(this, __spreadArray([jsSdkEnums.LogMethod.DEBUG, jsSdkEnums.LogLevel.DEBUG], __read(args), false));
     };
     /**
      * @param {Array<any>} args
@@ -152,7 +157,7 @@ var LogManager = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this._log.apply(this, __spreadArray([enums.LogMethod.INFO, enums.LogLevel.INFO], __read(args), false));
+        this._log.apply(this, __spreadArray([jsSdkEnums.LogMethod.INFO, jsSdkEnums.LogLevel.INFO], __read(args), false));
     };
     /**
      * @param {Array<any>} args
@@ -162,7 +167,7 @@ var LogManager = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this._log.apply(this, __spreadArray([enums.LogMethod.WARN, enums.LogLevel.WARN], __read(args), false));
+        this._log.apply(this, __spreadArray([jsSdkEnums.LogMethod.WARN, jsSdkEnums.LogLevel.WARN], __read(args), false));
     };
     /**
      * @param {Array<any>} args
@@ -172,7 +177,7 @@ var LogManager = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this._log.apply(this, __spreadArray([enums.LogMethod.ERROR, enums.LogLevel.ERROR], __read(args), false));
+        this._log.apply(this, __spreadArray([jsSdkEnums.LogMethod.ERROR, jsSdkEnums.LogLevel.ERROR], __read(args), false));
     };
     /**
      * @param {any=} client

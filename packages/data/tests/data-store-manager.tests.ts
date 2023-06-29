@@ -4,7 +4,7 @@ import {assert} from 'chai';
 
 import {DataStoreManager as dsm} from '../src/data-store-manager';
 import testConfig from './test-config.json';
-import {Config} from '@convertcom/types';
+import {Config} from '@convertcom/js-sdk-types';
 
 const configuration = testConfig as unknown as Config;
 

@@ -41,16 +41,16 @@
     "node": ">=8.0.0"
   },
   "peerDependencies": {
-    "@convertcom/api": "1.0.0",
-    "@convertcom/bucketing": "1.0.0",
-    "@convertcom/data": "1.0.0",
-    "@convertcom/enums": "1.0.0",
-    "@convertcom/event": "1.0.0",
-    "@convertcom/experience": "1.0.0",
-    "@convertcom/logger": "1.0.0",
-    "@convertcom/rules": "1.0.0",
-    "@convertcom/types": "1.0.0",
-    "@convertcom/utils": "1.0.0"
+    "@convertcom/js-sdk-api": "1.0.0",
+    "@convertcom/js-sdk-bucketing": "1.0.0",
+    "@convertcom/js-sdk-data": "1.0.0",
+    "@convertcom/js-sdk-enums": "1.0.0",
+    "@convertcom/js-sdk-event": "1.0.0",
+    "@convertcom/js-sdk-experience": "1.0.0",
+    "@convertcom/js-sdk-logger": "1.0.0",
+    "@convertcom/js-sdk-rules": "1.0.0",
+    "@convertcom/js-sdk-types": "1.0.0",
+    "@convertcom/js-sdk-utils": "1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",

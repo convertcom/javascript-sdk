@@ -3,7 +3,7 @@ import {expect} from 'chai';
 import {assert} from 'chai';
 import {BucketingManager as bm} from '../src/bucketing-manager';
 import configuration from './test-config.json';
-import {Config} from '@convertcom/types';
+import {Config} from '@convertcom/js-sdk-types';
 
 const testsAmount = 10000;
 const DEFAULT_MAX_TRAFFIC = 10000;

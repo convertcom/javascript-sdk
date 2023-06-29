@@ -4,20 +4,20 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {ApiManagerInterface} from '@convertcom/api';
+import {ApiManagerInterface} from '@convertcom/js-sdk-api';
 import {ContextInterface} from './interfaces/context';
 import {CoreInterface} from './interfaces/core';
-import {DataManagerInterface} from '@convertcom/data';
-import {EventManagerInterface} from '@convertcom/event';
-import {ExperienceManagerInterface} from '@convertcom/experience';
+import {DataManagerInterface} from '@convertcom/js-sdk-data';
+import {EventManagerInterface} from '@convertcom/js-sdk-event';
+import {ExperienceManagerInterface} from '@convertcom/js-sdk-experience';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from '@convertcom/logger';
+import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {SegmentsManagerInterface} from './interfaces/segments-manager';
 
-import {Config, ConfigData, Id} from '@convertcom/types';
+import {Config, ConfigData, Id} from '@convertcom/js-sdk-types';
 
-import {ERROR_MESSAGES, MESSAGES, SystemEvents} from '@convertcom/enums';
-import {objectNotEmpty} from '@convertcom/utils';
+import {ERROR_MESSAGES, MESSAGES, SystemEvents} from '@convertcom/js-sdk-enums';
+import {objectNotEmpty} from '@convertcom/js-sdk-utils';
 import {Context} from './context';
 
 const DEFAULT_DATA_REFRESH_INTERVAL = 300000; // in milliseconds (5 minutes)

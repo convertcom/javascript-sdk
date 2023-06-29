@@ -3,14 +3,14 @@ import {expect} from 'chai';
 import {assert} from 'chai';
 import http from 'http';
 
-import {BucketingManager as bm} from '@convertcom/bucketing';
-import {RuleManager as rm} from '@convertcom/rules';
-import {EventManager as em} from '@convertcom/event';
-import {ApiManager as am} from '@convertcom/api';
-import {DataManager as dm} from '@convertcom/data';
-import {ExperienceManager as exm} from '@convertcom/experience';
+import {BucketingManager as bm} from '@convertcom/js-sdk-bucketing';
+import {RuleManager as rm} from '@convertcom/js-sdk-rules';
+import {EventManager as em} from '@convertcom/js-sdk-event';
+import {ApiManager as am} from '@convertcom/js-sdk-api';
+import {DataManager as dm} from '@convertcom/js-sdk-data';
+import {ExperienceManager as exm} from '@convertcom/js-sdk-experience';
 import testConfig from './test-config.json';
-import {Config} from '@convertcom/types';
+import {Config} from '@convertcom/js-sdk-types';
 
 const host = 'http://localhost';
 const port = 8090;

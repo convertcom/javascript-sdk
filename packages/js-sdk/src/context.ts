@@ -5,11 +5,11 @@
  * License Apache-2.0
  */
 import {ContextInterface} from './interfaces/context';
-import {EventManagerInterface} from '@convertcom/event';
-import {ExperienceManagerInterface} from '@convertcom/experience';
+import {EventManagerInterface} from '@convertcom/js-sdk-event';
+import {ExperienceManagerInterface} from '@convertcom/js-sdk-experience';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from '@convertcom/logger';
-import {DataManagerInterface} from '@convertcom/data';
+import {LogManagerInterface} from '@convertcom/js-sdk-logger';
+import {DataManagerInterface} from '@convertcom/js-sdk-data';
 
 import {
   Config,
@@ -20,15 +20,15 @@ import {
   ConversionAttributes,
   SegmentsData,
   SegmentsAttributes
-} from '@convertcom/types';
+} from '@convertcom/js-sdk-types';
 
 import {
   ERROR_MESSAGES,
   RuleError,
   SystemEvents,
   SegmentsKeys
-} from '@convertcom/enums';
-import {objectDeepMerge} from '@convertcom/utils';
+} from '@convertcom/js-sdk-enums';
+import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {SegmentsManagerInterface} from './interfaces/segments-manager';
 
 /**

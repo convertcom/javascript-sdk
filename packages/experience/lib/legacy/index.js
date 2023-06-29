@@ -1,6 +1,6 @@
 'use strict';
 
-var enums = require('@convertcom/enums');
+var jsSdkEnums = require('@convertcom/js-sdk-enums');
 
 /**
  * Provides experiences specific logic
@@ -20,7 +20,7 @@ var ExperienceManager = /** @class */ (function () {
         var _b, _c;
         this._dataManager = dataManager;
         this._loggerManager = loggerManager;
-        (_c = (_b = this._loggerManager) === null || _b === void 0 ? void 0 : _b.trace) === null || _c === void 0 ? void 0 : _c.call(_b, enums.MESSAGES.EXPERIENCE_CONSTRUCTOR);
+        (_c = (_b = this._loggerManager) === null || _b === void 0 ? void 0 : _b.trace) === null || _c === void 0 ? void 0 : _c.call(_b, jsSdkEnums.MESSAGES.EXPERIENCE_CONSTRUCTOR);
     }
     /**
      * Get a list of all entities

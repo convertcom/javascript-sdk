@@ -4,8 +4,13 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Id, Feature, IdentityField, BucketedFeature} from '@convertcom/types';
-import {RuleError} from '@convertcom/enums';
+import {
+  Id,
+  Feature,
+  IdentityField,
+  BucketedFeature
+} from '@convertcom/js-sdk-types';
+import {RuleError} from '@convertcom/js-sdk-enums';
 
 export interface FeatureManagerInterface {
   getList(): Array<Feature>;

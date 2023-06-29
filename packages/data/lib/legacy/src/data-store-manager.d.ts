@@ -1,7 +1,7 @@
 import { DataStoreManagerInterface } from './interfaces/data-store-manager';
-import { LogManagerInterface } from '@convertcom/logger';
-import { EventManagerInterface } from '@convertcom/event';
-import { Config } from '@convertcom/types';
+import { LogManagerInterface } from '@convertcom/js-sdk-logger';
+import { EventManagerInterface } from '@convertcom/js-sdk-event';
+import { Config } from '@convertcom/js-sdk-types';
 /**
  * Data Store wrapper
  * @category Modules

@@ -13,12 +13,12 @@ import {
   Segments,
   SegmentsData,
   StoreData
-} from '@convertcom/types';
-import {MESSAGES, SegmentsKeys, RuleError} from '@convertcom/enums';
-import {LogManagerInterface} from '@convertcom/logger';
-import {objectDeepValue} from '@convertcom/utils';
-import {DataManagerInterface} from '@convertcom/data';
-import {RuleManagerInterface} from '@convertcom/rules';
+} from '@convertcom/js-sdk-types';
+import {MESSAGES, SegmentsKeys, RuleError} from '@convertcom/js-sdk-enums';
+import {LogManagerInterface} from '@convertcom/js-sdk-logger';
+import {objectDeepValue} from '@convertcom/js-sdk-utils';
+import {DataManagerInterface} from '@convertcom/js-sdk-data';
+import {RuleManagerInterface} from '@convertcom/js-sdk-rules';
 
 /**
  * Provides segments specific logic

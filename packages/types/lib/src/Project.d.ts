@@ -5,7 +5,7 @@
  * License Apache-2.0
  */
 import { Id } from './Id';
-import { DoNotTrack, GoogleAnalyticsType, ProjectType } from '@convertcom/enums';
+import { DoNotTrack, GoogleAnalyticsType, ProjectType } from '@convertcom/js-sdk-enums';
 export type Project = {
     id: Id;
     name: string;

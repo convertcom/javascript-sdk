@@ -5,7 +5,7 @@
  * License Apache-2.0
  */
 
-import {GoalDataKey} from '@convertcom/enums';
+import {GoalDataKey} from '@convertcom/js-sdk-enums';
 import {Id} from '../Id';
 
 export type ConversionEvent = {

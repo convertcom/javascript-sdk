@@ -1,5 +1,5 @@
 {
-  "name": "@convertcom/types",
+  "name": "@convertcom/js-sdk-types",
   "description": "",
   "main": "./lib/index.js",
   "module": "./lib/index.mjs",

@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import { BrowserType, DeviceType, SegmentsKeys, SourceType, VisitorType } from '@convertcom/enums';
+import { BrowserType, DeviceType, SegmentsKeys, SourceType, VisitorType } from '@convertcom/js-sdk-enums';
 export type SegmentsData = {
     [SegmentsKeys.COUNTRY]?: string;
     [SegmentsKeys.BROWSER]?: BrowserType;

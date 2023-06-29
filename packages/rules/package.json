@@ -1,5 +1,5 @@
 {
-  "name": "@convertcom/rules",
+  "name": "@convertcom/js-sdk-rules",
   "description": "",
   "main": "./lib/index.js",
   "module": "./lib/index.mjs",

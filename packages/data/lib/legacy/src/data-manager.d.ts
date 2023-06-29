@@ -1,12 +1,12 @@
-import { ApiManagerInterface } from '@convertcom/api';
-import { BucketingManagerInterface } from '@convertcom/bucketing';
+import { ApiManagerInterface } from '@convertcom/js-sdk-api';
+import { BucketingManagerInterface } from '@convertcom/js-sdk-bucketing';
 import { DataStoreManagerInterface } from './interfaces/data-store-manager';
 import { DataManagerInterface } from './interfaces/data-manager';
-import { EventManagerInterface } from '@convertcom/event';
-import { LogManagerInterface } from '@convertcom/logger';
-import { RuleManagerInterface } from '@convertcom/rules';
-import { Entity, Id, Config, ConfigData, IdentityField, BucketedVariation, StoreData, SegmentsData } from '@convertcom/types';
-import { RuleError, GoalDataKey } from '@convertcom/enums';
+import { EventManagerInterface } from '@convertcom/js-sdk-event';
+import { LogManagerInterface } from '@convertcom/js-sdk-logger';
+import { RuleManagerInterface } from '@convertcom/js-sdk-rules';
+import { Entity, Id, Config, ConfigData, IdentityField, BucketedVariation, StoreData, SegmentsData } from '@convertcom/js-sdk-types';
+import { RuleError, GoalDataKey } from '@convertcom/js-sdk-enums';
 /**
  * Provides logic for data. Stores bucket with help of dataStore if it's provided
  * @category Modules

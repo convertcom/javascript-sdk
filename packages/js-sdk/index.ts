@@ -8,20 +8,20 @@
 /**
  * Module dependencies
  */
-import {ApiManager} from '@convertcom/api';
-import {BucketingManager} from '@convertcom/bucketing';
+import {ApiManager} from '@convertcom/js-sdk-api';
+import {BucketingManager} from '@convertcom/js-sdk-bucketing';
 import {Core} from './src/core';
-import {DataManager} from '@convertcom/data';
-import {EventManager} from '@convertcom/event';
-import {ExperienceManager} from '@convertcom/experience';
+import {DataManager} from '@convertcom/js-sdk-data';
+import {EventManager} from '@convertcom/js-sdk-event';
+import {ExperienceManager} from '@convertcom/js-sdk-experience';
 import {FeatureManager} from './src/feature-manager';
-import {RuleManager} from '@convertcom/rules';
+import {RuleManager} from '@convertcom/js-sdk-rules';
 import {SegmentsManager} from './src/segments-manager';
-import {LogManager} from '@convertcom/logger';
+import {LogManager} from '@convertcom/js-sdk-logger';
 
 import {Config} from './src/config';
-import {ERROR_MESSAGES} from '@convertcom/enums';
-import {Config as ConfigType} from '@convertcom/types';
+import {ERROR_MESSAGES} from '@convertcom/js-sdk-enums';
+import {Config as ConfigType} from '@convertcom/js-sdk-types';
 
 //todo: add config attributes definition
 /**
@@ -126,5 +126,5 @@ class ConvertSDK extends Core {
 
 export default ConvertSDK;
 
-export {LogLevel, SystemEvents} from '@convertcom/enums';
-export {FileLogger, DataStore} from '@convertcom/utils';
+export {LogLevel, SystemEvents} from '@convertcom/js-sdk-enums';
+export {FileLogger, DataStore} from '@convertcom/js-sdk-utils';

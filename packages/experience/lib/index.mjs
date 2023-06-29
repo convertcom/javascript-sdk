@@ -1,4 +1,4 @@
-import { MESSAGES } from '@convertcom/enums';
+import { MESSAGES } from '@convertcom/js-sdk-enums';
 
 /**
  * Provides experiences specific logic

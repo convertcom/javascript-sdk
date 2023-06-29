@@ -1,8 +1,8 @@
 'use strict';
 
 var Murmurhash = require('murmurhash');
-var utils = require('@convertcom/utils');
-var enums = require('@convertcom/enums');
+var jsSdkUtils = require('@convertcom/js-sdk-utils');
+var jsSdkEnums = require('@convertcom/js-sdk-enums');
 
 /*!
  * Convert JS SDK
@@ -32,9 +32,9 @@ var BucketingManager = /** @class */ (function () {
         this._max_traffic = DEFAULT_MAX_TRAFFIC;
         this._hash_seed = DEFAULT_HASH_SEED;
         this._loggerManager = loggerManager;
-        this._max_traffic = utils.objectDeepValue(config, 'bucketing.max_traffic', DEFAULT_MAX_TRAFFIC, true);
-        this._hash_seed = utils.objectDeepValue(config, 'bucketing.hash_seed', DEFAULT_HASH_SEED, true);
-        (_d = (_c = this._loggerManager) === null || _c === void 0 ? void 0 : _c.trace) === null || _d === void 0 ? void 0 : _d.call(_c, enums.MESSAGES.BUCKETING_CONSTRUCTOR, this);
+        this._max_traffic = jsSdkUtils.objectDeepValue(config, 'bucketing.max_traffic', DEFAULT_MAX_TRAFFIC, true);
+        this._hash_seed = jsSdkUtils.objectDeepValue(config, 'bucketing.hash_seed', DEFAULT_HASH_SEED, true);
+        (_d = (_c = this._loggerManager) === null || _c === void 0 ? void 0 : _c.trace) === null || _d === void 0 ? void 0 : _d.call(_c, jsSdkEnums.MESSAGES.BUCKETING_CONSTRUCTOR, this);
     }
     /**
      * Select variation based on its percentages and value provided

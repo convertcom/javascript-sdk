@@ -1,6 +1,6 @@
 'use strict';
 
-var enums = require('@convertcom/enums');
+var jsSdkEnums = require('@convertcom/js-sdk-enums');
 
 /*!
  * Convert JS SDK
@@ -205,7 +205,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 
 function __awaiter(thisArg, _arguments, P, generator) {
@@ -217,6 +217,11 @@ function __awaiter(thisArg, _arguments, P, generator) {
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 }
+
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
 
 /**
  * @param {string} file
@@ -256,7 +261,7 @@ class FileLogger {
      */
     log(...args) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._write(enums.LogMethod.LOG, ...args);
+            yield this._write(jsSdkEnums.LogMethod.LOG, ...args);
         });
     }
     /**
@@ -264,7 +269,7 @@ class FileLogger {
      */
     info(...args) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._write(enums.LogMethod.INFO, ...args);
+            yield this._write(jsSdkEnums.LogMethod.INFO, ...args);
         });
     }
     /**
@@ -272,7 +277,7 @@ class FileLogger {
      */
     debug(...args) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._write(enums.LogMethod.DEBUG, ...args);
+            yield this._write(jsSdkEnums.LogMethod.DEBUG, ...args);
         });
     }
     /**
@@ -280,7 +285,7 @@ class FileLogger {
      */
     warn(...args) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._write(enums.LogMethod.WARN, ...args);
+            yield this._write(jsSdkEnums.LogMethod.WARN, ...args);
         });
     }
     /**
@@ -288,7 +293,7 @@ class FileLogger {
      */
     error(...args) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._write(enums.LogMethod.ERROR, ...args);
+            yield this._write(jsSdkEnums.LogMethod.ERROR, ...args);
         });
     }
 }
@@ -442,12 +447,12 @@ const HttpClient = {
                         resolve({
                             data: true,
                             status: HttpStatusCode.Ok,
-                            statusText: enums.MESSAGES.SEND_BEACON_SUCCESS
+                            statusText: jsSdkEnums.MESSAGES.SEND_BEACON_SUCCESS
                         });
                     }
                     else {
                         reject({
-                            message: enums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
+                            message: jsSdkEnums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
                         });
                     }
                 }
@@ -473,7 +478,7 @@ const HttpClient = {
                                     break;
                                 default:
                                     reject({
-                                        message: enums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
+                                        message: jsSdkEnums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
                                     });
                                     return;
                             }
@@ -547,7 +552,7 @@ const HttpClient = {
                                     break;
                                 default:
                                     reject({
-                                        message: enums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
+                                        message: jsSdkEnums.ERROR_MESSAGES.UNSUPPORTED_RESPONSE_TYPE
                                     });
                                     return;
                             }
@@ -572,7 +577,7 @@ const HttpClient = {
             }
             else {
                 reject({
-                    message: enums.ERROR_MESSAGES.UNABLE_TO_PERFORM_NETWORK_REQUEST
+                    message: jsSdkEnums.ERROR_MESSAGES.UNABLE_TO_PERFORM_NETWORK_REQUEST
                 });
             }
         });

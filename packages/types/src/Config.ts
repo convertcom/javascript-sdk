@@ -11,7 +11,7 @@ import {Project} from './Project';
 import {Goal} from './Goal';
 import {Audience} from './Audience';
 import {Location} from './Location';
-import {LogLevel} from '@convertcom/enums';
+import {LogLevel} from '@convertcom/js-sdk-enums';
 import {Segments} from './Segments';
 
 export type ConfigData = {

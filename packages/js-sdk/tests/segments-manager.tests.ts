@@ -2,11 +2,11 @@ import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
 
-import {BucketingManager as bm} from '@convertcom/bucketing';
-import {RuleManager as rm} from '@convertcom/rules';
-import {EventManager as em} from '@convertcom/event';
-import {ApiManager as am} from '@convertcom/api';
-import {DataManager as dm} from '@convertcom/data';
+import {BucketingManager as bm} from '@convertcom/js-sdk-bucketing';
+import {RuleManager as rm} from '@convertcom/js-sdk-rules';
+import {EventManager as em} from '@convertcom/js-sdk-event';
+import {ApiManager as am} from '@convertcom/js-sdk-api';
+import {DataManager as dm} from '@convertcom/js-sdk-data';
 import {SegmentsManager as sm} from '../src/segments-manager';
 import testConfig from './test-config.json';
 import {Config} from '../src/config';

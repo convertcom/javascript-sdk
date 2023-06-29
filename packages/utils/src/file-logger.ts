@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {LogMethod} from '@convertcom/enums';
+import {LogMethod} from '@convertcom/js-sdk-enums';
 
 /**
  * @param {string} file

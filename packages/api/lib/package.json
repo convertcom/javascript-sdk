@@ -1,5 +1,5 @@
 {
-  "name": "@convertcom/api",
+  "name": "@convertcom/js-sdk-api",
   "main": "index.min.js",
   "module": "index.min.mjs",
   "browser": "index.umd.min.js",

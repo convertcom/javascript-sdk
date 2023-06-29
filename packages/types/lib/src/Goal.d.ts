@@ -6,7 +6,7 @@
  */
 import { RuleSet } from './Rule';
 import { Id } from './Id';
-import { GoalType, GoalRevenueTriggeringType } from '@convertcom/enums';
+import { GoalType, GoalRevenueTriggeringType } from '@convertcom/js-sdk-enums';
 export type GoalTrackedItem = {
     event: string;
     selector: string;

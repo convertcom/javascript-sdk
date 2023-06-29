@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {EventType} from '@convertcom/enums';
+import {EventType} from '@convertcom/js-sdk-enums';
 import {BucketingEvent} from './BucketingEvent';
 import {ConversionEvent} from './ConversionEvent';
 export type VisitorEvent = {

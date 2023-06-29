@@ -5,7 +5,7 @@ chai.use(chaiString);
 const {expect, assert} = chai;
 
 import {LogManager as lm} from '../src/log-manager';
-import {LogLevel as lv} from '@convertcom/enums';
+import {LogLevel as lv} from '@convertcom/js-sdk-enums';
 
 const DEBUG_MODE = process.env.DEBUG;
 

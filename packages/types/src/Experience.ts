@@ -5,7 +5,7 @@
  * License Apache-2.0
  */
 
-import {ExperienceType} from '@convertcom/enums';
+import {ExperienceType} from '@convertcom/js-sdk-enums';
 import {Id} from './Id';
 import {RuleSet} from './Rule';
 import {Variation} from './Variation';

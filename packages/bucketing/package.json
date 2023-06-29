@@ -1,5 +1,5 @@
 {
-  "name": "@convertcom/bucketing",
+  "name": "@convertcom/js-sdk-bucketing",
   "description": "",
   "main": "./lib/index.js",
   "module": "./lib/index.mjs",

@@ -1,7 +1,7 @@
 'use strict';
 
-var enums = require('@convertcom/enums');
-var utils = require('@convertcom/utils');
+var jsSdkEnums = require('@convertcom/js-sdk-enums');
+var jsSdkUtils = require('@convertcom/js-sdk-utils');
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -17,7 +17,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 
 var __assign = function() {
@@ -69,6 +69,11 @@ function __generator(thisArg, body) {
     }
 }
 
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
+
 /*!
  * Convert JS SDK config
  * Version 1.0.0
@@ -107,15 +112,15 @@ var ApiManager = /** @class */ (function () {
         this.releaseInterval = DEFAULT_RELEASE_INTERVAL;
         this._loggerManager = loggerManager;
         this._eventManager = eventManager;
-        this._configEndpoint = utils.objectDeepValue(config, 'api.endpoint.config', DEFAULT_CONFIG_ENDPOINT);
-        this._trackEndpoint = utils.objectDeepValue(config, 'api.endpoint.track', DEFAULT_TRACK_ENDPOINT);
-        this._data = utils.objectDeepValue(config, 'data');
+        this._configEndpoint = jsSdkUtils.objectDeepValue(config, 'api.endpoint.config', DEFAULT_CONFIG_ENDPOINT);
+        this._trackEndpoint = jsSdkUtils.objectDeepValue(config, 'api.endpoint.track', DEFAULT_TRACK_ENDPOINT);
+        this._data = jsSdkUtils.objectDeepValue(config, 'data');
         this._enrichData = !(config === null || config === void 0 ? void 0 : config.dataStore);
         this.batchSize =
-            Number(utils.objectDeepValue(config, 'events.batch_size')).valueOf() ||
+            Number(jsSdkUtils.objectDeepValue(config, 'events.batch_size')).valueOf() ||
                 DEFAULT_BATCH_SIZE;
         this.releaseInterval =
-            Number(utils.objectDeepValue(config, 'events.release_interval')).valueOf() ||
+            Number(jsSdkUtils.objectDeepValue(config, 'events.release_interval')).valueOf() ||
                 DEFAULT_RELEASE_INTERVAL;
         this._accountId = (_c = this._data) === null || _c === void 0 ? void 0 : _c.account_id;
         this._projectId = (_e = (_d = this._data) === null || _d === void 0 ? void 0 : _d.project) === null || _e === void 0 ? void 0 : _e.id;
@@ -173,7 +178,7 @@ var ApiManager = /** @class */ (function () {
                     data: data,
                     responseType: 'json'
                 };
-                return [2 /*return*/, utils.HttpClient.request(requestConfig)];
+                return [2 /*return*/, jsSdkUtils.HttpClient.request(requestConfig)];
             });
         });
     };
@@ -219,7 +224,7 @@ var ApiManager = /** @class */ (function () {
             .then(function (result) {
             var _a, _b;
             _this._requestsQueue.reset();
-            (_b = (_a = _this._eventManager) === null || _a === void 0 ? void 0 : _a.fire) === null || _b === void 0 ? void 0 : _b.call(_a, enums.SystemEvents.API_QUEUE_RELEASED, {
+            (_b = (_a = _this._eventManager) === null || _a === void 0 ? void 0 : _a.fire) === null || _b === void 0 ? void 0 : _b.call(_a, jsSdkEnums.SystemEvents.API_QUEUE_RELEASED, {
                 reason: reason,
                 result: result
             });
@@ -231,7 +236,7 @@ var ApiManager = /** @class */ (function () {
                 error: error.message
             });
             _this.startQueue();
-            (_d = (_c = _this._eventManager) === null || _c === void 0 ? void 0 : _c.fire) === null || _d === void 0 ? void 0 : _d.call(_c, enums.SystemEvents.API_QUEUE_RELEASED, { reason: reason }, error);
+            (_d = (_c = _this._eventManager) === null || _c === void 0 ? void 0 : _c.fire) === null || _d === void 0 ? void 0 : _d.call(_c, jsSdkEnums.SystemEvents.API_QUEUE_RELEASED, { reason: reason }, error);
         });
     };
     /**

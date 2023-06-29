@@ -5,9 +5,9 @@ import {assert} from 'chai';
 import chai from 'chai';
 import spies from 'chai-spies';
 
-import {EventManager as em} from '@convertcom/event';
+import {EventManager as em} from '@convertcom/js-sdk-event';
 
-import {Config} from '@convertcom/types';
+import {Config} from '@convertcom/js-sdk-types';
 
 import configuration from './test-config.json';
 

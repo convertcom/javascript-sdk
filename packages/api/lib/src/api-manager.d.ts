@@ -5,10 +5,10 @@
  * License Apache-2.0
  */
 import { ApiManagerInterface } from './interfaces/api-manager';
-import { Config, ConfigData, Id, SegmentsData, VisitorEvent, Path } from '@convertcom/types';
-import { LogManagerInterface } from '@convertcom/logger';
-import { EventManagerInterface } from '@convertcom/event';
-import { HttpResponse } from '@convertcom/utils';
+import { Config, ConfigData, Id, SegmentsData, VisitorEvent, Path } from '@convertcom/js-sdk-types';
+import { LogManagerInterface } from '@convertcom/js-sdk-logger';
+import { EventManagerInterface } from '@convertcom/js-sdk-event';
+import { HttpResponse } from '@convertcom/js-sdk-utils';
 /**
  * Provides logic for network requests. Reads remote configuration and sends tracking events to Convert server.
  * @category Modules

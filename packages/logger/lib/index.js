@@ -1,6 +1,6 @@
 'use strict';
 
-var enums = require('@convertcom/enums');
+var jsSdkEnums = require('@convertcom/js-sdk-enums');
 
 /*!
  * Convert JS SDK
@@ -8,7 +8,7 @@ var enums = require('@convertcom/enums');
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-const DEFAULT_LOG_LEVEL = enums.LogLevel.TRACE;
+const DEFAULT_LOG_LEVEL = jsSdkEnums.LogLevel.TRACE;
 /**
  * Provides logging logic
  * @category Modules
@@ -23,24 +23,24 @@ class LogManager {
      */
     constructor(client = console, level = DEFAULT_LOG_LEVEL, mapper) {
         this._defaultMapper = {
-            [enums.LogMethod.LOG]: enums.LogMethod.LOG,
-            [enums.LogMethod.DEBUG]: enums.LogMethod.DEBUG,
-            [enums.LogMethod.INFO]: enums.LogMethod.INFO,
-            [enums.LogMethod.WARN]: enums.LogMethod.WARN,
-            [enums.LogMethod.ERROR]: enums.LogMethod.ERROR
+            [jsSdkEnums.LogMethod.LOG]: jsSdkEnums.LogMethod.LOG,
+            [jsSdkEnums.LogMethod.DEBUG]: jsSdkEnums.LogMethod.DEBUG,
+            [jsSdkEnums.LogMethod.INFO]: jsSdkEnums.LogMethod.INFO,
+            [jsSdkEnums.LogMethod.WARN]: jsSdkEnums.LogMethod.WARN,
+            [jsSdkEnums.LogMethod.ERROR]: jsSdkEnums.LogMethod.ERROR
         };
         this._clients = [];
         this.addClient(client, level, mapper);
     }
     _isValidLevel(level) {
-        return Object.values(enums.LogLevel).includes(level);
+        return Object.values(jsSdkEnums.LogLevel).includes(level);
     }
     _isValidMethod(method) {
-        return Object.values(enums.LogMethod).includes(method);
+        return Object.values(jsSdkEnums.LogMethod).includes(method);
     }
     _log(method, level, ...args) {
         this._clients.forEach((client) => {
-            if (level >= client.level && enums.LogLevel.SILENT !== level) {
+            if (level >= client.level && jsSdkEnums.LogLevel.SILENT !== level) {
                 const fn = client.sdk[client.mapper[method]];
                 if (fn) {
                     fn.call(client.sdk, ...args);
@@ -62,37 +62,37 @@ class LogManager {
             console.error('Invalid Log Level');
             return;
         }
-        this._log(enums.LogMethod.LOG, level, ...args);
+        this._log(jsSdkEnums.LogMethod.LOG, level, ...args);
     }
     /**
      * @param {Array<any>} args
      */
     trace(...args) {
-        this._log(enums.LogMethod.LOG, enums.LogLevel.TRACE, ...args);
+        this._log(jsSdkEnums.LogMethod.LOG, jsSdkEnums.LogLevel.TRACE, ...args);
     }
     /**
      * @param {Array<any>} args
      */
     debug(...args) {
-        this._log(enums.LogMethod.DEBUG, enums.LogLevel.DEBUG, ...args);
+        this._log(jsSdkEnums.LogMethod.DEBUG, jsSdkEnums.LogLevel.DEBUG, ...args);
     }
     /**
      * @param {Array<any>} args
      */
     info(...args) {
-        this._log(enums.LogMethod.INFO, enums.LogLevel.INFO, ...args);
+        this._log(jsSdkEnums.LogMethod.INFO, jsSdkEnums.LogLevel.INFO, ...args);
     }
     /**
      * @param {Array<any>} args
      */
     warn(...args) {
-        this._log(enums.LogMethod.WARN, enums.LogLevel.WARN, ...args);
+        this._log(jsSdkEnums.LogMethod.WARN, jsSdkEnums.LogLevel.WARN, ...args);
     }
     /**
      * @param {Array<any>} args
      */
     error(...args) {
-        this._log(enums.LogMethod.ERROR, enums.LogLevel.ERROR, ...args);
+        this._log(jsSdkEnums.LogMethod.ERROR, jsSdkEnums.LogLevel.ERROR, ...args);
     }
     /**
      * @param {any=} client

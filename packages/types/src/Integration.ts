@@ -5,7 +5,10 @@
  * License Apache-2.0
  */
 
-import {GoogleAnalyticsType, IntegrationProvider} from '@convertcom/enums';
+import {
+  GoogleAnalyticsType,
+  IntegrationProvider
+} from '@convertcom/js-sdk-enums';
 
 export type Integration = {
   provider: IntegrationProvider;

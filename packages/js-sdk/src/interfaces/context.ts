@@ -13,8 +13,8 @@ import {
   Id,
   SegmentsAttributes,
   SegmentsData
-} from '@convertcom/types';
-import {RuleError} from '@convertcom/enums';
+} from '@convertcom/js-sdk-types';
+import {RuleError} from '@convertcom/js-sdk-enums';
 
 export interface ContextInterface {
   runExperience(

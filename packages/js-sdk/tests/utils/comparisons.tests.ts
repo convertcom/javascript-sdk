@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import 'mocha';
-import {Comparisons} from '@convertcom/utils';
+import {Comparisons} from '@convertcom/js-sdk-utils';
 
 describe('Comparison Processor utils tests', function () {
   it('Equal should return true comparing numbers 123 and 123', function () {

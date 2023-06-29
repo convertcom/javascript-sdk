@@ -1,5 +1,5 @@
-import { objectDeepMerge, objectDeepValue, arrayNotEmpty, objectNotEmpty } from '@convertcom/utils';
-import { SystemEvents, ERROR_MESSAGES, DATA_ENTITIES, MESSAGES, RuleError, EventType } from '@convertcom/enums';
+import { objectDeepMerge, objectDeepValue, arrayNotEmpty, objectNotEmpty } from '@convertcom/js-sdk-utils';
+import { SystemEvents, ERROR_MESSAGES, DATA_ENTITIES, MESSAGES, RuleError, EventType } from '@convertcom/js-sdk-enums';
 
 /*!
  * Convert JS SDK

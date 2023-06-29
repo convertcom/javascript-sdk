@@ -1,5 +1,5 @@
 {
-  "name": "@convertcom/logger",
+  "name": "@convertcom/js-sdk-logger",
   "main": "index.min.js",
   "module": "index.min.mjs",
   "browser": "index.umd.min.js",

@@ -1,7 +1,7 @@
 'use strict';
 
-var utils = require('@convertcom/utils');
-var enums = require('@convertcom/enums');
+var jsSdkUtils = require('@convertcom/js-sdk-utils');
+var jsSdkEnums = require('@convertcom/js-sdk-enums');
 
 /*!
  * Convert JS SDK
@@ -25,14 +25,14 @@ class RuleManager {
      */
     constructor(config, { loggerManager } = {}) {
         var _a, _b;
-        this._comparisonProcessor = utils.Comparisons;
+        this._comparisonProcessor = jsSdkUtils.Comparisons;
         this._negation = DEFAULT_NEGATION;
         this._keys_case_sensitive = DEFAULT_KEYS_CASE_SENSITIVE;
         this._loggerManager = loggerManager;
-        this._comparisonProcessor = utils.objectDeepValue(config, 'rules.comparisonProcessor', utils.Comparisons);
-        this._negation = String(utils.objectDeepValue(config, 'rules.negation', DEFAULT_NEGATION)).valueOf();
-        this._keys_case_sensitive = utils.objectDeepValue(config, 'rules.keys_case_sensitive', DEFAULT_KEYS_CASE_SENSITIVE, true);
-        (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, enums.MESSAGES.RULE_CONSTRUCTOR, this);
+        this._comparisonProcessor = jsSdkUtils.objectDeepValue(config, 'rules.comparisonProcessor', jsSdkUtils.Comparisons);
+        this._negation = String(jsSdkUtils.objectDeepValue(config, 'rules.negation', DEFAULT_NEGATION)).valueOf();
+        this._keys_case_sensitive = jsSdkUtils.objectDeepValue(config, 'rules.keys_case_sensitive', DEFAULT_KEYS_CASE_SENSITIVE, true);
+        (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, jsSdkEnums.MESSAGES.RULE_CONSTRUCTOR, this);
     }
     /**
      * Setter for comparison processor
@@ -69,7 +69,7 @@ class RuleManager {
         // Top OR level
         let match;
         if (Object.prototype.hasOwnProperty.call(ruleSet, 'OR') &&
-            utils.arrayNotEmpty(ruleSet === null || ruleSet === void 0 ? void 0 : ruleSet.OR)) {
+            jsSdkUtils.arrayNotEmpty(ruleSet === null || ruleSet === void 0 ? void 0 : ruleSet.OR)) {
             for (let i = 0, l = ruleSet.OR.length; i < l; i++) {
                 match = this._processAND(data, ruleSet.OR[i]);
                 if (match !== false) {
@@ -78,7 +78,7 @@ class RuleManager {
             }
         }
         else {
-            (_d = (_c = this._loggerManager) === null || _c === void 0 ? void 0 : _c.warn) === null || _d === void 0 ? void 0 : _d.call(_c, enums.ERROR_MESSAGES.RULE_NOT_VALID);
+            (_d = (_c = this._loggerManager) === null || _c === void 0 ? void 0 : _c.warn) === null || _d === void 0 ? void 0 : _d.call(_c, jsSdkEnums.ERROR_MESSAGES.RULE_NOT_VALID);
         }
         return false;
     }
@@ -112,7 +112,7 @@ class RuleManager {
         // Second AND level
         let match;
         if (Object.prototype.hasOwnProperty.call(rulesSubset, 'AND') &&
-            utils.arrayNotEmpty(rulesSubset === null || rulesSubset === void 0 ? void 0 : rulesSubset.AND)) {
+            jsSdkUtils.arrayNotEmpty(rulesSubset === null || rulesSubset === void 0 ? void 0 : rulesSubset.AND)) {
             for (let i = 0, l = rulesSubset.AND.length; i < l; i++) {
                 match = this._processORWHEN(data, rulesSubset.AND[i]);
                 if (match === false) {
@@ -122,7 +122,7 @@ class RuleManager {
             return match;
         }
         else {
-            (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.warn) === null || _b === void 0 ? void 0 : _b.call(_a, enums.ERROR_MESSAGES.RULE_NOT_VALID);
+            (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.warn) === null || _b === void 0 ? void 0 : _b.call(_a, jsSdkEnums.ERROR_MESSAGES.RULE_NOT_VALID);
         }
         return false;
     }
@@ -138,7 +138,7 @@ class RuleManager {
         // Third OR level. Called OR_WHEN.
         let match;
         if (Object.prototype.hasOwnProperty.call(rulesSubset, 'OR_WHEN') &&
-            utils.arrayNotEmpty(rulesSubset === null || rulesSubset === void 0 ? void 0 : rulesSubset.OR_WHEN)) {
+            jsSdkUtils.arrayNotEmpty(rulesSubset === null || rulesSubset === void 0 ? void 0 : rulesSubset.OR_WHEN)) {
             for (let i = 0, l = rulesSubset.OR_WHEN.length; i < l; i++) {
                 match = this._processRuleItem(data, rulesSubset.OR_WHEN[i]);
                 if (match !== false) {
@@ -147,7 +147,7 @@ class RuleManager {
             }
         }
         else {
-            (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.warn) === null || _b === void 0 ? void 0 : _b.call(_a, enums.ERROR_MESSAGES.RULE_NOT_VALID);
+            (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.warn) === null || _b === void 0 ? void 0 : _b.call(_a, jsSdkEnums.ERROR_MESSAGES.RULE_NOT_VALID);
         }
         return false;
     }
@@ -184,10 +184,10 @@ class RuleManager {
                             for (const method of Object.getOwnPropertyNames(data.constructor.prototype)) {
                                 if (method === 'constructor')
                                     continue;
-                                const rule_method = utils.camelCase(`get ${rule.rule_type.replace(/_/g, ' ')}`);
+                                const rule_method = jsSdkUtils.camelCase(`get ${rule.rule_type.replace(/_/g, ' ')}`);
                                 if (method === rule_method) {
                                     const dataValue = data[method](rule);
-                                    if (Object.values(enums.RuleError).includes(dataValue))
+                                    if (Object.values(jsSdkEnums.RuleError).includes(dataValue))
                                         return dataValue;
                                     return this._comparisonProcessor[matching](dataValue, rule.value, negation);
                                 }
@@ -196,7 +196,7 @@ class RuleManager {
                     }
                     else {
                         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.warn) === null || _b === void 0 ? void 0 : _b.call(_a, 'RuleManager._processRule()', {
-                            warn: enums.ERROR_MESSAGES.RULE_DATA_NOT_VALID
+                            warn: jsSdkEnums.ERROR_MESSAGES.RULE_DATA_NOT_VALID
                         });
                     }
                 }
@@ -208,7 +208,7 @@ class RuleManager {
             }
         }
         else {
-            (_f = (_e = this._loggerManager) === null || _e === void 0 ? void 0 : _e.warn) === null || _f === void 0 ? void 0 : _f.call(_e, enums.ERROR_MESSAGES.RULE_NOT_VALID);
+            (_f = (_e = this._loggerManager) === null || _e === void 0 ? void 0 : _e.warn) === null || _f === void 0 ? void 0 : _f.call(_e, jsSdkEnums.ERROR_MESSAGES.RULE_NOT_VALID);
         }
         return false;
     }

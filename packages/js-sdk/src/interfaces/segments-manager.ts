@@ -4,8 +4,8 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Id, SegmentsData} from '@convertcom/types';
-import {RuleError} from '@convertcom/enums';
+import {Id, SegmentsData} from '@convertcom/js-sdk-types';
+import {RuleError} from '@convertcom/js-sdk-enums';
 
 export interface SegmentsManagerInterface {
   getSegments(visitorId: Id): SegmentsData;

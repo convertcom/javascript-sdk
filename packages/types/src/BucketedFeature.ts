@@ -5,7 +5,7 @@
  * License Apache-2.0
  */
 import {Id} from './Id';
-import {FeatureStatus} from '@convertcom/enums';
+import {FeatureStatus} from '@convertcom/js-sdk-enums';
 import {RequireAtLeastOne} from './RequireAtLeastOne';
 
 // Not enabled feature can have only disabled status but have to contain id or key

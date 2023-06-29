@@ -8,15 +8,15 @@ import {
   arrayNotEmpty,
   objectDeepValue,
   objectNotEmpty
-} from '@convertcom/utils';
+} from '@convertcom/js-sdk-utils';
 
-import {ApiManagerInterface} from '@convertcom/api';
-import {BucketingManagerInterface} from '@convertcom/bucketing';
+import {ApiManagerInterface} from '@convertcom/js-sdk-api';
+import {BucketingManagerInterface} from '@convertcom/js-sdk-bucketing';
 import {DataStoreManagerInterface} from './interfaces/data-store-manager';
 import {DataManagerInterface} from './interfaces/data-manager';
-import {EventManagerInterface} from '@convertcom/event';
-import {LogManagerInterface} from '@convertcom/logger';
-import {RuleManagerInterface} from '@convertcom/rules';
+import {EventManagerInterface} from '@convertcom/js-sdk-event';
+import {LogManagerInterface} from '@convertcom/js-sdk-logger';
+import {RuleManagerInterface} from '@convertcom/js-sdk-rules';
 import {
   Entity,
   Variation,
@@ -34,7 +34,7 @@ import {
   ConversionEvent,
   Goal,
   SegmentsData
-} from '@convertcom/types';
+} from '@convertcom/js-sdk-types';
 
 import {
   DATA_ENTITIES,
@@ -44,7 +44,7 @@ import {
   EventType,
   GoalDataKey,
   AudienceType
-} from '@convertcom/enums';
+} from '@convertcom/js-sdk-enums';
 
 import {DataStoreManager} from './data-store-manager';
 const LOCAL_STORE_LIMIT = 10000;

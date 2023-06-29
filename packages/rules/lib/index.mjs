@@ -1,5 +1,5 @@
-import { Comparisons, objectDeepValue, arrayNotEmpty, camelCase } from '@convertcom/utils';
-import { MESSAGES, ERROR_MESSAGES, RuleError } from '@convertcom/enums';
+import { Comparisons, objectDeepValue, arrayNotEmpty, camelCase } from '@convertcom/js-sdk-utils';
+import { MESSAGES, ERROR_MESSAGES, RuleError } from '@convertcom/js-sdk-enums';
 
 /*!
  * Convert JS SDK

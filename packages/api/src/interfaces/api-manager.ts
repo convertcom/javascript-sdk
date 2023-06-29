@@ -11,7 +11,7 @@ import {
   VisitorEvent,
   ConfigData,
   Path
-} from '@convertcom/types';
+} from '@convertcom/js-sdk-types';
 
 export interface ApiManagerInterface {
   readonly batchSize: number;

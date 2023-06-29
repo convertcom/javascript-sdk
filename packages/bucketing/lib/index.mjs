@@ -1,6 +1,6 @@
 import Murmurhash from 'murmurhash';
-import { objectDeepValue } from '@convertcom/utils';
-import { MESSAGES } from '@convertcom/enums';
+import { objectDeepValue } from '@convertcom/js-sdk-utils';
+import { MESSAGES } from '@convertcom/js-sdk-enums';
 
 /*!
  * Convert JS SDK

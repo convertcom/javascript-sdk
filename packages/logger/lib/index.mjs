@@ -1,4 +1,4 @@
-import { LogLevel, LogMethod } from '@convertcom/enums';
+import { LogLevel, LogMethod } from '@convertcom/js-sdk-enums';
 
 /*!
  * Convert JS SDK

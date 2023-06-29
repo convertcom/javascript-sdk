@@ -1,5 +1,5 @@
 {
-  "name": "@convertcom/utils",
+  "name": "@convertcom/js-sdk-utils",
   "main": "index.min.js",
   "module": "index.min.mjs",
   "browser": "index.umd.min.js",

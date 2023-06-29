@@ -6,9 +6,9 @@
  */
 
 import {EventManagerInterface} from './interfaces/event-manager';
-import {Config} from '@convertcom/types';
-import {SystemEvents} from '@convertcom/enums';
-import {LogManagerInterface} from '@convertcom/logger';
+import {Config} from '@convertcom/js-sdk-types';
+import {SystemEvents} from '@convertcom/js-sdk-enums';
+import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 
 /**
  * Event wrapper

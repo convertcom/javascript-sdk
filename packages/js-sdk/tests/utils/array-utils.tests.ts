@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import 'mocha';
-import * as arrayUtils from '@convertcom/utils';
+import * as arrayUtils from '@convertcom/js-sdk-utils';
 
 describe('Array utils tool tests', function () {
   it('Should return true for not an empty array', function () {

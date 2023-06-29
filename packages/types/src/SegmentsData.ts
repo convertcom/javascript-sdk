@@ -10,7 +10,7 @@ import {
   SegmentsKeys,
   SourceType,
   VisitorType
-} from '@convertcom/enums';
+} from '@convertcom/js-sdk-enums';
 
 export type SegmentsData = {
   [SegmentsKeys.COUNTRY]?: string;

@@ -3,10 +3,10 @@ import {expect} from 'chai';
 import {assert} from 'chai';
 import http from 'http';
 import {ApiManager as am} from '../src/api-manager';
-import {EventManager as em} from '@convertcom/event';
-import {SystemEvents} from '@convertcom/enums';
+import {EventManager as em} from '@convertcom/js-sdk-event';
+import {SystemEvents} from '@convertcom/js-sdk-enums';
 import testConfig from './test-config.json';
-import {Config} from '@convertcom/types';
+import {Config} from '@convertcom/js-sdk-types';
 
 const host = 'http://localhost';
 const port = 8090;

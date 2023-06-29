@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import { GoalDataKey } from '@convertcom/enums';
+import { GoalDataKey } from '@convertcom/js-sdk-enums';
 export type ConversionAttributes = {
     ruleData?: Record<string, any>;
     conversionData?: Array<Record<GoalDataKey, number>>;

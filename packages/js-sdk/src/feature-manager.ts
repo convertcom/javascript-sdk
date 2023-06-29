@@ -4,9 +4,9 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {DataManagerInterface} from '@convertcom/data';
+import {DataManagerInterface} from '@convertcom/js-sdk-data';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from '@convertcom/logger';
+import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 
 import {
   Config,
@@ -16,16 +16,16 @@ import {
   IdentityField,
   VariableType,
   Experience
-} from '@convertcom/types';
+} from '@convertcom/js-sdk-types';
 import {
   MESSAGES,
   FeatureStatus,
   RuleError,
   VariationType
-} from '@convertcom/enums';
+} from '@convertcom/js-sdk-enums';
 
-import {castType, arrayNotEmpty} from '@convertcom/utils';
-import {BucketedVariation} from '@convertcom/types';
+import {castType, arrayNotEmpty} from '@convertcom/js-sdk-utils';
+import {BucketedVariation} from '@convertcom/js-sdk-types';
 
 /**
  * Provides features specific logic

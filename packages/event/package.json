@@ -1,5 +1,5 @@
 {
-  "name": "@convertcom/event",
+  "name": "@convertcom/js-sdk-event",
   "description": "",
   "main": "./lib/index.js",
   "module": "./lib/index.mjs",

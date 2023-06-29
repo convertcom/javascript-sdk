@@ -12,9 +12,9 @@ import {
   BucketedVariation,
   StoreData,
   SegmentsData
-} from '@convertcom/types';
+} from '@convertcom/js-sdk-types';
 import {DataStoreManagerInterface} from './data-store-manager';
-import {GoalDataKey, RuleError} from '@convertcom/enums';
+import {GoalDataKey, RuleError} from '@convertcom/js-sdk-enums';
 
 export interface DataManagerInterface {
   data: ConfigData;

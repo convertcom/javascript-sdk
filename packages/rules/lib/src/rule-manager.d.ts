@@ -1,7 +1,7 @@
 import { RuleManagerInterface } from './interfaces/rule-manager';
-import { Config, Rule, RuleSet } from '@convertcom/types';
-import { LogManagerInterface } from '@convertcom/logger';
-import { RuleError } from '@convertcom/enums';
+import { Config, Rule, RuleSet } from '@convertcom/js-sdk-types';
+import { LogManagerInterface } from '@convertcom/js-sdk-logger';
+import { RuleError } from '@convertcom/js-sdk-enums';
 /**
  * Provides rule processing calculations with corresponding comparisons methods
  * @category Modules

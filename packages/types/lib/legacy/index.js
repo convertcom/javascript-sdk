@@ -1,5 +1,5 @@
 'use strict';
 
-require('@convertcom/enums');
+require('@convertcom/js-sdk-enums');
 
 //# sourceMappingURL=index.js.map
