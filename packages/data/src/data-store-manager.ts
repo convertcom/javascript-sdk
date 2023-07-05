@@ -135,10 +135,12 @@ export class DataStoreManager implements DataStoreManagerInterface {
    * @param {any=} dataStore
    */
   set dataStore(dataStore: any) {
-    if (this.isValidDataStore(dataStore)) {
-      this._dataStore = dataStore;
-    } else {
-      this._loggerManager?.error?.(ERROR_MESSAGES.DATA_STORE_NOT_VALID);
+    if (dataStore) {
+      if (this.isValidDataStore(dataStore)) {
+        this._dataStore = dataStore;
+      } else {
+        this._loggerManager?.error?.(ERROR_MESSAGES.DATA_STORE_NOT_VALID);
+      }
     }
   }
 
@@ -156,7 +158,6 @@ export class DataStoreManager implements DataStoreManagerInterface {
    */
   isValidDataStore(dataStore: any): boolean {
     return (
-      dataStore &&
       typeof dataStore === 'object' &&
       typeof dataStore['get'] === 'function' &&
       typeof dataStore['set'] === 'function'
