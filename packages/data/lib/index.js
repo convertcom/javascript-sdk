@@ -108,11 +108,13 @@ class DataStoreManager {
      */
     set dataStore(dataStore) {
         var _a, _b;
-        if (this.isValidDataStore(dataStore)) {
-            this._dataStore = dataStore;
-        }
-        else {
-            (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.call(_a, jsSdkEnums.ERROR_MESSAGES.DATA_STORE_NOT_VALID);
+        if (dataStore) {
+            if (this.isValidDataStore(dataStore)) {
+                this._dataStore = dataStore;
+            }
+            else {
+                (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.call(_a, jsSdkEnums.ERROR_MESSAGES.DATA_STORE_NOT_VALID);
+            }
         }
     }
     /**
@@ -127,8 +129,7 @@ class DataStoreManager {
      * @return {boolean}
      */
     isValidDataStore(dataStore) {
-        return (dataStore &&
-            typeof dataStore === 'object' &&
+        return (typeof dataStore === 'object' &&
             typeof dataStore['get'] === 'function' &&
             typeof dataStore['set'] === 'function');
     }
