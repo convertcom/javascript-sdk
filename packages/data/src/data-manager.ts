@@ -185,14 +185,13 @@ export class DataManager implements DataManagerInterface {
     const isArchivedExperience = !!archivedExperiences.find(
       (id) => experience?.id == id
     );
-    // Check environment
-    const isEnvironmentMatch =
-      environment && Array.isArray(experience?.environments)
-        ? experience.environments.includes(environment)
-        : true; // skip environment check if not supported yet
 
     let matchedErrors = [];
-    if (experience && !isArchivedExperience && isEnvironmentMatch) {
+    if (
+      experience &&
+      !isArchivedExperience &&
+      experience.environments.includes(environment) // Check environment
+    ) {
       let locationMatched: boolean | RuleError = false;
       if (Array.isArray(experience?.locations) && experience.locations.length) {
         // Get attached locations
