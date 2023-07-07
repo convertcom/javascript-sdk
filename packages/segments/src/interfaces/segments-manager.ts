@@ -15,4 +15,9 @@ export interface SegmentsManagerInterface {
     segmentKeys: Array<string>,
     segmentRule?: Record<string, any>
   ): SegmentsData | RuleError;
+  selectCustomSegmentsByIds(
+    visitorId: Id,
+    segmentIds: Array<Id>,
+    segmentRule?: Record<string, any>
+  ): SegmentsData | RuleError;
 }

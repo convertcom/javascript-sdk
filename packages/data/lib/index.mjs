@@ -241,59 +241,60 @@ class DataManager {
             experience.environments.includes(environment) // Check environment
         ) {
             let locationMatched = false;
-            if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.locations) && experience.locations.length) {
-                let matchedLocations = [];
-                // Get attached locations
-                const locations = this.getItemsByIds(experience.locations, 'locations');
-                if (locations.length) {
-                    // Validate locationProperties against locations rules
-                    matchedLocations = this.filterMatchedRecordsWithRule(locations, locationProperties);
-                    // Return rule errors if present
-                    matchedErrors = matchedLocations.filter((match) => Object.values(RuleError).includes(match));
-                    if (matchedErrors.length)
-                        return matchedErrors[0];
-                }
-                // If there are some matched locations
-                locationMatched = Boolean(!locationProperties || matchedLocations.length || !locations.length // Empty locations list means there's no restriction for the locations
-                );
-            }
-            else if (experience === null || experience === void 0 ? void 0 : experience.site_area) {
-                locationMatched = this._ruleManager.isRuleMatched(locationProperties, experience.site_area);
-                // Return rule errors if present
-                if (Object.values(RuleError).includes(locationMatched))
-                    return locationMatched;
-            }
-            // Validate locationProperties against site area rules
-            if (!locationProperties || locationMatched) {
-                let audiences = [], segmentations = [], matchedAudiences = [], matchedSegmentations = [];
-                if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.audiences) &&
-                    experience.audiences.length) {
-                    // Get attached transient and/or permnent audiences
-                    audiences = this.getItemsByIds(experience.audiences, 'audiences');
-                    if (audiences.length) {
-                        // Validate visitorProperties against audiences rules
-                        matchedAudiences = this.filterMatchedRecordsWithRule(audiences, visitorProperties);
+            if (locationProperties) {
+                if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.locations) &&
+                    experience.locations.length) {
+                    let matchedLocations = [];
+                    // Get attached locations
+                    const locations = this.getItemsByIds(experience.locations, 'locations');
+                    if (locations.length) {
+                        // Validate locationProperties against locations rules
+                        matchedLocations = this.filterMatchedRecordsWithRule(locations, locationProperties);
                         // Return rule errors if present
-                        matchedErrors = matchedAudiences.filter((match) => Object.values(RuleError).includes(match));
+                        matchedErrors = matchedLocations.filter((match) => Object.values(RuleError).includes(match));
                         if (matchedErrors.length)
                             return matchedErrors[0];
                     }
-                    // Get attached segmentation audiences
-                    segmentations = this.getItemsByIds(experience.audiences, 'segments');
-                    if (segmentations.length) {
-                        // Validate visitorProperties against segmentations rules
-                        matchedSegmentations = this.filterMatchedRecordsWithRule(segmentations, visitorProperties);
-                        // Return rule errors if present
-                        matchedErrors = matchedSegmentations.filter((match) => Object.values(RuleError).includes(match));
-                        if (matchedErrors.length)
-                            return matchedErrors[0];
+                    // If there are some matched locations
+                    locationMatched = Boolean(matchedLocations.length);
+                }
+                else if (experience === null || experience === void 0 ? void 0 : experience.site_area) {
+                    locationMatched = this._ruleManager.isRuleMatched(locationProperties, experience.site_area);
+                    // Return rule errors if present
+                    if (Object.values(RuleError).includes(locationMatched))
+                        return locationMatched;
+                }
+                else {
+                    // Empty experience locations list or unset Site Area means there's no restriction for the location
+                    locationMatched = true;
+                }
+            }
+            // Validate locationProperties against site area rules
+            if (!locationProperties || locationMatched) {
+                let audiences = [], matchedAudiences = [];
+                if (visitorProperties) {
+                    if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.audiences) &&
+                        experience.audiences.length) {
+                        // Get attached transient and/or permnent audiences
+                        // Note that audiences of type segmentation ignored here
+                        // Visitor segments shall be evaluated later on _retrieveBucketing()
+                        // where visitor segments is expected to be set using
+                        // SegmentsManager.setCustomSegments()
+                        audiences = this.getItemsByIds(experience.audiences, 'audiences');
+                        if (audiences.length) {
+                            // Validate visitorProperties against audiences rules
+                            matchedAudiences = this.filterMatchedRecordsWithRule(audiences, visitorProperties);
+                            // Return rule errors if present
+                            matchedErrors = matchedAudiences.filter((match) => Object.values(RuleError).includes(match));
+                            if (matchedErrors.length)
+                                return matchedErrors[0];
+                        }
                     }
                 }
                 // If there are some matched audiences
                 if (!visitorProperties ||
                     matchedAudiences.length ||
-                    matchedSegmentations.length ||
-                    (!audiences.length && !segmentations.length) // Empty audiences and segmentations list means there's no restriction for the audience
+                    !audiences.length // Empty audiences list means there's no restriction for the audience
                 ) {
                     // And experience has variations
                     if ((experience === null || experience === void 0 ? void 0 : experience.variations) && ((_c = experience === null || experience === void 0 ? void 0 : experience.variations) === null || _c === void 0 ? void 0 : _c.length)) {
@@ -302,16 +303,14 @@ class DataManager {
                     else {
                         (_e = (_d = this._loggerManager) === null || _d === void 0 ? void 0 : _d.debug) === null || _e === void 0 ? void 0 : _e.call(_d, MESSAGES.VARIATIONS_NOT_FOUND, {
                             visitorProperties: visitorProperties,
-                            audiences: audiences,
-                            segmentations: segmentations
+                            audiences: audiences
                         });
                     }
                 }
                 else {
                     (_g = (_f = this._loggerManager) === null || _f === void 0 ? void 0 : _f.debug) === null || _g === void 0 ? void 0 : _g.call(_f, MESSAGES.RULES_NOT_MATCH, {
                         visitorProperties: visitorProperties,
-                        audiences: audiences,
-                        segmentations: segmentations
+                        audiences: audiences
                     });
                 }
             }

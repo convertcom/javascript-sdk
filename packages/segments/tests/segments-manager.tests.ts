@@ -7,9 +7,9 @@ import {RuleManager as rm} from '@convertcom/js-sdk-rules';
 import {EventManager as em} from '@convertcom/js-sdk-event';
 import {ApiManager as am} from '@convertcom/js-sdk-api';
 import {DataManager as dm} from '@convertcom/js-sdk-data';
-import {SegmentsManager as sm} from '@convertcom/js-sdk-segments';
+import {SegmentsManager as sm} from '../src/segments-manager';
 import testConfig from './test-config.json';
-import {Config} from '../src/config';
+import {Config} from '@convertcom/js-sdk-types';
 
 const host = 'http://localhost';
 const port = 8090;
@@ -17,7 +17,7 @@ const release_timeout = 1000;
 const test_timeout = release_timeout + 1000;
 const batch_size = 5;
 
-const configuration = Config({
+const configuration = {
   ...testConfig,
   api: {
     endpoint: {
@@ -29,7 +29,7 @@ const configuration = Config({
     batch_size: batch_size,
     release_interval: release_timeout
   }
-});
+} as unknown as Config;
 const bucketingManager = new bm(configuration);
 const ruleManager = new rm(configuration);
 const eventManager = new em(configuration);

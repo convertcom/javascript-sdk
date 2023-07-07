@@ -12,7 +12,7 @@ import {EventManagerInterface} from '@convertcom/js-sdk-event';
 import {ExperienceManagerInterface} from '@convertcom/js-sdk-experience';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
-import {SegmentsManagerInterface} from './interfaces/segments-manager';
+import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
 
 import {Config, ConfigData, Id} from '@convertcom/js-sdk-types';
 

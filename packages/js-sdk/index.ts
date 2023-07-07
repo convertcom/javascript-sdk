@@ -16,7 +16,7 @@ import {EventManager} from '@convertcom/js-sdk-event';
 import {ExperienceManager} from '@convertcom/js-sdk-experience';
 import {FeatureManager} from './src/feature-manager';
 import {RuleManager} from '@convertcom/js-sdk-rules';
-import {SegmentsManager} from './src/segments-manager';
+import {SegmentsManager} from '@convertcom/js-sdk-segments';
 import {LogManager} from '@convertcom/js-sdk-logger';
 
 import {Config} from './src/config';

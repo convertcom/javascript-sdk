@@ -33,8 +33,7 @@ import {
   VisitorEvent,
   ConversionEvent,
   Goal,
-  SegmentsData,
-  Segments
+  SegmentsData
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -43,8 +42,7 @@ import {
   MESSAGES,
   RuleError,
   EventType,
-  GoalDataKey,
-  AudienceType
+  GoalDataKey
 } from '@convertcom/js-sdk-enums';
 
 import {DataStoreManager} from './data-store-manager';
@@ -194,89 +192,82 @@ export class DataManager implements DataManagerInterface {
       experience.environments.includes(environment) // Check environment
     ) {
       let locationMatched: boolean | RuleError = false;
-      if (Array.isArray(experience?.locations) && experience.locations.length) {
-        let matchedLocations = [];
-        // Get attached locations
-        const locations = this.getItemsByIds(
-          experience.locations,
-          'locations'
-        ) as Array<Location>;
-        if (locations.length) {
-          // Validate locationProperties against locations rules
-          matchedLocations = this.filterMatchedRecordsWithRule(
-            locations,
-            locationProperties
-          );
-          // Return rule errors if present
-          matchedErrors = matchedLocations.filter((match) =>
-            Object.values(RuleError).includes(match as RuleError)
-          );
-          if (matchedErrors.length) return matchedErrors[0] as RuleError;
-        }
-        // If there are some matched locations
-        locationMatched = Boolean(
-          !locationProperties || matchedLocations.length || !locations.length // Empty locations list means there's no restriction for the locations
-        );
-      } else if (experience?.site_area) {
-        locationMatched = this._ruleManager.isRuleMatched(
-          locationProperties,
-          experience.site_area
-        );
-        // Return rule errors if present
-        if (Object.values(RuleError).includes(locationMatched as RuleError))
-          return locationMatched as RuleError;
-      }
-      // Validate locationProperties against site area rules
-      if (!locationProperties || locationMatched) {
-        let audiences = [],
-          segmentations = [],
-          matchedAudiences = [],
-          matchedSegmentations = [];
+      if (locationProperties) {
         if (
-          Array.isArray(experience?.audiences) &&
-          experience.audiences.length
+          Array.isArray(experience?.locations) &&
+          experience.locations.length
         ) {
-          // Get attached transient and/or permnent audiences
-          audiences = this.getItemsByIds(
-            experience.audiences,
-            'audiences'
-          ) as Array<Audience>;
-          if (audiences.length) {
-            // Validate visitorProperties against audiences rules
-            matchedAudiences = this.filterMatchedRecordsWithRule(
-              audiences,
-              visitorProperties
+          let matchedLocations = [];
+          // Get attached locations
+          const locations = this.getItemsByIds(
+            experience.locations,
+            'locations'
+          ) as Array<Location>;
+          if (locations.length) {
+            // Validate locationProperties against locations rules
+            matchedLocations = this.filterMatchedRecordsWithRule(
+              locations,
+              locationProperties
             );
             // Return rule errors if present
-            matchedErrors = matchedAudiences.filter((match) =>
+            matchedErrors = matchedLocations.filter((match) =>
               Object.values(RuleError).includes(match as RuleError)
             );
             if (matchedErrors.length) return matchedErrors[0] as RuleError;
           }
-          // Get attached segmentation audiences
-          segmentations = this.getItemsByIds(
-            experience.audiences,
-            'segments'
-          ) as Array<Segments>;
-          if (segmentations.length) {
-            // Validate visitorProperties against segmentations rules
-            matchedSegmentations = this.filterMatchedRecordsWithRule(
-              segmentations,
-              visitorProperties
-            );
-            // Return rule errors if present
-            matchedErrors = matchedSegmentations.filter((match) =>
-              Object.values(RuleError).includes(match as RuleError)
-            );
-            if (matchedErrors.length) return matchedErrors[0] as RuleError;
+          // If there are some matched locations
+          locationMatched = Boolean(matchedLocations.length);
+        } else if (experience?.site_area) {
+          locationMatched = this._ruleManager.isRuleMatched(
+            locationProperties,
+            experience.site_area
+          );
+          // Return rule errors if present
+          if (Object.values(RuleError).includes(locationMatched as RuleError))
+            return locationMatched as RuleError;
+        } else {
+          // Empty experience locations list or unset Site Area means there's no restriction for the location
+          locationMatched = true;
+        }
+      }
+      // Validate locationProperties against site area rules
+      if (!locationProperties || locationMatched) {
+        let audiences = [],
+          matchedAudiences = [];
+        if (visitorProperties) {
+          if (
+            Array.isArray(experience?.audiences) &&
+            experience.audiences.length
+          ) {
+            // Get attached transient and/or permnent audiences
+            // Note that audiences of type segmentation ignored here
+            // Visitor segments shall be evaluated later on _retrieveBucketing()
+            // where visitor segments is expected to be set using:
+            // SegmentsManager.putSegments(visitorId, segments)
+            // SegmentsManager.setCustomSegments(segmentKeys)
+            audiences = this.getItemsByIds(
+              experience.audiences,
+              'audiences'
+            ) as Array<Audience>;
+            if (audiences.length) {
+              // Validate visitorProperties against audiences rules
+              matchedAudiences = this.filterMatchedRecordsWithRule(
+                audiences,
+                visitorProperties
+              );
+              // Return rule errors if present
+              matchedErrors = matchedAudiences.filter((match) =>
+                Object.values(RuleError).includes(match as RuleError)
+              );
+              if (matchedErrors.length) return matchedErrors[0] as RuleError;
+            }
           }
         }
         // If there are some matched audiences
         if (
           !visitorProperties ||
           matchedAudiences.length ||
-          matchedSegmentations.length ||
-          (!audiences.length && !segmentations.length) // Empty audiences and segmentations list means there's no restriction for the audience
+          !audiences.length // Empty audiences list means there's no restriction for the audience
         ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
@@ -284,15 +275,13 @@ export class DataManager implements DataManagerInterface {
           } else {
             this._loggerManager?.debug?.(MESSAGES.VARIATIONS_NOT_FOUND, {
               visitorProperties: visitorProperties,
-              audiences: audiences,
-              segmentations: segmentations
+              audiences: audiences
             });
           }
         } else {
           this._loggerManager?.debug?.(MESSAGES.RULES_NOT_MATCH, {
             visitorProperties: visitorProperties,
-            audiences: audiences,
-            segmentations: segmentations
+            audiences: audiences
           });
         }
       } else {

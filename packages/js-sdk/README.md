@@ -368,7 +368,7 @@ Decides whether to update custom segments in user context, which is mapped to se
 
 | Parameter         | Type   | Required | Description                                                       |
 | ----------------- | ------ | -------- | ----------------------------------------------------------------- |
-| segmentsKey       | string | Yes      | A segments key                                                    |
+| segmentsKeys      | array  | Yes      | A list of segments keys                                           |
 | visitorProperties | object | No       | An object of key-value pairs that are used for segments matching. |
 
 #### Returns
@@ -385,7 +385,7 @@ const config = {
 
 const convertSDK = new ConvertSDK(config);
 const context = convertSDK.createContext('user-unique-id');
-context.setCustomSegments('segments-key', {
+context.setCustomSegments(['segments-key'], {
   enabled: true
 });
 ```

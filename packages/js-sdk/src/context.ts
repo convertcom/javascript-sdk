@@ -29,7 +29,7 @@ import {
   SegmentsKeys
 } from '@convertcom/js-sdk-enums';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
-import {SegmentsManagerInterface} from './interfaces/segments-manager';
+import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
 
 /**
  * Provides visitor context

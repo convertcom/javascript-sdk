@@ -1,0 +1,8 @@
+/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020-2022 Convert Insights, Inc
+ * License Apache-2.0
+ */
+import{SegmentsKeys as e,RuleError as t,MESSAGES as s}from"@convertcom/js-sdk-enums";import{objectDeepValue as a}from"@convertcom/js-sdk-utils";class n{constructor(e,{dataManager:t,ruleManager:s,loggerManager:n}){this._dataManager=t,this._ruleManager=s,this._loggerManager=n,this._data=a(e,"data")}getSegments(e){const t=this._dataManager.getLocalStore(e)||{};return null==t?void 0:t.segments}putSegments(e,t){this._dataManager.putLocalStore(e,{segments:t});const s=this._dataManager.getStoreKey(e);this._dataManager.dataStoreManager.enqueue(s,{segments:t})}setSegments(a,n,r){var g,o,i,l,u;const d=this._dataManager.getLocalStore(a)||{},{segments:{[e.CUSTOM_SEGMENTS]:c=[]}={}}=d,M=[];let S,m=!1;for(const e of n){if(r&&!m&&(m=this._ruleManager.isRuleMatched(r,null==e?void 0:e.rules),Object.values(t).includes(m)))return m;if(!r||m){const t=null===(g=null==e?void 0:e.id)||void 0===g?void 0:g.toString();c.includes(t)?null===(i=null===(o=this._loggerManager)||void 0===o?void 0:o.warn)||void 0===i||i.call(o,s.CUSTOM_SEGMENTS_KEY_FOUND):M.push(t)}}return M.length?(S=Object.assign(Object.assign({},d.segments||{}),{[e.CUSTOM_SEGMENTS]:[...c,...M]}),this.putSegments(a,S)):null===(u=null===(l=this._loggerManager)||void 0===l?void 0:l.error)||void 0===u||u.call(l,s.SEGMENTS_NOT_FOUND),S}selectCustomSegments(e,t,s){const a=this._dataManager.getEntities(t,"segments");return this.setSegments(e,a,s)}selectCustomSegmentsByIds(e,t,s){const a=this._dataManager.getEntitiesByIds(t,"segments");return this.setSegments(e,a,s)}}export{n as SegmentsManager};
+//# sourceMappingURL=index.min.mjs.map

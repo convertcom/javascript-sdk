@@ -82,24 +82,11 @@ export class SegmentsManager implements SegmentsManagerInterface {
     this._dataManager.dataStoreManager.enqueue(storeKey, {segments});
   }
 
-  /**
-   * Update custom segments for specific visitor
-   * @param {Id} visitorId
-   * @param {Array<string>} segmentKeys A list of segment keys
-   * @param {Record<string, any>=} segmentRule An object of key-value pairs that are used for segments matching
-   * @param {string=} environment
-   * @return {SegmentsData | RuleError}
-   */
-  selectCustomSegments(
+  private setSegments(
     visitorId: Id,
-    segmentKeys: Array<string>,
+    segments: Array<Segments>,
     segmentRule?: Record<string, any>
   ): SegmentsData | RuleError {
-    const segments = this._dataManager.getEntities(
-      segmentKeys,
-      'segments'
-    ) as Array<Segments>;
-
     const storeData: StoreData =
       this._dataManager.getLocalStore(visitorId) || {};
     // Get custom segments ID from DataStore
@@ -145,5 +132,47 @@ export class SegmentsManager implements SegmentsManagerInterface {
     }
 
     return segmentsData;
+  }
+
+  /**
+   * Update custom segments for specific visitor
+   * @param {Id} visitorId
+   * @param {Array<string>} segmentKeys A list of segment keys
+   * @param {Record<string, any>=} segmentRule An object of key-value pairs that are used for segments matching
+   * @param {string=} environment
+   * @return {SegmentsData | RuleError}
+   */
+  selectCustomSegments(
+    visitorId: Id,
+    segmentKeys: Array<string>,
+    segmentRule?: Record<string, any>
+  ): SegmentsData | RuleError {
+    const segments = this._dataManager.getEntities(
+      segmentKeys,
+      'segments'
+    ) as Array<Segments>;
+
+    return this.setSegments(visitorId, segments, segmentRule);
+  }
+
+  /**
+   * Update custom segments for specific visitor
+   * @param {Id} visitorId
+   * @param {Array<Id>} segmentIds A list of segment ids
+   * @param {Record<string, any>=} segmentRule An object of key-value pairs that are used for segments matching
+   * @param {string=} environment
+   * @return {SegmentsData | RuleError}
+   */
+  selectCustomSegmentsByIds(
+    visitorId: Id,
+    segmentIds: Array<Id>,
+    segmentRule?: Record<string, any>
+  ): SegmentsData | RuleError {
+    const segments = this._dataManager.getEntitiesByIds(
+      segmentIds,
+      'segments'
+    ) as Array<Segments>;
+
+    return this.setSegments(visitorId, segments, segmentRule);
   }
 }

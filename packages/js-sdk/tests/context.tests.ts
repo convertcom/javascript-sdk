@@ -10,7 +10,7 @@ import {ApiManager as am} from '@convertcom/js-sdk-api';
 import {DataManager as dm} from '@convertcom/js-sdk-data';
 import {ExperienceManager as exm} from '@convertcom/js-sdk-experience';
 import {FeatureManager as fm} from '../src/feature-manager';
-import {SegmentsManager as sm} from '../src/segments-manager';
+import {SegmentsManager as sm} from '@convertcom/js-sdk-segments';
 import {Context as c} from '../src/context';
 import testConfig from './test-config.json';
 import {Config} from '../src/config';
