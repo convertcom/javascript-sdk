@@ -1,5 +1,5 @@
 import { objectDeepMerge, objectDeepValue, arrayNotEmpty, objectNotEmpty } from '@convertcom/js-sdk-utils';
-import { SystemEvents, ERROR_MESSAGES, DATA_ENTITIES, MESSAGES, RuleError, EventType } from '@convertcom/js-sdk-enums';
+import { SystemEvents, ERROR_MESSAGES, DATA_ENTITIES, MESSAGES, RuleError, EventType, SegmentsKeys } from '@convertcom/js-sdk-enums';
 
 /*!
  * Convert JS SDK
@@ -271,15 +271,11 @@ class DataManager {
             }
             // Validate locationProperties against site area rules
             if (!locationProperties || locationMatched) {
-                let audiences = [], matchedAudiences = [];
+                let audiences = [], segmentations = [], matchedAudiences = [], matchedSegmentations = [];
                 if (visitorProperties) {
                     if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.audiences) &&
                         experience.audiences.length) {
                         // Get attached transient and/or permnent audiences
-                        // Note that audiences of type segmentation ignored here
-                        // Visitor segments shall be evaluated later on _retrieveBucketing()
-                        // where visitor segments is expected to be set using
-                        // SegmentsManager.setCustomSegments()
                         audiences = this.getItemsByIds(experience.audiences, 'audiences');
                         if (audiences.length) {
                             // Validate visitorProperties against audiences rules
@@ -289,11 +285,18 @@ class DataManager {
                             if (matchedErrors.length)
                                 return matchedErrors[0];
                         }
+                        // Get attached segmentation audiences
+                        segmentations = this.getItemsByIds(experience.audiences, 'segments');
+                        if (segmentations.length) {
+                            // Validate custom segments against segmentations
+                            matchedSegmentations = this.filterMatchedCustomSegments(segmentations, visitorId);
+                        }
                     }
                 }
                 // If there are some matched audiences
                 if (!visitorProperties ||
                     matchedAudiences.length ||
+                    matchedSegmentations.length ||
                     !audiences.length // Empty audiences list means there's no restriction for the audience
                 ) {
                     // And experience has variations
@@ -568,6 +571,37 @@ class DataManager {
             }
         }
         (_e = (_d = this._loggerManager) === null || _d === void 0 ? void 0 : _d.debug) === null || _e === void 0 ? void 0 : _e.call(_d, 'DataManager.filterMatchedRecordsWithRule()', {
+            matchedRecords: matchedRecords
+        });
+        return matchedRecords;
+    }
+    /**
+     * Get audiences that meet the custom segments
+     * @param {Array<Record<any, any>>} items
+     * @param {Id} visitorId
+     * @return {Array<Record<string, any>>}
+     */
+    filterMatchedCustomSegments(items, visitorId) {
+        var _a, _b, _c, _d, _e;
+        (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager.filterMatchedCustomSegments()', {
+            items: items,
+            visitorId: visitorId
+        });
+        // Check that custom segments are matched
+        const storeData = this.getLocalStore(visitorId) || {};
+        // Get custom segments ID from DataStore
+        const { segments: { [SegmentsKeys.CUSTOM_SEGMENTS]: customSegments = [] } = {} } = storeData;
+        const matchedRecords = [];
+        if (arrayNotEmpty(items)) {
+            for (let i = 0, length = items.length; i < length; i++) {
+                if (!((_c = items === null || items === void 0 ? void 0 : items[i]) === null || _c === void 0 ? void 0 : _c.id))
+                    continue;
+                if (customSegments.includes(items[i].id)) {
+                    matchedRecords.push(items[i]);
+                }
+            }
+        }
+        (_e = (_d = this._loggerManager) === null || _d === void 0 ? void 0 : _d.debug) === null || _e === void 0 ? void 0 : _e.call(_d, 'DataManager.filterMatchedCustomSegments()', {
             matchedRecords: matchedRecords
         });
         return matchedRecords;

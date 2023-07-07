@@ -33,7 +33,8 @@ import {
   VisitorEvent,
   ConversionEvent,
   Goal,
-  SegmentsData
+  SegmentsData,
+  Segments
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -42,7 +43,8 @@ import {
   MESSAGES,
   RuleError,
   EventType,
-  GoalDataKey
+  GoalDataKey,
+  SegmentsKeys
 } from '@convertcom/js-sdk-enums';
 
 import {DataStoreManager} from './data-store-manager';
@@ -233,18 +235,15 @@ export class DataManager implements DataManagerInterface {
       // Validate locationProperties against site area rules
       if (!locationProperties || locationMatched) {
         let audiences = [],
-          matchedAudiences = [];
+          segmentations = [],
+          matchedAudiences = [],
+          matchedSegmentations = [];
         if (visitorProperties) {
           if (
             Array.isArray(experience?.audiences) &&
             experience.audiences.length
           ) {
             // Get attached transient and/or permnent audiences
-            // Note that audiences of type segmentation ignored here
-            // Visitor segments shall be evaluated later on _retrieveBucketing()
-            // where visitor segments is expected to be set using:
-            // SegmentsManager.putSegments(visitorId, segments)
-            // SegmentsManager.setCustomSegments(segmentKeys)
             audiences = this.getItemsByIds(
               experience.audiences,
               'audiences'
@@ -261,12 +260,25 @@ export class DataManager implements DataManagerInterface {
               );
               if (matchedErrors.length) return matchedErrors[0] as RuleError;
             }
+            // Get attached segmentation audiences
+            segmentations = this.getItemsByIds(
+              experience.audiences,
+              'segments'
+            ) as Array<Segments>;
+            if (segmentations.length) {
+              // Validate custom segments against segmentations
+              matchedSegmentations = this.filterMatchedCustomSegments(
+                segmentations,
+                visitorId
+              );
+            }
           }
         }
         // If there are some matched audiences
         if (
           !visitorProperties ||
           matchedAudiences.length ||
+          matchedSegmentations.length ||
           !audiences.length // Empty audiences list means there's no restriction for the audience
         ) {
           // And experience has variations
@@ -610,6 +622,41 @@ export class DataManager implements DataManagerInterface {
       }
     }
     this._loggerManager?.debug?.('DataManager.filterMatchedRecordsWithRule()', {
+      matchedRecords: matchedRecords
+    });
+    return matchedRecords;
+  }
+
+  /**
+   * Get audiences that meet the custom segments
+   * @param {Array<Record<any, any>>} items
+   * @param {Id} visitorId
+   * @return {Array<Record<string, any>>}
+   */
+  filterMatchedCustomSegments(
+    items: Array<Record<string, any>>,
+    visitorId: Id
+  ): Array<Record<string, any>> {
+    this._loggerManager?.trace?.('DataManager.filterMatchedCustomSegments()', {
+      items: items,
+      visitorId: visitorId
+    });
+    // Check that custom segments are matched
+    const storeData = this.getLocalStore(visitorId) || {};
+    // Get custom segments ID from DataStore
+    const {
+      segments: {[SegmentsKeys.CUSTOM_SEGMENTS]: customSegments = []} = {}
+    } = storeData;
+    const matchedRecords = [];
+    if (arrayNotEmpty(items)) {
+      for (let i = 0, length = items.length; i < length; i++) {
+        if (!items?.[i]?.id) continue;
+        if (customSegments.includes(items[i].id)) {
+          matchedRecords.push(items[i]);
+        }
+      }
+    }
+    this._loggerManager?.debug?.('DataManager.filterMatchedCustomSegments()', {
       matchedRecords: matchedRecords
     });
     return matchedRecords;

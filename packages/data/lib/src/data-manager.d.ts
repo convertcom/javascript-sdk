@@ -139,6 +139,13 @@ export declare class DataManager implements DataManagerInterface {
      */
     filterMatchedRecordsWithRule(items: Array<Record<string, any>>, visitorProperties: Record<string, any>): Array<Record<string, any> | RuleError>;
     /**
+     * Get audiences that meet the custom segments
+     * @param {Array<Record<any, any>>} items
+     * @param {Id} visitorId
+     * @return {Array<Record<string, any>>}
+     */
+    filterMatchedCustomSegments(items: Array<Record<string, any>>, visitorId: Id): Array<Record<string, any>>;
+    /**
      * Get list of data entities
      * @param {string} entityType
      * @return {Array<Entity | Id>}

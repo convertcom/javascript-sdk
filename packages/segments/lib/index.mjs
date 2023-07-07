@@ -98,7 +98,7 @@ class SegmentsManager {
     /**
      * Update custom segments for specific visitor
      * @param {Id} visitorId
-     * @param {Array<Id>} segmentIds A list of segment keys
+     * @param {Array<Id>} segmentIds A list of segment ids
      * @param {Record<string, any>=} segmentRule An object of key-value pairs that are used for segments matching
      * @param {string=} environment
      * @return {SegmentsData | RuleError}

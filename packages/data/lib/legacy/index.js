@@ -350,15 +350,11 @@ var DataManager = /** @class */ (function () {
             }
             // Validate locationProperties against site area rules
             if (!locationProperties || locationMatched) {
-                var audiences = [], matchedAudiences = [];
+                var audiences = [], segmentations = [], matchedAudiences = [], matchedSegmentations = [];
                 if (visitorProperties) {
                     if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.audiences) &&
                         experience.audiences.length) {
                         // Get attached transient and/or permnent audiences
-                        // Note that audiences of type segmentation ignored here
-                        // Visitor segments shall be evaluated later on _retrieveBucketing()
-                        // where visitor segments is expected to be set using
-                        // SegmentsManager.setCustomSegments()
                         audiences = this.getItemsByIds(experience.audiences, 'audiences');
                         if (audiences.length) {
                             // Validate visitorProperties against audiences rules
@@ -370,11 +366,18 @@ var DataManager = /** @class */ (function () {
                             if (matchedErrors.length)
                                 return matchedErrors[0];
                         }
+                        // Get attached segmentation audiences
+                        segmentations = this.getItemsByIds(experience.audiences, 'segments');
+                        if (segmentations.length) {
+                            // Validate custom segments against segmentations
+                            matchedSegmentations = this.filterMatchedCustomSegments(segmentations, visitorId);
+                        }
                     }
                 }
                 // If there are some matched audiences
                 if (!visitorProperties ||
                     matchedAudiences.length ||
+                    matchedSegmentations.length ||
                     !audiences.length // Empty audiences list means there's no restriction for the audience
                 ) {
                     // And experience has variations
@@ -669,6 +672,37 @@ var DataManager = /** @class */ (function () {
         return matchedRecords;
     };
     /**
+     * Get audiences that meet the custom segments
+     * @param {Array<Record<any, any>>} items
+     * @param {Id} visitorId
+     * @return {Array<Record<string, any>>}
+     */
+    DataManager.prototype.filterMatchedCustomSegments = function (items, visitorId) {
+        var _a, _b, _c, _d, _e;
+        (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager.filterMatchedCustomSegments()', {
+            items: items,
+            visitorId: visitorId
+        });
+        // Check that custom segments are matched
+        var storeData = this.getLocalStore(visitorId) || {};
+        // Get custom segments ID from DataStore
+        var _f = storeData, _g = _f.segments, _h = _g === void 0 ? {} : _g, _j = jsSdkEnums.SegmentsKeys.CUSTOM_SEGMENTS, _k = _h[_j], customSegments = _k === void 0 ? [] : _k;
+        var matchedRecords = [];
+        if (jsSdkUtils.arrayNotEmpty(items)) {
+            for (var i = 0, length_2 = items.length; i < length_2; i++) {
+                if (!((_c = items === null || items === void 0 ? void 0 : items[i]) === null || _c === void 0 ? void 0 : _c.id))
+                    continue;
+                if (customSegments.includes(items[i].id)) {
+                    matchedRecords.push(items[i]);
+                }
+            }
+        }
+        (_e = (_d = this._loggerManager) === null || _d === void 0 ? void 0 : _d.debug) === null || _e === void 0 ? void 0 : _e.call(_d, 'DataManager.filterMatchedCustomSegments()', {
+            matchedRecords: matchedRecords
+        });
+        return matchedRecords;
+    };
+    /**
      * Get list of data entities
      * @param {string} entityType
      * @return {Array<Entity | Id>}
@@ -716,7 +750,7 @@ var DataManager = /** @class */ (function () {
         });
         var list = this.getEntitiesList(entityType);
         if (jsSdkUtils.arrayNotEmpty(list)) {
-            for (var i = 0, length_2 = list.length; i < length_2; i++) {
+            for (var i = 0, length_3 = list.length; i < length_3; i++) {
                 if (list[i] && ((_c = list[i]) === null || _c === void 0 ? void 0 : _c[identityField]) === identity) {
                     return list[i];
                 }
@@ -771,7 +805,7 @@ var DataManager = /** @class */ (function () {
         var list = this.getEntitiesList(path);
         var items = [];
         if (jsSdkUtils.arrayNotEmpty(list)) {
-            for (var i = 0, length_3 = list.length; i < length_3; i++) {
+            for (var i = 0, length_4 = list.length; i < length_4; i++) {
                 if (keys.indexOf((_a = list[i]) === null || _a === void 0 ? void 0 : _a.key) !== -1) {
                     items.push(list[i]);
                 }
@@ -795,7 +829,7 @@ var DataManager = /** @class */ (function () {
         if (jsSdkUtils.arrayNotEmpty(ids)) {
             var list = this.getEntitiesList(path);
             if (jsSdkUtils.arrayNotEmpty(list)) {
-                for (var i = 0, length_4 = list.length; i < length_4; i++) {
+                for (var i = 0, length_5 = list.length; i < length_5; i++) {
                     if (ids.indexOf((_c = list[i]) === null || _c === void 0 ? void 0 : _c.id) !== -1) {
                         items.push(list[i]);
                     }
