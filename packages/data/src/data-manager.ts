@@ -194,24 +194,27 @@ export class DataManager implements DataManagerInterface {
     ) {
       let locationMatched: boolean | RuleError = false;
       if (Array.isArray(experience?.locations) && experience.locations.length) {
+        let matchedLocations = [];
         // Get attached locations
         const locations = this.getItemsByIds(
           experience.locations,
           'locations'
         ) as Array<Location>;
-        // Validate locationProperties against locations rules
-        const matchedLocations = this.filterMatchedRecordsWithRule(
-          locations,
-          locationProperties
-        );
-        // Return rule errors if present
-        matchedErrors = matchedLocations.filter((match) =>
-          Object.values(RuleError).includes(match as RuleError)
-        );
-        if (matchedErrors.length) return matchedErrors[0] as RuleError;
+        if (locations.length) {
+          // Validate locationProperties against locations rules
+          matchedLocations = this.filterMatchedRecordsWithRule(
+            locations,
+            locationProperties
+          );
+          // Return rule errors if present
+          matchedErrors = matchedLocations.filter((match) =>
+            Object.values(RuleError).includes(match as RuleError)
+          );
+          if (matchedErrors.length) return matchedErrors[0] as RuleError;
+        }
         // If there are some matched locations
         locationMatched = Boolean(
-          !locationProperties || matchedLocations.length
+          !locationProperties || matchedLocations.length || !locations.length // Empty locations list means there's no restriction for the locations
         );
       } else if (experience?.site_area) {
         locationMatched = this._ruleManager.isRuleMatched(
@@ -270,8 +273,9 @@ export class DataManager implements DataManagerInterface {
         // If there are some matched audiences
         if (
           !visitorProperties ||
+          matchedAudiences.length ||
           matchedSegmentations.length ||
-          matchedAudiences.length
+          (!audiences.length && !segmentations.length) // Empty audiences and segmentations list means there's no restriction for the audience
         ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {

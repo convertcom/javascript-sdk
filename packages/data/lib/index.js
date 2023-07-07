@@ -244,16 +244,20 @@ class DataManager {
         ) {
             let locationMatched = false;
             if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.locations) && experience.locations.length) {
+                let matchedLocations = [];
                 // Get attached locations
                 const locations = this.getItemsByIds(experience.locations, 'locations');
-                // Validate locationProperties against locations rules
-                const matchedLocations = this.filterMatchedRecordsWithRule(locations, locationProperties);
-                // Return rule errors if present
-                matchedErrors = matchedLocations.filter((match) => Object.values(jsSdkEnums.RuleError).includes(match));
-                if (matchedErrors.length)
-                    return matchedErrors[0];
+                if (locations.length) {
+                    // Validate locationProperties against locations rules
+                    matchedLocations = this.filterMatchedRecordsWithRule(locations, locationProperties);
+                    // Return rule errors if present
+                    matchedErrors = matchedLocations.filter((match) => Object.values(jsSdkEnums.RuleError).includes(match));
+                    if (matchedErrors.length)
+                        return matchedErrors[0];
+                }
                 // If there are some matched locations
-                locationMatched = Boolean(!locationProperties || matchedLocations.length);
+                locationMatched = Boolean(!locationProperties || matchedLocations.length || !locations.length // Empty locations list means there's no restriction for the locations
+                );
             }
             else if (experience === null || experience === void 0 ? void 0 : experience.site_area) {
                 locationMatched = this._ruleManager.isRuleMatched(locationProperties, experience.site_area);
@@ -289,8 +293,10 @@ class DataManager {
                 }
                 // If there are some matched audiences
                 if (!visitorProperties ||
+                    matchedAudiences.length ||
                     matchedSegmentations.length ||
-                    matchedAudiences.length) {
+                    (!audiences.length && !segmentations.length) // Empty audiences and segmentations list means there's no restriction for the audience
+                ) {
                     // And experience has variations
                     if ((experience === null || experience === void 0 ? void 0 : experience.variations) && ((_c = experience === null || experience === void 0 ? void 0 : experience.variations) === null || _c === void 0 ? void 0 : _c.length)) {
                         return this._retrieveBucketing(visitorId, experience);
