@@ -33,7 +33,8 @@ import {
   VisitorEvent,
   ConversionEvent,
   Goal,
-  SegmentsData
+  SegmentsData,
+  Segments
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -256,7 +257,7 @@ export class DataManager implements DataManagerInterface {
           segmentations = this.getItemsByIds(
             experience.audiences,
             'segments'
-          ) as Array<Audience>;
+          ) as Array<Segments>;
           if (segmentations.length) {
             // Validate visitorProperties against segmentations rules
             matchedSegmentations = this.filterMatchedRecordsWithRule(
