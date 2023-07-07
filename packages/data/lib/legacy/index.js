@@ -344,7 +344,7 @@ var DataManager = /** @class */ (function () {
             }
             // Validate locationProperties against site area rules
             if (!locationProperties || locationMatched) {
-                var audiences = void 0, segmentations = void 0, matchedAudiences = [], matchedSegmentations = [];
+                var audiences = [], segmentations = [], matchedAudiences = [], matchedSegmentations = [];
                 if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.audiences) &&
                     experience.audiences.length) {
                     // Get attached transient and/or permnent audiences
@@ -385,7 +385,8 @@ var DataManager = /** @class */ (function () {
                     else {
                         (_f = (_e = this._loggerManager) === null || _e === void 0 ? void 0 : _e.debug) === null || _f === void 0 ? void 0 : _f.call(_e, jsSdkEnums.MESSAGES.VARIATIONS_NOT_FOUND, {
                             visitorProperties: visitorProperties,
-                            audiences: audiences
+                            audiences: audiences,
+                            segmentations: segmentations
                         });
                     }
                 }

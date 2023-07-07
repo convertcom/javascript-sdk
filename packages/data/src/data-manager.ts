@@ -228,8 +228,8 @@ export class DataManager implements DataManagerInterface {
       }
       // Validate locationProperties against site area rules
       if (!locationProperties || locationMatched) {
-        let audiences,
-          segmentations,
+        let audiences = [],
+          segmentations = [],
           matchedAudiences = [],
           matchedSegmentations = [];
         if (
@@ -284,7 +284,8 @@ export class DataManager implements DataManagerInterface {
           } else {
             this._loggerManager?.debug?.(MESSAGES.VARIATIONS_NOT_FOUND, {
               visitorProperties: visitorProperties,
-              audiences: audiences
+              audiences: audiences,
+              segmentations: segmentations
             });
           }
         } else {

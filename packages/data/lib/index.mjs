@@ -265,7 +265,7 @@ class DataManager {
             }
             // Validate locationProperties against site area rules
             if (!locationProperties || locationMatched) {
-                let audiences, segmentations, matchedAudiences = [], matchedSegmentations = [];
+                let audiences = [], segmentations = [], matchedAudiences = [], matchedSegmentations = [];
                 if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.audiences) &&
                     experience.audiences.length) {
                     // Get attached transient and/or permnent audiences
@@ -302,7 +302,8 @@ class DataManager {
                     else {
                         (_e = (_d = this._loggerManager) === null || _d === void 0 ? void 0 : _d.debug) === null || _e === void 0 ? void 0 : _e.call(_d, MESSAGES.VARIATIONS_NOT_FOUND, {
                             visitorProperties: visitorProperties,
-                            audiences: audiences
+                            audiences: audiences,
+                            segmentations: segmentations
                         });
                     }
                 }
