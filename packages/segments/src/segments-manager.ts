@@ -82,7 +82,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
     this._dataManager.dataStoreManager.enqueue(storeKey, {segments});
   }
 
-  private setSegments(
+  private setCustomSegments(
     visitorId: Id,
     segments: Array<Segments>,
     segmentRule?: Record<string, any>
@@ -152,7 +152,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
       'segments'
     ) as Array<Segments>;
 
-    return this.setSegments(visitorId, segments, segmentRule);
+    return this.setCustomSegments(visitorId, segments, segmentRule);
   }
 
   /**
@@ -173,6 +173,6 @@ export class SegmentsManager implements SegmentsManagerInterface {
       'segments'
     ) as Array<Segments>;
 
-    return this.setSegments(visitorId, segments, segmentRule);
+    return this.setCustomSegments(visitorId, segments, segmentRule);
   }
 }
