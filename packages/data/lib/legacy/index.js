@@ -312,11 +312,13 @@ var DataManager = /** @class */ (function () {
         var archivedExperiences = this.getEntitiesList('archived_experiences');
         // Check whether the experience is archived
         var isArchivedExperience = !!archivedExperiences.find(function (id) { return (experience === null || experience === void 0 ? void 0 : experience.id) == id; });
+        // Check environment
+        var isEnvironmentMatch = Array.isArray(experience === null || experience === void 0 ? void 0 : experience.environments)
+            ? !experience.environments.length || // skip if empty
+                experience.environments.includes(environment)
+            : true; // skip if no environments
         var matchedErrors = [];
-        if (experience &&
-            !isArchivedExperience &&
-            experience.environments.includes(environment) // Check environment
-        ) {
+        if (experience && !isArchivedExperience && isEnvironmentMatch) {
             var locationMatched = false;
             if (locationProperties) {
                 if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.locations) &&

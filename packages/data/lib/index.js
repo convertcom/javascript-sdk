@@ -237,11 +237,13 @@ class DataManager {
         const archivedExperiences = this.getEntitiesList('archived_experiences');
         // Check whether the experience is archived
         const isArchivedExperience = !!archivedExperiences.find((id) => (experience === null || experience === void 0 ? void 0 : experience.id) == id);
+        // Check environment
+        const isEnvironmentMatch = Array.isArray(experience === null || experience === void 0 ? void 0 : experience.environments)
+            ? !experience.environments.length || // skip if empty
+                experience.environments.includes(environment)
+            : true; // skip if no environments
         let matchedErrors = [];
-        if (experience &&
-            !isArchivedExperience &&
-            experience.environments.includes(environment) // Check environment
-        ) {
+        if (experience && !isArchivedExperience && isEnvironmentMatch) {
             let locationMatched = false;
             if (locationProperties) {
                 if (Array.isArray(experience === null || experience === void 0 ? void 0 : experience.locations) &&
