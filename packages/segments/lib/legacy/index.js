@@ -123,7 +123,7 @@ var SegmentsManager = /** @class */ (function () {
         var storeKey = this._dataManager.getStoreKey(visitorId);
         this._dataManager.dataStoreManager.enqueue(storeKey, { segments: segments });
     };
-    SegmentsManager.prototype.setSegments = function (visitorId, segments, segmentRule) {
+    SegmentsManager.prototype.setCustomSegments = function (visitorId, segments, segmentRule) {
         var e_1, _a, _b;
         var _c, _d, _e, _f, _g;
         var storeData = this._dataManager.getLocalStore(visitorId) || {};
@@ -179,7 +179,7 @@ var SegmentsManager = /** @class */ (function () {
      */
     SegmentsManager.prototype.selectCustomSegments = function (visitorId, segmentKeys, segmentRule) {
         var segments = this._dataManager.getEntities(segmentKeys, 'segments');
-        return this.setSegments(visitorId, segments, segmentRule);
+        return this.setCustomSegments(visitorId, segments, segmentRule);
     };
     /**
      * Update custom segments for specific visitor
@@ -191,7 +191,7 @@ var SegmentsManager = /** @class */ (function () {
      */
     SegmentsManager.prototype.selectCustomSegmentsByIds = function (visitorId, segmentIds, segmentRule) {
         var segments = this._dataManager.getEntitiesByIds(segmentIds, 'segments');
-        return this.setSegments(visitorId, segments, segmentRule);
+        return this.setCustomSegments(visitorId, segments, segmentRule);
     };
     return SegmentsManager;
 }());

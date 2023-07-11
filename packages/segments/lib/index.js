@@ -50,7 +50,7 @@ class SegmentsManager {
         const storeKey = this._dataManager.getStoreKey(visitorId);
         this._dataManager.dataStoreManager.enqueue(storeKey, { segments });
     }
-    setSegments(visitorId, segments, segmentRule) {
+    setCustomSegments(visitorId, segments, segmentRule) {
         var _a, _b, _c, _d, _e;
         const storeData = this._dataManager.getLocalStore(visitorId) || {};
         // Get custom segments ID from DataStore
@@ -95,7 +95,7 @@ class SegmentsManager {
      */
     selectCustomSegments(visitorId, segmentKeys, segmentRule) {
         const segments = this._dataManager.getEntities(segmentKeys, 'segments');
-        return this.setSegments(visitorId, segments, segmentRule);
+        return this.setCustomSegments(visitorId, segments, segmentRule);
     }
     /**
      * Update custom segments for specific visitor
@@ -107,7 +107,7 @@ class SegmentsManager {
      */
     selectCustomSegmentsByIds(visitorId, segmentIds, segmentRule) {
         const segments = this._dataManager.getEntitiesByIds(segmentIds, 'segments');
-        return this.setSegments(visitorId, segments, segmentRule);
+        return this.setCustomSegments(visitorId, segments, segmentRule);
     }
 }
 

@@ -15,6 +15,7 @@ function captureConsole() {
   const defaultConsoleInfo = console.info;
   const defaultConsoleWarn = console.warn;
   const defaultConsoleError = console.error;
+  const defaultConsoleTrace = console.trace;
   return {
     unhook: () => {
       console.log = defaultConsoleLog;
@@ -22,6 +23,7 @@ function captureConsole() {
       console.info = defaultConsoleInfo;
       console.warn = defaultConsoleWarn;
       console.error = defaultConsoleError;
+      console.trace = defaultConsoleTrace;
     }
   };
 }
@@ -30,6 +32,7 @@ function captureLog() {
   let buffer = '';
   console.log =
     console.debug =
+    console.trace =
     console.info =
       (...args) => {
         buffer += args.join(' ') + '\n';
@@ -160,7 +163,7 @@ describe('LogManager tests', function () {
       },
       lv.TRACE,
       {
-        log: 'send'
+        trace: 'send'
       }
     );
     const output = 'testing third-party method mapping';

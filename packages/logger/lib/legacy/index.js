@@ -85,6 +85,7 @@ var LogManager = /** @class */ (function () {
             _a[jsSdkEnums.LogMethod.INFO] = jsSdkEnums.LogMethod.INFO,
             _a[jsSdkEnums.LogMethod.WARN] = jsSdkEnums.LogMethod.WARN,
             _a[jsSdkEnums.LogMethod.ERROR] = jsSdkEnums.LogMethod.ERROR,
+            _a[jsSdkEnums.LogMethod.TRACE] = jsSdkEnums.LogMethod.TRACE,
             _a);
         this._clients = [];
         this.addClient(client, level, mapper);
@@ -137,7 +138,7 @@ var LogManager = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this._log.apply(this, __spreadArray([jsSdkEnums.LogMethod.LOG, jsSdkEnums.LogLevel.TRACE], __read(args), false));
+        this._log.apply(this, __spreadArray([jsSdkEnums.LogMethod.TRACE, jsSdkEnums.LogLevel.TRACE], __read(args), false));
     };
     /**
      * @param {Array<any>} args

@@ -11,4 +11,5 @@ export interface LogMethodMapInterface {
     [LogMethod.INFO]?: string;
     [LogMethod.WARN]?: string;
     [LogMethod.ERROR]?: string;
+    [LogMethod.TRACE]?: string;
 }

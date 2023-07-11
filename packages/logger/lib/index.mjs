@@ -25,7 +25,8 @@ class LogManager {
             [LogMethod.DEBUG]: LogMethod.DEBUG,
             [LogMethod.INFO]: LogMethod.INFO,
             [LogMethod.WARN]: LogMethod.WARN,
-            [LogMethod.ERROR]: LogMethod.ERROR
+            [LogMethod.ERROR]: LogMethod.ERROR,
+            [LogMethod.TRACE]: LogMethod.TRACE
         };
         this._clients = [];
         this.addClient(client, level, mapper);
@@ -66,7 +67,7 @@ class LogManager {
      * @param {Array<any>} args
      */
     trace(...args) {
-        this._log(LogMethod.LOG, LogLevel.TRACE, ...args);
+        this._log(LogMethod.TRACE, LogLevel.TRACE, ...args);
     }
     /**
      * @param {Array<any>} args

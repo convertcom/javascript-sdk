@@ -27,7 +27,8 @@ class LogManager {
             [jsSdkEnums.LogMethod.DEBUG]: jsSdkEnums.LogMethod.DEBUG,
             [jsSdkEnums.LogMethod.INFO]: jsSdkEnums.LogMethod.INFO,
             [jsSdkEnums.LogMethod.WARN]: jsSdkEnums.LogMethod.WARN,
-            [jsSdkEnums.LogMethod.ERROR]: jsSdkEnums.LogMethod.ERROR
+            [jsSdkEnums.LogMethod.ERROR]: jsSdkEnums.LogMethod.ERROR,
+            [jsSdkEnums.LogMethod.TRACE]: jsSdkEnums.LogMethod.TRACE
         };
         this._clients = [];
         this.addClient(client, level, mapper);
@@ -68,7 +69,7 @@ class LogManager {
      * @param {Array<any>} args
      */
     trace(...args) {
-        this._log(jsSdkEnums.LogMethod.LOG, jsSdkEnums.LogLevel.TRACE, ...args);
+        this._log(jsSdkEnums.LogMethod.TRACE, jsSdkEnums.LogLevel.TRACE, ...args);
     }
     /**
      * @param {Array<any>} args

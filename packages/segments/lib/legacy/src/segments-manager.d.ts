@@ -45,7 +45,7 @@ export declare class SegmentsManager implements SegmentsManagerInterface {
      * @param {SegmentsData} segments
      */
     putSegments(visitorId: Id, segments: SegmentsData): void;
-    private setSegments;
+    private setCustomSegments;
     /**
      * Update custom segments for specific visitor
      * @param {Id} visitorId

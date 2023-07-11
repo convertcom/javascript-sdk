@@ -24,7 +24,8 @@ export class LogManager implements LogManagerInterface {
     [LogMethod.DEBUG]: LogMethod.DEBUG,
     [LogMethod.INFO]: LogMethod.INFO,
     [LogMethod.WARN]: LogMethod.WARN,
-    [LogMethod.ERROR]: LogMethod.ERROR
+    [LogMethod.ERROR]: LogMethod.ERROR,
+    [LogMethod.TRACE]: LogMethod.TRACE
   };
 
   /**
@@ -83,7 +84,7 @@ export class LogManager implements LogManagerInterface {
    * @param {Array<any>} args
    */
   trace(...args: any[]): void {
-    this._log(LogMethod.LOG, LogLevel.TRACE, ...args);
+    this._log(LogMethod.TRACE, LogLevel.TRACE, ...args);
   }
 
   /**
