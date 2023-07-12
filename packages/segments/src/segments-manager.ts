@@ -128,7 +128,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
       // Merge custom segments ID into DataStore
       this.putSegments(visitorId, segmentsData);
     } else {
-      this._loggerManager?.error?.(MESSAGES.SEGMENTS_NOT_FOUND);
+      this._loggerManager?.warn?.(MESSAGES.SEGMENTS_NOT_FOUND);
     }
 
     return segmentsData;

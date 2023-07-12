@@ -81,7 +81,7 @@ class SegmentsManager {
             this.putSegments(visitorId, segmentsData);
         }
         else {
-            (_e = (_d = this._loggerManager) === null || _d === void 0 ? void 0 : _d.error) === null || _e === void 0 ? void 0 : _e.call(_d, jsSdkEnums.MESSAGES.SEGMENTS_NOT_FOUND);
+            (_e = (_d = this._loggerManager) === null || _d === void 0 ? void 0 : _d.warn) === null || _e === void 0 ? void 0 : _e.call(_d, jsSdkEnums.MESSAGES.SEGMENTS_NOT_FOUND);
         }
         return segmentsData;
     }

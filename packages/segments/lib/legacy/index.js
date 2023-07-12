@@ -165,7 +165,7 @@ var SegmentsManager = /** @class */ (function () {
             this.putSegments(visitorId, segmentsData);
         }
         else {
-            (_g = (_f = this._loggerManager) === null || _f === void 0 ? void 0 : _f.error) === null || _g === void 0 ? void 0 : _g.call(_f, jsSdkEnums.MESSAGES.SEGMENTS_NOT_FOUND);
+            (_g = (_f = this._loggerManager) === null || _f === void 0 ? void 0 : _f.warn) === null || _g === void 0 ? void 0 : _g.call(_f, jsSdkEnums.MESSAGES.SEGMENTS_NOT_FOUND);
         }
         return segmentsData;
     };
