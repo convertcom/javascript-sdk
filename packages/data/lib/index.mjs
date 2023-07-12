@@ -646,7 +646,7 @@ class DataManager {
      * @private
      */
     _getEntityByField(identity, entityType, identityField = 'key') {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager._getEntityByField()', {
             identity: identity,
             entityType: entityType,
@@ -655,7 +655,8 @@ class DataManager {
         const list = this.getEntitiesList(entityType);
         if (arrayNotEmpty(list)) {
             for (let i = 0, length = list.length; i < length; i++) {
-                if (list[i] && ((_c = list[i]) === null || _c === void 0 ? void 0 : _c[identityField]) === identity) {
+                if (list[i] &&
+                    ((_d = (_c = list[i]) === null || _c === void 0 ? void 0 : _c[identityField]) === null || _d === void 0 ? void 0 : _d.toString()) === identity.toString()) {
                     return list[i];
                 }
             }
@@ -724,7 +725,7 @@ class DataManager {
      * @return {Array<Record<string, any>>}
      */
     getItemsByIds(ids, path) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager.getItemsByIds()', {
             ids: ids,
             path: path
@@ -734,7 +735,8 @@ class DataManager {
             const list = this.getEntitiesList(path);
             if (arrayNotEmpty(list)) {
                 for (let i = 0, length = list.length; i < length; i++) {
-                    if (ids.indexOf((_c = list[i]) === null || _c === void 0 ? void 0 : _c.id) !== -1) {
+                    if (ids.indexOf(Number((_c = list[i]) === null || _c === void 0 ? void 0 : _c.id)) !== -1 ||
+                        ids.indexOf(String((_d = list[i]) === null || _d === void 0 ? void 0 : _d.id)) !== -1) {
                         items.push(list[i]);
                     }
                 }

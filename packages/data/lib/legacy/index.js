@@ -743,7 +743,7 @@ var DataManager = /** @class */ (function () {
      * @private
      */
     DataManager.prototype._getEntityByField = function (identity, entityType, identityField) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         if (identityField === void 0) { identityField = 'key'; }
         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager._getEntityByField()', {
             identity: identity,
@@ -753,7 +753,8 @@ var DataManager = /** @class */ (function () {
         var list = this.getEntitiesList(entityType);
         if (jsSdkUtils.arrayNotEmpty(list)) {
             for (var i = 0, length_3 = list.length; i < length_3; i++) {
-                if (list[i] && ((_c = list[i]) === null || _c === void 0 ? void 0 : _c[identityField]) === identity) {
+                if (list[i] &&
+                    ((_d = (_c = list[i]) === null || _c === void 0 ? void 0 : _c[identityField]) === null || _d === void 0 ? void 0 : _d.toString()) === identity.toString()) {
                     return list[i];
                 }
             }
@@ -822,7 +823,7 @@ var DataManager = /** @class */ (function () {
      * @return {Array<Record<string, any>>}
      */
     DataManager.prototype.getItemsByIds = function (ids, path) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager.getItemsByIds()', {
             ids: ids,
             path: path
@@ -832,7 +833,8 @@ var DataManager = /** @class */ (function () {
             var list = this.getEntitiesList(path);
             if (jsSdkUtils.arrayNotEmpty(list)) {
                 for (var i = 0, length_5 = list.length; i < length_5; i++) {
-                    if (ids.indexOf((_c = list[i]) === null || _c === void 0 ? void 0 : _c.id) !== -1) {
+                    if (ids.indexOf(Number((_c = list[i]) === null || _c === void 0 ? void 0 : _c.id)) !== -1 ||
+                        ids.indexOf(String((_d = list[i]) === null || _d === void 0 ? void 0 : _d.id)) !== -1) {
                         items.push(list[i]);
                     }
                 }
