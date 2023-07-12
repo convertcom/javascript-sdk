@@ -717,7 +717,10 @@ export class DataManager implements DataManagerInterface {
     const list = this.getEntitiesList(entityType) as Array<Entity>;
     if (arrayNotEmpty(list)) {
       for (let i = 0, length = list.length; i < length; i++) {
-        if (list[i] && list[i]?.[identityField] === identity) {
+        if (
+          list[i] &&
+          list[i]?.[identityField]?.toString() === identity.toString()
+        ) {
           return list[i];
         }
       }
@@ -803,7 +806,10 @@ export class DataManager implements DataManagerInterface {
       const list = this.getEntitiesList(path) as Array<Entity>;
       if (arrayNotEmpty(list)) {
         for (let i = 0, length = list.length; i < length; i++) {
-          if (ids.indexOf(list[i]?.id) !== -1) {
+          if (
+            ids.indexOf(Number(list[i]?.id)) !== -1 ||
+            ids.indexOf(String(list[i]?.id)) !== -1
+          ) {
             items.push(list[i]);
           }
         }
