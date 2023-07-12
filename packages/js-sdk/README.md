@@ -151,7 +151,7 @@ const config = {
     logLevel: LogLevel.DEBUG,
     customLoggers: [] // Allows 3rd party loggers to be passed
   },
-  dataStore: null, // Allows 3rd party data store to be passed
+  dataStore: null, // Allows 3rd party data store to be passed (optional)
   dataRefreshInterval: 300, // in seconds (5 minutes)
   data: projectData
 };
@@ -368,7 +368,7 @@ Decides whether to update custom segments in user context, which is mapped to se
 
 | Parameter         | Type   | Required | Description                                                       |
 | ----------------- | ------ | -------- | ----------------------------------------------------------------- |
-| segmentsKey       | string | Yes      | A segments key                                                    |
+| segmentsKeys      | array  | Yes      | A list of segments keys                                           |
 | visitorProperties | object | No       | An object of key-value pairs that are used for segments matching. |
 
 #### Returns
@@ -385,7 +385,7 @@ const config = {
 
 const convertSDK = new ConvertSDK(config);
 const context = convertSDK.createContext('user-unique-id');
-context.setCustomSegments('segments-key', {
+context.setCustomSegments(['segments-key'], {
   enabled: true
 });
 ```
@@ -435,6 +435,8 @@ convertSDK.on(SystemEvents.CONFIG_UPDATED, function (res, err) {
 ```
 
 ### Provide Persistent DataStore
+
+> **Note**: This feature is optional
 
 You can provide your own DataStore that is used to make user bucketing persistent, ensuring persistent experience variation selection, regardless of the experience’s configurations changing or not. As long as Experience variations and/or traffic allocation do not change, the initial user bucketing remains persistent (We use the [MurmurHash](https://en.wikipedia.org/wiki/MurmurHash) algorithm to decide which variation will be selected. This ensures the same one is going to be selected each time, as long as the experience’s configuration does not change.)
 

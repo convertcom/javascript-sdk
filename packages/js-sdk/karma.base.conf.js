@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
 dotenv.config();
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+process.env.CHROME_BIN = require('puppeteer').executablePath();
 module.exports = {
   // base path that will be used to resolve all patterns (eg. files, exclude)
   basePath: './',

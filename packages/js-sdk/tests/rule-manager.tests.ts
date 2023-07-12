@@ -2,11 +2,10 @@ import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
 
-import {RuleManager as rm} from '../src/rule-manager';
-import {Comparisons as comparisonProcessor} from '../src/utils/comparisons';
+import {RuleManager as rm} from '@convertcom/js-sdk-rules';
+import {Comparisons as comparisonProcessor} from '@convertcom/js-sdk-utils';
 import testConfig from './test-config.json';
-import {Config} from '../src/config';
-import {RuleSet} from '../src/types/Rule';
+import {RuleSet, Config} from '@convertcom/js-sdk-types';
 
 describe('RuleManager tests', function () {
   it('Should expose RuleManager', function () {
@@ -35,13 +34,13 @@ describe('RuleManager tests', function () {
     };
 
     // eslint-disable-next-line mocha/no-setup-in-describe
-    const configuration = Config({
+    const configuration = {
       ...testConfig,
       rules: {
         comparisonProcessor: customComparisonProcessor,
         keys_case_sensitive: false
       }
-    });
+    } as unknown as Config;
     const testRuleSet1: RuleSet = {
       OR: [
         {
@@ -189,9 +188,9 @@ describe('RuleManager tests', function () {
   describe('RuleManager with default comparison processor', function () {
     let ruleManager;
     // eslint-disable-next-line mocha/no-setup-in-describe
-    const configuration = Config({
+    const configuration = {
       ...testConfig
-    });
+    } as unknown as Config;
     const testRuleSet1: RuleSet = {
       OR: [
         {
@@ -478,7 +477,7 @@ describe('RuleManager tests', function () {
       }
     );
     it(
-      'isRuleMatched should return true checking single string value "' +
+      'isRuleMatched should return false checking single string value "' +
         data21 +
         '" against rule ' +
         JSON.stringify(testRuleSet2),

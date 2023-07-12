@@ -2,19 +2,20 @@ import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
 
-import {DataManager as dm} from '../src/data-manager';
+import {DataStoreManager as dsm} from '@convertcom/js-sdk-data';
 import testConfig from './test-config.json';
-import {Config} from '../src/config';
-const configuration = Config(testConfig);
+import {Config} from '@convertcom/js-sdk-types';
 
-describe('DataManager tests', function () {
-  it('Should expose DataManager', function () {
-    assert.isDefined(dm);
+const configuration = testConfig as unknown as Config;
+
+describe('DataStoreManager tests', function () {
+  it('Should expose DataStoreManager', function () {
+    assert.isDefined(dsm);
   });
-  it('Imported entity should be a constructor of DataManager instance', function () {
-    expect(dm)
+  it('Imported entity should be a constructor of DataStoreManager instance', function () {
+    expect(dsm)
       .to.be.a('function')
       .that.has.property('name')
-      .which.equal('DataManager');
+      .which.equal('DataStoreManager');
   });
 });

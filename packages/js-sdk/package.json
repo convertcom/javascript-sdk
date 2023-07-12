@@ -40,6 +40,19 @@
   "engines": {
     "node": ">=8.0.0"
   },
+  "peerDependencies": {
+    "@convertcom/js-sdk-api": "1.0.0",
+    "@convertcom/js-sdk-bucketing": "1.0.0",
+    "@convertcom/js-sdk-data": "1.0.0",
+    "@convertcom/js-sdk-enums": "1.0.0",
+    "@convertcom/js-sdk-event": "1.0.0",
+    "@convertcom/js-sdk-experience": "1.0.0",
+    "@convertcom/js-sdk-logger": "1.0.0",
+    "@convertcom/js-sdk-rules": "1.0.0",
+    "@convertcom/js-sdk-segments": "1.0.0",
+    "@convertcom/js-sdk-types": "1.0.0",
+    "@convertcom/js-sdk-utils": "1.0.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.17.10",
     "@babel/preset-env": "^7.17.10",
@@ -82,6 +95,7 @@
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "prettier": "^2.6.2",
+    "puppeteer": "^20.7.4",
     "require": "^2.4.20",
     "rollup": "^3.20.2",
     "rollup-plugin-copy": "^3.4.0",

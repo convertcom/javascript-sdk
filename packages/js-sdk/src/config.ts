@@ -4,10 +4,10 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Config as ConfigType} from './types/Config';
+import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {defaultConfig} from './config/default';
-import {LogLevel} from './enums/log-level';
-import {objectDeepMerge} from './utils/object-utils';
+import {LogLevel} from '@convertcom/js-sdk-enums';
+import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 
 const DEFAULT_LOGGER_SETTINGS = {
   logger: {
