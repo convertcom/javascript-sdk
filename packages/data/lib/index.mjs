@@ -234,7 +234,7 @@ class DataManager {
         // Retrieve archived experiences
         const archivedExperiences = this.getEntitiesList('archived_experiences');
         // Check whether the experience is archived
-        const isArchivedExperience = !!archivedExperiences.find((id) => (experience === null || experience === void 0 ? void 0 : experience.id) == id);
+        const isArchivedExperience = !!archivedExperiences.find((id) => String(experience === null || experience === void 0 ? void 0 : experience.id) === String(id));
         // Check environment
         const isEnvironmentMatch = Array.isArray(experience === null || experience === void 0 ? void 0 : experience.environments)
             ? !experience.environments.length || // skip if empty

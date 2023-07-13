@@ -311,7 +311,7 @@ var DataManager = /** @class */ (function () {
         // Retrieve archived experiences
         var archivedExperiences = this.getEntitiesList('archived_experiences');
         // Check whether the experience is archived
-        var isArchivedExperience = !!archivedExperiences.find(function (id) { return (experience === null || experience === void 0 ? void 0 : experience.id) == id; });
+        var isArchivedExperience = !!archivedExperiences.find(function (id) { return String(experience === null || experience === void 0 ? void 0 : experience.id) === String(id); });
         // Check environment
         var isEnvironmentMatch = Array.isArray(experience === null || experience === void 0 ? void 0 : experience.environments)
             ? !experience.environments.length || // skip if empty

@@ -184,7 +184,7 @@ export class DataManager implements DataManagerInterface {
     ) as Array<Id>;
     // Check whether the experience is archived
     const isArchivedExperience = !!archivedExperiences.find(
-      (id) => experience?.id == id
+      (id) => String(experience?.id) === String(id)
     );
     // Check environment
     const isEnvironmentMatch = Array.isArray(experience?.environments)

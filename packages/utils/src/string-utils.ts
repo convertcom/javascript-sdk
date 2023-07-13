@@ -44,7 +44,7 @@ export function stringFormat(template: string, ...args: any[]): string {
 export function camelCase(input: string): string {
   return input
     .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
-      return index == 0 ? word.toLowerCase() : word.toUpperCase();
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
     })
     .replace(/\s+/g, '');
 }
