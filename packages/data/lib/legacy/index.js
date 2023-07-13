@@ -295,7 +295,7 @@ var DataManager = /** @class */ (function () {
      */
     DataManager.prototype._getBucketingByField = function (visitorId, identity, visitorProperties, locationProperties, identityField, environment) {
         var _a;
-        var _b, _c, _d, _e, _f, _g, _h, _j, _k;
+        var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         if (identityField === void 0) { identityField = 'key'; }
         if (environment === void 0) { environment = this._environment; }
         (_c = (_b = this._loggerManager) === null || _b === void 0 ? void 0 : _b.trace) === null || _c === void 0 ? void 0 : _c.call(_b, 'DataManager._getBucketingByField()', {
@@ -409,6 +409,12 @@ var DataManager = /** @class */ (function () {
                         : 'experiences[].variations[].site_area'] = (experience === null || experience === void 0 ? void 0 : experience.locations) || (experience === null || experience === void 0 ? void 0 : experience.site_area) || '',
                     _a));
             }
+        }
+        else {
+            (_m = (_l = this._loggerManager) === null || _l === void 0 ? void 0 : _l.debug) === null || _m === void 0 ? void 0 : _m.call(_l, jsSdkEnums.MESSAGES.EXPERIENCE_NOT_FOUND, {
+                identity: identity,
+                identityField: identityField
+            });
         }
         return null;
     };

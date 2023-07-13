@@ -306,6 +306,11 @@ export class DataManager implements DataManagerInterface {
             experience?.locations || experience?.site_area || ''
         });
       }
+    } else {
+      this._loggerManager?.debug?.(MESSAGES.EXPERIENCE_NOT_FOUND, {
+        identity: identity,
+        identityField: identityField
+      });
     }
     return null;
   }

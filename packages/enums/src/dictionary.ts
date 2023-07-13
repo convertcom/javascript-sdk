@@ -24,6 +24,7 @@ export const MESSAGES = {
   CORE_CONSTRUCTOR: 'Core Manager constructor has been called',
   CORE_INITIALIZED: 'Core Manager has been initialized',
   EXPERIENCE_CONSTRUCTOR: 'Experience Manager constructor has been called',
+  EXPERIENCE_NOT_FOUND: 'Experience not found',
   VARIATIONS_NOT_FOUND: 'Variations not found',
   VARIATION_CHANGE_NOT_SUPPORTED: 'Variation change not supported',
   FEATURE_CONSTRUCTOR: 'Feature Manager constructor has been called',

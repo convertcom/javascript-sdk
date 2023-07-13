@@ -23,6 +23,7 @@ export declare const MESSAGES: {
     CORE_CONSTRUCTOR: string;
     CORE_INITIALIZED: string;
     EXPERIENCE_CONSTRUCTOR: string;
+    EXPERIENCE_NOT_FOUND: string;
     VARIATIONS_NOT_FOUND: string;
     VARIATION_CHANGE_NOT_SUPPORTED: string;
     FEATURE_CONSTRUCTOR: string;

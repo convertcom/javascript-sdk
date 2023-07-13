@@ -222,7 +222,7 @@ class DataManager {
      * @private
      */
     _getBucketingByField(visitorId, identity, visitorProperties, locationProperties, identityField = 'key', environment = this._environment) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager._getBucketingByField()', {
             visitorId: visitorId,
             identity: identity,
@@ -329,6 +329,12 @@ class DataManager {
                         : 'experiences[].variations[].site_area']: (experience === null || experience === void 0 ? void 0 : experience.locations) || (experience === null || experience === void 0 ? void 0 : experience.site_area) || ''
                 });
             }
+        }
+        else {
+            (_l = (_k = this._loggerManager) === null || _k === void 0 ? void 0 : _k.debug) === null || _l === void 0 ? void 0 : _l.call(_k, jsSdkEnums.MESSAGES.EXPERIENCE_NOT_FOUND, {
+                identity: identity,
+                identityField: identityField
+            });
         }
         return null;
     }
