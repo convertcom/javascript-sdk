@@ -648,7 +648,7 @@ class DataManager {
      * @private
      */
     _getEntityByField(identity, entityType, identityField = 'key') {
-        var _a, _b, _c, _d;
+        var _a, _b, _c;
         (_b = (_a = this._loggerManager) === null || _a === void 0 ? void 0 : _a.trace) === null || _b === void 0 ? void 0 : _b.call(_a, 'DataManager._getEntityByField()', {
             identity: identity,
             entityType: entityType,
@@ -657,8 +657,7 @@ class DataManager {
         const list = this.getEntitiesList(entityType);
         if (jsSdkUtils.arrayNotEmpty(list)) {
             for (let i = 0, length = list.length; i < length; i++) {
-                if (list[i] &&
-                    ((_d = (_c = list[i]) === null || _c === void 0 ? void 0 : _c[identityField]) === null || _d === void 0 ? void 0 : _d.toString()) === identity.toString()) {
+                if (list[i] && String((_c = list[i]) === null || _c === void 0 ? void 0 : _c[identityField]) === String(identity)) {
                     return list[i];
                 }
             }
@@ -760,7 +759,8 @@ class DataManager {
         var _a;
         const entity = this._getEntityByField(entityIdentity, entityType, identityField);
         for (const k in entity[subEntityType]) {
-            if (((_a = entity[subEntityType][k]) === null || _a === void 0 ? void 0 : _a[subIdentityField]) == subEntityIdentity) {
+            if (String((_a = entity[subEntityType][k]) === null || _a === void 0 ? void 0 : _a[subIdentityField]) ===
+                String(subEntityIdentity)) {
                 return entity[subEntityType][k];
             }
         }

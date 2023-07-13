@@ -717,10 +717,7 @@ export class DataManager implements DataManagerInterface {
     const list = this.getEntitiesList(entityType) as Array<Entity>;
     if (arrayNotEmpty(list)) {
       for (let i = 0, length = list.length; i < length; i++) {
-        if (
-          list[i] &&
-          list[i]?.[identityField]?.toString() === identity.toString()
-        ) {
+        if (list[i] && String(list[i]?.[identityField]) === String(identity)) {
           return list[i];
         }
       }
@@ -842,7 +839,10 @@ export class DataManager implements DataManagerInterface {
       identityField
     );
     for (const k in entity[subEntityType]) {
-      if (entity[subEntityType][k]?.[subIdentityField] == subEntityIdentity) {
+      if (
+        String(entity[subEntityType][k]?.[subIdentityField]) ===
+        String(subEntityIdentity)
+      ) {
         return entity[subEntityType][k];
       }
     }
