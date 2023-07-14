@@ -394,8 +394,8 @@ class DataManager {
                     this.dataStoreManager.enqueue(storeKey, storeData);
                     // Enqueue bucketing event to api
                     const bucketingEvent = {
-                        experienceId: experience.id,
-                        variationId
+                        experienceId: experience.id.toString(),
+                        variationId: variationId.toString()
                     };
                     const visitorEvent = {
                         eventType: EventType.BUCKETING,

@@ -477,8 +477,8 @@ var DataManager = /** @class */ (function () {
                     this.dataStoreManager.enqueue(storeKey, storeData);
                     // Enqueue bucketing event to api
                     var bucketingEvent = {
-                        experienceId: experience.id,
-                        variationId: variationId_1
+                        experienceId: experience.id.toString(),
+                        variationId: variationId_1.toString()
                     };
                     var visitorEvent = {
                         eventType: jsSdkEnums.EventType.BUCKETING,
