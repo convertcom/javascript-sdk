@@ -388,8 +388,8 @@ export class DataManager implements DataManagerInterface {
           this.dataStoreManager.enqueue(storeKey, storeData);
           // Enqueue bucketing event to api
           const bucketingEvent: BucketingEvent = {
-            experienceId: experience.id,
-            variationId
+            experienceId: experience.id.toString(),
+            variationId: variationId.toString()
           };
           const visitorEvent: VisitorEvent = {
             eventType: EventType.BUCKETING,
