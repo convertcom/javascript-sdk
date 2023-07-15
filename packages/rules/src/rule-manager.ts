@@ -248,6 +248,7 @@ export class RuleManager implements RuleManagerInterface {
                   const dataValue = data[method](rule);
                   if (Object.values(RuleError).includes(dataValue as RuleError))
                     return dataValue as RuleError;
+                  if (rule.rule_type === 'js_condition') return dataValue;
                   return this._comparisonProcessor[matching](
                     dataValue,
                     rule.value,
