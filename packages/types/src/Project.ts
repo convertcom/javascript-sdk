@@ -23,7 +23,7 @@ export type Project = {
   //     hosts: null
   //   }
   // ],
-  global_javascript?: string;
+  global_javascript?: string | ((...args: any) => any | undefined);
   settings: {
     auto_link: boolean;
     data_anonymization: boolean;
