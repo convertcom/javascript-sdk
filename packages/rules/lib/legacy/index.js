@@ -236,6 +236,8 @@ var RuleManager = /** @class */ (function () {
                                         var dataValue = data[method](rule);
                                         if (Object.values(jsSdkEnums.RuleError).includes(dataValue))
                                             return dataValue;
+                                        if (rule.rule_type === 'js_condition')
+                                            return dataValue;
                                         return this._comparisonProcessor[matching](dataValue, rule.value, negation);
                                     }
                                 }
