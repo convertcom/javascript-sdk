@@ -21,7 +21,7 @@ node_modules/
 # Maven
 target/
 dist/
-# lib/
+lib/
 # JetBrains IDE
 .idea/
 
