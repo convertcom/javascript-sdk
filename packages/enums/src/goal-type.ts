@@ -9,7 +9,12 @@ export enum GoalType {
   DOM_INTERACTION = 'dom_interaction',
   SCROLL_PERCENTAGE = 'scroll_percentage',
   CODE_TRIGGER = 'code_trigger',
-  REVENUE = 'revenue'
+  REVENUE = 'revenue',
+  GOOGLE_ANALYTICS_IMPORT = 'ga_import',
+  CLICKS_ELEMENT = 'clicks_element',
+  CLICKS_LINK = 'clicks_link',
+  SUBMITS_FORM = 'submits_form',
+  VISITS_PAGE = 'visits_page'
 }
 
 export enum GoalRevenueTriggeringType {
