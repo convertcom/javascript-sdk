@@ -202,6 +202,7 @@ export class ApiManager implements ApiManagerInterface {
    * @return {Promise<any>}
    */
   releaseQueue(reason?: string): Promise<any> {
+    if (!this._requestsQueue.length) return;
     this._loggerManager?.trace?.('ApiManager.releaseQueue()', {
       reason: reason || ''
     });
