@@ -332,10 +332,9 @@ export class DataManager implements DataManagerInterface {
     let bucketedVariation = null;
     const storeKey = this.getStoreKey(visitorId);
     // Check that visitor id already bucketed and stored and skip bucketing logic
-    const {
-      bucketing: {[experience.id.toString()]: variationId} = {},
-      segments
-    } = this.getLocalStore(visitorId) || {};
+    const storeData: StoreData = this.getLocalStore(visitorId) || {};
+    const {bucketing, segments} = storeData;
+    const {[experience.id.toString()]: variationId} = bucketing || {};
     if (
       variationId &&
       (variation = this.retrieveVariation(experience.id, variationId))
@@ -356,7 +355,7 @@ export class DataManager implements DataManagerInterface {
       ) {
         // Store the data in local variable
         this.putLocalStore(visitorId, {
-          bucketing: {[experience.id.toString()]: variationId},
+          bucketing: {...bucketing, [experience.id.toString()]: variationId},
           ...(segments ? {segments} : {})
         });
         // If it's found log debug info. The return value will be formed next step
@@ -380,7 +379,7 @@ export class DataManager implements DataManagerInterface {
         if (variationId) {
           // Store the data in local variable
           const storeData: StoreData = {
-            bucketing: {[experience.id.toString()]: variationId},
+            bucketing: {...bucketing, [experience.id.toString()]: variationId},
             ...(segments ? {segments} : {})
           };
           this.putLocalStore(visitorId, storeData);
