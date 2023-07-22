@@ -332,8 +332,7 @@ export class DataManager implements DataManagerInterface {
     let bucketedVariation = null;
     const storeKey = this.getStoreKey(visitorId);
     // Check that visitor id already bucketed and stored and skip bucketing logic
-    const storeData: StoreData = this.getLocalStore(visitorId) || {};
-    const {bucketing, segments} = storeData;
+    const {bucketing, segments} = this.getLocalStore(visitorId) || {};
     const {[experience.id.toString()]: variationId} = bucketing || {};
     if (
       variationId &&
