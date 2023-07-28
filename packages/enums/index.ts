@@ -22,7 +22,7 @@ export * from './src/project-type';
 export * from './src/rule-error';
 export * from './src/system-events';
 export * from './src/variable-types';
-export * from './src/variation-type';
+export * from './src/variation-change-type';
 export * from './src/segments/browser-type';
 export * from './src/segments/device-type';
 export * from './src/segments/segments-keys';

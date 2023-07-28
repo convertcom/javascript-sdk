@@ -21,7 +21,7 @@ import {
   MESSAGES,
   FeatureStatus,
   RuleError,
-  VariationType
+  VariationChangeType
 } from '@convertcom/js-sdk-enums';
 
 import {castType, arrayNotEmpty} from '@convertcom/js-sdk-utils';
@@ -382,7 +382,7 @@ export class FeatureManager implements FeatureManagerInterface {
       for (const v in bucketedVariation?.changes || []) {
         if (
           bucketedVariation?.changes?.[v]?.type !==
-          VariationType.FULLSTACK_FEATURE
+          VariationChangeType.FULLSTACK_FEATURE
         ) {
           this._loggerManager?.warn?.(MESSAGES.VARIATION_CHANGE_NOT_SUPPORTED);
           continue;

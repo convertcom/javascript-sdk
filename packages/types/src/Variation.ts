@@ -4,12 +4,12 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {VariationType} from '@convertcom/js-sdk-enums';
+import {VariationChangeType} from '@convertcom/js-sdk-enums';
 import {Id} from './Id';
 
 export type VariationChange = {
   id: Id;
-  type: VariationType;
+  type: VariationChangeType;
   data: {
     feature_id?: Id;
     variables_data?: Record<string, any>;
