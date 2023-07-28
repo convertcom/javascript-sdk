@@ -15,7 +15,8 @@ import {
   BucketedFeature,
   IdentityField,
   VariableType,
-  Experience
+  Experience,
+  FullStackFeatureChange
 } from '@convertcom/js-sdk-types';
 import {
   MESSAGES,
@@ -380,6 +381,8 @@ export class FeatureManager implements FeatureManagerInterface {
     for (const k in bucketedVariations) {
       const bucketedVariation = bucketedVariations[k] as BucketedVariation;
       for (const v in bucketedVariation?.changes || []) {
+        const changes = bucketedVariation?.changes?.[v]
+          ?.data as FullStackFeatureChange;
         if (
           bucketedVariation?.changes?.[v]?.type !==
           VariationChangeType.FULLSTACK_FEATURE
@@ -387,7 +390,7 @@ export class FeatureManager implements FeatureManagerInterface {
           this._loggerManager?.warn?.(MESSAGES.VARIATION_CHANGE_NOT_SUPPORTED);
           continue;
         }
-        const featureId = bucketedVariation?.changes?.[v]?.data?.feature_id;
+        const featureId = changes?.feature_id;
         // Take the features filter into account
         if (!featureId) {
           this._loggerManager?.warn?.(MESSAGES.FEATURE_NOT_FOUND);
@@ -400,8 +403,7 @@ export class FeatureManager implements FeatureManagerInterface {
               -1) ||
           !filter?.features
         ) {
-          const variables =
-            bucketedVariation?.changes?.[v]?.data?.variables_data;
+          const variables = changes?.variables_data;
 
           if (!variables) {
             this._loggerManager?.warn?.(MESSAGES.FEATURE_VARIABLES_NOT_FOUND);
