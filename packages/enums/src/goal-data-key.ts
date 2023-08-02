@@ -6,5 +6,6 @@
  */
 export enum GoalDataKey {
   AMOUNT = 'amount',
-  PRODUCTS_COUNT = 'productsCount'
+  PRODUCTS_COUNT = 'productsCount',
+  TRANSACTION_ID = 'transactionId'
 }
