@@ -8,7 +8,7 @@
 import {GoalDataKey} from '@convertcom/js-sdk-enums';
 import {Id} from '../Id';
 
-type GoalData = {
+export type GoalData = {
   [key in GoalDataKey]?: Id;
 };
 
