@@ -10,5 +10,6 @@ export enum BrowserType {
   FF = 'FF',
   OP = 'OP',
   SF = 'SF',
+  EDG = 'EDG',
   OTH = 'OTH'
 }
