@@ -44,7 +44,8 @@ import {
   RuleError,
   EventType,
   GoalDataKey,
-  SegmentsKeys
+  SegmentsKeys,
+  SystemEvents
 } from '@convertcom/js-sdk-enums';
 
 import {DataStoreManager} from './data-store-manager';
@@ -194,13 +195,13 @@ export class DataManager implements DataManagerInterface {
 
     let matchedErrors = [];
     if (experience && !isArchivedExperience && isEnvironmentMatch) {
-      let locationMatched: boolean | RuleError = false;
+      let locationMatched: boolean | RuleError = false,
+        matchedLocations = [];
       if (locationProperties) {
         if (
           Array.isArray(experience?.locations) &&
           experience.locations.length
         ) {
-          let matchedLocations = [];
           // Get attached locations
           const locations = this.getItemsByIds(
             experience.locations,
@@ -282,6 +283,55 @@ export class DataManager implements DataManagerInterface {
           matchedSegmentations.length ||
           !audiences.length // Empty audiences list means there's no restriction for the audience
         ) {
+          this._eventManager.fire(
+            SystemEvents.LOCATIONS,
+            {
+              visitorId,
+              experienceId: experience.id,
+              experiencekey: experience.key,
+              locations: matchedLocations.map(({id, key, name}) => ({
+                id,
+                key,
+                name
+              }))
+            },
+            null,
+            true
+          );
+          if (matchedAudiences.length) {
+            this._eventManager.fire(
+              SystemEvents.AUDIENCES,
+              {
+                visitorId,
+                experienceId: experience.id,
+                experiencekey: experience.key,
+                audiences: matchedAudiences.map(({id, key, name}) => ({
+                  id,
+                  key,
+                  name
+                }))
+              },
+              null,
+              true
+            );
+          }
+          if (matchedSegmentations.length) {
+            this._eventManager.fire(
+              SystemEvents.SEGMENTS,
+              {
+                visitorId,
+                experienceId: experience.id,
+                experiencekey: experience.key,
+                segments: matchedSegmentations.map(({id, key, name}) => ({
+                  id,
+                  key,
+                  name
+                }))
+              },
+              null,
+              true
+            );
+          }
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
             return this._retrieveBucketing(visitorId, experience);
