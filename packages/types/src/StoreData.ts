@@ -9,5 +9,6 @@ import {SegmentsData} from './SegmentsData';
 
 export type StoreData = {
   bucketing?: Record<string, Id>;
+  locations?: Array<Id>;
   segments?: SegmentsData;
 };
