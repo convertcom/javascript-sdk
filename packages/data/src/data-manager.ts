@@ -492,6 +492,13 @@ export class DataManager implements DataManagerInterface {
     return `${this._accountId}-${this._projectId}-${visitorId}`;
   }
 
+  /**
+   *
+   * @param {string} visitorId
+   * @param {Array<Record<string, any>>} items
+   * @param {Record<string, any>} locationProperties
+   * @returns {Array<Record<string, any> | RuleError>}
+   */
   selectLocations(
     visitorId: string,
     items: Array<Record<string, any>>,
