@@ -147,25 +147,24 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
-   * Retrieve variation for visitor
+   * Validate locationProperties against locations rules and visitorProperties against audiences rules
    * @param {string} visitorId
    * @param {string|Id} identity Value of the field which name is provided in identityField
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
    * @param {IdentityField=} identityField Defaults to 'key'
    * @param {string=} environment
-   * @return {BucketedVariation | RuleError}
-   * @private
+   * @return {Experience | RuleError}
    */
-  private _getBucketingByField(
+  matchRulesByField(
     visitorId: string,
     identity: string | Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
     identityField: IdentityField = 'key',
     environment: string = this._environment
-  ): BucketedVariation | RuleError {
-    this._loggerManager?.trace?.('DataManager._getBucketingByField()', {
+  ): Experience | RuleError {
+    this._loggerManager?.trace?.('DataManager.matchRulesByField()', {
       visitorId: visitorId,
       identity: identity,
       visitorProperties: visitorProperties,
@@ -294,7 +293,7 @@ export class DataManager implements DataManagerInterface {
         ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
-            return this._retrieveBucketing(visitorId, experience);
+            return experience;
           } else {
             this._loggerManager?.debug?.(MESSAGES.VARIATIONS_NOT_FOUND, {
               visitorProperties: visitorProperties,
@@ -321,6 +320,52 @@ export class DataManager implements DataManagerInterface {
         identity: identity,
         identityField: identityField
       });
+    }
+    return null;
+  }
+
+  /**
+   * Retrieve variation for visitor
+   * @param {string} visitorId
+   * @param {string|Id} identity Value of the field which name is provided in identityField
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
+   * @param {IdentityField=} identityField Defaults to 'key'
+   * @param {string=} environment
+   * @return {BucketedVariation | RuleError}
+   * @private
+   */
+  private _getBucketingByField(
+    visitorId: string,
+    identity: string | Id,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
+    identityField: IdentityField = 'key',
+    environment: string = this._environment
+  ): BucketedVariation | RuleError {
+    this._loggerManager?.trace?.('DataManager._getBucketingByField()', {
+      visitorId: visitorId,
+      identity: identity,
+      visitorProperties: visitorProperties,
+      locationProperties: locationProperties,
+      identityField: identityField,
+      environment: environment
+    });
+
+    // Retrieve the experience
+    const experience = this.matchRulesByField(
+      visitorId,
+      identity,
+      visitorProperties,
+      locationProperties,
+      identityField,
+      environment
+    );
+    if (experience) {
+      if (Object.values(RuleError).includes(experience as RuleError)) {
+        return experience as RuleError;
+      }
+      return this._retrieveBucketing(visitorId, experience as Experience);
     }
     return null;
   }
