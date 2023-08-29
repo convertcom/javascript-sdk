@@ -561,18 +561,14 @@ export class DataManager implements DataManagerInterface {
     if (arrayNotEmpty(items)) {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
-        if (locations.includes(items[i].id.toString())) {
-          matchedRecords.push(items[i]);
-          continue;
-        }
         match = this._ruleManager.isRuleMatched(
           locationProperties,
           items[i].rules
         );
-        if (match === true) {
+        if (match === true && !locations.includes(items[i].id.toString())) {
           locations.push(items[i].id.toString());
           this._eventManager.fire(
-            SystemEvents.LOCATIONS,
+            SystemEvents.LOCATION_ACTIVATED,
             {
               visitorId,
               location: {
@@ -588,6 +584,27 @@ export class DataManager implements DataManagerInterface {
         } else if (match !== false) {
           // catch rule errors
           matchedRecords.push(match);
+        } else if (
+          match === false &&
+          locations.includes(items[i].id.toString())
+        ) {
+          this._eventManager.fire(
+            SystemEvents.LOCATION_DEACTIVATED,
+            {
+              visitorId,
+              location: {
+                id: items[i].id,
+                key: items[i].key,
+                name: items[i].name
+              }
+            },
+            null,
+            true
+          );
+          const locationIndex = locations.findIndex(
+            (location) => location === items[i].id.toString()
+          );
+          locations.splice(locationIndex, 1);
         }
       }
     }

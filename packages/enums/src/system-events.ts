@@ -16,7 +16,8 @@ export enum SystemEvents {
   BUCKETING = 'bucketing',
   CONVERSION = 'conversion',
   SEGMENTS = 'segments',
-  LOCATIONS = 'locations',
+  LOCATION_ACTIVATED = 'location-activated',
+  LOCATION_DEACTIVATED = 'location-deactivated',
   AUDIENCES = 'audiences',
   DATA_STORE_QUEUE_RELEASED = 'data-store-queue-released'
 }
