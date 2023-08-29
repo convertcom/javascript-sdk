@@ -7,20 +7,26 @@ import jsdoc from 'rollup-plugin-jsdoc';
 import json from '@rollup/plugin-json';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 import copy from 'rollup-plugin-copy';
-import replace from '@rollup/plugin-replace';
+import modify from 'rollup-plugin-modify';
 
 import dotenv from 'dotenv';
 dotenv.config();
 
 const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
 
-const ENV_OPTIONS = {
-  values: {
-    'process.env.CONFIG_ENDPOINT': `'${process.env.CONFIG_ENDPOINT || ''}'`,
-    'process.env.TRACK_ENDPOINT': `'${process.env.TRACK_ENDPOINT || ''}'`
-  },
-  objectGuards: true,
-  preventAssignment: true
+const LOGGER_OPTIONS = {
+  find: /this\._loggerManager[.|?].*?;$/gms,
+  replace: '// eslint-disable-line'
+};
+
+const CONFIG_ENV = {
+  find: 'process.env.CONFIG_ENDPOINT',
+  replace: `'${process.env.CONFIG_ENDPOINT || ''}'`
+};
+
+const TRACK_ENV = {
+  find: 'process.env.TRACK_ENDPOINT',
+  replace: `'${process.env.TRACK_ENDPOINT || ''}'`
 };
 
 const JSDOC_PATH = 'docs';
@@ -53,6 +59,9 @@ const terserConfig = {
   }
 };
 
+const withLogging =
+  Number(process.env.ENABLE_LOGGING) === 1 ? [] : [modify(LOGGER_OPTIONS)];
+
 const commonJSBundle = {
   cache: BUILD_CACHE,
   input: './index.ts',
@@ -71,8 +80,9 @@ const commonJSBundle = {
       plugins: [terser(terserConfig)]
     }
   ],
-  plugins: [
-    replace(ENV_OPTIONS),
+  plugins: withLogging.concat([
+    modify(CONFIG_ENV),
+    modify(TRACK_ENV),
     typescript({
       tsconfigOverride: {exclude: exclude}
     }),
@@ -108,7 +118,7 @@ const commonJSBundle = {
     copy({
       targets: [{src: ['public/**/*', 'coverage/coverage.svg'], dest: 'docs'}]
     })
-  ]
+  ])
 };
 
 const commonJSLegacyBundle = {
@@ -129,8 +139,9 @@ const commonJSLegacyBundle = {
       plugins: [terser(terserConfig)]
     }
   ],
-  plugins: [
-    replace(ENV_OPTIONS),
+  plugins: withLogging.concat([
+    modify(CONFIG_ENV),
+    modify(TRACK_ENV),
     typescript({
       tsconfigOverride: {compilerOptions: {target: 'es5'}, exclude: exclude}
     }),
@@ -145,7 +156,7 @@ const commonJSLegacyBundle = {
       presets: [['@babel/preset-env', {targets: 'defaults'}]]
     }),
     json()
-  ]
+  ])
 };
 
 const esmBundle = {
@@ -166,8 +177,9 @@ const esmBundle = {
       sourcemap: true
     }
   ],
-  plugins: [
-    replace(ENV_OPTIONS),
+  plugins: withLogging.concat([
+    modify(CONFIG_ENV),
+    modify(TRACK_ENV),
     typescript({
       tsconfigOverride: {exclude: exclude}
     }),
@@ -177,7 +189,7 @@ const esmBundle = {
     }),
     commonjs(),
     json()
-  ]
+  ])
 };
 
 const umdBundle = {
@@ -200,8 +212,9 @@ const umdBundle = {
       sourcemap: true
     }
   ],
-  plugins: [
-    replace(ENV_OPTIONS),
+  plugins: withLogging.concat([
+    modify(CONFIG_ENV),
+    modify(TRACK_ENV),
     typescript({
       tsconfigOverride: {exclude: exclude}
     }),
@@ -211,7 +224,7 @@ const umdBundle = {
     }),
     commonjs(),
     json()
-  ]
+  ])
 };
 export default () => {
   return [commonJSBundle, commonJSLegacyBundle, esmBundle, umdBundle];

@@ -3,8 +3,17 @@ import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
+import modify from 'rollup-plugin-modify';
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
+
+const LOGGER_OPTIONS = {
+  find: /this\._loggerManager[.|?].*?;$/gms,
+  replace: '// eslint-disable-line'
+};
 
 const exclude = [
   '**/*.conf.js',
@@ -32,6 +41,9 @@ const terserConfig = {
   }
 };
 
+const withLogging =
+  Number(process.env.ENABLE_LOGGING) === 1 ? [] : [modify(LOGGER_OPTIONS)];
+
 const commonJSBundle = {
   cache: BUILD_CACHE,
   input: './index.ts',
@@ -50,7 +62,7 @@ const commonJSBundle = {
       plugins: [terser(terserConfig)]
     }
   ],
-  plugins: [
+  plugins: withLogging.concat([
     typescript({
       tsconfigOverride: {exclude: exclude}
     }),
@@ -74,7 +86,7 @@ const commonJSBundle = {
         version: pkg.version
       })
     })
-  ]
+  ])
 };
 
 const commonJSLegacyBundle = {
@@ -95,7 +107,7 @@ const commonJSLegacyBundle = {
       plugins: [terser(terserConfig)]
     }
   ],
-  plugins: [
+  plugins: withLogging.concat([
     typescript({
       tsconfigOverride: {compilerOptions: {target: 'es5'}, exclude: exclude}
     }),
@@ -105,7 +117,7 @@ const commonJSLegacyBundle = {
       exclude: 'node_modules/**',
       presets: [['@babel/preset-env', {targets: 'defaults'}]]
     })
-  ]
+  ])
 };
 
 const esmBundle = {
@@ -126,12 +138,12 @@ const esmBundle = {
       sourcemap: true
     }
   ],
-  plugins: [
+  plugins: withLogging.concat([
     typescript({
       tsconfigOverride: {exclude: exclude}
     }),
     commonjs()
-  ]
+  ])
 };
 
 export default () => {

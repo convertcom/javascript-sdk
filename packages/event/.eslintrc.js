@@ -15,6 +15,7 @@ module.exports = {
     'plugin:prettier/recommended',
     'plugin:mocha/recommended'
   ],
+  plugins: ['eslint-plugin-local-rules'],
   rules: {
     // Include .prettierrc.js rules
     'prettier/prettier': ['error', {}, {usePrettierrc: true}],
@@ -25,7 +26,8 @@ module.exports = {
     semi: ['error', 'always'],
     'no-console': 'off',
     'linebreak-style': ['error', 'unix'],
-    '@typescript-eslint/no-explicit-any': 'off'
+    '@typescript-eslint/no-explicit-any': 'off',
+    'local-rules/log-manager': 'error'
   },
   settings: {
     react: {
