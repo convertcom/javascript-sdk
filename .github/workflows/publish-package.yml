@@ -15,7 +15,7 @@ jobs:
       - run: yarn install
       - run: |
           yarn sdk:lint
-          ENABLE_LOGGING=0 yarn sdk:build
+          ENABLE_LOGGING=0 LOG_LEVEL=5 yarn sdk:build
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
