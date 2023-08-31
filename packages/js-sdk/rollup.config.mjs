@@ -15,9 +15,36 @@ dotenv.config();
 const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
 
 const LOGGER_OPTIONS = {
-  find: /this\._loggerManager[.|?].*?;$/gms,
   replace: '// eslint-disable-line'
 };
+const logLevel = process.env.LOG_LEVEL ? Number(process.env.LOG_LEVEL) : 0;
+switch (logLevel) {
+  case 2:
+    console.log('log level:', 'info');
+    LOGGER_OPTIONS.find =
+      /this\.(render\.)?_loggerManager(\?)?\.(?!(info|warn|error)).*?;$/gms;
+    break;
+  case 3:
+    console.log('log level:', 'warn');
+    LOGGER_OPTIONS.find =
+      /this\.(render\.)?_loggerManager(\?)?\.(?!(warn|error)).*?;$/gms;
+    break;
+  case 4:
+    console.log('log level:', 'error');
+    LOGGER_OPTIONS.find =
+      /this\.(render\.)?_loggerManager(\?)?\.(?!(error)).*?;$/gms;
+    break;
+  default:
+    if (logLevel === 0) {
+      console.log('log level:', 'trace');
+    } else if (logLevel === 1) {
+      console.log('log level:', 'debug');
+    } else if (logLevel === 5) {
+      console.log('log level:', 'silent');
+    }
+    LOGGER_OPTIONS.find = /this\.(render\.)?_loggerManager(\?)?\..*?;$/gms;
+    break;
+}
 
 const CONFIG_ENV = {
   find: 'process.env.CONFIG_ENDPOINT',
