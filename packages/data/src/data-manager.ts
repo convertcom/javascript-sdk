@@ -241,6 +241,12 @@ export class DataManager implements DataManagerInterface {
           // Empty experience locations list or unset Site Area means there's no restriction for the location
           locationMatched = true;
         }
+        if (locationMatched) {
+          this._loggerManager?.info?.(MESSAGES.LOCATION_MATCH);
+          this._loggerManager?.debug?.({
+            locationProperties: locationProperties
+          });
+        }
       }
       // Validate locationProperties against site area rules
       if (!locationProperties || locationMatched) {
@@ -291,6 +297,15 @@ export class DataManager implements DataManagerInterface {
           matchedSegmentations.length ||
           !audiences.length // Empty audiences list means there's no restriction for the audience
         ) {
+          if (matchedAudiences.length) {
+            this._loggerManager?.info?.(MESSAGES.AUDIENCE_MATCH);
+            this._loggerManager?.debug?.({
+              visitorProperties: visitorProperties
+            });
+          }
+          if (matchedSegmentations.length) {
+            this._loggerManager?.info?.(MESSAGES.SEGMENTATION_MATCH);
+          }
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
             return experience;
@@ -395,7 +410,8 @@ export class DataManager implements DataManagerInterface {
       (variation = this.retrieveVariation(experience.id, variationId))
     ) {
       // If it's found log debug info. The return value will be formed next step
-      this._loggerManager?.debug?.(MESSAGES.BUCKETED_VISITOR_FOUND, {
+      this._loggerManager?.info?.(MESSAGES.BUCKETED_VISITOR_FOUND);
+      this._loggerManager?.debug?.({
         storeKey: storeKey,
         visitorId: visitorId,
         variationId: variationId
@@ -415,7 +431,8 @@ export class DataManager implements DataManagerInterface {
           ...(segments ? {segments} : {})
         });
         // If it's found log debug info. The return value will be formed next step
-        this._loggerManager?.debug?.(MESSAGES.BUCKETED_VISITOR_FOUND, {
+        this._loggerManager?.info?.(MESSAGES.BUCKETED_VISITOR_FOUND);
+        this._loggerManager?.debug?.({
           storeKey: storeKey,
           visitorId: visitorId,
           variationId: variationId
@@ -433,6 +450,7 @@ export class DataManager implements DataManagerInterface {
           visitorId
         ) as Id;
         if (variationId) {
+          this._loggerManager?.info?.(MESSAGES.BUCKETED_VISITOR);
           // Store the data in local variable
           const storeData: StoreData = {
             bucketing: {...bucketing, [experience.id.toString()]: variationId},
@@ -581,6 +599,7 @@ export class DataManager implements DataManagerInterface {
             true
           );
           matchedRecords.push(items[i]);
+          this._loggerManager?.info?.(MESSAGES.LOCATION_ACTIVE);
         } else if (match !== false) {
           // catch rule errors
           matchedRecords.push(match);
@@ -605,6 +624,7 @@ export class DataManager implements DataManagerInterface {
             (location) => location === items[i].id.toString()
           );
           locations.splice(locationIndex, 1);
+          this._loggerManager?.info?.(MESSAGES.LOCATION_INACTIVE);
         }
       }
     }
