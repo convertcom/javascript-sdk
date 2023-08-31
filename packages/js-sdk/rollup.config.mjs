@@ -19,6 +19,11 @@ const LOGGER_OPTIONS = {
 };
 const logLevel = process.env.LOG_LEVEL ? Number(process.env.LOG_LEVEL) : 0;
 switch (logLevel) {
+  case 1:
+    console.log('log level:', 'debug');
+    LOGGER_OPTIONS.find =
+      /this\.(render\.)?_loggerManager(\?)?\.(?!(debug|info|warn|error)).*?;$/gms;
+    break;
   case 2:
     console.log('log level:', 'info');
     LOGGER_OPTIONS.find =
@@ -34,14 +39,8 @@ switch (logLevel) {
     LOGGER_OPTIONS.find =
       /this\.(render\.)?_loggerManager(\?)?\.(?!(error)).*?;$/gms;
     break;
-  default:
-    if (logLevel === 0) {
-      console.log('log level:', 'trace');
-    } else if (logLevel === 1) {
-      console.log('log level:', 'debug');
-    } else if (logLevel === 5) {
-      console.log('log level:', 'silent');
-    }
+  case 5:
+    console.log('log level:', 'silent');
     LOGGER_OPTIONS.find = /this\.(render\.)?_loggerManager(\?)?\..*?;$/gms;
     break;
 }
@@ -86,8 +85,7 @@ const terserConfig = {
   }
 };
 
-const withLogging =
-  Number(process.env.ENABLE_LOGGING) === 1 ? [] : [modify(LOGGER_OPTIONS)];
+const withLogging = logLevel > 0 ? [modify(LOGGER_OPTIONS)] : [];
 
 const commonJSBundle = {
   cache: BUILD_CACHE,
