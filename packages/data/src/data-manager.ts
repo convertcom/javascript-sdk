@@ -241,12 +241,6 @@ export class DataManager implements DataManagerInterface {
           // Empty experience locations list or unset Site Area means there's no restriction for the location
           locationMatched = true;
         }
-        if (locationMatched) {
-          this._loggerManager?.info?.(MESSAGES.LOCATION_MATCH);
-          this._loggerManager?.debug?.({
-            locationProperties: locationProperties
-          });
-        }
       }
       // Validate locationProperties against site area rules
       if (!locationProperties || locationMatched) {
@@ -297,15 +291,6 @@ export class DataManager implements DataManagerInterface {
           matchedSegmentations.length ||
           !audiences.length // Empty audiences list means there's no restriction for the audience
         ) {
-          if (matchedAudiences.length) {
-            this._loggerManager?.info?.(MESSAGES.AUDIENCE_MATCH);
-            this._loggerManager?.debug?.({
-              visitorProperties: visitorProperties
-            });
-          }
-          if (matchedSegmentations.length) {
-            this._loggerManager?.info?.(MESSAGES.SEGMENTATION_MATCH);
-          }
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
             return experience;
