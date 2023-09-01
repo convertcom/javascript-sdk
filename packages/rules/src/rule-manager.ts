@@ -113,6 +113,13 @@ export class RuleManager implements RuleManagerInterface {
     ) {
       for (let i = 0, l = ruleSet.OR.length; i < l; i++) {
         match = this._processAND(data, ruleSet.OR[i]);
+        if (Object.values(RuleError).includes(match as RuleError)) {
+          this._loggerManager?.info?.(ERROR_MESSAGES.RULE_ERROR, match);
+        } else {
+          this._loggerManager?.info?.(
+            match === false ? MESSAGES.RULES_NOT_MATCH : MESSAGES.RULES_MATCH
+          );
+        }
         if (match !== false) {
           return match;
         }

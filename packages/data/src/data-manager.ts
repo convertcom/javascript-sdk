@@ -316,7 +316,7 @@ export class DataManager implements DataManagerInterface {
             });
           }
         } else {
-          this._loggerManager?.debug?.(MESSAGES.RULES_NOT_MATCH, {
+          this._loggerManager?.debug?.(MESSAGES.AUDIENCE_NOT_MATCH, {
             visitorProperties: visitorProperties,
             audiences: audiences
           });

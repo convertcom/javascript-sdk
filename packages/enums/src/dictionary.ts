@@ -11,6 +11,7 @@ export const ERROR_MESSAGES = {
   SDK_OR_DATA_OBJECT_REQUIRED: 'SDK key or Data object should be provided',
   RULE_NOT_VALID: 'Provided rule is not valid',
   RULE_DATA_NOT_VALID: 'Provided rule data is not valid',
+  RULE_ERROR: 'Rule error',
   DATA_STORE_NOT_VALID:
     'DataStore object is not valid. It should contain get and set methods',
   VISITOR_ID_REQUIRED: 'Visitor Id string is not present',
@@ -36,6 +37,7 @@ export const MESSAGES = {
   DATA_CONSTRUCTOR: 'Data Manager constructor has been called',
   RULE_CONSTRUCTOR: 'Rule Manager constructor has been called',
   LOCATION_NOT_MATCH: 'Location does not match',
+  AUDIENCE_NOT_MATCH: 'Audience does not match',
   RULES_NOT_MATCH: 'Rules do not match',
   RULES_MATCH: 'Found matched rules',
   LOCATION_MATCH: 'Found matched location rules',
