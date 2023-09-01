@@ -410,7 +410,9 @@ export class DataManager implements DataManagerInterface {
       (variation = this.retrieveVariation(experience.id, variationId))
     ) {
       // If it's found log debug info. The return value will be formed next step
-      this._loggerManager?.info?.(MESSAGES.BUCKETED_VISITOR_FOUND);
+      this._loggerManager?.info?.(
+        MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
+      );
       this._loggerManager?.debug?.({
         storeKey: storeKey,
         visitorId: visitorId,
@@ -431,7 +433,9 @@ export class DataManager implements DataManagerInterface {
           ...(segments ? {segments} : {})
         });
         // If it's found log debug info. The return value will be formed next step
-        this._loggerManager?.info?.(MESSAGES.BUCKETED_VISITOR_FOUND);
+        this._loggerManager?.info?.(
+          MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
+        );
         this._loggerManager?.debug?.({
           storeKey: storeKey,
           visitorId: visitorId,
@@ -450,7 +454,9 @@ export class DataManager implements DataManagerInterface {
           visitorId
         ) as Id;
         if (variationId) {
-          this._loggerManager?.info?.(MESSAGES.BUCKETED_VISITOR);
+          this._loggerManager?.info?.(
+            MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
+          );
           // Store the data in local variable
           const storeData: StoreData = {
             bucketing: {...bucketing, [experience.id.toString()]: variationId},
@@ -599,7 +605,9 @@ export class DataManager implements DataManagerInterface {
             true
           );
           matchedRecords.push(items[i]);
-          this._loggerManager?.info?.(MESSAGES.LOCATION_ACTIVE);
+          this._loggerManager?.info?.(
+            MESSAGES.LOCATION_ACTIVATED.replace('#', `#${items[i].id}`)
+          );
         } else if (match !== false) {
           // catch rule errors
           matchedRecords.push(match);
@@ -624,7 +632,9 @@ export class DataManager implements DataManagerInterface {
             (location) => location === items[i].id.toString()
           );
           locations.splice(locationIndex, 1);
-          this._loggerManager?.info?.(MESSAGES.LOCATION_INACTIVE);
+          this._loggerManager?.info?.(
+            MESSAGES.LOCATION_DEACTIVATED.replace('#', `#${items[i].id}`)
+          );
         }
       }
     }
