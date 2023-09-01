@@ -35,10 +35,10 @@
     "node": ">=8.0.0"
   },
   "peerDependencies": {
-    "@convertcom/enums": "1.0.0",
-    "@convertcom/logger": "1.0.0",
-    "@convertcom/types": "1.0.0",
-    "@convertcom/utils": "1.0.0"
+    "@convertcom/js-sdk-enums": "1.0.0",
+    "@convertcom/js-sdk-logger": "1.0.0",
+    "@convertcom/js-sdk-types": "1.0.0",
+    "@convertcom/js-sdk-utils": "1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",

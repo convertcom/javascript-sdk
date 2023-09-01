@@ -32,7 +32,7 @@
     "node": ">=8.0.0"
   },
   "peerDependencies": {
-    "@convertcom/enums": "1.0.0"
+    "@convertcom/js-sdk-enums": "1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",
