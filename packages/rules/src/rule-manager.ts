@@ -114,10 +114,12 @@ export class RuleManager implements RuleManagerInterface {
       for (let i = 0, l = ruleSet.OR.length; i < l; i++) {
         match = this._processAND(data, ruleSet.OR[i]);
         if (Object.values(RuleError).includes(match as RuleError)) {
-          this._loggerManager?.info?.(ERROR_MESSAGES.RULE_ERROR, match);
+          this._loggerManager?.info?.(ERROR_MESSAGES.RULE_ERROR);
         } else {
           this._loggerManager?.info?.(
-            match === false ? MESSAGES.RULES_NOT_MATCH : MESSAGES.RULES_MATCH
+            match === false
+              ? MESSAGES.RULES_NOT_MATCH
+              : MESSAGES.RULES_MATCH.replace('#', String(i))
           );
         }
         if (match !== false) {
@@ -172,6 +174,9 @@ export class RuleManager implements RuleManagerInterface {
         if (match === false) {
           return false;
         }
+      }
+      if (match !== false) {
+        this._loggerManager?.info?.(MESSAGES.RULES_MATCH_AND);
       }
       return match;
     } else {
@@ -244,6 +249,9 @@ export class RuleManager implements RuleManagerInterface {
               }
             } else if (rule?.rule_type) {
               // Rule object has to have `rule_type` field
+              this._loggerManager?.info?.(
+                MESSAGES.RULE_MATCH_START.replace('#', rule.rule_type)
+              );
               for (const method of Object.getOwnPropertyNames(
                 data.constructor.prototype
               )) {
