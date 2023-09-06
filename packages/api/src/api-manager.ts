@@ -203,7 +203,7 @@ export class ApiManager implements ApiManagerInterface {
    */
   releaseQueue(reason?: string): Promise<any> {
     if (!this._requestsQueue.length) return;
-    this._loggerManager?.trace?.('ApiManager.releaseQueue()', {
+    this._loggerManager?.info?.('ApiManager.releaseQueue()', {
       reason: reason || ''
     });
     this.stopQueue();
