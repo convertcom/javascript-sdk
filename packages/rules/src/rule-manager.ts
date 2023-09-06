@@ -120,9 +120,13 @@ export class RuleManager implements RuleManagerInterface {
       for (let i = 0, l = ruleSet.OR.length; i < l; i++) {
         match = this._processAND(data, ruleSet.OR[i]);
         if (Object.values(RuleError).includes(match as RuleError)) {
-          this._loggerManager?.info?.(ERROR_MESSAGES.RULE_ERROR);
+          this._loggerManager?.info?.(
+            logEntry || '',
+            ERROR_MESSAGES.RULE_ERROR
+          );
         } else {
           this._loggerManager?.info?.(
+            logEntry || '',
             match === false
               ? MESSAGES.RULE_NOT_MATCH
               : MESSAGES.RULE_MATCH.replace('#', String(i))
@@ -133,7 +137,10 @@ export class RuleManager implements RuleManagerInterface {
         }
       }
     } else {
-      this._loggerManager?.warn?.(ERROR_MESSAGES.RULE_NOT_VALID);
+      this._loggerManager?.warn?.(
+        logEntry || '',
+        ERROR_MESSAGES.RULE_NOT_VALID
+      );
     }
     return false;
   }
