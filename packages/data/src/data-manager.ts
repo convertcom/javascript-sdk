@@ -6,6 +6,7 @@
  */
 import {
   arrayNotEmpty,
+  camelCase,
   objectDeepValue,
   objectNotEmpty
 } from '@convertcom/js-sdk-utils';
@@ -595,8 +596,7 @@ export class DataManager implements DataManagerInterface {
         match = this._ruleManager.isRuleMatched(
           locationProperties,
           items[i].rules,
-          'location',
-          identityField
+          `Location #${items[i][identityField]}`
         );
         const identity = items?.[i]?.[identityField]?.toString?.();
         if (match === true) {
@@ -743,7 +743,7 @@ export class DataManager implements DataManagerInterface {
       const ruleMatched = this._ruleManager.isRuleMatched(
         goalRule,
         goal.rules,
-        'goal'
+        `Goal #${goalId}`
       );
       // Return rule errors if present
       if (Object.values(RuleError).includes(ruleMatched as RuleError))
@@ -805,8 +805,7 @@ export class DataManager implements DataManagerInterface {
         match = this._ruleManager.isRuleMatched(
           visitorProperties,
           items[i].rules,
-          entityType,
-          field
+          `${camelCase(entityType)} #${items[i][field]}`
         );
         if (match === true) {
           matchedRecords.push(items[i]);

@@ -107,7 +107,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
         segmentsMatched = this._ruleManager.isRuleMatched(
           segmentRule,
           segment?.rules,
-          'segments'
+          `Segments #${segment?.id}`
         );
         // Return rule errors if present
         if (Object.values(RuleError).includes(segmentsMatched as RuleError))
