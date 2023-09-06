@@ -193,8 +193,8 @@ export class DataManager implements DataManagerInterface {
       : true; // skip if no environments
 
     // Get locations from DataStore
-    const storeData = this.getLocalStore(visitorId) || {};
-    const {locations: selectedLocations = []} = storeData;
+    // const storeData = this.getLocalStore(visitorId) || {};
+    // const {locations: selectedLocations = []} = storeData;
 
     let matchedErrors = [];
     if (experience && !isArchivedExperience && isEnvironmentMatch) {
@@ -205,28 +205,47 @@ export class DataManager implements DataManagerInterface {
           Array.isArray(experience?.locations) &&
           experience.locations.length
         ) {
-          matchedLocations = experience.locations.filter((locationId) =>
-            selectedLocations.includes(locationId.toString())
-          );
-          if (!matchedLocations.length) {
-            // Get attached locations
-            const locations = this.getItemsByIds(
-              experience.locations,
-              'locations'
-            ) as Array<Location>;
-            if (locations.length) {
-              // Validate locationProperties against locations rules
-              matchedLocations = this.filterMatchedRecordsWithRule(
-                locations,
-                locationProperties
-              );
-              // Return rule errors if present
-              matchedErrors = matchedLocations.filter((match) =>
-                Object.values(RuleError).includes(match as RuleError)
-              );
-              if (matchedErrors.length) return matchedErrors[0] as RuleError;
-            }
+          // Get attached locations
+          const locations = this.getItemsByIds(
+            experience.locations,
+            'locations'
+          ) as Array<Location>;
+          if (locations.length) {
+            // Validate locationProperties against locations rules
+            // and trigger activated/deactivated events
+            matchedLocations = this.selectLocations(
+              visitorId,
+              locations,
+              locationProperties
+            );
+            // Return rule errors if present
+            matchedErrors = matchedLocations.filter((match) =>
+              Object.values(RuleError).includes(match as RuleError)
+            );
+            if (matchedErrors.length) return matchedErrors[0] as RuleError;
           }
+          // matchedLocations = experience.locations.filter((locationId) =>
+          //   selectedLocations.includes(locationId.toString())
+          // );
+          // if (!matchedLocations.length) {
+          //   // Get attached locations
+          //   const locations = this.getItemsByIds(
+          //     experience.locations,
+          //     'locations'
+          //   ) as Array<Location>;
+          //   if (locations.length) {
+          //     // Validate locationProperties against locations rules
+          //     matchedLocations = this.filterMatchedRecordsWithRule(
+          //       locations,
+          //       locationProperties
+          //     );
+          //     // Return rule errors if present
+          //     matchedErrors = matchedLocations.filter((match) =>
+          //       Object.values(RuleError).includes(match as RuleError)
+          //     );
+          //     if (matchedErrors.length) return matchedErrors[0] as RuleError;
+          //   }
+          // }
           // If there are some matched locations
           locationMatched = Boolean(matchedLocations.length);
         } else if (experience?.site_area) {
@@ -269,6 +288,13 @@ export class DataManager implements DataManagerInterface {
                 Object.values(RuleError).includes(match as RuleError)
               );
               if (matchedErrors.length) return matchedErrors[0] as RuleError;
+              if (matchedAudiences.length) {
+                for (const item of matchedAudiences) {
+                  this._loggerManager?.info?.(
+                    MESSAGES.AUDIENCE_MATCH.replace('#', item?.id || item?.key)
+                  );
+                }
+              }
             }
             // Get attached segmentation audiences
             segmentations = this.getItemsByIds(
@@ -281,6 +307,16 @@ export class DataManager implements DataManagerInterface {
                 segmentations,
                 visitorId
               );
+              if (matchedSegmentations.length) {
+                for (const item of matchedSegmentations) {
+                  this._loggerManager?.info?.(
+                    MESSAGES.SEGMENTATION_MATCH.replace(
+                      '#',
+                      item?.id || item?.key
+                    )
+                  );
+                }
+              }
             }
           }
         }
@@ -295,18 +331,21 @@ export class DataManager implements DataManagerInterface {
           if (experience?.variations && experience?.variations?.length) {
             return experience;
           } else {
+            this._loggerManager?.info?.(MESSAGES.VARIATIONS_NOT_FOUND);
             this._loggerManager?.debug?.(MESSAGES.VARIATIONS_NOT_FOUND, {
               visitorProperties: visitorProperties,
               audiences: audiences
             });
           }
         } else {
+          this._loggerManager?.info?.(MESSAGES.AUDIENCE_NOT_MATCH);
           this._loggerManager?.debug?.(MESSAGES.AUDIENCE_NOT_MATCH, {
             visitorProperties: visitorProperties,
             audiences: audiences
           });
         }
       } else {
+        this._loggerManager?.info?.(MESSAGES.LOCATION_NOT_MATCH);
         this._loggerManager?.debug?.(MESSAGES.LOCATION_NOT_MATCH, {
           locationProperties: locationProperties,
           [experience?.locations
@@ -316,6 +355,7 @@ export class DataManager implements DataManagerInterface {
         });
       }
     } else {
+      this._loggerManager?.info?.(MESSAGES.EXPERIENCE_NOT_FOUND);
       this._loggerManager?.debug?.(MESSAGES.EXPERIENCE_NOT_FOUND, {
         identity: identity,
         identityField: identityField
@@ -569,6 +609,7 @@ export class DataManager implements DataManagerInterface {
     let match;
     if (arrayNotEmpty(items)) {
       for (let i = 0, length = items.length; i < length; i++) {
+        if (!items?.[i]?.id) continue;
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
           locationProperties,
@@ -582,8 +623,8 @@ export class DataManager implements DataManagerInterface {
               visitorId,
               location: {
                 id: items[i].id,
-                key: items[i].key,
-                name: items[i].name
+                key: items[i]?.key,
+                name: items[i]?.name
               }
             },
             null,
@@ -606,8 +647,8 @@ export class DataManager implements DataManagerInterface {
               visitorId,
               location: {
                 id: items[i].id,
-                key: items[i].key,
-                name: items[i].name
+                key: items[i]?.key,
+                name: items[i]?.name
               }
             },
             null,

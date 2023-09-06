@@ -118,8 +118,8 @@ export class RuleManager implements RuleManagerInterface {
         } else {
           this._loggerManager?.info?.(
             match === false
-              ? MESSAGES.RULES_NOT_MATCH
-              : MESSAGES.RULES_MATCH.replace('#', String(i))
+              ? MESSAGES.RULE_NOT_MATCH
+              : MESSAGES.RULE_MATCH.replace('#', String(i))
           );
         }
         if (match !== false) {
@@ -176,7 +176,7 @@ export class RuleManager implements RuleManagerInterface {
         }
       }
       if (match !== false) {
-        this._loggerManager?.info?.(MESSAGES.RULES_MATCH_AND);
+        this._loggerManager?.info?.(MESSAGES.RULE_MATCH_AND);
       }
       return match;
     } else {
