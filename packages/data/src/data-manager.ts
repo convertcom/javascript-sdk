@@ -588,18 +588,14 @@ export class DataManager implements DataManagerInterface {
           locationProperties,
           items[i].rules
         );
+        const identitier =
+          items?.[i]?.id?.toString?.() || items?.[i]?.key?.toString?.();
         if (match === true) {
           this._loggerManager?.info?.(
-            MESSAGES.LOCATION_MATCH.replace(
-              '#',
-              `#${items?.[i]?.id || items?.[i]?.key}`
-            )
+            MESSAGES.LOCATION_MATCH.replace('#', `#${identitier}`)
           );
-          if (
-            !locations.includes(items?.[i]?.id.toString()) &&
-            !locations.includes(items?.[i]?.key.toString())
-          ) {
-            locations.push(items?.[i]?.id || items?.[i]?.key);
+          if (!locations.includes(identitier)) {
+            locations.push(identitier);
             this._eventManager.fire(
               SystemEvents.LOCATION_ACTIVATED,
               {
@@ -614,21 +610,14 @@ export class DataManager implements DataManagerInterface {
               true
             );
             this._loggerManager?.info?.(
-              MESSAGES.LOCATION_ACTIVATED.replace(
-                '#',
-                `#${items?.[i]?.id || items?.[i]?.key}`
-              )
+              MESSAGES.LOCATION_ACTIVATED.replace('#', `#${identitier}`)
             );
           }
           matchedRecords.push(items[i]);
         } else if (match !== false) {
           // catch rule errors
           matchedRecords.push(match);
-        } else if (
-          match === false &&
-          (locations.includes(items?.[i]?.id.toString()) ||
-            locations.includes(items?.[i]?.key.toString()))
-        ) {
+        } else if (match === false && locations.includes(identitier)) {
           this._eventManager.fire(
             SystemEvents.LOCATION_DEACTIVATED,
             {
@@ -643,14 +632,11 @@ export class DataManager implements DataManagerInterface {
             true
           );
           const locationIndex = locations.findIndex(
-            (location) => location === items?.[i]?.id.toString()
+            (location) => location === identitier
           );
           locations.splice(locationIndex, 1);
           this._loggerManager?.info?.(
-            MESSAGES.LOCATION_DEACTIVATED.replace(
-              '#',
-              `#${items?.[i]?.id || items?.[i]?.key}`
-            )
+            MESSAGES.LOCATION_DEACTIVATED.replace('#', `#${identitier}`)
           );
         }
       }
