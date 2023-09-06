@@ -27,7 +27,8 @@ export interface DataManagerInterface {
   selectLocations(
     visitorId: string,
     items: Array<Record<string, any>>,
-    locationProperties: Record<string, any>
+    locationProperties: Record<string, any>,
+    identityField: IdentityField
   ): Array<Record<string, any> | RuleError>;
   matchRulesByField(
     visitorId: string,

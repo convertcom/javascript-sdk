@@ -212,7 +212,8 @@ export class DataManager implements DataManagerInterface {
             matchedLocations = this.selectLocations(
               visitorId,
               locations,
-              locationProperties
+              locationProperties,
+              identityField
             );
             // Return rule errors if present
             matchedErrors = matchedLocations.filter((match) =>
@@ -570,7 +571,8 @@ export class DataManager implements DataManagerInterface {
   selectLocations(
     visitorId: string,
     items: Array<Record<string, any>>,
-    locationProperties: Record<string, any>
+    locationProperties: Record<string, any>,
+    identityField: IdentityField = 'key'
   ): Array<Record<string, any> | RuleError> {
     this._loggerManager?.trace?.('DataManager.selectLocations()', {
       items: items,
@@ -588,14 +590,13 @@ export class DataManager implements DataManagerInterface {
           locationProperties,
           items[i].rules
         );
-        const identitier =
-          items?.[i]?.id?.toString?.() || items?.[i]?.key?.toString?.();
+        const identity = items?.[i]?.[identityField]?.toString?.();
         if (match === true) {
           this._loggerManager?.info?.(
-            MESSAGES.LOCATION_MATCH.replace('#', `#${identitier}`)
+            MESSAGES.LOCATION_MATCH.replace('#', `#${identity}`)
           );
-          if (!locations.includes(identitier)) {
-            locations.push(identitier);
+          if (!locations.includes(identity)) {
+            locations.push(identity);
             this._eventManager.fire(
               SystemEvents.LOCATION_ACTIVATED,
               {
@@ -610,14 +611,14 @@ export class DataManager implements DataManagerInterface {
               true
             );
             this._loggerManager?.info?.(
-              MESSAGES.LOCATION_ACTIVATED.replace('#', `#${identitier}`)
+              MESSAGES.LOCATION_ACTIVATED.replace('#', `#${identity}`)
             );
           }
           matchedRecords.push(items[i]);
         } else if (match !== false) {
           // catch rule errors
           matchedRecords.push(match);
-        } else if (match === false && locations.includes(identitier)) {
+        } else if (match === false && locations.includes(identity)) {
           this._eventManager.fire(
             SystemEvents.LOCATION_DEACTIVATED,
             {
@@ -632,11 +633,11 @@ export class DataManager implements DataManagerInterface {
             true
           );
           const locationIndex = locations.findIndex(
-            (location) => location === identitier
+            (location) => location === identity
           );
           locations.splice(locationIndex, 1);
           this._loggerManager?.info?.(
-            MESSAGES.LOCATION_DEACTIVATED.replace('#', `#${identitier}`)
+            MESSAGES.LOCATION_DEACTIVATED.replace('#', `#${identity}`)
           );
         }
       }
