@@ -270,6 +270,8 @@ export class DataManager implements DataManagerInterface {
                   );
                 }
               }
+            } else {
+              this._loggerManager?.info?.(MESSAGES.AUDIENCE_NOT_RESTRICTED);
             }
             // Get attached segmentation audiences
             segmentations = this.getItemsByIds(
@@ -304,6 +306,7 @@ export class DataManager implements DataManagerInterface {
         ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
+            this._loggerManager?.info?.(MESSAGES.EXPERIENCE_RULES_MATCHED);
             return experience;
           } else {
             this._loggerManager?.info?.(MESSAGES.VARIATIONS_NOT_FOUND);
