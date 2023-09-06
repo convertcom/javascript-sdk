@@ -266,12 +266,10 @@ export class DataManager implements DataManagerInterface {
               if (matchedAudiences.length) {
                 for (const item of matchedAudiences) {
                   this._loggerManager?.info?.(
-                    MESSAGES.AUDIENCE_MATCH.replace('#', item?.id || item?.key)
+                    MESSAGES.AUDIENCE_MATCH.replace('#', item?.[identityField])
                   );
                 }
               }
-            } else {
-              this._loggerManager?.info?.(MESSAGES.AUDIENCE_NOT_RESTRICTED);
             }
             // Get attached segmentation audiences
             segmentations = this.getItemsByIds(
@@ -289,12 +287,14 @@ export class DataManager implements DataManagerInterface {
                   this._loggerManager?.info?.(
                     MESSAGES.SEGMENTATION_MATCH.replace(
                       '#',
-                      item?.id || item?.key
+                      item?.[identityField]
                     )
                   );
                 }
               }
             }
+          } else {
+            this._loggerManager?.info?.(MESSAGES.AUDIENCE_NOT_RESTRICTED);
           }
         }
         // If there are some matched audiences
