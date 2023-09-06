@@ -37,6 +37,7 @@ export const MESSAGES = {
   BUCKETING_CONSTRUCTOR: 'Bucketing Manager constructor has been called',
   DATA_CONSTRUCTOR: 'Data Manager constructor has been called',
   RULE_CONSTRUCTOR: 'Rule Manager constructor has been called',
+  PROCESSING_ENTITY: 'Processing #',
   LOCATION_MATCH: 'Location # rule matched',
   LOCATION_NOT_MATCH: 'Location does not match',
   AUDIENCE_MATCH: 'Audience # rule matched',

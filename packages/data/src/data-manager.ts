@@ -226,7 +226,8 @@ export class DataManager implements DataManagerInterface {
         } else if (experience?.site_area) {
           locationMatched = this._ruleManager.isRuleMatched(
             locationProperties,
-            experience.site_area
+            experience.site_area,
+            'SiteArea'
           );
           // Return rule errors if present
           if (Object.values(RuleError).includes(locationMatched as RuleError))
@@ -256,7 +257,9 @@ export class DataManager implements DataManagerInterface {
               // Validate visitorProperties against audiences rules
               matchedAudiences = this.filterMatchedRecordsWithRule(
                 audiences,
-                visitorProperties
+                visitorProperties,
+                'audience',
+                identityField
               );
               // Return rule errors if present
               matchedErrors = matchedAudiences.filter((match) =>
@@ -591,7 +594,9 @@ export class DataManager implements DataManagerInterface {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
           locationProperties,
-          items[i].rules
+          items[i].rules,
+          'location',
+          identityField
         );
         const identity = items?.[i]?.[identityField]?.toString?.();
         if (match === true) {
@@ -735,7 +740,11 @@ export class DataManager implements DataManagerInterface {
 
     if (goalRule) {
       if (!goal?.rules) return;
-      const ruleMatched = this._ruleManager.isRuleMatched(goalRule, goal.rules);
+      const ruleMatched = this._ruleManager.isRuleMatched(
+        goalRule,
+        goal.rules,
+        'goal'
+      );
       // Return rule errors if present
       if (Object.values(RuleError).includes(ruleMatched as RuleError))
         return ruleMatched as RuleError;
@@ -780,7 +789,9 @@ export class DataManager implements DataManagerInterface {
    */
   filterMatchedRecordsWithRule(
     items: Array<Record<string, any>>,
-    visitorProperties: Record<string, any>
+    visitorProperties: Record<string, any>,
+    entityType: string,
+    field: IdentityField = 'id'
   ): Array<Record<string, any> | RuleError> {
     this._loggerManager?.trace?.('DataManager.filterMatchedRecordsWithRule()', {
       items: items,
@@ -793,7 +804,9 @@ export class DataManager implements DataManagerInterface {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
           visitorProperties,
-          items[i].rules
+          items[i].rules,
+          entityType,
+          field
         );
         if (match === true) {
           matchedRecords.push(items[i]);

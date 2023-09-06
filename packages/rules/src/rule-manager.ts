@@ -15,6 +15,7 @@ import {RuleManagerInterface} from './interfaces/rule-manager';
 
 import {
   Config,
+  IdentityField,
   Rule,
   RuleAnd,
   RuleOrWhen,
@@ -99,12 +100,28 @@ export class RuleManager implements RuleManagerInterface {
    */
   isRuleMatched(
     data: Record<string, any>,
-    ruleSet: RuleSet
+    ruleSet: RuleSet,
+    entityType: string,
+    field: IdentityField = 'id'
   ): boolean | RuleError {
     this._loggerManager?.debug?.('RuleManager.isRuleMatched()', {
       data: data,
       ruleSet: ruleSet
     });
+    if (entityType) {
+      if (data?.[field]) {
+        this._loggerManager?.info?.(
+          MESSAGES.PROCESSING_ENTITY.replace(
+            '#',
+            `${camelCase(entityType)} #${data?.[field]}`
+          )
+        );
+      } else {
+        this._loggerManager?.info?.(
+          MESSAGES.PROCESSING_ENTITY.replace('#', camelCase(entityType))
+        );
+      }
+    }
     // Top OR level
     let match;
     if (
