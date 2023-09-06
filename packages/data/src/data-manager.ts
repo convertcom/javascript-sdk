@@ -192,10 +192,6 @@ export class DataManager implements DataManagerInterface {
         experience.environments.includes(environment)
       : true; // skip if no environments
 
-    // Get locations from DataStore
-    // const storeData = this.getLocalStore(visitorId) || {};
-    // const {locations: selectedLocations = []} = storeData;
-
     let matchedErrors = [];
     if (experience && !isArchivedExperience && isEnvironmentMatch) {
       let locationMatched: boolean | RuleError = false,
@@ -224,28 +220,6 @@ export class DataManager implements DataManagerInterface {
             );
             if (matchedErrors.length) return matchedErrors[0] as RuleError;
           }
-          // matchedLocations = experience.locations.filter((locationId) =>
-          //   selectedLocations.includes(locationId.toString())
-          // );
-          // if (!matchedLocations.length) {
-          //   // Get attached locations
-          //   const locations = this.getItemsByIds(
-          //     experience.locations,
-          //     'locations'
-          //   ) as Array<Location>;
-          //   if (locations.length) {
-          //     // Validate locationProperties against locations rules
-          //     matchedLocations = this.filterMatchedRecordsWithRule(
-          //       locations,
-          //       locationProperties
-          //     );
-          //     // Return rule errors if present
-          //     matchedErrors = matchedLocations.filter((match) =>
-          //       Object.values(RuleError).includes(match as RuleError)
-          //     );
-          //     if (matchedErrors.length) return matchedErrors[0] as RuleError;
-          //   }
-          // }
           // If there are some matched locations
           locationMatched = Boolean(matchedLocations.length);
         } else if (experience?.site_area) {
@@ -609,57 +583,74 @@ export class DataManager implements DataManagerInterface {
     let match;
     if (arrayNotEmpty(items)) {
       for (let i = 0, length = items.length; i < length; i++) {
-        if (!items?.[i]?.id) continue;
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
           locationProperties,
           items[i].rules
         );
-        if (match === true && !locations.includes(items[i].id.toString())) {
-          locations.push(items[i].id.toString());
-          this._eventManager.fire(
-            SystemEvents.LOCATION_ACTIVATED,
-            {
-              visitorId,
-              location: {
-                id: items[i].id,
-                key: items[i]?.key,
-                name: items[i]?.name
-              }
-            },
-            null,
-            true
-          );
-          matchedRecords.push(items[i]);
+        if (match === true) {
           this._loggerManager?.info?.(
-            MESSAGES.LOCATION_ACTIVATED.replace('#', `#${items[i].id}`)
+            MESSAGES.LOCATION_MATCH.replace(
+              '#',
+              `#${items?.[i]?.id || items?.[i]?.key}`
+            )
           );
+          if (
+            !locations.includes(items?.[i]?.id.toString()) &&
+            !locations.includes(items?.[i]?.key.toString())
+          ) {
+            locations.push(items?.[i]?.id || items?.[i]?.key);
+            this._eventManager.fire(
+              SystemEvents.LOCATION_ACTIVATED,
+              {
+                visitorId,
+                location: {
+                  id: items?.[i]?.id,
+                  key: items?.[i]?.key,
+                  name: items?.[i]?.name
+                }
+              },
+              null,
+              true
+            );
+            this._loggerManager?.info?.(
+              MESSAGES.LOCATION_ACTIVATED.replace(
+                '#',
+                `#${items?.[i]?.id || items?.[i]?.key}`
+              )
+            );
+          }
+          matchedRecords.push(items[i]);
         } else if (match !== false) {
           // catch rule errors
           matchedRecords.push(match);
         } else if (
           match === false &&
-          locations.includes(items[i].id.toString())
+          (locations.includes(items?.[i]?.id.toString()) ||
+            locations.includes(items?.[i]?.key.toString()))
         ) {
           this._eventManager.fire(
             SystemEvents.LOCATION_DEACTIVATED,
             {
               visitorId,
               location: {
-                id: items[i].id,
-                key: items[i]?.key,
-                name: items[i]?.name
+                id: items?.[i]?.id,
+                key: items?.[i]?.key,
+                name: items?.[i]?.name
               }
             },
             null,
             true
           );
           const locationIndex = locations.findIndex(
-            (location) => location === items[i].id.toString()
+            (location) => location === items?.[i]?.id.toString()
           );
           locations.splice(locationIndex, 1);
           this._loggerManager?.info?.(
-            MESSAGES.LOCATION_DEACTIVATED.replace('#', `#${items[i].id}`)
+            MESSAGES.LOCATION_DEACTIVATED.replace(
+              '#',
+              `#${items?.[i]?.id || items?.[i]?.key}`
+            )
           );
         }
       }
