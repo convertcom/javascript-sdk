@@ -61,6 +61,7 @@ export class ApiManager implements ApiManagerInterface {
   private _accountId: Id;
   private _projectId: Id;
   private _trackingEvent: TrackingEvent;
+  private _trackingEnabled: boolean;
 
   readonly batchSize: number = DEFAULT_BATCH_SIZE;
   readonly releaseInterval: number = DEFAULT_RELEASE_INTERVAL;
@@ -113,6 +114,7 @@ export class ApiManager implements ApiManagerInterface {
       projectId: this._projectId,
       visitors: []
     };
+    this._trackingEnabled = config?.tracking;
     this._requestsQueue = {
       length: 0,
       items: [],
@@ -187,11 +189,13 @@ export class ApiManager implements ApiManagerInterface {
       eventRequest: eventRequest
     });
     this._requestsQueue.push(visitorId, eventRequest, segments);
-    if (this._requestsQueue.length === this.batchSize) {
-      this.releaseQueue('size').then();
-    } else {
-      if (this._requestsQueue.length === 1) {
-        this.startQueue();
+    if (this._trackingEnabled) {
+      if (this._requestsQueue.length === this.batchSize) {
+        this.releaseQueue('size').then();
+      } else {
+        if (this._requestsQueue.length === 1) {
+          this.startQueue();
+        }
       }
     }
   }
@@ -255,6 +259,21 @@ export class ApiManager implements ApiManagerInterface {
     this._requestsQueueTimerID = setTimeout(() => {
       this.releaseQueue('timeout');
     }, this.releaseInterval) as any;
+  }
+
+  /**
+   * Enable tracking
+   */
+  enableTracking(): void {
+    this._trackingEnabled = true;
+    this.releaseQueue('trackingEnabled');
+  }
+
+  /**
+   * Disable tracking
+   */
+  disableTracking(): void {
+    this._trackingEnabled = false;
   }
 
   /**

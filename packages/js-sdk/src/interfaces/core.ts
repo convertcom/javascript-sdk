@@ -17,4 +17,6 @@ export interface CoreInterface {
   on(event: SystemEvents, fn: (args?, err?) => void): void;
 
   onReady(): Promise<void>;
+
+  enableTracking(): void;
 }

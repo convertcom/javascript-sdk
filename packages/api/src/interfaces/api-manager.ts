@@ -36,6 +36,10 @@ export interface ApiManagerInterface {
 
   startQueue(): void;
 
+  enableTracking(): void;
+
+  disableTracking(): void;
+
   setData(data: ConfigData): void;
 
   getConfigByKey(sdkKey: string): Promise<ConfigData>;

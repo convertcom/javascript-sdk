@@ -16,6 +16,7 @@ const batch_size = 5;
 
 const configuration = {
   ...testConfig,
+  tracking: true,
   api: {
     endpoint: {
       config: host + ':' + port,

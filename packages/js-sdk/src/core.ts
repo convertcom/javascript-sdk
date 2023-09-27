@@ -168,6 +168,13 @@ export class Core implements CoreInterface {
   }
 
   /**
+   * Enable tracking
+   */
+  enableTracking(): void {
+    this._apiManager.enableTracking();
+  }
+
+  /**
    * Fetch remote config data
    * @return {Promise<void>}
    */
