@@ -218,7 +218,7 @@ const config = {
 
 const convertSDK = new ConvertSDK(config);
 const context = convertSDK.createContext('user-unique-id');
-const variations = convertSDK.runExperiences();
+const variations = context.runExperiences();
 console.log(variations);
 ```
 
