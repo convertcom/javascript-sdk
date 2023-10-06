@@ -104,7 +104,13 @@ import ConvertSDK from '@convertcom/js-sdk';
 **CommonJS:**
 
 ```javascript
-const ConvertSDK = require('@convertcom/js-sdk').default;
+const {default: ConvertSDK} = require('@convertcom/js-sdk');
+```
+
+**UMD:**
+
+```javascript
+const {default: ConvertSDK} = window.ConvertSDK; // ConvertSDK is provided by https://unpkg.com/@convertcom/js-sdk/lib/index.umd.min.js
 ```
 
 The SDK instance can be initialized by either providing an SDK key or a full project's data object.
@@ -116,9 +122,13 @@ Include `sdkKey` as a string property in the options object you pass to the cons
 ```javascript
 const convertSDK = new ConvertSDK({
   sdkKey: 'xxx',
-  dataRefreshInterval: 300 //in seconds, 5 minutes
+  dataRefreshInterval: 300000 // in milliseconds (5 minutes)
 });
-await convertSDK.onReady();
+convertSDK.onReady().then(() => {
+  // create user context
+  // run experience(s)
+  // ...
+});
 ```
 
 After this point, the SDK has been successfully instantiated, project config data has been downloaded, and it is ready to be used for starting a UserContext.
@@ -152,7 +162,7 @@ const config = {
     customLoggers: [] // Allows 3rd party loggers to be passed
   },
   dataStore: null, // Allows 3rd party data store to be passed (optional)
-  dataRefreshInterval: 300, // in seconds (5 minutes)
+  dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   data: projectData
 };
 ```
@@ -217,9 +227,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const variations = context.runExperiences();
-console.log(variations);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variations = context.runExperiences();
+  console.log(variations);
+});
 ```
 
 ### Run a Single Experience
@@ -249,9 +261,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const variation = context.runExperience('experience-key');
-console.log(variation);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variation = context.runExperience('experience-key');
+  console.log(variation);
+});
 ```
 
 ### Run Multiple Features
@@ -281,9 +295,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const features = context.runFeatures();
-console.log(features);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const features = context.runFeatures();
+  console.log(features);
+});
 ```
 
 ### Run a Single Feature
@@ -315,9 +331,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const feature = context.runFeature('feature-key');
-console.log(feature);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const feature = context.runFeature('feature-key');
+  console.log(feature);
+});
 ```
 
 ### Track Conversion Event
@@ -346,17 +364,19 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-context.trackConversion('goal-key', {
-  ruleData: {
-    action: 'buy'
-  },
-  conversionData: [
-    {
-      amount: 10.3,
-      productsCount: 2
-    }
-  ]
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.trackConversion('goal-key', {
+    ruleData: {
+      action: 'buy'
+    },
+    conversionData: [
+      {
+        amount: 10.3,
+        productsCount: 2
+      }
+    ]
+  });
 });
 ```
 
@@ -384,9 +404,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-context.setCustomSegments(['segments-key'], {
-  enabled: true
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.setCustomSegments(['segments-key'], {
+    enabled: true
+  });
 });
 ```
 
