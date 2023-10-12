@@ -405,7 +405,7 @@ export class DataManager implements DataManagerInterface {
     let bucketedVariation = null;
     const storeKey = this.getStoreKey(visitorId);
     // Check that visitor id already bucketed and stored and skip bucketing logic
-    const {bucketing, locations, segments} =
+    const {bucketing, locations, segments, goals} =
       this.getLocalStore(visitorId) || {};
     const {[experience.id.toString()]: variationId} = bucketing || {};
     if (
@@ -433,7 +433,8 @@ export class DataManager implements DataManagerInterface {
         this.putLocalStore(visitorId, {
           bucketing: {...bucketing, [experience.id.toString()]: variationId},
           ...(locations ? {locations} : {}),
-          ...(segments ? {segments} : {})
+          ...(segments ? {segments} : {}),
+          ...(goals ? {goals} : {})
         });
         // If it's found log debug info. The return value will be formed next step
         this._loggerManager?.info?.(
@@ -464,7 +465,8 @@ export class DataManager implements DataManagerInterface {
           const storeData: StoreData = {
             bucketing: {...bucketing, [experience.id.toString()]: variationId},
             ...(locations ? {locations} : {}),
-            ...(segments ? {segments} : {})
+            ...(segments ? {segments} : {}),
+            ...(goals ? {goals} : {})
           };
           this.putLocalStore(visitorId, storeData);
           // Enqueue to store in dataStore
@@ -583,7 +585,7 @@ export class DataManager implements DataManagerInterface {
     });
     // Get locations from DataStore
     const storeData = this.getLocalStore(visitorId) || {};
-    const {bucketing, locations = [], segments} = storeData;
+    const {bucketing, locations = [], segments, goals} = storeData;
     const matchedRecords = [];
     let match;
     if (arrayNotEmpty(items)) {
@@ -650,7 +652,8 @@ export class DataManager implements DataManagerInterface {
     this.putLocalStore(visitorId, {
       ...(bucketing ? {bucketing} : {}),
       locations,
-      ...(segments ? {segments} : {})
+      ...(segments ? {segments} : {}),
+      ...(goals ? {goals} : {})
     });
     this._loggerManager?.debug?.('DataManager.selectLocations()', {
       matchedRecords: matchedRecords
@@ -724,7 +727,7 @@ export class DataManager implements DataManagerInterface {
     goalRule?: Record<string, any>,
     goalData?: Array<Record<GoalDataKey, number>>,
     segments?: SegmentsData
-  ): RuleError {
+  ): RuleError | boolean {
     const goal =
       typeof goalId === 'string'
         ? (this.getEntity(goalId as string, 'goals') as Goal)
@@ -749,10 +752,49 @@ export class DataManager implements DataManagerInterface {
         return;
       }
     }
+
+    // Check that goal id already triggred and stored and skip tracking conversion event
+    const storeKey = this.getStoreKey(visitorId);
+    const {
+      bucketing: bucketingData,
+      locations: locationsData,
+      segments: segmentsData,
+      goals: {[goalId.toString()]: goalTriggered} = {}
+    } = this.getLocalStore(visitorId) || {};
+    if (goalTriggered) {
+      this._loggerManager?.debug?.(MESSAGES.GOAL_FOUND.replace('#', goalId), {
+        storeKey: storeKey,
+        visitorId: visitorId,
+        goalId: goalId
+      });
+      return;
+    } else {
+      // Try to find a triggered goal in dataStore
+      const {goals: {[goalId.toString()]: goalTriggered} = {}} =
+        this.dataStoreManager?.get?.(storeKey) || {};
+      if (goalTriggered) {
+        this._loggerManager?.debug?.(MESSAGES.GOAL_FOUND.replace('#', goalId), {
+          storeKey: storeKey,
+          visitorId: visitorId,
+          goalId: goalId
+        });
+        return;
+      }
+    }
+    // Store the data in local variable
+    const storeData: StoreData = {
+      ...(bucketingData ? {bucketing: bucketingData} : {}),
+      ...(locationsData ? {locations: locationsData} : {}),
+      ...(segmentsData ? {segments: segmentsData} : {}),
+      goals: {[goalId.toString()]: true}
+    };
+    this.putLocalStore(visitorId, storeData);
+    // Enqueue to store in dataStore
+    this.dataStoreManager.enqueue(storeKey, storeData);
+
     const data: ConversionEvent = {
       goalId: goal.id
     };
-    const {bucketing: bucketingData} = this.getLocalStore(visitorId) || {};
     if (bucketingData) data.bucketingData = bucketingData;
     const event: VisitorEvent = {
       eventType: EventType.CONVERSION,
@@ -775,6 +817,8 @@ export class DataManager implements DataManagerInterface {
     this._loggerManager?.trace?.('DataManager.convert()', {
       event
     });
+
+    return true;
   }
 
   /**

@@ -342,24 +342,26 @@ export class Context implements ContextInterface {
     }
 
     const segments = this._segmentsManager.getSegments(this._visitorId);
-    const error = this._dataManager.convert(
+    const triggred = this._dataManager.convert(
       this._visitorId,
       goalKey,
       goalRule,
       goalData,
       segments
     );
-    if (error) return error as RuleError;
-
-    this._eventManager.fire(
-      SystemEvents.CONVERSION,
-      {
-        visitorId: this._visitorId,
-        goalKey
-      },
-      null,
-      true
-    );
+    if (Object.values(RuleError).includes(triggred as RuleError))
+      return triggred as RuleError;
+    if (triggred) {
+      this._eventManager.fire(
+        SystemEvents.CONVERSION,
+        {
+          visitorId: this._visitorId,
+          goalKey
+        },
+        null,
+        true
+      );
+    }
 
     return;
   }
