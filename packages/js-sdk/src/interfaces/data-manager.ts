@@ -41,7 +41,7 @@ export interface DataManagerInterface {
     goalRule?: Record<string, any>,
     goalData?: Array<Record<GoalDataKey, number>>,
     segments?: SegmentsData
-  ): void;
+  ): boolean;
   getEntitiesList(entityType: string): Array<Entity | Id>;
   getEntitiesListObject(
     entityType: string,

@@ -10,4 +10,5 @@ import {SegmentsData} from './SegmentsData';
 export type StoreData = {
   bucketing?: Record<string, Id>;
   segments?: SegmentsData;
+  goals?: Record<string, boolean>;
 };

@@ -41,6 +41,7 @@ export const MESSAGES = {
     'Visitor is already bucketed and the variation is found',
   GOAL_NOT_FOUND: 'Goal not found',
   GOAL_RULE_NOT_MATCH: 'Goal rule do not match',
+  GOAL_FOUND: 'Goal already triggered',
   SEGMENTS_NOT_FOUND: 'Segments not found',
   SEGMENTS_RULE_NOT_MATCH: 'Segments rule do not match',
   CUSTOM_SEGMENTS_KEY_FOUND: 'Custom segments key already set'
