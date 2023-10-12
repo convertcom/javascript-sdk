@@ -206,7 +206,7 @@ export class DataManager implements DataManagerInterface {
       }
       // Validate locationProperties against site area rules
       if (!locationProperties || locationMatched) {
-        let audiences,
+        let audiences = [],
           matchedAudiences = [];
         if (experience?.audiences) {
           // Get attached audiences
@@ -221,7 +221,11 @@ export class DataManager implements DataManagerInterface {
           );
         }
         // If there are some matched audiences
-        if (!visitorProperties || matchedAudiences.length) {
+        if (
+          !visitorProperties ||
+          matchedAudiences.length ||
+          !audiences.length // Empty audiences list means there's no restriction for the audience
+        ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
             return this._retrieveBucketing(visitorId, experience);
