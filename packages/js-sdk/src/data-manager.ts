@@ -175,12 +175,13 @@ export class DataManager implements DataManagerInterface {
     const isArchivedExperience = !!archivedExperiences.find(
       (id) => experience?.id == id
     );
+    // Check environment
+    const isEnvironmentMatch = Array.isArray(experience?.environments)
+      ? !experience.environments.length || // skip if empty
+        experience.environments.includes(environment)
+      : true; // skip if no environments
 
-    if (
-      experience &&
-      !isArchivedExperience &&
-      experience.environments.includes(environment)
-    ) {
+    if (experience && !isArchivedExperience && isEnvironmentMatch) {
       let locationMatched = false;
       if (experience?.locations) {
         // Get attached locations
@@ -205,7 +206,7 @@ export class DataManager implements DataManagerInterface {
       }
       // Validate locationProperties against site area rules
       if (!locationProperties || locationMatched) {
-        let audiences,
+        let audiences = [],
           matchedAudiences = [];
         if (experience?.audiences) {
           // Get attached audiences
@@ -220,7 +221,11 @@ export class DataManager implements DataManagerInterface {
           );
         }
         // If there are some matched audiences
-        if (!visitorProperties || matchedAudiences.length) {
+        if (
+          !visitorProperties ||
+          matchedAudiences.length ||
+          !audiences.length // Empty audiences list means there's no restriction for the audience
+        ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
             return this._retrieveBucketing(visitorId, experience);
@@ -268,7 +273,8 @@ export class DataManager implements DataManagerInterface {
     // Check that visitor id already bucketed and stored and skip bucketing logic
     const {
       bucketing: {[experience.id.toString()]: variationId} = {},
-      segments
+      segments,
+      goals
     } = this.getLocalStore(visitorId) || {};
     if (
       variationId &&
@@ -291,7 +297,8 @@ export class DataManager implements DataManagerInterface {
         // Store the data in local variable
         this.putLocalStore(visitorId, {
           bucketing: {[experience.id.toString()]: variationId},
-          ...(segments ? {segments} : {})
+          ...(segments ? {segments} : {}),
+          ...(goals ? {goals} : {})
         });
         // If it's found log debug info. The return value will be formed next step
         this._loggerManager?.debug?.(MESSAGES.BUCKETED_VISITOR_FOUND, {
@@ -315,7 +322,8 @@ export class DataManager implements DataManagerInterface {
           // Store the data in local variable
           const storeData: StoreData = {
             bucketing: {[experience.id.toString()]: variationId},
-            ...(segments ? {segments} : {})
+            ...(segments ? {segments} : {}),
+            ...(goals ? {goals} : {})
           };
           this.putLocalStore(visitorId, storeData);
           // Enqueue to store in dataStore
@@ -481,7 +489,7 @@ export class DataManager implements DataManagerInterface {
     goalRule?: Record<string, any>,
     goalData?: Array<Record<GoalDataKey, number>>,
     segments?: SegmentsData
-  ): void {
+  ): boolean {
     const goal =
       typeof goalId === 'string'
         ? (this.getEntity(goalId as string, 'goals') as Goal)
@@ -502,10 +510,47 @@ export class DataManager implements DataManagerInterface {
         return;
       }
     }
+
+    // Check that goal id already triggred and stored and skip tracking conversion event
+    const storeKey = this.getStoreKey(visitorId);
+    const {
+      bucketing: bucketingData,
+      segments: segmentsData,
+      goals: {[goalId.toString()]: goalTriggered} = {}
+    } = this.getLocalStore(visitorId) || {};
+    if (goalTriggered) {
+      this._loggerManager?.debug?.(MESSAGES.GOAL_FOUND, {
+        storeKey: storeKey,
+        visitorId: visitorId,
+        goalId: goalId
+      });
+      return;
+    } else {
+      // Try to find a triggered goal in dataStore
+      const {goals: {[goalId.toString()]: goalTriggered} = {}} =
+        this.dataStoreManager?.get?.(storeKey) || {};
+      if (goalTriggered) {
+        this._loggerManager?.debug?.(MESSAGES.GOAL_FOUND, {
+          storeKey: storeKey,
+          visitorId: visitorId,
+          goalId: goalId
+        });
+        return;
+      }
+    }
+    // Store the data in local variable
+    const storeData: StoreData = {
+      ...(bucketingData ? {bucketing: bucketingData} : {}),
+      ...(segmentsData ? {segments: segmentsData} : {}),
+      goals: {[goalId.toString()]: true}
+    };
+    this.putLocalStore(visitorId, storeData);
+    // Enqueue to store in dataStore
+    this.dataStoreManager.enqueue(storeKey, storeData);
+
     const data: ConversionEvent = {
       goalId: goal?.id
     };
-    const {bucketing: bucketingData} = this.getLocalStore(visitorId) || {};
     if (bucketingData) data.bucketingData = bucketingData;
     const event: VisitorEvent = {
       eventType: EventType.CONVERSION,
@@ -528,6 +573,8 @@ export class DataManager implements DataManagerInterface {
     this._loggerManager?.trace?.('DataManager.convert()', {
       event
     });
+
+    return true;
   }
 
   /**

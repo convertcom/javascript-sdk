@@ -301,23 +301,24 @@ export class Context implements ContextInterface {
     }
 
     const segments = this._segmentsManager.getSegments(this._visitorId);
-    this._dataManager.convert(
+    const trigger = this._dataManager.convert(
       this._visitorId,
       goalKey,
       goalRule,
       goalData,
       segments
     );
-
-    this._eventManager.fire(
-      SystemEvents.CONVERSION,
-      {
-        visitorId: this._visitorId,
-        goalKey
-      },
-      null,
-      true
-    );
+    if (trigger) {
+      this._eventManager.fire(
+        SystemEvents.CONVERSION,
+        {
+          visitorId: this._visitorId,
+          goalKey
+        },
+        null,
+        true
+      );
+    }
   }
 
   /**
