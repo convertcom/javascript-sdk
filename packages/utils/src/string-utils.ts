@@ -56,6 +56,6 @@ export function camelCase(input: string): string {
  * @param {number=} seed
  * @return {number}
  */
-export function generateHash(value: string, seed = this._hash_seed): number {
+export function generateHash(value: string, seed = 9999): number {
   return Murmurhash.v3(String(value), seed);
 }
