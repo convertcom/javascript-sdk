@@ -1683,10 +1683,10 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
-    "@convertcom/logger": 1.0.0
-    "@convertcom/types": 1.0.0
-    "@convertcom/utils": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
+    "@convertcom/js-sdk-logger": 1.0.0
+    "@convertcom/js-sdk-types": 1.0.0
+    "@convertcom/js-sdk-utils": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -1733,10 +1733,10 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
-    "@convertcom/logger": 1.0.0
-    "@convertcom/types": 1.0.0
-    "@convertcom/utils": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
+    "@convertcom/js-sdk-logger": 1.0.0
+    "@convertcom/js-sdk-types": 1.0.0
+    "@convertcom/js-sdk-utils": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -1783,10 +1783,10 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
-    "@convertcom/logger": 1.0.0
-    "@convertcom/types": 1.0.0
-    "@convertcom/utils": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
+    "@convertcom/js-sdk-logger": 1.0.0
+    "@convertcom/js-sdk-types": 1.0.0
+    "@convertcom/js-sdk-utils": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -1896,10 +1896,10 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
-    "@convertcom/logger": 1.0.0
-    "@convertcom/types": 1.0.0
-    "@convertcom/utils": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
+    "@convertcom/js-sdk-logger": 1.0.0
+    "@convertcom/js-sdk-types": 1.0.0
+    "@convertcom/js-sdk-utils": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -1946,10 +1946,10 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
-    "@convertcom/logger": 1.0.0
-    "@convertcom/types": 1.0.0
-    "@convertcom/utils": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
+    "@convertcom/js-sdk-logger": 1.0.0
+    "@convertcom/js-sdk-types": 1.0.0
+    "@convertcom/js-sdk-utils": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -1992,7 +1992,7 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -2038,10 +2038,10 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
-    "@convertcom/logger": 1.0.0
-    "@convertcom/types": 1.0.0
-    "@convertcom/utils": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
+    "@convertcom/js-sdk-logger": 1.0.0
+    "@convertcom/js-sdk-types": 1.0.0
+    "@convertcom/js-sdk-utils": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -2088,10 +2088,10 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
-    "@convertcom/logger": 1.0.0
-    "@convertcom/types": 1.0.0
-    "@convertcom/utils": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
+    "@convertcom/js-sdk-logger": 1.0.0
+    "@convertcom/js-sdk-types": 1.0.0
+    "@convertcom/js-sdk-utils": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -2123,7 +2123,7 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -2166,7 +2166,7 @@ __metadata:
     typings: ^2.1.1
     webpack: ^5.72.1
   peerDependencies:
-    "@convertcom/enums": 1.0.0
+    "@convertcom/js-sdk-enums": 1.0.0
   languageName: unknown
   linkType: soft
 

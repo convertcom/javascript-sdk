@@ -762,22 +762,28 @@ export class DataManager implements DataManagerInterface {
       goals: {[goalId.toString()]: goalTriggered} = {}
     } = this.getLocalStore(visitorId) || {};
     if (goalTriggered) {
-      this._loggerManager?.debug?.(MESSAGES.GOAL_FOUND.replace('#', goalId), {
-        storeKey: storeKey,
-        visitorId: visitorId,
-        goalId: goalId
-      });
+      this._loggerManager?.debug?.(
+        MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
+        {
+          storeKey: storeKey,
+          visitorId: visitorId,
+          goalId: goalId
+        }
+      );
       return;
     } else {
       // Try to find a triggered goal in dataStore
       const {goals: {[goalId.toString()]: goalTriggered} = {}} =
         this.dataStoreManager?.get?.(storeKey) || {};
       if (goalTriggered) {
-        this._loggerManager?.debug?.(MESSAGES.GOAL_FOUND.replace('#', goalId), {
-          storeKey: storeKey,
-          visitorId: visitorId,
-          goalId: goalId
-        });
+        this._loggerManager?.debug?.(
+          MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
+          {
+            storeKey: storeKey,
+            visitorId: visitorId,
+            goalId: goalId
+          }
+        );
         return;
       }
     }
