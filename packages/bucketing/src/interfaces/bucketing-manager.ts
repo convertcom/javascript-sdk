@@ -13,6 +13,8 @@ export interface BucketingManagerInterface {
     redistribute?: number
   ): string | null;
 
+  getHash(value: string, seed?: number): number;
+
   getValueVisitorBased(visitorId: Id, seed?: number): number;
 
   getBucketForVisitor(
