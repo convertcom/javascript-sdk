@@ -5,12 +5,10 @@
  * License Apache-2.0
  */
 
-import Murmurhash from 'murmurhash';
-
 import {BucketingManagerInterface} from './interfaces/bucketing-manager';
 
 import {Config, Id} from '@convertcom/js-sdk-types';
-import {objectDeepValue} from '@convertcom/js-sdk-utils';
+import {objectDeepValue, generateHash} from '@convertcom/js-sdk-utils';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {MESSAGES} from '@convertcom/js-sdk-enums';
 
@@ -89,23 +87,13 @@ export class BucketingManager implements BucketingManagerInterface {
   }
 
   /**
-   * Get hash
-   * @param {string} value
-   * @param {number=} seed
-   * @return {number}
-   */
-  getHash(value: string, seed = this._hash_seed): number {
-    return Murmurhash.v3(String(value), seed);
-  }
-
-  /**
    * Get a value based on hash from Visitor id to use for bucket selecting
    * @param {Id} visitorId
    * @param {number=} seed
    * @return {number}
    */
   getValueVisitorBased(visitorId: Id, seed = this._hash_seed): number {
-    const hash = this.getHash(String(visitorId), seed);
+    const hash = generateHash(String(visitorId), seed);
     const val = (hash / DEFAULT_MAX_HASH) * this._max_traffic;
     const result = parseInt(String(val), 10);
     this._loggerManager?.debug?.('BucketingManager.getValueVisitorBased()', {

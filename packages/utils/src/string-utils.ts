@@ -4,6 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
+import Murmurhash from 'murmurhash';
 
 /**
  * String formatter tool. Use %s for string %d for digit and %j for JSON formatting
@@ -47,4 +48,14 @@ export function camelCase(input: string): string {
       return index === 0 ? word.toLowerCase() : word.toUpperCase();
     })
     .replace(/\s+/g, '');
+}
+
+/**
+ * Generate numeric hash based on seed
+ * @param {string} value
+ * @param {number=} seed
+ * @return {number}
+ */
+export function generateHash(value: string, seed = this._hash_seed): number {
+  return Murmurhash.v3(String(value), seed);
 }
