@@ -5,7 +5,10 @@
   "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
-    "lib/**/**/*"
+    "lib/**/**/*",
+    "src/**/**/*",
+    "rollup.config.mjs",
+    "index.ts"
   ],
   "author": "Convert Insights, Inc",
   "repository": {
