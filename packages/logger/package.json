@@ -7,7 +7,7 @@
   "files": [
     "lib/**/**/*",
     "src/**/**/*",
-    "rollup.config.mjs",
+    "build.mjs",
     "index.ts"
   ],
   "author": "Convert Insights, Inc",
@@ -25,7 +25,7 @@
     "clean": "rm -rf lib",
     "prebuild:version": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "prebuild": "yarn clean",
-    "build": "rollup -c rollup.config.mjs",
+    "build": "rollup -c build.mjs",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "yarn lint -- --fix",
     "coverage": "nyc report -r cobertura --reporter=text-summary",
