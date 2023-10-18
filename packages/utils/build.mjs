@@ -13,7 +13,7 @@ const exclude = [
   '**/dist',
   '**/lib',
   '**/*.md',
-  '**/rollup.config.js',
+  '**/build.mjs',
   '**/tests'
 ];
 
