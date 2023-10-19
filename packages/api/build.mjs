@@ -1,3 +1,5 @@
+import {dirname} from 'path';
+import {fileURLToPath} from 'url';
 import {babel} from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
@@ -9,6 +11,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
+
+const include = [`${dirname(fileURLToPath(import.meta.url))}/**/*`]; // jail input files in package root
 
 const LOGGER_OPTIONS = {
   find: /this\._loggerManager[.|?].*?;$/gms,
@@ -64,7 +68,7 @@ const commonJSBundle = {
   ],
   plugins: withLogging.concat([
     typescript({
-      tsconfigOverride: {exclude: exclude}
+      tsconfigOverride: {include: include, exclude: exclude}
     }),
     commonjs(),
     generatePackageJson({
@@ -109,7 +113,11 @@ const commonJSLegacyBundle = {
   ],
   plugins: withLogging.concat([
     typescript({
-      tsconfigOverride: {compilerOptions: {target: 'es5'}, exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {target: 'es5'},
+        include: include,
+        exclude: exclude
+      }
     }),
     commonjs(),
     babel({
@@ -140,7 +148,7 @@ const esmBundle = {
   ],
   plugins: withLogging.concat([
     typescript({
-      tsconfigOverride: {exclude: exclude}
+      tsconfigOverride: {include: include, exclude: exclude}
     }),
     commonjs()
   ])

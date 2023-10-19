@@ -1,3 +1,5 @@
+import {dirname} from 'path';
+import {fileURLToPath} from 'url';
 import {babel} from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
@@ -5,6 +7,8 @@ import typescript from 'rollup-plugin-typescript2';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 
 const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
+
+const include = [`${dirname(fileURLToPath(import.meta.url))}/**/*`]; // jail input files in package root
 
 const exclude = [
   '**/*.conf.js',
@@ -52,7 +56,7 @@ const commonJSBundle = {
   ],
   plugins: [
     typescript({
-      tsconfigOverride: {exclude: exclude}
+      tsconfigOverride: {include: include, exclude: exclude}
     }),
     commonjs(),
     generatePackageJson({
@@ -97,7 +101,11 @@ const commonJSLegacyBundle = {
   ],
   plugins: [
     typescript({
-      tsconfigOverride: {compilerOptions: {target: 'es5'}, exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {target: 'es5'},
+        include: include,
+        exclude: exclude
+      }
     }),
     commonjs(),
     babel({
@@ -128,7 +136,7 @@ const esmBundle = {
   ],
   plugins: [
     typescript({
-      tsconfigOverride: {exclude: exclude}
+      tsconfigOverride: {include: include, exclude: exclude}
     }),
     commonjs()
   ]

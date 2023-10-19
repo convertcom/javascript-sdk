@@ -1,3 +1,5 @@
+import {dirname} from 'path';
+import {fileURLToPath} from 'url';
 import {babel} from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
@@ -38,6 +40,8 @@ switch (logLevel) {
     LOGGER_OPTIONS.find = /this\._loggerManager(\?)?\..*?;$/gms;
     break;
 }
+
+const include = [`${dirname(fileURLToPath(import.meta.url))}/**/*`]; // jail input files in package root
 
 const exclude = [
   '**/*.conf.js',
@@ -87,7 +91,7 @@ const commonJSBundle = {
   ],
   plugins: withLogging.concat([
     typescript({
-      tsconfigOverride: {exclude: exclude}
+      tsconfigOverride: {include: include, exclude: exclude}
     }),
     commonjs(),
     generatePackageJson({
@@ -132,7 +136,11 @@ const commonJSLegacyBundle = {
   ],
   plugins: withLogging.concat([
     typescript({
-      tsconfigOverride: {compilerOptions: {target: 'es5'}, exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {target: 'es5'},
+        include: include,
+        exclude: exclude
+      }
     }),
     commonjs(),
     babel({
@@ -163,7 +171,7 @@ const esmBundle = {
   ],
   plugins: withLogging.concat([
     typescript({
-      tsconfigOverride: {exclude: exclude}
+      tsconfigOverride: {include: include, exclude: exclude}
     }),
     commonjs()
   ])
