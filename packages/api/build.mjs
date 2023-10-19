@@ -15,9 +15,35 @@ const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
 const include = [`${dirname(fileURLToPath(import.meta.url))}/**/*`]; // jail input files in package root
 
 const LOGGER_OPTIONS = {
-  find: /this\._loggerManager[.|?].*?;$/gms,
   replace: '// eslint-disable-line'
 };
+const logLevel = process.env.LOG_LEVEL ? Number(process.env.LOG_LEVEL) : 0;
+switch (logLevel) {
+  case 1:
+    console.log('log level:', 'debug');
+    LOGGER_OPTIONS.find =
+      /this\.(render\.)?_loggerManager(\?)?\.(?!(debug|info|warn|error)).*?;$/gms;
+    break;
+  case 2:
+    console.log('log level:', 'info');
+    LOGGER_OPTIONS.find =
+      /this\.(render\.)?_loggerManager(\?)?\.(?!(info|warn|error)).*?;$/gms;
+    break;
+  case 3:
+    console.log('log level:', 'warn');
+    LOGGER_OPTIONS.find =
+      /this\.(render\.)?_loggerManager(\?)?\.(?!(warn|error)).*?;$/gms;
+    break;
+  case 4:
+    console.log('log level:', 'error');
+    LOGGER_OPTIONS.find =
+      /this\.(render\.)?_loggerManager(\?)?\.(?!(error)).*?;$/gms;
+    break;
+  case 5:
+    console.log('log level:', 'silent');
+    LOGGER_OPTIONS.find = /this\.(render\.)?_loggerManager(\?)?\..*?;$/gms;
+    break;
+}
 
 const exclude = [
   '**/*.conf.js',
@@ -45,8 +71,7 @@ const terserConfig = {
   }
 };
 
-const withLogging =
-  Number(process.env.ENABLE_LOGGING) === 1 ? [] : [modify(LOGGER_OPTIONS)];
+const withLogging = logLevel > 0 ? [modify(LOGGER_OPTIONS)] : [];
 
 const commonJSBundle = {
   cache: BUILD_CACHE,
