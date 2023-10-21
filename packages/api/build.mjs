@@ -22,26 +22,24 @@ switch (logLevel) {
   case 1:
     console.log('log level:', 'debug');
     LOGGER_OPTIONS.find =
-      /this\.(render\.)?_loggerManager(\?)?\.(?!(debug|info|warn|error)).*?;$/gms;
+      /this\._loggerManager(\?)?\.(?!(debug|info|warn|error)).*?;$/gms;
     break;
   case 2:
     console.log('log level:', 'info');
     LOGGER_OPTIONS.find =
-      /this\.(render\.)?_loggerManager(\?)?\.(?!(info|warn|error)).*?;$/gms;
+      /this\._loggerManager(\?)?\.(?!(info|warn|error)).*?;$/gms;
     break;
   case 3:
     console.log('log level:', 'warn');
-    LOGGER_OPTIONS.find =
-      /this\.(render\.)?_loggerManager(\?)?\.(?!(warn|error)).*?;$/gms;
+    LOGGER_OPTIONS.find = /this\._loggerManager(\?)?\.(?!(warn|error)).*?;$/gms;
     break;
   case 4:
     console.log('log level:', 'error');
-    LOGGER_OPTIONS.find =
-      /this\.(render\.)?_loggerManager(\?)?\.(?!(error)).*?;$/gms;
+    LOGGER_OPTIONS.find = /this\._loggerManager(\?)?\.(?!(error)).*?;$/gms;
     break;
   case 5:
     console.log('log level:', 'silent');
-    LOGGER_OPTIONS.find = /this\.(render\.)?_loggerManager(\?)?\..*?;$/gms;
+    LOGGER_OPTIONS.find = /this\._loggerManager(\?)?\..*?;$/gms;
     break;
 }
 
