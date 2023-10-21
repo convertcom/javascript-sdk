@@ -21,6 +21,8 @@ const exclude = [
   '**/tests'
 ];
 
+const external = ['@convertcom/js-sdk-enums', 'murmurhash'];
+
 const minimizedFilesHeader =
   '/*!\n' +
   ' * Convert JS SDK\n' +
@@ -54,6 +56,7 @@ const commonJSBundle = {
       plugins: [terser(terserConfig)]
     }
   ],
+  external: external,
   plugins: [
     typescript({
       tsconfigOverride: {include: include, exclude: exclude}
@@ -99,6 +102,7 @@ const commonJSLegacyBundle = {
       plugins: [terser(terserConfig)]
     }
   ],
+  external: external,
   plugins: [
     typescript({
       tsconfigOverride: {
@@ -134,6 +138,7 @@ const esmBundle = {
       sourcemap: true
     }
   ],
+  external: external,
   plugins: [
     typescript({
       tsconfigOverride: {include: include, exclude: exclude}

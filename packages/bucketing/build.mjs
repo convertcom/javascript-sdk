@@ -54,6 +54,8 @@ const exclude = [
   '**/tests'
 ];
 
+const external = ['@convertcom/js-sdk-enums', '@convertcom/js-sdk-utils'];
+
 const minimizedFilesHeader =
   '/*!\n' +
   ' * Convert JS SDK\n' +
@@ -89,6 +91,7 @@ const commonJSBundle = {
       plugins: [terser(terserConfig)]
     }
   ],
+  external: external,
   plugins: withLogging.concat([
     typescript({
       tsconfigOverride: {include: include, exclude: exclude}
@@ -134,6 +137,7 @@ const commonJSLegacyBundle = {
       plugins: [terser(terserConfig)]
     }
   ],
+  external: external,
   plugins: withLogging.concat([
     typescript({
       tsconfigOverride: {
@@ -169,6 +173,7 @@ const esmBundle = {
       sourcemap: true
     }
   ],
+  external: external,
   plugins: withLogging.concat([
     typescript({
       tsconfigOverride: {include: include, exclude: exclude}

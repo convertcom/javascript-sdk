@@ -90,13 +90,13 @@ const commonJSBundle = {
   input: './index.ts',
   output: [
     {
-      exports: 'auto',
+      exports: 'named',
       file: './lib/index.js',
       format: 'cjs',
       sourcemap: true
     },
     {
-      exports: 'auto',
+      exports: 'named',
       file: './lib/index.min.js',
       format: 'cjs',
       sourcemap: true,
@@ -149,13 +149,13 @@ const commonJSLegacyBundle = {
   input: './index.ts',
   output: [
     {
-      exports: 'auto',
+      exports: 'named',
       file: './lib/legacy/index.js',
       format: 'cjs',
       sourcemap: true
     },
     {
-      exports: 'auto',
+      exports: 'named',
       file: './lib/legacy/index.min.js',
       format: 'cjs',
       sourcemap: true,
@@ -221,14 +221,14 @@ const umdBundle = {
   output: [
     {
       name: 'ConvertSDK',
-      exports: 'auto',
+      exports: 'named',
       format: 'umd',
       file: 'lib/index.umd.js',
       sourcemap: true
     },
     {
       name: 'ConvertSDK',
-      exports: 'auto',
+      exports: 'named',
       format: 'umd',
       file: 'lib/index.umd.min.js',
       plugins: [terser(terserConfig)],
