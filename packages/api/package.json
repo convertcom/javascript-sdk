@@ -31,9 +31,6 @@
     "coverage": "nyc report -r cobertura --reporter=text-summary",
     "postcoverage": "istanbul-cobertura-badger -e 85 -g 70 -r coverage/cobertura-coverage.xml -d ./coverage -b coverage"
   },
-  "dependencies": {
-    "murmurhash": "^2.0.0"
-  },
   "engines": {
     "node": ">=8.0.0"
   },

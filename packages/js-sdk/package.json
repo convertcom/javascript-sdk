@@ -34,9 +34,6 @@
     "postcoverage": "istanbul-cobertura-badger -e 85 -g 70 -r coverage/cobertura-coverage.xml -d ./coverage -b coverage",
     "docs": "PORT=$(grep PORT .env | cut -d '=' -f2) && serve -l $PORT docs"
   },
-  "dependencies": {
-    "murmurhash": "^2.0.0"
-  },
   "engines": {
     "node": ">=8.0.0"
   },
