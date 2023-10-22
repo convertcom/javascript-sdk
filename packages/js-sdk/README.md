@@ -78,9 +78,9 @@ npm install --save @convertcom/js-sdk
 
 Package's build contains definitions for generating entry points in different formats:
 
-- CommonJs - can be found under `lib/index.js` or `lib/index.min.js` for the minified version;
-- ESM - can be found under `lib/index.mjs` or `lib/index.min.mjs` for the minified version;
-- UMD - can be found under `lib/index.umd.js` or `lib/index.umd.min.js` for the minified version;
+- CommonJS `CJS` - can be found under `lib/index.js`or`lib/index.min.js` for the minified version;
+- ES Moduls `ESM` - can be found under `lib/index.mjs`or`lib/index.min.mjs` for the minified version;
+- Universal Module Definition `UMD` - can be found under `lib/index.umd.js` or `lib/index.umd.min.js` for the minified version;
 
 The above entry points can also be loaded through [unpkg](https://unpkg.com/) but this method will add a dependency on third-party URLs and therefore is recommended to use it only for evaluation purposes:
 
@@ -97,17 +97,31 @@ The above entry points can also be loaded through [unpkg](https://unpkg.com/) bu
 
 **ES6:**
 
+Supports `import` and `export` statements in modern JS (_i.e. React, Vue, Angular, .. etc_).
+
+> Must be transpiled to work in client browsers.
+
 ```javascript
 import ConvertSDK from '@convertcom/js-sdk';
 ```
 
 **CommonJS:**
 
+Supports `require` and `exports` in NodeJS environment.
+
+> Must be transpiled to work in client browsers.
+
 ```javascript
 const {default: ConvertSDK} = require('@convertcom/js-sdk');
 ```
 
 **UMD:**
+
+> Works directly in client browsers.
+
+```html
+<script src="https://unpkg.com/@convertcom/js-sdk/lib/index.umd.min.js"></script>
+```
 
 ```javascript
 const {default: ConvertSDK} = window.ConvertSDK; // ConvertSDK is provided by https://unpkg.com/@convertcom/js-sdk/lib/index.umd.min.js
@@ -488,6 +502,78 @@ const convertSDK = new ConvertSDK({
   dataStore
 });
 ```
+
+## Build Environment Variables
+
+| Environment Variable | Description                                                                                                                          | Value                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `LOG_LEVEL`          | Number prepresents the level of log statements to keep, while removing the rest from bundle output (_defaults to include all logs_). | `0` = ALL, `1` = DEBUG, `2` = INFO, `3` = WARN, `4` = ERROR, `5` = SILENT |
+| `BUNDLES`            | Comma-separated tokens for specifying which bundles to build (_defaults to include all bundles_).                                    | `cjs`, `cjs-legacy`, `esm`, `umd`                                         |
+
+## Custom Build
+
+You can use a customized build in certain situations. For example:
+
+1. Reducing bundle size and remove all log statements: `LOG_LEVEL=5 yarn sdk:build`
+2. Build CommonJS bundles only: `BUNDLES=cjs,cjs-legacy yarn sdk:build`
+
+Additionaly, you can even include this repository as part of your own `TypeScript` project:
+
+1. Add Convert JavaScriptSDK repository to your own as a submodule: `git submodule add https://github.com/convertcom/javascript-sdk javascript-sdk`
+2. Add the following `workspaces` to your `package.json` (_assuming that the submodule located under you repository root_):
+   ```json
+   "workspaces": [
+     "javascript-sdk/packages/*"
+   ]
+   ```
+3. Add the following `paths` under `compilerOptions` of your `tsconfig.json`:
+   ```json
+   {
+     "compilerOptions": {
+       "paths": {
+         "@convertcom/js-sdk-api": ["./javascript-sdk/packages/api"],
+         "@convertcom/js-sdk-bucketing": [
+           "./javascript-sdk/packages/bucketing"
+         ],
+         "@convertcom/js-sdk-data": ["./javascript-sdk/packages/data"],
+         "@convertcom/js-sdk-enums": ["./javascript-sdk/packages/enums"],
+         "@convertcom/js-sdk-event": ["./javascript-sdk/packages/event"],
+         "@convertcom/js-sdk-experience": [
+           "./javascript-sdk/packages/experience"
+         ],
+         "@convertcom/js-sdk-logger": ["./javascript-sdk/packages/logger"],
+         "@convertcom/js-sdk-rules": ["./javascript-sdk/packages/rules"],
+         "@convertcom/js-sdk-segments": ["./javascript-sdk/packages/segments"],
+         "@convertcom/js-sdk-types": ["./javascript-sdk/packages/types"],
+         "@convertcom/js-sdk-utils": ["./javascript-sdk/packages/utils"]
+       }
+     }
+   }
+   ```
+4. Add the following script to your `package.json`:
+   ```json
+   "scripts": {
+     "build:sdk": "cd javascript-sdk && BUNDLES=cjs,esm LOG_LEVEL=5 yarn sdk:build"
+   }
+   ```
+   > Note that both `BUNDLES` and `LOG_LEVEL` are optional (_see [Build Environment Variables](#build-environment-variables) above_)
+5. Now you can build Convert JavaScriptSDK alongside your project (_assuming that you use `rollup` for bundling_):
+   ```json
+   "scripts": {
+     "build": "yarn build:sdk && rollup -c"
+   }
+   ```
+6. You need to run `yarn` inside submodule `javascript-sdk` as well:
+   ```bash
+   # update ConvertSDK submodule
+   git submodule update --init --remote
+   # install your project dependencies at your `package.json`
+   yarn
+   # install ConvertSDK dependencies
+   cd javascript-sdk && yarn
+   # build your project
+   yarn build
+   ```
 
 ## Credits
 
