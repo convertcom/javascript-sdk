@@ -5,10 +5,7 @@
   "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
-    "lib/**/**/*",
-    "src/**/**/*",
-    "build.mjs",
-    "index.ts"
+    "lib/**/**/*"
   ],
   "author": "Convert Insights, Inc",
   "repository": {
