@@ -263,13 +263,15 @@ const umdBundle = {
 
 const BUNDLES = process.env.BUNDLES
   ? process.env.BUNDLES.split(',')
-  : ['cjs', 'esm', 'umd'];
+  : ['cjs', 'cjs-legacy', 'esm', 'umd'];
 
 export default () => {
   return BUNDLES.map((bundle) => {
     switch (bundle) {
       case 'cjs':
-        return [commonJSBundle, commonJSLegacyBundle];
+        return [commonJSBundle];
+      case 'cjs-legacy':
+        return [commonJSLegacyBundle];
       case 'esm':
         return [esmBundle];
       case 'umd':
