@@ -1,3 +1,5 @@
+// import info from './package.json' assert {type: 'json'}; // ExperimentalWarning: Importing JSON modules is an experimental feature. This feature could change at any time
+import {readFileSync} from 'fs';
 import {dirname} from 'path';
 import {fileURLToPath} from 'url';
 import {babel} from '@rollup/plugin-babel';
@@ -9,6 +11,13 @@ import modify from 'rollup-plugin-modify';
 
 import dotenv from 'dotenv';
 dotenv.config();
+const info = JSON.parse(
+  readFileSync(
+    `${dirname(fileURLToPath(import.meta.url))}/package.json`,
+    'utf-8'
+  )
+);
+console.log(`build ${info.name}...`);
 
 const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
 
@@ -182,6 +191,18 @@ const esmBundle = {
   ])
 };
 
+const BUNDLES = process.env.BUNDLES
+  ? process.env.BUNDLES.split(',')
+  : ['cjs', 'esm'];
+
 export default () => {
-  return [commonJSBundle, commonJSLegacyBundle, esmBundle];
+  return BUNDLES.map((bundle) => {
+    switch (bundle) {
+      case 'cjs':
+        return [commonJSBundle, commonJSLegacyBundle];
+      case 'esm':
+        return [esmBundle];
+    }
+    return [];
+  }).flat();
 };
