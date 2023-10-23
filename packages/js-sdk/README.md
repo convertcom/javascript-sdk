@@ -526,7 +526,12 @@ Additionaly, you can even include this repository as part of your own `TypeScrip
      "javascript-sdk/packages/*"
    ]
    ```
-3. Add the following `paths` under `compilerOptions` of your `tsconfig.json`:
+3. If using PnP, the following `packages` to your `pnpm-workspace.yaml` instead:
+   ```yaml
+   packages:
+     - 'javascript-sdk/packages/*'
+   ```
+4. Add the following `paths` under `compilerOptions` of your `tsconfig.json`:
    ```json
    {
      "compilerOptions": {
@@ -550,20 +555,20 @@ Additionaly, you can even include this repository as part of your own `TypeScrip
      }
    }
    ```
-4. Add the following script to your `package.json`:
+5. Add the following script to your `package.json`:
    ```json
    "scripts": {
      "build:sdk": "cd javascript-sdk && BUNDLES=cjs,esm LOG_LEVEL=5 yarn sdk:build"
    }
    ```
    > Note that both `BUNDLES` and `LOG_LEVEL` are optional (_see [Build Environment Variables](#build-environment-variables) above_)
-5. Now you can build Convert JavaScriptSDK alongside your project (_assuming that you use `rollup` for bundling_):
+6. Now you can build Convert JavaScriptSDK alongside your project (_assuming that you use `rollup` for bundling_):
    ```json
    "scripts": {
      "build": "yarn build:sdk && rollup -c"
    }
    ```
-6. You need to run `yarn` inside submodule `javascript-sdk` as well:
+7. You need to run `yarn` inside submodule `javascript-sdk` as well:
    ```bash
    # update ConvertSDK submodule
    git submodule update --init --remote
