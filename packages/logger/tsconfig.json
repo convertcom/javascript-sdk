@@ -7,6 +7,11 @@
     "declaration": true,
     "outDir": "./lib/",
     "allowJs": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@convertcom/js-sdk-enums": ["../enums"],
+      "@convertcom/js-sdk-enums/*": ["../enums/src/*"]
+    }
   }
 }
