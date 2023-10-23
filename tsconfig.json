@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@convertcom/js-sdk-enums": ["packages/enums/src"],
+      "@convertcom/js-sdk-enums/*": ["packages/enums/src/*"],
+      "@convertcom/js-sdk-types": ["packages/types/src"],
+      "@convertcom/js-sdk-types/*": ["packages/types/src/*"],
+      "@convertcom/js-sdk-utils": ["packages/utils/src"],
+      "@convertcom/js-sdk-utils/*": ["packages/utils/src/*"],
+      "@convertcom/js-sdk-event": ["packages/event/src"],
+      "@convertcom/js-sdk-event/*": ["packages/event/src/*"],
+      "@convertcom/js-sdk-bucketing": ["packages/bucketing/src"],
+      "@convertcom/js-sdk-bucketing/*": ["packages/bucketing/src/*"],
+      "@convertcom/js-sdk-logger": ["packages/logger/src"],
+      "@convertcom/js-sdk-logger/*": ["packages/logger/src/*"],
+      "@convertcom/js-sdk-rules": ["packages/rules/src"],
+      "@convertcom/js-sdk-rules/*": ["packages/rules/src/*"],
+      "@convertcom/js-sdk-segments": ["packages/segments/src"],
+      "@convertcom/js-sdk-segments/*": ["packages/segments/src/*"],
+      "@convertcom/js-sdk-api": ["packages/api/src"],
+      "@convertcom/js-sdk-api/*": ["packages/api/src/*"],
+      "@convertcom/js-sdk-data": ["packages/data/src"],
+      "@convertcom/js-sdk-data/*": ["packages/data/src/*"],
+      "@convertcom/js-sdk-experience": ["packages/experience/src"],
+      "@convertcom/js-sdk-experience/*": ["packages/experience/src/*"],
+      "@convertcom/js-sdk": ["packages/js-sdk/src"],
+      "@convertcom/js-sdk/*": ["packages/js-sdk/src/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}
