@@ -102,7 +102,7 @@ export class RuleManager implements RuleManagerInterface {
     ruleSet: RuleSet,
     logEntry?: string
   ): boolean | RuleError {
-    this._loggerManager?.debug?.('RuleManager.isRuleMatched()', {
+    this._loggerManager?.trace?.('RuleManager.isRuleMatched()', {
       data: data,
       ruleSet: ruleSet
     });
@@ -151,7 +151,7 @@ export class RuleManager implements RuleManagerInterface {
    * @return {boolean}
    */
   isValidRule(rule: Rule): boolean {
-    this._loggerManager?.debug?.('RuleManager.isValidRule()', {
+    this._loggerManager?.trace?.('RuleManager.isValidRule()', {
       rule: rule
     });
     return (

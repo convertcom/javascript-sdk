@@ -44,7 +44,7 @@ export class EventManager implements EventManagerInterface {
    */
   on(event: SystemEvents | string, fn: (args: any, err: any) => void): void {
     (this._listeners[event] = this._listeners[event] || []).push(fn);
-    this._loggerManager?.trace?.('EventManage.on()', {event: event});
+    this._loggerManager?.trace?.('EventManager.on()', {event: event});
     if (Object.hasOwnProperty.call(this._deferred, event)) {
       this.fire(event, this._deferred[event].args, this._deferred[event].err);
     }
@@ -76,7 +76,7 @@ export class EventManager implements EventManagerInterface {
     err: Error | any = null,
     deferred = false
   ): void {
-    this._loggerManager?.trace?.('EventManage.fire()', {
+    this._loggerManager?.debug?.('EventManager.fire()', {
       event: event,
       args: args,
       err: err,
