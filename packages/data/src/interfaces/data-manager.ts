@@ -36,7 +36,7 @@ export interface DataManagerInterface {
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
     identityField: IdentityField,
-    environment: string
+    environment?: string
   ): Experience | RuleError;
   getBucketing(
     visitorId: Id,
