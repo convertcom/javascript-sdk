@@ -550,7 +550,8 @@ Additionaly, you can even include this repository as part of your own `TypeScrip
          "@convertcom/js-sdk-rules": ["./javascript-sdk/packages/rules"],
          "@convertcom/js-sdk-segments": ["./javascript-sdk/packages/segments"],
          "@convertcom/js-sdk-types": ["./javascript-sdk/packages/types"],
-         "@convertcom/js-sdk-utils": ["./javascript-sdk/packages/utils"]
+         "@convertcom/js-sdk-utils": ["./javascript-sdk/packages/utils"],
+         "@convertcom/js-sdk": ["./javascript-sdk/packages/js-sdk"]
        }
      }
    }
