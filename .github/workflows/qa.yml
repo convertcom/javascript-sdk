@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [16]
+        node: [18]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/setup-node@v1
@@ -38,7 +38,7 @@ jobs:
 
       - name: Runs the SDK QA checks
         run: |
-          yarn install
+          yarn
           cd packages/js-sdk
           yarn lint
           yarn test
