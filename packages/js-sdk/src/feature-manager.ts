@@ -56,7 +56,10 @@ export class FeatureManager implements FeatureManagerInterface {
   ) {
     this._dataManager = dataManager;
     this._loggerManager = loggerManager;
-    this._loggerManager?.trace?.(MESSAGES.FEATURE_CONSTRUCTOR);
+    this._loggerManager?.trace?.(
+      'FeatureManager.constructor()',
+      MESSAGES.FEATURE_CONSTRUCTOR
+    );
   }
 
   /**
@@ -387,13 +390,19 @@ export class FeatureManager implements FeatureManagerInterface {
           bucketedVariation?.changes?.[v]?.type !==
           VariationChangeType.FULLSTACK_FEATURE
         ) {
-          this._loggerManager?.warn?.(MESSAGES.VARIATION_CHANGE_NOT_SUPPORTED);
+          this._loggerManager?.warn?.(
+            'FeatureManager.runFeatures()',
+            MESSAGES.VARIATION_CHANGE_NOT_SUPPORTED
+          );
           continue;
         }
         const featureId = changes?.feature_id;
         // Take the features filter into account
         if (!featureId) {
-          this._loggerManager?.warn?.(MESSAGES.FEATURE_NOT_FOUND);
+          this._loggerManager?.warn?.(
+            'FeatureManager.runFeatures()',
+            MESSAGES.FEATURE_NOT_FOUND
+          );
           continue;
         }
         if (
@@ -406,7 +415,10 @@ export class FeatureManager implements FeatureManagerInterface {
           const variables = changes?.variables_data;
 
           if (!variables) {
-            this._loggerManager?.warn?.(MESSAGES.FEATURE_VARIABLES_NOT_FOUND);
+            this._loggerManager?.warn?.(
+              'FeatureManager.runFeatures()',
+              MESSAGES.FEATURE_VARIABLES_NOT_FOUND
+            );
           }
 
           if (typeCasting && variables.constructor === Object) {
@@ -424,6 +436,7 @@ export class FeatureManager implements FeatureManagerInterface {
                 );
               } else {
                 this._loggerManager?.warn?.(
+                  'FeatureManager.runFeatures()',
                   MESSAGES.FEATURE_VARIABLES_TYPE_NOT_FOUND
                 );
               }

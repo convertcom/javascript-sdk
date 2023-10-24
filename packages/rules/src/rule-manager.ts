@@ -63,7 +63,11 @@ export class RuleManager implements RuleManagerInterface {
       DEFAULT_KEYS_CASE_SENSITIVE,
       true
     );
-    this._loggerManager?.trace?.(MESSAGES.RULE_CONSTRUCTOR, this);
+    this._loggerManager?.trace?.(
+      'RuleManager.constructor()',
+      MESSAGES.RULE_CONSTRUCTOR,
+      this
+    );
   }
 
   /**
@@ -108,6 +112,7 @@ export class RuleManager implements RuleManagerInterface {
     });
     if (logEntry) {
       this._loggerManager?.info?.(
+        'RuleManager.isRuleMatched()',
         MESSAGES.PROCESSING_ENTITY.replace('#', logEntry)
       );
     }
@@ -121,11 +126,13 @@ export class RuleManager implements RuleManagerInterface {
         match = this._processAND(data, ruleSet.OR[i]);
         if (Object.values(RuleError).includes(match as RuleError)) {
           this._loggerManager?.info?.(
+            'RuleManager.isRuleMatched()',
             logEntry || '',
             ERROR_MESSAGES.RULE_ERROR
           );
         } else {
           this._loggerManager?.info?.(
+            'RuleManager.isRuleMatched()',
             logEntry || '',
             match === false
               ? MESSAGES.RULE_NOT_MATCH
@@ -138,6 +145,7 @@ export class RuleManager implements RuleManagerInterface {
       }
     } else {
       this._loggerManager?.warn?.(
+        'RuleManager.isRuleMatched()',
         logEntry || '',
         ERROR_MESSAGES.RULE_NOT_VALID
       );
@@ -189,11 +197,17 @@ export class RuleManager implements RuleManagerInterface {
         }
       }
       if (match !== false) {
-        this._loggerManager?.info?.(MESSAGES.RULE_MATCH_AND);
+        this._loggerManager?.info?.(
+          'RuleManager._processAND()',
+          MESSAGES.RULE_MATCH_AND
+        );
       }
       return match;
     } else {
-      this._loggerManager?.warn?.(ERROR_MESSAGES.RULE_NOT_VALID);
+      this._loggerManager?.warn?.(
+        'RuleManager._processAND()',
+        ERROR_MESSAGES.RULE_NOT_VALID
+      );
     }
     return false;
   }
@@ -222,7 +236,10 @@ export class RuleManager implements RuleManagerInterface {
         }
       }
     } else {
-      this._loggerManager?.warn?.(ERROR_MESSAGES.RULE_NOT_VALID);
+      this._loggerManager?.warn?.(
+        'RuleManager._processORWHEN()',
+        ERROR_MESSAGES.RULE_NOT_VALID
+      );
     }
     return false;
   }
@@ -263,6 +280,7 @@ export class RuleManager implements RuleManagerInterface {
             } else if (rule?.rule_type) {
               // Rule object has to have `rule_type` field
               this._loggerManager?.info?.(
+                'RuleManager._processRuleItem()',
                 MESSAGES.RULE_MATCH_START.replace('#', rule.rule_type)
               );
               for (const method of Object.getOwnPropertyNames(
@@ -286,18 +304,21 @@ export class RuleManager implements RuleManagerInterface {
               }
             }
           } else {
-            this._loggerManager?.warn?.('RuleManager._processRule()', {
+            this._loggerManager?.warn?.('RuleManager._processRuleItem()', {
               warn: ERROR_MESSAGES.RULE_DATA_NOT_VALID
             });
           }
         }
       } catch (error) {
-        this._loggerManager?.error?.('RuleManager._processRule()', {
+        this._loggerManager?.error?.('RuleManager._processRuleItem()', {
           error: error.message
         });
       }
     } else {
-      this._loggerManager?.warn?.(ERROR_MESSAGES.RULE_NOT_VALID);
+      this._loggerManager?.warn?.(
+        'RuleManager._processRuleItem()',
+        ERROR_MESSAGES.RULE_NOT_VALID
+      );
     }
     return false;
   }

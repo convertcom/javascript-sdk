@@ -49,7 +49,11 @@ export class BucketingManager implements BucketingManagerInterface {
       DEFAULT_HASH_SEED,
       true
     );
-    this._loggerManager?.trace?.(MESSAGES.BUCKETING_CONSTRUCTOR, this);
+    this._loggerManager?.trace?.(
+      'BucketingManager.constructor()',
+      MESSAGES.BUCKETING_CONSTRUCTOR,
+      this
+    );
   }
 
   /**

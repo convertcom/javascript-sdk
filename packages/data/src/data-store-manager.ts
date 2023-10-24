@@ -108,7 +108,7 @@ export class DataStoreManager implements DataStoreManagerInterface {
   }
 
   releaseQueue(reason?: string): any {
-    this._loggerManager?.trace?.('DataStoreManager.releaseQueue()', {
+    this._loggerManager?.info?.('DataStoreManager.releaseQueue()', {
       reason: reason || ''
     });
     this.stopQueue();
@@ -139,7 +139,10 @@ export class DataStoreManager implements DataStoreManagerInterface {
       if (this.isValidDataStore(dataStore)) {
         this._dataStore = dataStore;
       } else {
-        this._loggerManager?.error?.(ERROR_MESSAGES.DATA_STORE_NOT_VALID);
+        this._loggerManager?.error?.(
+          'DataStoreManager.dataStore.set()',
+          ERROR_MESSAGES.DATA_STORE_NOT_VALID
+        );
       }
     }
   }

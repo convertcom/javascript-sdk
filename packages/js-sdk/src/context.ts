@@ -112,7 +112,10 @@ export class Context implements ContextInterface {
     attributes?: BucketingAttributes
   ): BucketedVariation | RuleError {
     if (!this._visitorId) {
-      this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
+      this._loggerManager?.error?.(
+        'Context.runExperience()',
+        ERROR_MESSAGES.VISITOR_ID_REQUIRED
+      );
       return;
     }
     const visitorAttributes = this.getVisitorAttributes(
@@ -154,7 +157,10 @@ export class Context implements ContextInterface {
     attributes?: BucketingAttributes
   ): Array<BucketedVariation | RuleError> {
     if (!this._visitorId) {
-      this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
+      this._loggerManager?.error?.(
+        'Context.runExperiences()',
+        ERROR_MESSAGES.VISITOR_ID_REQUIRED
+      );
       return;
     }
     const visitorAttributes = this.getVisitorAttributes(
@@ -205,7 +211,10 @@ export class Context implements ContextInterface {
     attributes?: BucketingAttributes
   ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError> {
     if (!this._visitorId) {
-      this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
+      this._loggerManager?.error?.(
+        'Context.runFeature()',
+        ERROR_MESSAGES.VISITOR_ID_REQUIRED
+      );
       return;
     }
     const visitorAttributes = this.getVisitorAttributes(
@@ -278,7 +287,10 @@ export class Context implements ContextInterface {
     attributes?: BucketingAttributes
   ): Array<BucketedFeature | RuleError> {
     if (!this._visitorId) {
-      this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
+      this._loggerManager?.error?.(
+        'Context.runFeatures()',
+        ERROR_MESSAGES.VISITOR_ID_REQUIRED
+      );
       return;
     }
     const visitorAttributes = this.getVisitorAttributes(
@@ -328,7 +340,10 @@ export class Context implements ContextInterface {
    */
   trackConversion(goalKey: Id, attributes?: ConversionAttributes): RuleError {
     if (!this._visitorId) {
-      this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
+      this._loggerManager?.error?.(
+        'Context.trackConversion()',
+        ERROR_MESSAGES.VISITOR_ID_REQUIRED
+      );
       return;
     }
 
@@ -336,7 +351,10 @@ export class Context implements ContextInterface {
     const goalData = attributes?.conversionData;
     if (goalData) {
       if (!Array.isArray(goalData)) {
-        this._loggerManager?.error?.(ERROR_MESSAGES.GOAL_DATA_NOT_VALID);
+        this._loggerManager?.error?.(
+          'Context.trackConversion()',
+          ERROR_MESSAGES.GOAL_DATA_NOT_VALID
+        );
         return;
       }
     }
@@ -386,7 +404,10 @@ export class Context implements ContextInterface {
     attributes?: SegmentsAttributes
   ): RuleError {
     if (!this._visitorId) {
-      this._loggerManager?.error?.(ERROR_MESSAGES.VISITOR_ID_REQUIRED);
+      this._loggerManager?.error?.(
+        'Context.setCustomSegments()',
+        ERROR_MESSAGES.VISITOR_ID_REQUIRED
+      );
       return;
     }
     const segmentsRule = this.getVisitorAttributes(attributes?.ruleData);

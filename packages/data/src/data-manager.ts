@@ -107,7 +107,11 @@ export class DataManager implements DataManagerInterface {
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
     this.dataStoreManager = objectDeepValue(config, 'dataStore');
-    this._loggerManager?.trace?.(MESSAGES.DATA_CONSTRUCTOR, this);
+    this._loggerManager?.trace?.(
+      'DataManager.constructor()',
+      MESSAGES.DATA_CONSTRUCTOR,
+      this
+    );
   }
 
   set data(data: ConfigData) {
@@ -116,7 +120,10 @@ export class DataManager implements DataManagerInterface {
       this._accountId = data?.account_id;
       this._projectId = data?.project?.id;
     } else {
-      this._loggerManager?.error?.(ERROR_MESSAGES.CONFIG_DATA_NOT_VALID);
+      this._loggerManager?.error?.(
+        'DataManager.data.set()',
+        ERROR_MESSAGES.CONFIG_DATA_NOT_VALID
+      );
     }
   }
 
@@ -270,6 +277,7 @@ export class DataManager implements DataManagerInterface {
               if (matchedAudiences.length) {
                 for (const item of matchedAudiences) {
                   this._loggerManager?.info?.(
+                    'DataManager.matchRulesByField()',
                     MESSAGES.AUDIENCE_MATCH.replace('#', item?.[identityField])
                   );
                 }
@@ -289,6 +297,7 @@ export class DataManager implements DataManagerInterface {
               if (matchedSegmentations.length) {
                 for (const item of matchedSegmentations) {
                   this._loggerManager?.info?.(
+                    'DataManager.matchRulesByField()',
                     MESSAGES.SEGMENTATION_MATCH.replace(
                       '#',
                       item?.[identityField]
@@ -298,7 +307,10 @@ export class DataManager implements DataManagerInterface {
               }
             }
           } else {
-            this._loggerManager?.info?.(MESSAGES.AUDIENCE_NOT_RESTRICTED);
+            this._loggerManager?.info?.(
+              'DataManager.matchRulesByField()',
+              MESSAGES.AUDIENCE_NOT_RESTRICTED
+            );
           }
         }
         // If there are some matched audiences
@@ -310,34 +322,53 @@ export class DataManager implements DataManagerInterface {
         ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
-            this._loggerManager?.info?.(MESSAGES.EXPERIENCE_RULES_MATCHED);
+            this._loggerManager?.info?.(
+              'DataManager.matchRulesByField()',
+              MESSAGES.EXPERIENCE_RULES_MATCHED
+            );
             return experience;
           } else {
-            this._loggerManager?.debug?.(MESSAGES.VARIATIONS_NOT_FOUND, {
-              visitorProperties: visitorProperties,
-              audiences: audiences
-            });
+            this._loggerManager?.debug?.(
+              'DataManager.matchRulesByField()',
+              MESSAGES.VARIATIONS_NOT_FOUND,
+              {
+                visitorProperties: visitorProperties,
+                audiences: audiences
+              }
+            );
           }
         } else {
-          this._loggerManager?.debug?.(MESSAGES.AUDIENCE_NOT_MATCH, {
-            visitorProperties: visitorProperties,
-            audiences: audiences
-          });
+          this._loggerManager?.debug?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.AUDIENCE_NOT_MATCH,
+            {
+              visitorProperties: visitorProperties,
+              audiences: audiences
+            }
+          );
         }
       } else {
-        this._loggerManager?.debug?.(MESSAGES.LOCATION_NOT_MATCH, {
-          locationProperties: locationProperties,
-          [experience?.locations
-            ? 'experiences[].variations[].locations'
-            : 'experiences[].variations[].site_area']:
-            experience?.locations || experience?.site_area || ''
-        });
+        this._loggerManager?.debug?.(
+          'DataManager.matchRulesByField()',
+          MESSAGES.LOCATION_NOT_MATCH,
+          {
+            locationProperties: locationProperties,
+            [experience?.locations
+              ? 'experiences[].variations[].locations'
+              : 'experiences[].variations[].site_area']:
+              experience?.locations || experience?.site_area || ''
+          }
+        );
       }
     } else {
-      this._loggerManager?.debug?.(MESSAGES.EXPERIENCE_NOT_FOUND, {
-        identity: identity,
-        identityField: identityField
-      });
+      this._loggerManager?.debug?.(
+        'DataManager.matchRulesByField()',
+        MESSAGES.EXPERIENCE_NOT_FOUND,
+        {
+          identity: identity,
+          identityField: identityField
+        }
+      );
     }
     return null;
   }
@@ -414,9 +445,10 @@ export class DataManager implements DataManagerInterface {
     ) {
       // If it's found log debug info. The return value will be formed next step
       this._loggerManager?.info?.(
+        'DataManager._retrieveBucketing()',
         MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
       );
-      this._loggerManager?.debug?.({
+      this._loggerManager?.debug?.('DataManager._retrieveBucketing()', {
         storeKey: storeKey,
         visitorId: visitorId,
         variationId: variationId
@@ -438,9 +470,10 @@ export class DataManager implements DataManagerInterface {
         });
         // If it's found log debug info. The return value will be formed next step
         this._loggerManager?.info?.(
+          'DataManager._retrieveBucketing()',
           MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
         );
-        this._loggerManager?.debug?.({
+        this._loggerManager?.debug?.('DataManager._retrieveBucketing()', {
           storeKey: storeKey,
           visitorId: visitorId,
           variationId: variationId
@@ -459,6 +492,7 @@ export class DataManager implements DataManagerInterface {
         ) as Id;
         if (variationId) {
           this._loggerManager?.info?.(
+            'DataManager._retrieveBucketing()',
             MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
           );
           // Store the data in local variable
@@ -488,6 +522,7 @@ export class DataManager implements DataManagerInterface {
           variation = this.retrieveVariation(experience.id, variationId);
         } else {
           this._loggerManager?.error?.(
+            'DataManager._retrieveBucketing()',
             ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
             {
               visitorId: visitorId,
@@ -599,6 +634,7 @@ export class DataManager implements DataManagerInterface {
         const identity = items?.[i]?.[identityField]?.toString?.();
         if (match === true) {
           this._loggerManager?.info?.(
+            'DataManager.selectLocations()',
             MESSAGES.LOCATION_MATCH.replace('#', `#${identity}`)
           );
           if (!locations.includes(identity)) {
@@ -617,6 +653,7 @@ export class DataManager implements DataManagerInterface {
               true
             );
             this._loggerManager?.info?.(
+              'DataManager.selectLocations()',
               MESSAGES.LOCATION_ACTIVATED.replace('#', `#${identity}`)
             );
           }
@@ -643,6 +680,7 @@ export class DataManager implements DataManagerInterface {
           );
           locations.splice(locationIndex, 1);
           this._loggerManager?.info?.(
+            'DataManager.selectLocations()',
             MESSAGES.LOCATION_DEACTIVATED.replace('#', `#${identity}`)
           );
         }
@@ -733,7 +771,10 @@ export class DataManager implements DataManagerInterface {
         ? (this.getEntity(goalId as string, 'goals') as Goal)
         : (this.getEntityById(goalId, 'goals') as Goal);
     if (!goal?.id) {
-      this._loggerManager?.error?.(MESSAGES.GOAL_NOT_FOUND);
+      this._loggerManager?.error?.(
+        'DataManager.convert()',
+        MESSAGES.GOAL_NOT_FOUND
+      );
       return;
     }
 
@@ -748,7 +789,10 @@ export class DataManager implements DataManagerInterface {
       if (Object.values(RuleError).includes(ruleMatched as RuleError))
         return ruleMatched as RuleError;
       if (!ruleMatched) {
-        this._loggerManager?.error?.(MESSAGES.GOAL_RULE_NOT_MATCH);
+        this._loggerManager?.error?.(
+          'DataManager.convert()',
+          MESSAGES.GOAL_RULE_NOT_MATCH
+        );
         return;
       }
     }
@@ -763,6 +807,7 @@ export class DataManager implements DataManagerInterface {
     } = this.getLocalStore(visitorId) || {};
     if (goalTriggered) {
       this._loggerManager?.debug?.(
+        'DataManager.convert()',
         MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
         {
           storeKey: storeKey,
@@ -777,6 +822,7 @@ export class DataManager implements DataManagerInterface {
         this.dataStoreManager?.get?.(storeKey) || {};
       if (goalTriggered) {
         this._loggerManager?.debug?.(
+          'DataManager.convert()',
           MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
           {
             storeKey: storeKey,

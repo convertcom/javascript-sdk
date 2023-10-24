@@ -84,7 +84,11 @@ export class Core implements CoreInterface {
     this._eventManager = eventManager;
     this._apiManager = apiManager;
     this._loggerManager = loggerManager;
-    this._loggerManager?.trace?.(MESSAGES.CORE_CONSTRUCTOR, this);
+    this._loggerManager?.trace?.(
+      'Core.constructor()',
+      MESSAGES.CORE_CONSTRUCTOR,
+      this
+    );
     this.initialize(config);
   }
 
@@ -104,10 +108,16 @@ export class Core implements CoreInterface {
     } else if (Object.prototype.hasOwnProperty.call(config, 'data')) {
       this._eventManager.fire(SystemEvents.READY, null, null, true);
       this._dataManager.data = config.data;
-      this._loggerManager?.trace?.(MESSAGES.CORE_INITIALIZED);
+      this._loggerManager?.trace?.(
+        'Core.initialize()',
+        MESSAGES.CORE_INITIALIZED
+      );
       this._initialized = true;
     } else {
-      this._loggerManager?.error?.(ERROR_MESSAGES.SDK_OR_DATA_OBJECT_REQUIRED);
+      this._loggerManager?.error?.(
+        'Core.initialize()',
+        ERROR_MESSAGES.SDK_OR_DATA_OBJECT_REQUIRED
+      );
       this._eventManager.fire(
         SystemEvents.READY,
         {},
@@ -194,9 +204,15 @@ export class Core implements CoreInterface {
         true
       );
       if (objectNotEmpty(this._dataManager.data)) {
-        this._loggerManager?.trace?.(MESSAGES.CONFIG_DATA_UPDATED);
+        this._loggerManager?.trace?.(
+          'Core.fetchConfig()',
+          MESSAGES.CONFIG_DATA_UPDATED
+        );
       } else {
-        this._loggerManager?.trace?.(MESSAGES.CORE_INITIALIZED);
+        this._loggerManager?.trace?.(
+          'Core.fetchConfig()',
+          MESSAGES.CORE_INITIALIZED
+        );
         this._initialized = true;
       }
       this._dataManager.data = data;

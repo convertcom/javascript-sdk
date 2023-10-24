@@ -117,7 +117,10 @@ export class SegmentsManager implements SegmentsManagerInterface {
       if (!segmentRule || segmentsMatched) {
         const segmentId = segment?.id?.toString();
         if (customSegments.includes(segmentId)) {
-          this._loggerManager?.warn?.(MESSAGES.CUSTOM_SEGMENTS_KEY_FOUND);
+          this._loggerManager?.warn?.(
+            'SegmentsManager.setCustomSegments()',
+            MESSAGES.CUSTOM_SEGMENTS_KEY_FOUND
+          );
         } else {
           segmentIds.push(segmentId);
         }
@@ -134,7 +137,10 @@ export class SegmentsManager implements SegmentsManagerInterface {
       // Merge custom segments ID into DataStore
       this.putSegments(visitorId, segmentsData);
     } else {
-      this._loggerManager?.warn?.(MESSAGES.SEGMENTS_NOT_FOUND);
+      this._loggerManager?.warn?.(
+        'SegmentsManager.setCustomSegments()',
+        MESSAGES.SEGMENTS_NOT_FOUND
+      );
     }
 
     return segmentsData;
