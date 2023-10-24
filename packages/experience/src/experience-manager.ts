@@ -46,7 +46,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
     this._dataManager = dataManager;
     this._loggerManager = loggerManager;
     this._loggerManager?.trace?.(
-      'ExperienceManager.constructor()',
+      'ExperienceManager()',
       MESSAGES.EXPERIENCE_CONSTRUCTOR
     );
   }

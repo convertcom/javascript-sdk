@@ -57,7 +57,7 @@ export class FeatureManager implements FeatureManagerInterface {
     this._dataManager = dataManager;
     this._loggerManager = loggerManager;
     this._loggerManager?.trace?.(
-      'FeatureManager.constructor()',
+      'FeatureManager()',
       MESSAGES.FEATURE_CONSTRUCTOR
     );
   }

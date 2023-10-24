@@ -84,11 +84,7 @@ export class Core implements CoreInterface {
     this._eventManager = eventManager;
     this._apiManager = apiManager;
     this._loggerManager = loggerManager;
-    this._loggerManager?.trace?.(
-      'Core.constructor()',
-      MESSAGES.CORE_CONSTRUCTOR,
-      this
-    );
+    this._loggerManager?.trace?.('Core()', MESSAGES.CORE_CONSTRUCTOR, this);
     this.initialize(config);
   }
 

@@ -64,7 +64,7 @@ export class RuleManager implements RuleManagerInterface {
       true
     );
     this._loggerManager?.trace?.(
-      'RuleManager.constructor()',
+      'RuleManager()',
       MESSAGES.RULE_CONSTRUCTOR,
       this
     );

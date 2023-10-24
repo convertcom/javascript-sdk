@@ -50,7 +50,7 @@ export class BucketingManager implements BucketingManagerInterface {
       true
     );
     this._loggerManager?.trace?.(
-      'BucketingManager.constructor()',
+      'BucketingManager()',
       MESSAGES.BUCKETING_CONSTRUCTOR,
       this
     );
