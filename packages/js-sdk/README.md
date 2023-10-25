@@ -430,13 +430,15 @@ convertSDK.onReady().then(() => {
 
 You can capture SDK events as well:
 
-| Event            | Triggered by                 | Callback data                                                                            |
-| ---------------- | ---------------------------- | ---------------------------------------------------------------------------------------- |
-| `ready`          | Initializing the SDK         | null                                                                                     |
-| `bucketing`      | Run experience(s)            | { visitorId: `string`, experienceKey: `string`, variationKey: `string` }                 |
-|                  | Run feature(s)               | { visitorId: `string`, experienceKey: `string`, featureKey: `string`, status: `string` } |
-| `conversion` }   | Track conversion             | { visitorId: `string`, goalKey: `string` }                                               |
-| `config-updated` | Refreshing the configuration | null                                                                                     |
+| Event                  | Triggered by                                             | Callback data                                                                            |
+| ---------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `ready`                | Initializing the SDK                                     | null                                                                                     |
+| `bucketing`            | Run experience(s)                                        | { visitorId: `string`, experienceKey: `string`, variationKey: `string` }                 |
+|                        | Run feature(s)                                           | { visitorId: `string`, experienceKey: `string`, featureKey: `string`, status: `string` } |
+| `conversion`           | Track conversion                                         | { visitorId: `string`, goalKey: `string` }                                               |
+| `location.activated`   | Location rules matched                                   | { visitorId: `string`, location: { id: `string`, name: `string`, key: `string` } }       |
+| `location.deactivated` | Location rules not matched (_only if activated earlier_) | { visitorId: `string`, location: { id: `string`, name: `string`, key: `string` } }       |
+| `config.updated`       | Refreshing the configuration                             | null                                                                                     |
 
 ```javascript
 const convertSDK,{SystemEvents} = new ConvertSDK({sdkKey: 'xxx'});
