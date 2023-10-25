@@ -62,7 +62,7 @@
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "require": "^2.4.20",
-    "rollup": "^4.1.4",
+    "rollup": "^3.20.2",
     "rollup-plugin-generate-package-json": "^3.2.0",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-node": "^10.9.1",
