@@ -5,7 +5,7 @@
 
 # Node artifact files
 node_modules/
-.yarn
+.yarn/
 .pnp*
 
 # Compiled Java class files
