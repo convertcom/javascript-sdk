@@ -11,13 +11,13 @@
  */
 export enum SystemEvents {
   READY = 'ready',
-  CONFIG_UPDATED = 'config-updated',
-  API_QUEUE_RELEASED = 'api-queue-released',
+  CONFIG_UPDATED = 'config.updated',
+  API_QUEUE_RELEASED = 'api.queue.released',
   BUCKETING = 'bucketing',
   CONVERSION = 'conversion',
   SEGMENTS = 'segments',
-  LOCATION_ACTIVATED = 'location-activated',
-  LOCATION_DEACTIVATED = 'location-deactivated',
+  LOCATION_ACTIVATED = 'location.activated',
+  LOCATION_DEACTIVATED = 'location.deactivated',
   AUDIENCES = 'audiences',
-  DATA_STORE_QUEUE_RELEASED = 'data-store-queue-released'
+  DATA_STORE_QUEUE_RELEASED = 'datastore.queue.released'
 }
