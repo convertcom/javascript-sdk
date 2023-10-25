@@ -38,7 +38,6 @@ jobs:
 
       - name: Runs the SDK QA checks
         run: |
-          yarn set version 4
           yarn
           cd packages/js-sdk
           yarn lint
