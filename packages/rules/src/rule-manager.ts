@@ -260,7 +260,7 @@ export class RuleManager implements RuleManagerInterface {
         const negation = rule.matching.negated || false;
         const matching = rule.matching.match_type;
         if (this.getComparisonProcessorMethods().indexOf(matching) !== -1) {
-          if (typeof data === 'object') {
+          if (data && typeof data === 'object' && data?.constructor) {
             // Validate data key-value set.
             if (data.constructor === Object) {
               // Rule object has to have `key` field
