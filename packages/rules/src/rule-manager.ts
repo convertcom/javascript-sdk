@@ -290,7 +290,7 @@ export class RuleManager implements RuleManagerInterface {
                 const rule_method = camelCase(
                   `get ${rule.rule_type.replace(/_/g, ' ')}`
                 );
-                if (method === rule_method) {
+                if (method === rule_method || data?.mapper?.(method) === rule_method) {
                   const dataValue = data[method](rule);
                   if (Object.values(RuleError).includes(dataValue as RuleError))
                     return dataValue as RuleError;
