@@ -62,6 +62,7 @@ export class ApiManager implements ApiManagerInterface {
   private _projectId: Id;
   private _trackingEvent: TrackingEvent;
   private _trackingEnabled: boolean;
+  private _mapper: (...args: any) => any;
 
   readonly batchSize: number = DEFAULT_BATCH_SIZE;
   readonly releaseInterval: number = DEFAULT_RELEASE_INTERVAL;
@@ -97,6 +98,7 @@ export class ApiManager implements ApiManagerInterface {
     );
     this._data = objectDeepValue(config, 'data');
     this._enrichData = !config?.dataStore;
+    this._mapper = config?.mapper || ((value: any) => value);
 
     this.batchSize =
       Number(objectDeepValue(config, 'events.batch_size')).valueOf() ||
@@ -185,9 +187,9 @@ export class ApiManager implements ApiManagerInterface {
     eventRequest: VisitorEvent,
     segments?: SegmentsData
   ): void {
-    this._loggerManager?.trace?.('ApiManager.enqueue()', {
+    this._loggerManager?.trace?.('ApiManager.enqueue()', this._mapper({
       eventRequest: eventRequest
-    });
+    }));
     this._requestsQueue.push(visitorId, eventRequest, segments);
     if (this._trackingEnabled) {
       if (this._requestsQueue.length === this.batchSize) {
@@ -222,7 +224,7 @@ export class ApiManager implements ApiManagerInterface {
         ),
         route: `/track/${this._accountId}/${this._projectId}`
       },
-      payload
+      this._mapper(payload)
     )
       .then((result) => {
         this._requestsQueue.reset();

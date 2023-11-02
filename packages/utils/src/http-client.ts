@@ -124,7 +124,7 @@ const supportsRequestBody = (method: string) =>
 
 export const serialize = (params: Record<string, any>, method: string) => {
   let query = '';
-  if (params && params.constructor === Object && !supportsRequestBody(method)) {
+  if (params && params?.constructor === Object && !supportsRequestBody(method)) {
     if (typeof navigator !== 'undefined') {
       query = Object.keys(params)
         .map(
