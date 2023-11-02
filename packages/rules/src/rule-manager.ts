@@ -315,12 +315,24 @@ export class RuleManager implements RuleManagerInterface {
                   );
                 }
               }
+            } else {
+              this._loggerManager?.trace?.('RuleManager._processRuleItem()', {
+                warn: ERROR_MESSAGES.RULE_DATA_NOT_VALID,
+                data
+              });
             }
           } else {
-            this._loggerManager?.warn?.('RuleManager._processRuleItem()', {
-              warn: ERROR_MESSAGES.RULE_DATA_NOT_VALID
+            this._loggerManager?.trace?.('RuleManager._processRuleItem()', {
+              warn: ERROR_MESSAGES.RULE_NOT_VALID,
+              data,
+              rule
             });
           }
+        } else {
+          this._loggerManager?.warn?.(
+            'RuleManager._processRuleItem()',
+            ERROR_MESSAGES.RULE_MATCH_TYPE_NOT_SUPPORTED.replace('#', matching)
+          );
         }
       } catch (error) {
         this._loggerManager?.error?.('RuleManager._processRuleItem()', {
