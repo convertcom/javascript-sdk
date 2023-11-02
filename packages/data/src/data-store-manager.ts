@@ -34,6 +34,7 @@ export class DataStoreManager implements DataStoreManagerInterface {
   readonly releaseInterval: number = DEFAULT_RELEASE_INTERVAL;
 
   private _dataStore;
+  private _mapper: (...args: any) => any;
 
   /**
    * @param {Config=} config
@@ -66,6 +67,7 @@ export class DataStoreManager implements DataStoreManagerInterface {
       // Number(objectDeepValue(config, 'events.release_interval')).valueOf() ||
       DEFAULT_RELEASE_INTERVAL;
     this.dataStore = dataStore;
+    this._mapper = config?.mapper || ((value: any) => value);
     this._requestsQueue = {};
   }
 
@@ -91,10 +93,10 @@ export class DataStoreManager implements DataStoreManagerInterface {
   }
 
   enqueue(key: string, data: any) {
-    this._loggerManager?.trace?.('DataStoreManager.enqueue()', {
+    this._loggerManager?.trace?.('DataStoreManager.enqueue()', this._mapper({
       key: key,
       data: data
-    });
+    }));
     const addData = {};
     addData[key] = data;
     this._requestsQueue = objectDeepMerge(this._requestsQueue, addData);
