@@ -122,7 +122,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="ApiManager_ApiManager.html">ApiManager</a></li><li><a href="BucketingManager_BucketingManager.html">BucketingManager</a></li><li><a href="Context_Context.html">Context</a></li><li><a href="ConvertSDK_ConvertSDK.html">ConvertSDK</a></li><li><a href="Core_Core.html">Core</a></li><li><a href="DataManager_DataManager.html">DataManager</a></li><li><a href="DataStoreManager_DataStoreManager.html">DataStoreManager</a></li><li><a href="EventManager_EventManager.html">EventManager</a></li><li><a href="ExperienceManager_ExperienceManager.html">ExperienceManager</a></li><li><a href="FeatureManager_FeatureManager.html">FeatureManager</a></li><li><a href="LogManager_LogManager.html">LogManager</a></li><li><a href="RuleManager_RuleManager.html">RuleManager</a></li><li><a href="SegmentsManager_SegmentsManager.html">SegmentsManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Config">Config</a></li><li><a href="global.html#SystemEvents">SystemEvents</a></li></ul></div><div class="category"><h2>Main</h2><h3>Classes</h3><ul><li><a href="Context.html">Context</a></li><li><a href="ConvertSDK.html">ConvertSDK</a></li><li><a href="Core.html">Core</a></li></ul></div><div class="category"><h2>Modules</h2><h3>Classes</h3><ul><li><a href="ApiManager.html">ApiManager</a></li><li><a href="BucketingManager.html">BucketingManager</a></li><li><a href="DataManager.html">DataManager</a></li><li><a href="DataStoreManager.html">DataStoreManager</a></li><li><a href="EventManager.html">EventManager</a></li><li><a href="ExperienceManager.html">ExperienceManager</a></li><li><a href="FeatureManager.html">FeatureManager</a></li><li><a href="LogManager.html">LogManager</a></li><li><a href="RuleManager.html">RuleManager</a></li><li><a href="SegmentsManager.html">SegmentsManager</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="Context_Context.html">Context</a></li><li><a href="ConvertSDK_ConvertSDK.html">ConvertSDK</a></li><li><a href="Core_Core.html">Core</a></li><li><a href="FeatureManager_FeatureManager.html">FeatureManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Config">Config</a></li></ul></div><div class="category"><h2>Main</h2><h3>Classes</h3><ul><li><a href="Context.html">Context</a></li><li><a href="ConvertSDK.html">ConvertSDK</a></li><li><a href="Core.html">Core</a></li></ul></div><div class="category"><h2>Modules</h2><h3>Classes</h3><ul><li><a href="FeatureManager.html">FeatureManager</a></li></ul></div>
                 
             </nav>
         </div>
@@ -215,9 +215,9 @@
 </code></pre>
 <p>Package's build contains definitions for generating entry points in different formats:</p>
 <ul>
-<li>CommonJs - can be found under <code>lib/index.js</code> or <code>lib/index.min.js</code> for the minified version;</li>
-<li>ESM - can be found under <code>lib/index.mjs</code> or <code>lib/index.min.mjs</code> for the minified version;</li>
-<li>UMD - can be found under <code>lib/index.umd.js</code> or <code>lib/index.umd.min.js</code> for the minified version;</li>
+<li>CommonJS <code>CJS</code> - can be found under <code>lib/index.js</code>or<code>lib/index.min.js</code> for the minified version;</li>
+<li>ES Moduls <code>ESM</code> - can be found under <code>lib/index.mjs</code>or<code>lib/index.min.mjs</code> for the minified version;</li>
+<li>Universal Module Definition <code>UMD</code> - can be found under <code>lib/index.umd.js</code> or <code>lib/index.umd.min.js</code> for the minified version;</li>
 </ul>
 <p>The above entry points can also be loaded through <a href="https://unpkg.com/">unpkg</a> but this method will add a dependency on third-party URLs and therefore is recommended to use it only for evaluation purposes:</p>
 <pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://unpkg.com/@convertcom/js-sdk/lib/index.js&quot;>&lt;/script>
@@ -228,19 +228,39 @@
 <h2>SDK Usage</h2>
 <h3>Import the SDK Inside Your Project</h3>
 <p><strong>ES6:</strong></p>
+<p>Supports <code>import</code> and <code>export</code> statements in modern JS (<em>i.e. React, Vue, Angular, .. etc</em>).</p>
+<blockquote>
+<p>Must be transpiled to work in client browsers.</p>
+</blockquote>
 <pre class="prettyprint source lang-javascript"><code>import ConvertSDK from '@convertcom/js-sdk';
 </code></pre>
 <p><strong>CommonJS:</strong></p>
-<pre class="prettyprint source lang-javascript"><code>const ConvertSDK = require('@convertcom/js-sdk').default;
+<p>Supports <code>require</code> and <code>exports</code> in NodeJS environment.</p>
+<blockquote>
+<p>Must be transpiled to work in client browsers.</p>
+</blockquote>
+<pre class="prettyprint source lang-javascript"><code>const {default: ConvertSDK} = require('@convertcom/js-sdk');
+</code></pre>
+<p><strong>UMD:</strong></p>
+<blockquote>
+<p>Works directly in client browsers.</p>
+</blockquote>
+<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://unpkg.com/@convertcom/js-sdk/lib/index.umd.min.js&quot;>&lt;/script>
+</code></pre>
+<pre class="prettyprint source lang-javascript"><code>const {default: ConvertSDK} = window.ConvertSDK; // ConvertSDK is provided by https://unpkg.com/@convertcom/js-sdk/lib/index.umd.min.js
 </code></pre>
 <p>The SDK instance can be initialized by either providing an SDK key or a full project's data object.</p>
 <h4>Initialize using the SDK Key</h4>
 <p>Include <code>sdkKey</code> as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every <code>dataRefreshInterval</code> seconds.</p>
 <pre class="prettyprint source lang-javascript"><code>const convertSDK = new ConvertSDK({
   sdkKey: 'xxx',
-  dataRefreshInterval: 300 //in seconds, 5 minutes
+  dataRefreshInterval: 300000 // in milliseconds (5 minutes)
 });
-await convertSDK.onReady();
+convertSDK.onReady().then(() => {
+  // create user context
+  // run experience(s)
+  // ...
+});
 </code></pre>
 <p>After this point, the SDK has been successfully instantiated, project config data has been downloaded, and it is ready to be used for starting a UserContext.</p>
 <h4>Initialize using Static Configuration</h4>
@@ -263,8 +283,8 @@ const config = {
     logLevel: LogLevel.DEBUG,
     customLoggers: [] // Allows 3rd party loggers to be passed
   },
-  dataStore: null, // Allows 3rd party data store to be passed
-  dataRefreshInterval: 300, // in seconds (5 minutes)
+  dataStore: null, // Allows 3rd party data store to be passed (optional)
+  dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   data: projectData
 };
 </code></pre>
@@ -337,9 +357,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const variations = convertSDK.runExperiences();
-console.log(variations);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variations = context.runExperiences();
+  console.log(variations);
+});
 </code></pre>
 <h3>Run a Single Experience</h3>
 <p>Decides whether the user should be bucketed into a single variation, which is mapped to an experience unique key. The decision is made against the configured experience rules.</p>
@@ -395,9 +417,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const variation = context.runExperience('experience-key');
-console.log(variation);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variation = context.runExperience('experience-key');
+  console.log(variation);
+});
 </code></pre>
 <h3>Run Multiple Features</h3>
 <p>Retrieves a list of features that the user already bucketed.</p>
@@ -453,9 +477,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const features = context.runFeatures();
-console.log(features);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const features = context.runFeatures();
+  console.log(features);
+});
 </code></pre>
 <h3>Run a Single Feature</h3>
 <p>Retrieves a single feature that the user already bucketed, which is mapped to a feature unique key.</p>
@@ -523,9 +549,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const feature = context.runFeature('feature-key');
-console.log(feature);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const feature = context.runFeature('feature-key');
+  console.log(feature);
+});
 </code></pre>
 <h3>Track Conversion Event</h3>
 <p>Decides whether to send a conversion event, which is mapped to a goal-unique key. The decision is made against the configured goal-triggering rules.</p>
@@ -575,17 +603,19 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-context.trackConversion('goal-key', {
-  ruleData: {
-    action: 'buy'
-  },
-  conversionData: [
-    {
-      amount: 10.3,
-      productsCount: 2
-    }
-  ]
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.trackConversion('goal-key', {
+    ruleData: {
+      action: 'buy'
+    },
+    conversionData: [
+      {
+        amount: 10.3,
+        productsCount: 2
+      }
+    ]
+  });
 });
 </code></pre>
 <h3>Set Custom Segments</h3>
@@ -602,10 +632,10 @@ context.trackConversion('goal-key', {
 </thead>
 <tbody>
 <tr>
-<td>segmentsKey</td>
-<td>string</td>
+<td>segmentsKeys</td>
+<td>array</td>
 <td>Yes</td>
-<td>A segments key</td>
+<td>A list of segments keys</td>
 </tr>
 <tr>
 <td>visitorProperties</td>
@@ -624,9 +654,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-context.setCustomSegments('segments-key', {
-  enabled: true
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.setCustomSegments(['segments-key'], {
+    enabled: true
+  });
 });
 </code></pre>
 <h3>Events</h3>
@@ -656,12 +688,22 @@ context.setCustomSegments('segments-key', {
 <td>{ visitorId: <code>string</code>, experienceKey: <code>string</code>, featureKey: <code>string</code>, status: <code>string</code> }</td>
 </tr>
 <tr>
-<td><code>conversion</code> }</td>
+<td><code>conversion</code></td>
 <td>Track conversion</td>
 <td>{ visitorId: <code>string</code>, goalKey: <code>string</code> }</td>
 </tr>
 <tr>
-<td><code>config-updated</code></td>
+<td><code>location.activated</code></td>
+<td>Location rules matched</td>
+<td>{ visitorId: <code>string</code>, location: { id: <code>string</code>, name: <code>string</code>, key: <code>string</code> } }</td>
+</tr>
+<tr>
+<td><code>location.deactivated</code></td>
+<td>Location rules not matched (<em>only if activated earlier</em>)</td>
+<td>{ visitorId: <code>string</code>, location: { id: <code>string</code>, name: <code>string</code>, key: <code>string</code> } }</td>
+</tr>
+<tr>
+<td><code>config.updated</code></td>
 <td>Refreshing the configuration</td>
 <td>null</td>
 </tr>
@@ -698,6 +740,9 @@ convertSDK.on(SystemEvents.CONFIG_UPDATED, function (res, err) {
 });
 </code></pre>
 <h3>Provide Persistent DataStore</h3>
+<blockquote>
+<p><strong>Note</strong>: This feature is optional</p>
+</blockquote>
 <p>You can provide your own DataStore that is used to make user bucketing persistent, ensuring persistent experience variation selection, regardless of the experience’s configurations changing or not. As long as Experience variations and/or traffic allocation do not change, the initial user bucketing remains persistent (We use the <a href="https://en.wikipedia.org/wiki/MurmurHash">MurmurHash</a> algorithm to decide which variation will be selected. This ensures the same one is going to be selected each time, as long as the experience’s configuration does not change.)</p>
 <p>The provided DataStore interface is expected to provide 2 methods: <code>set</code> and <code>get</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>import ConvertSDK from '@convertcom/js-sdk';
@@ -723,6 +768,94 @@ const convertSDK = new ConvertSDK({
   dataStore
 });
 </code></pre>
+<h2>Build Environment Variables</h2>
+<table>
+<thead>
+<tr>
+<th>Environment Variable</th>
+<th>Description</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LOG_LEVEL</code></td>
+<td>Number prepresents the level of log statements to keep, while removing the rest from bundle output (<em>defaults to include all logs</em>).</td>
+<td><code>0</code> = ALL, <code>1</code> = DEBUG, <code>2</code> = INFO, <code>3</code> = WARN, <code>4</code> = ERROR, <code>5</code> = SILENT</td>
+</tr>
+<tr>
+<td><code>BUNDLES</code></td>
+<td>Comma-separated tokens for specifying which bundles to build (<em>defaults to include all bundles</em>).</td>
+<td><code>cjs</code>, <code>cjs-legacy</code>, <code>esm</code>, <code>umd</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Custom Build</h2>
+<p>You can use a customized build in certain situations. For example:</p>
+<ol>
+<li>Reducing bundle size and remove all log statements: <code>LOG_LEVEL=5 yarn sdk:build</code></li>
+<li>Build CommonJS bundles only: <code>BUNDLES=cjs,cjs-legacy yarn sdk:build</code></li>
+</ol>
+<p>Additionaly, you can even include this repository as part of your own <code>TypeScript</code> project:</p>
+<ol>
+<li>Add Convert JavaScriptSDK repository to your own as a submodule: <code>git submodule add https://github.com/convertcom/javascript-sdk javascript-sdk</code></li>
+<li>Add the following <code>workspaces</code> to your <code>package.json</code> (<em>assuming that the submodule located under you repository root</em>):<pre class="prettyprint source lang-json"><code>&quot;workspaces&quot;: [
+  &quot;javascript-sdk/packages/*&quot;
+]
+</code></pre>
+</li>
+<li>If using PnP, the following <code>packages</code> to your <code>pnpm-workspace.yaml</code> instead:<pre class="prettyprint source lang-yaml"><code>packages:
+  - 'javascript-sdk/packages/*'
+</code></pre>
+</li>
+<li>Add the following <code>paths</code> under <code>compilerOptions</code> of your <code>tsconfig.json</code>:<pre class="prettyprint source lang-json"><code>{
+  &quot;compilerOptions&quot;: {
+    &quot;paths&quot;: {
+      &quot;@convertcom/js-sdk-api&quot;: [&quot;./javascript-sdk/packages/api&quot;],
+      &quot;@convertcom/js-sdk-bucketing&quot;: [
+        &quot;./javascript-sdk/packages/bucketing&quot;
+      ],
+      &quot;@convertcom/js-sdk-data&quot;: [&quot;./javascript-sdk/packages/data&quot;],
+      &quot;@convertcom/js-sdk-enums&quot;: [&quot;./javascript-sdk/packages/enums&quot;],
+      &quot;@convertcom/js-sdk-event&quot;: [&quot;./javascript-sdk/packages/event&quot;],
+      &quot;@convertcom/js-sdk-experience&quot;: [
+        &quot;./javascript-sdk/packages/experience&quot;
+      ],
+      &quot;@convertcom/js-sdk-logger&quot;: [&quot;./javascript-sdk/packages/logger&quot;],
+      &quot;@convertcom/js-sdk-rules&quot;: [&quot;./javascript-sdk/packages/rules&quot;],
+      &quot;@convertcom/js-sdk-segments&quot;: [&quot;./javascript-sdk/packages/segments&quot;],
+      &quot;@convertcom/js-sdk-types&quot;: [&quot;./javascript-sdk/packages/types&quot;],
+      &quot;@convertcom/js-sdk-utils&quot;: [&quot;./javascript-sdk/packages/utils&quot;],
+      &quot;@convertcom/js-sdk&quot;: [&quot;./javascript-sdk/packages/js-sdk&quot;]
+    }
+  }
+}
+</code></pre>
+</li>
+<li>Add the following script to your <code>package.json</code>:<pre class="prettyprint source lang-json"><code>&quot;scripts&quot;: {
+  &quot;build:sdk&quot;: &quot;cd javascript-sdk && BUNDLES=cjs,esm LOG_LEVEL=5 yarn sdk:build&quot;
+}
+</code></pre>
+<blockquote>
+<p>Note that both <code>BUNDLES</code> and <code>LOG_LEVEL</code> are optional (<em>see <a href="#build-environment-variables">Build Environment Variables</a> above</em>)</p>
+</blockquote>
+</li>
+<li>Now you can build Convert JavaScriptSDK alongside your project (<em>assuming that you use <code>rollup</code> for bundling</em>):<pre class="prettyprint source lang-json"><code>&quot;scripts&quot;: {
+  &quot;build&quot;: &quot;yarn build:sdk && rollup -c&quot;
+}
+</code></pre>
+</li>
+<li>You need to run <code>yarn</code> inside submodule <code>javascript-sdk</code> as well:<pre class="prettyprint source lang-bash"><code># update ConvertSDK submodule
+git submodule update --init --remote
+# install your project dependencies at your `package.json`
+yarn
+# install ConvertSDK dependencies
+cd javascript-sdk && yarn
+# build your project
+yarn build
+</code></pre>
+</li>
+</ol>
 <h2>Credits</h2>
 <p>Copyright(c) 2023 Convert Insights, Inc</p></article>
     </section>
