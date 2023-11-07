@@ -32,13 +32,13 @@ app.use(express.static(path.join(__dirname, "public")));
 var sdkConfig = { sdkKey: "10035569/10034190" }; // [ConvertSDK]
 
 var dataStore = new DataStore();
-sdkConfig.dataStore = dataStore;
+sdkConfig.dataStore = dataStore; // [ConvertSDK] optional
 
 var ConvertSDK = require("@convertcom/js-sdk").default; // [ConvertSDK]
 var sdkInstance = new ConvertSDK(sdkConfig); // [ConvertSDK]
 
 var ConvertContext = require("./middleware/convertcontext"); // [ConvertSDK]
-app.use(ConvertContext(sdkInstance)); // [ConvertSDK]
+app.use(ConvertContext(sdkInstance, dataStore)); // [ConvertSDK]
 
 app.use("/", indexRouter);
 app.use("/events", eventsRouter);
@@ -61,5 +61,7 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+
+console.log("NodeJS Demo available at http://localhost:" + port);
 
 module.exports = app;

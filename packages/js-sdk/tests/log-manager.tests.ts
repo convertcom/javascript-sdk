@@ -3,13 +3,9 @@ import chai from 'chai';
 import chaiString from 'chai-string';
 chai.use(chaiString);
 const {expect, assert} = chai;
-import fs from 'fs';
 
-import {LogManager as lm} from '../src/log-manager';
-import {LogLevel as lv} from '../src/enums/log-level';
-import testConfig from './test-config.json';
-import {Config} from '../src/config';
-const configuration = Config(testConfig);
+import {LogManager as lm} from '@convertcom/js-sdk-logger';
+import {LogLevel as lv} from '@convertcom/js-sdk-enums';
 
 const DEBUG_MODE = process.env.DEBUG;
 
@@ -19,6 +15,7 @@ function captureConsole() {
   const defaultConsoleInfo = console.info;
   const defaultConsoleWarn = console.warn;
   const defaultConsoleError = console.error;
+  const defaultConsoleTrace = console.trace;
   return {
     unhook: () => {
       console.log = defaultConsoleLog;
@@ -26,6 +23,7 @@ function captureConsole() {
       console.info = defaultConsoleInfo;
       console.warn = defaultConsoleWarn;
       console.error = defaultConsoleError;
+      console.trace = defaultConsoleTrace;
     }
   };
 }
@@ -34,6 +32,7 @@ function captureLog() {
   let buffer = '';
   console.log =
     console.debug =
+    console.trace =
     console.info =
       (...args) => {
         buffer += args.join(' ') + '\n';
@@ -164,7 +163,7 @@ describe('LogManager tests', function () {
       },
       lv.TRACE,
       {
-        log: 'send'
+        trace: 'send'
       }
     );
     const output = 'testing third-party method mapping';

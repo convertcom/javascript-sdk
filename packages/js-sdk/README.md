@@ -78,9 +78,9 @@ npm install --save @convertcom/js-sdk
 
 Package's build contains definitions for generating entry points in different formats:
 
-- CommonJs - can be found under `lib/index.js` or `lib/index.min.js` for the minified version;
-- ESM - can be found under `lib/index.mjs` or `lib/index.min.mjs` for the minified version;
-- UMD - can be found under `lib/index.umd.js` or `lib/index.umd.min.js` for the minified version;
+- CommonJS `CJS` - can be found under `lib/index.js`or`lib/index.min.js` for the minified version;
+- ES Moduls `ESM` - can be found under `lib/index.mjs`or`lib/index.min.mjs` for the minified version;
+- Universal Module Definition `UMD` - can be found under `lib/index.umd.js` or `lib/index.umd.min.js` for the minified version;
 
 The above entry points can also be loaded through [unpkg](https://unpkg.com/) but this method will add a dependency on third-party URLs and therefore is recommended to use it only for evaluation purposes:
 
@@ -97,14 +97,34 @@ The above entry points can also be loaded through [unpkg](https://unpkg.com/) bu
 
 **ES6:**
 
+Supports `import` and `export` statements in modern JS (_i.e. React, Vue, Angular, .. etc_).
+
+> Must be transpiled to work in client browsers.
+
 ```javascript
 import ConvertSDK from '@convertcom/js-sdk';
 ```
 
 **CommonJS:**
 
+Supports `require` and `exports` in NodeJS environment.
+
+> Must be transpiled to work in client browsers.
+
 ```javascript
-const ConvertSDK = require('@convertcom/js-sdk').default;
+const {default: ConvertSDK} = require('@convertcom/js-sdk');
+```
+
+**UMD:**
+
+> Works directly in client browsers.
+
+```html
+<script src="https://unpkg.com/@convertcom/js-sdk/lib/index.umd.min.js"></script>
+```
+
+```javascript
+const {default: ConvertSDK} = window.ConvertSDK; // ConvertSDK is provided by https://unpkg.com/@convertcom/js-sdk/lib/index.umd.min.js
 ```
 
 The SDK instance can be initialized by either providing an SDK key or a full project's data object.
@@ -116,9 +136,13 @@ Include `sdkKey` as a string property in the options object you pass to the cons
 ```javascript
 const convertSDK = new ConvertSDK({
   sdkKey: 'xxx',
-  dataRefreshInterval: 300 //in seconds, 5 minutes
+  dataRefreshInterval: 300000 // in milliseconds (5 minutes)
 });
-await convertSDK.onReady();
+convertSDK.onReady().then(() => {
+  // create user context
+  // run experience(s)
+  // ...
+});
 ```
 
 After this point, the SDK has been successfully instantiated, project config data has been downloaded, and it is ready to be used for starting a UserContext.
@@ -151,8 +175,8 @@ const config = {
     logLevel: LogLevel.DEBUG,
     customLoggers: [] // Allows 3rd party loggers to be passed
   },
-  dataStore: null, // Allows 3rd party data store to be passed
-  dataRefreshInterval: 300, // in seconds (5 minutes)
+  dataStore: null, // Allows 3rd party data store to be passed (optional)
+  dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   data: projectData
 };
 ```
@@ -217,9 +241,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const variations = convertSDK.runExperiences();
-console.log(variations);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variations = context.runExperiences();
+  console.log(variations);
+});
 ```
 
 ### Run a Single Experience
@@ -249,9 +275,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const variation = context.runExperience('experience-key');
-console.log(variation);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variation = context.runExperience('experience-key');
+  console.log(variation);
+});
 ```
 
 ### Run Multiple Features
@@ -281,9 +309,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const features = context.runFeatures();
-console.log(features);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const features = context.runFeatures();
+  console.log(features);
+});
 ```
 
 ### Run a Single Feature
@@ -315,9 +345,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-const feature = context.runFeature('feature-key');
-console.log(feature);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const feature = context.runFeature('feature-key');
+  console.log(feature);
+});
 ```
 
 ### Track Conversion Event
@@ -346,17 +378,19 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-context.trackConversion('goal-key', {
-  ruleData: {
-    action: 'buy'
-  },
-  conversionData: [
-    {
-      amount: 10.3,
-      productsCount: 2
-    }
-  ]
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.trackConversion('goal-key', {
+    ruleData: {
+      action: 'buy'
+    },
+    conversionData: [
+      {
+        amount: 10.3,
+        productsCount: 2
+      }
+    ]
+  });
 });
 ```
 
@@ -368,7 +402,7 @@ Decides whether to update custom segments in user context, which is mapped to se
 
 | Parameter         | Type   | Required | Description                                                       |
 | ----------------- | ------ | -------- | ----------------------------------------------------------------- |
-| segmentsKey       | string | Yes      | A segments key                                                    |
+| segmentsKeys      | array  | Yes      | A list of segments keys                                           |
 | visitorProperties | object | No       | An object of key-value pairs that are used for segments matching. |
 
 #### Returns
@@ -384,9 +418,11 @@ const config = {
 };
 
 const convertSDK = new ConvertSDK(config);
-const context = convertSDK.createContext('user-unique-id');
-context.setCustomSegments('segments-key', {
-  enabled: true
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.setCustomSegments(['segments-key'], {
+    enabled: true
+  });
 });
 ```
 
@@ -394,13 +430,15 @@ context.setCustomSegments('segments-key', {
 
 You can capture SDK events as well:
 
-| Event            | Triggered by                 | Callback data                                                                            |
-| ---------------- | ---------------------------- | ---------------------------------------------------------------------------------------- |
-| `ready`          | Initializing the SDK         | null                                                                                     |
-| `bucketing`      | Run experience(s)            | { visitorId: `string`, experienceKey: `string`, variationKey: `string` }                 |
-|                  | Run feature(s)               | { visitorId: `string`, experienceKey: `string`, featureKey: `string`, status: `string` } |
-| `conversion` }   | Track conversion             | { visitorId: `string`, goalKey: `string` }                                               |
-| `config-updated` | Refreshing the configuration | null                                                                                     |
+| Event                  | Triggered by                                             | Callback data                                                                            |
+| ---------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `ready`                | Initializing the SDK                                     | null                                                                                     |
+| `bucketing`            | Run experience(s)                                        | { visitorId: `string`, experienceKey: `string`, variationKey: `string` }                 |
+|                        | Run feature(s)                                           | { visitorId: `string`, experienceKey: `string`, featureKey: `string`, status: `string` } |
+| `conversion`           | Track conversion                                         | { visitorId: `string`, goalKey: `string` }                                               |
+| `location.activated`   | Location rules matched                                   | { visitorId: `string`, location: { id: `string`, name: `string`, key: `string` } }       |
+| `location.deactivated` | Location rules not matched (_only if activated earlier_) | { visitorId: `string`, location: { id: `string`, name: `string`, key: `string` } }       |
+| `config.updated`       | Refreshing the configuration                             | null                                                                                     |
 
 ```javascript
 const convertSDK,{SystemEvents} = new ConvertSDK({sdkKey: 'xxx'});
@@ -436,6 +474,8 @@ convertSDK.on(SystemEvents.CONFIG_UPDATED, function (res, err) {
 
 ### Provide Persistent DataStore
 
+> **Note**: This feature is optional
+
 You can provide your own DataStore that is used to make user bucketing persistent, ensuring persistent experience variation selection, regardless of the experience’s configurations changing or not. As long as Experience variations and/or traffic allocation do not change, the initial user bucketing remains persistent (We use the [MurmurHash](https://en.wikipedia.org/wiki/MurmurHash) algorithm to decide which variation will be selected. This ensures the same one is going to be selected each time, as long as the experience’s configuration does not change.)
 
 The provided DataStore interface is expected to provide 2 methods: `set` and `get`.
@@ -464,6 +504,84 @@ const convertSDK = new ConvertSDK({
   dataStore
 });
 ```
+
+## Build Environment Variables
+
+| Environment Variable | Description                                                                                                                          | Value                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `LOG_LEVEL`          | Number prepresents the level of log statements to keep, while removing the rest from bundle output (_defaults to include all logs_). | `0` = ALL, `1` = DEBUG, `2` = INFO, `3` = WARN, `4` = ERROR, `5` = SILENT |
+| `BUNDLES`            | Comma-separated tokens for specifying which bundles to build (_defaults to include all bundles_).                                    | `cjs`, `cjs-legacy`, `esm`, `umd`                                         |
+
+## Custom Build
+
+You can use a customized build in certain situations. For example:
+
+1. Reducing bundle size and remove all log statements: `LOG_LEVEL=5 yarn sdk:build`
+2. Build CommonJS bundles only: `BUNDLES=cjs,cjs-legacy yarn sdk:build`
+
+Additionaly, you can even include this repository as part of your own `TypeScript` project:
+
+1. Add Convert JavaScriptSDK repository to your own as a submodule: `git submodule add https://github.com/convertcom/javascript-sdk javascript-sdk`
+2. Add the following `workspaces` to your `package.json` (_assuming that the submodule located under you repository root_):
+   ```json
+   "workspaces": [
+     "javascript-sdk/packages/*"
+   ]
+   ```
+3. If using PnP, the following `packages` to your `pnpm-workspace.yaml` instead:
+   ```yaml
+   packages:
+     - 'javascript-sdk/packages/*'
+   ```
+4. Add the following `paths` under `compilerOptions` of your `tsconfig.json`:
+   ```json
+   {
+     "compilerOptions": {
+       "paths": {
+         "@convertcom/js-sdk-api": ["./javascript-sdk/packages/api"],
+         "@convertcom/js-sdk-bucketing": [
+           "./javascript-sdk/packages/bucketing"
+         ],
+         "@convertcom/js-sdk-data": ["./javascript-sdk/packages/data"],
+         "@convertcom/js-sdk-enums": ["./javascript-sdk/packages/enums"],
+         "@convertcom/js-sdk-event": ["./javascript-sdk/packages/event"],
+         "@convertcom/js-sdk-experience": [
+           "./javascript-sdk/packages/experience"
+         ],
+         "@convertcom/js-sdk-logger": ["./javascript-sdk/packages/logger"],
+         "@convertcom/js-sdk-rules": ["./javascript-sdk/packages/rules"],
+         "@convertcom/js-sdk-segments": ["./javascript-sdk/packages/segments"],
+         "@convertcom/js-sdk-types": ["./javascript-sdk/packages/types"],
+         "@convertcom/js-sdk-utils": ["./javascript-sdk/packages/utils"],
+         "@convertcom/js-sdk": ["./javascript-sdk/packages/js-sdk"]
+       }
+     }
+   }
+   ```
+5. Add the following script to your `package.json`:
+   ```json
+   "scripts": {
+     "build:sdk": "cd javascript-sdk && BUNDLES=cjs,esm LOG_LEVEL=5 yarn sdk:build"
+   }
+   ```
+   > Note that both `BUNDLES` and `LOG_LEVEL` are optional (_see [Build Environment Variables](#build-environment-variables) above_)
+6. Now you can build Convert JavaScriptSDK alongside your project (_assuming that you use `rollup` for bundling_):
+   ```json
+   "scripts": {
+     "build": "yarn build:sdk && rollup -c"
+   }
+   ```
+7. You need to run `yarn` inside submodule `javascript-sdk` as well:
+   ```bash
+   # update ConvertSDK submodule
+   git submodule update --init --remote
+   # install your project dependencies at your `package.json`
+   yarn
+   # install ConvertSDK dependencies
+   cd javascript-sdk && yarn
+   # build your project
+   yarn build
+   ```
 
 ## Credits
 
