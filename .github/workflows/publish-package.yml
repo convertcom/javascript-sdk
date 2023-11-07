@@ -16,6 +16,17 @@ jobs:
       - run: |
           yarn sdk:lint
           yarn sdk:build
-          npm publish
+      - run: cd packages/enums && npm publish
+      - run: cd packages/types && npm publish
+      - run: cd packages/utils && npm publish
+      - run: cd packages/event && npm publish
+      - run: cd packages/bucketing && npm publish
+      - run: cd packages/logger && npm publish
+      - run: cd packages/rules && npm publish
+      - run: cd packages/segments && npm publish
+      - run: cd packages/api && npm publish
+      - run: cd packages/data && npm publish
+      - run: cd packages/experience && npm publish
+      - run: cd packages/js-sdk && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
