@@ -3,7 +3,7 @@
   "description": "",
   "main": "./lib/index.js",
   "module": "./lib/index.mjs",
-  "types": "./lib/index.d.ts",
+  "types": "./lib/experience/index.d.ts",
   "files": [
     "lib/**/**/*"
   ],

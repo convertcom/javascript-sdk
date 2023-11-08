@@ -4,7 +4,7 @@
   "main": "./lib/index.js",
   "module": "./lib/index.mjs",
   "browser": "lib/index.umd.min.js",
-  "types": "./lib/index.d.ts",
+  "types": "./lib/js-sdk/index.d.ts",
   "files": [
     "lib/**/**/*"
   ],
