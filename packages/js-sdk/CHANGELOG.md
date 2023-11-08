@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v1.2.1...js-sdk-v2.0.0) (2023-11-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* extract js-sdk-api, js-sdk-rule, js-sdk-bucketing, js-sdk-event, js-sdk-data, js-sdk-experience, js-sdk-segments, js-sdk-logger, js-sdk-enums, js-sdk-types, and js-sdk-utils as peer dependencies
+
+### Code Refactoring
+
+* extract js-sdk-api, js-sdk-rule, js-sdk-bucketing, js-sdk-event, js-sdk-data, js-sdk-experience, js-sdk-segments, js-sdk-logger, js-sdk-enums, js-sdk-types, and js-sdk-utils as peer dependencies ([27f9a57](https://github.com/convertcom/javascript-sdk/commit/27f9a57221e5619ea185edcf657db81d4cdf0fc6))
+
 ## [1.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v1.2.0...js-sdk-v1.2.1) (2023-10-13)
 
 
