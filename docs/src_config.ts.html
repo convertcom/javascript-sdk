@@ -124,7 +124,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="ApiManager_ApiManager.html">ApiManager</a></li><li><a href="BucketingManager_BucketingManager.html">BucketingManager</a></li><li><a href="Context_Context.html">Context</a></li><li><a href="ConvertSDK_ConvertSDK.html">ConvertSDK</a></li><li><a href="Core_Core.html">Core</a></li><li><a href="DataManager_DataManager.html">DataManager</a></li><li><a href="DataStoreManager_DataStoreManager.html">DataStoreManager</a></li><li><a href="EventManager_EventManager.html">EventManager</a></li><li><a href="ExperienceManager_ExperienceManager.html">ExperienceManager</a></li><li><a href="FeatureManager_FeatureManager.html">FeatureManager</a></li><li><a href="LogManager_LogManager.html">LogManager</a></li><li><a href="RuleManager_RuleManager.html">RuleManager</a></li><li><a href="SegmentsManager_SegmentsManager.html">SegmentsManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Config">Config</a></li><li><a href="global.html#SystemEvents">SystemEvents</a></li></ul></div><div class="category"><h2>Main</h2><h3>Classes</h3><ul><li><a href="Context.html">Context</a></li><li><a href="ConvertSDK.html">ConvertSDK</a></li><li><a href="Core.html">Core</a></li></ul></div><div class="category"><h2>Modules</h2><h3>Classes</h3><ul><li><a href="ApiManager.html">ApiManager</a></li><li><a href="BucketingManager.html">BucketingManager</a></li><li><a href="DataManager.html">DataManager</a></li><li><a href="DataStoreManager.html">DataStoreManager</a></li><li><a href="EventManager.html">EventManager</a></li><li><a href="ExperienceManager.html">ExperienceManager</a></li><li><a href="FeatureManager.html">FeatureManager</a></li><li><a href="LogManager.html">LogManager</a></li><li><a href="RuleManager.html">RuleManager</a></li><li><a href="SegmentsManager.html">SegmentsManager</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="Context_Context.html">Context</a></li><li><a href="ConvertSDK_ConvertSDK.html">ConvertSDK</a></li><li><a href="Core_Core.html">Core</a></li><li><a href="FeatureManager_FeatureManager.html">FeatureManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Config">Config</a></li></ul></div><div class="category"><h2>Main</h2><h3>Classes</h3><ul><li><a href="Context.html">Context</a></li><li><a href="ConvertSDK.html">ConvertSDK</a></li><li><a href="Core.html">Core</a></li></ul></div><div class="category"><h2>Modules</h2><h3>Classes</h3><ul><li><a href="FeatureManager.html">FeatureManager</a></li></ul></div>
                 
             </nav>
         </div>
@@ -147,10 +147,10 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Config as ConfigType} from './types/Config';
+import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {defaultConfig} from './config/default';
-import {LogLevel} from './enums/log-level';
-import {objectDeepMerge} from './utils/object-utils';
+import {LogLevel} from '@convertcom/js-sdk-enums';
+import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 
 const DEFAULT_LOGGER_SETTINGS = {
   logger: {
