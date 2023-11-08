@@ -5,16 +5,11 @@ import {assert} from 'chai';
 import chai from 'chai';
 import spies from 'chai-spies';
 
-import {EventManager as em} from '../src/event-manager';
+import {EventManager as em} from '@convertcom/js-sdk-event';
 
-import {Config as ConfigType} from '../src/types/Config';
+import {Config} from '@convertcom/js-sdk-types';
 
-import testConfig from './test-config.json';
-import {Config} from '../src/config';
-
-const configuration = Config({
-  ...testConfig
-});
+import configuration from './test-config.json';
 
 chai.use(spies);
 
@@ -31,7 +26,7 @@ describe('EventManager tests', function () {
       .which.equal('EventManager');
   });
   it('Should successfully create new EventManager instance with default config', function () {
-    eventManager = new em(<ConfigType>{}, {});
+    eventManager = new em(<Config>{}, {});
     expect(eventManager)
       .to.be.an('object')
       .that.has.property('constructor')
@@ -39,7 +34,7 @@ describe('EventManager tests', function () {
       .which.equal('EventManager');
   });
   it('Should create new EventManager instance', function () {
-    eventManager = new em(configuration, {});
+    eventManager = new em(configuration as unknown as Config, {});
     expect(eventManager)
       .to.be.an('object')
       .that.has.property('constructor')

@@ -16,7 +16,7 @@ const dataStore = new DataStore();
 
 const sdkConfig = {
   sdkKey: "10035569/10034190",
-  dataStore,
+  dataStore, // optional
 }; // [ConvertSDK]
 
 const sdkInstance = new ConvertSDK(sdkConfig);
