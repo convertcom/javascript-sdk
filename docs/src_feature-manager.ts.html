@@ -124,7 +124,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="Context_Context.html">Context</a></li><li><a href="ConvertSDK_ConvertSDK.html">ConvertSDK</a></li><li><a href="Core_Core.html">Core</a></li><li><a href="FeatureManager_FeatureManager.html">FeatureManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Config">Config</a></li></ul></div><div class="category"><h2>Main</h2><h3>Classes</h3><ul><li><a href="Context.html">Context</a></li><li><a href="ConvertSDK.html">ConvertSDK</a></li><li><a href="Core.html">Core</a></li></ul></div><div class="category"><h2>Modules</h2><h3>Classes</h3><ul><li><a href="FeatureManager.html">FeatureManager</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="ApiManager_ApiManager.html">ApiManager</a></li><li><a href="BucketingManager_BucketingManager.html">BucketingManager</a></li><li><a href="Context_Context.html">Context</a></li><li><a href="ConvertSDK_ConvertSDK.html">ConvertSDK</a></li><li><a href="Core_Core.html">Core</a></li><li><a href="DataManager_DataManager.html">DataManager</a></li><li><a href="DataStoreManager_DataStoreManager.html">DataStoreManager</a></li><li><a href="EventManager_EventManager.html">EventManager</a></li><li><a href="ExperienceManager_ExperienceManager.html">ExperienceManager</a></li><li><a href="FeatureManager_FeatureManager.html">FeatureManager</a></li><li><a href="LogManager_LogManager.html">LogManager</a></li><li><a href="RuleManager_RuleManager.html">RuleManager</a></li><li><a href="SegmentsManager_SegmentsManager.html">SegmentsManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Config">Config</a></li><li><a href="global.html#SystemEvents">SystemEvents</a></li></ul></div><div class="category"><h2>Main</h2><h3>Classes</h3><ul><li><a href="Context.html">Context</a></li><li><a href="ConvertSDK.html">ConvertSDK</a></li><li><a href="Core.html">Core</a></li></ul></div><div class="category"><h2>Modules</h2><h3>Classes</h3><ul><li><a href="ApiManager.html">ApiManager</a></li><li><a href="BucketingManager.html">BucketingManager</a></li><li><a href="DataManager.html">DataManager</a></li><li><a href="DataStoreManager.html">DataStoreManager</a></li><li><a href="EventManager.html">EventManager</a></li><li><a href="ExperienceManager.html">ExperienceManager</a></li><li><a href="FeatureManager.html">FeatureManager</a></li><li><a href="LogManager.html">LogManager</a></li><li><a href="RuleManager.html">RuleManager</a></li><li><a href="SegmentsManager.html">SegmentsManager</a></li></ul></div>
                 
             </nav>
         </div>
@@ -147,29 +147,23 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {DataManagerInterface} from '@convertcom/js-sdk-data';
+import {DataManagerInterface} from './interfaces/data-manager';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from '@convertcom/js-sdk-logger';
+import {LogManagerInterface} from './interfaces/log-manager';
 
-import {
-  Config,
-  Id,
-  Feature,
-  BucketedFeature,
-  IdentityField,
-  VariableType,
-  Experience,
-  FullStackFeatureChange
-} from '@convertcom/js-sdk-types';
-import {
-  MESSAGES,
-  FeatureStatus,
-  RuleError,
-  VariationChangeType
-} from '@convertcom/js-sdk-enums';
+import {Config} from './types/Config';
+import {Id} from './types/Id';
+import {Feature} from './types/Feature';
+import {MESSAGES} from './enums/dictionary';
 
-import {castType, arrayNotEmpty} from '@convertcom/js-sdk-utils';
-import {BucketedVariation} from '@convertcom/js-sdk-types';
+import {BucketedFeature} from './types/BucketedFeature';
+import {FeatureStatus} from './enums/feature-status';
+import {IdentityField} from './types/IndentityField';
+import {VariableType} from './types/VariableType';
+import {castType} from './utils/types-utils';
+import {arrayNotEmpty} from './utils/array-utils';
+import {Entity} from './types/Entity';
+import {VariationType} from './enums/variation-type';
 
 /**
  * Provides features specific logic
@@ -199,10 +193,7 @@ export class FeatureManager implements FeatureManagerInterface {
   ) {
     this._dataManager = dataManager;
     this._loggerManager = loggerManager;
-    this._loggerManager?.trace?.(
-      'FeatureManager()',
-      MESSAGES.FEATURE_CONSTRUCTOR
-    );
+    this._loggerManager?.trace?.(MESSAGES.FEATURE_CONSTRUCTOR);
   }
 
   /**
@@ -303,22 +294,22 @@ export class FeatureManager implements FeatureManagerInterface {
    * Get feature and its status
    * @param {Id} visitorId
    * @param {string} featureKey
-   * @param {Record&lt;string, any> | null} visitorProperties
-   * @param {Record&lt;string, any> | null} locationProperties
+   * @param {Record&lt;string, any>} visitorProperties
+   * @param {string} locationProperties
    * @param {boolean=} typeCasting Defaults to `true`
    * @param {Array&lt;string>=} experienceKeys
    * @param {string=} environment
-   * @return {BucketedFeature | RuleError | Array&lt;BucketedFeature | RuleError>}
+   * @return {BucketedFeature | Array&lt;BucketedFeature>}
    */
   runFeature(
     visitorId: Id,
     featureKey: string,
-    visitorProperties: Record&lt;string, any> | null,
-    locationProperties: Record&lt;string, any> | null,
+    visitorProperties: Record&lt;string, any>,
+    locationProperties: Record&lt;string, any>,
     typeCasting = true,
     experienceKeys?: Array&lt;string>,
     environment?: string
-  ): BucketedFeature | RuleError | Array&lt;BucketedFeature | RuleError> {
+  ): BucketedFeature | Array&lt;BucketedFeature> {
     const declaredFeature = this._dataManager.getEntity(
       featureKey,
       'features'
@@ -365,8 +356,8 @@ export class FeatureManager implements FeatureManagerInterface {
    * Check is feature enabled.
    * @param {Id} visitorId
    * @param {string} featureKey
-   * @param {Record&lt;string, any> | null} visitorProperties
-   * @param {Record&lt;string, any> | null} locationProperties
+   * @param {Record&lt;string, any>} visitorProperties
+   * @param {string} locationProperties
    * @param {Array&lt;string>=} experienceKeys
    * @param {string=} environment
    * @return {boolean}
@@ -374,8 +365,8 @@ export class FeatureManager implements FeatureManagerInterface {
   isFeatureEnabled(
     visitorId: Id,
     featureKey: string,
-    visitorProperties: Record&lt;string, any> | null,
-    locationProperties: Record&lt;string, any> | null,
+    visitorProperties: Record&lt;string, any>,
+    locationProperties: Record&lt;string, any>,
     experienceKeys?: Array&lt;string>,
     environment?: string
   ): boolean {
@@ -404,8 +395,8 @@ export class FeatureManager implements FeatureManagerInterface {
    * Get feature and its status
    * @param {Id} visitorId
    * @param {Id} featureId
-   * @param {Record&lt;string, any> | null} visitorProperties
-   * @param {Record&lt;string, any> | null} locationProperties
+   * @param {Record&lt;string, any>} visitorProperties
+   * @param {string} locationProperties
    * @param {boolean=} typeCasting Defaults to `true`
    * @param {Array&lt;Id>=} experienceIds
    * @param {string=} environment
@@ -414,12 +405,12 @@ export class FeatureManager implements FeatureManagerInterface {
   runFeatureById(
     visitorId: Id,
     featureId: Id,
-    visitorProperties: Record&lt;string, any> | null,
-    locationProperties: Record&lt;string, any> | null,
+    visitorProperties: Record&lt;string, any>,
+    locationProperties: Record&lt;string, any>,
     typeCasting = true,
     experienceIds?: Array&lt;Id>,
     environment?: string
-  ): BucketedFeature | RuleError | Array&lt;BucketedFeature | RuleError> {
+  ): BucketedFeature | Array&lt;BucketedFeature> {
     const declaredFeature = this._dataManager.getEntityById(
       featureId,
       'features'
@@ -444,11 +435,6 @@ export class FeatureManager implements FeatureManagerInterface {
           // Return the bucketed feature
           return features[0];
         } else {
-          // Return rule errors if present
-          const matchedErrors = features.filter((match) =>
-            Object.values(RuleError).includes(match as RuleError)
-          );
-          if (matchedErrors.length) return matchedErrors as Array&lt;RuleError>;
           // Return an array of bucketed features. It means the feature is used in different experiences and visitor has been bucketed to those variations
           return features;
         }
@@ -472,80 +458,61 @@ export class FeatureManager implements FeatureManagerInterface {
   /**
    * Get features and their statuses
    * @param {Id} visitorId
-   * @param {Record&lt;string, any> | null} visitorProperties
-   * @param {Record&lt;string, any> | null} locationProperties
+   * @param {Record&lt;string, any>} visitorProperties
+   * @param {string} locationProperties
    * @param {boolean=} typeCasting Defaults to `true`
    * @param {Record&lt;string, Array&lt;string>>=} filter Filter records by experiences and/or features keys
    * @param {Array&lt;string>} filter.experiences Array of experiences keys
    * @param {Array&lt;string>} filter.features Array of features keys
    * @param {string=} environment
-   * @return {Array&lt;BucketedFeature | RuleError>}
+   * @return {Array&lt;BucketedFeature>}
    */
   runFeatures(
     visitorId: Id,
-    visitorProperties: Record&lt;string, any> | null,
-    locationProperties: Record&lt;string, any> | null,
+    visitorProperties: Record&lt;string, any>,
+    locationProperties: Record&lt;string, any>,
     typeCasting = true,
     filter?: Record&lt;string, Array&lt;string>>,
     environment?: string
-  ): Array&lt;BucketedFeature | RuleError> {
+  ): Array&lt;BucketedFeature> {
     // Get list of declared features grouped by id
     const declaredFeatures = this.getListAsObject('id');
 
     const bucketedFeatures: Array&lt;BucketedFeature> = [];
 
     // Retrieve all or filtered experiences
-    const experiences = (
+    const experiences =
       filter &amp;&amp; arrayNotEmpty(filter?.experiences)
         ? this._dataManager.getEntities(filter.experiences, 'experiences')
-        : this._dataManager.getEntitiesList('experiences')
-    ) as Array&lt;Experience>;
+        : (this._dataManager.getEntitiesList('experiences') as Array&lt;Entity>);
 
     // Retrieve bucketed variations across the experiences
     const bucketedVariations = experiences
       .map((experience) => {
-        const variation = this._dataManager.getBucketing(
+        return this._dataManager.getBucketing(
           visitorId,
           experience?.key,
           visitorProperties,
           locationProperties,
           environment
         );
-        if (Object.values(RuleError).includes(variation as RuleError))
-          return variation as RuleError;
-        return variation as BucketedVariation;
       })
       .filter(Boolean);
 
-    // Return rule errors if present
-    const matchedErrors = bucketedVariations.filter((match) =>
-      Object.values(RuleError).includes(match as RuleError)
-    );
-    if (matchedErrors.length) return matchedErrors as Array&lt;RuleError>;
-
     // Collect features from bucketed variations
     for (const k in bucketedVariations) {
-      const bucketedVariation = bucketedVariations[k] as BucketedVariation;
-      for (const v in bucketedVariation?.changes || []) {
-        const changes = bucketedVariation?.changes?.[v]
-          ?.data as FullStackFeatureChange;
+      for (const v in bucketedVariations[k]?.changes || []) {
         if (
-          bucketedVariation?.changes?.[v]?.type !==
-          VariationChangeType.FULLSTACK_FEATURE
+          bucketedVariations[k]?.changes?.[v]?.type !==
+          VariationType.FULLSTACK_FEATURE
         ) {
-          this._loggerManager?.warn?.(
-            'FeatureManager.runFeatures()',
-            MESSAGES.VARIATION_CHANGE_NOT_SUPPORTED
-          );
+          this._loggerManager?.warn?.(MESSAGES.VARIATION_CHANGE_NOT_SUPPORTED);
           continue;
         }
-        const featureId = changes?.feature_id;
+        const featureId = bucketedVariations[k]?.changes?.[v]?.data?.feature_id;
         // Take the features filter into account
         if (!featureId) {
-          this._loggerManager?.warn?.(
-            'FeatureManager.runFeatures()',
-            MESSAGES.FEATURE_NOT_FOUND
-          );
+          this._loggerManager?.warn?.(MESSAGES.FEATURE_NOT_FOUND);
           continue;
         }
         if (
@@ -555,13 +522,11 @@ export class FeatureManager implements FeatureManagerInterface {
               -1) ||
           !filter?.features
         ) {
-          const variables = changes?.variables_data;
+          const variables =
+            bucketedVariations[k]?.changes?.[v]?.data?.variables_data;
 
           if (!variables) {
-            this._loggerManager?.warn?.(
-              'FeatureManager.runFeatures()',
-              MESSAGES.FEATURE_VARIABLES_NOT_FOUND
-            );
+            this._loggerManager?.warn?.(MESSAGES.FEATURE_VARIABLES_NOT_FOUND);
           }
 
           if (typeCasting &amp;&amp; variables.constructor === Object) {
@@ -579,7 +544,6 @@ export class FeatureManager implements FeatureManagerInterface {
                 );
               } else {
                 this._loggerManager?.warn?.(
-                  'FeatureManager.runFeatures()',
                   MESSAGES.FEATURE_VARIABLES_TYPE_NOT_FOUND
                 );
               }
@@ -589,9 +553,9 @@ export class FeatureManager implements FeatureManagerInterface {
           // Build the bucketed feature object
           const bucketedFeature = {
             ...{
-              experienceId: bucketedVariation.experienceId,
-              experienceName: bucketedVariation.experienceName,
-              experienceKey: bucketedVariation.experienceKey
+              experienceId: bucketedVariations[k].experienceId,
+              experienceName: bucketedVariations[k].experienceName,
+              experienceKey: bucketedVariations[k].experienceKey
             },
             ...{
               key: declaredFeatures[featureId]?.key,
