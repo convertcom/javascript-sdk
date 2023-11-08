@@ -13,73 +13,73 @@ jobs:
           node-version: "16.x"
           registry-url: "https://registry.npmjs.org"
       - run: yarn install
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-enums') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-enums:') }}
         run: |
           yarn enums:build
           (cd packages/enums && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-types') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-types:') }}
         run: |
           yarn types:build
           (cd packages/types && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-utils') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-utils:') }}
         run: |
           yarn utils:build
           (cd packages/utils && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-event') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-event:') }}
         run: |
           yarn event:build
           (cd packages/event && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-bucketing') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-bucketing:') }}
         run: |
           yarn bucketing:build
           (cd packages/bucketing && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-logger') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-logger:') }}
         run: |
           yarn logger:build
           (cd packages/logger && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-rules') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-rules:') }}
         run: |
           yarn rules:build
           (cd packages/rules && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-segments') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-segments:') }}
         run: |
           yarn segments:build
           (cd packages/segments && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-api') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-api:') }}
         run: |
           yarn api:build
           (cd packages/api && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-data') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-data:') }}
         run: |
           yarn data:build
           (cd packages/data && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-experience') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk-experience:') }}
         run: |
           yarn experience:build
           (cd packages/experience && npm publish)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ startsWith(github.event.release.name, ' js-sdk-v') }}
+      - if: ${{ startsWith(github.event.release.name, ' js-sdk:') }}
         run: |
           yarn sdk:build
           (cd packages/js-sdk && npm publish)
