@@ -4,23 +4,29 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {DataManagerInterface} from './interfaces/data-manager';
+import {DataManagerInterface} from '@convertcom/js-sdk-data';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from './interfaces/log-manager';
+import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 
-import {Config} from './types/Config';
-import {Id} from './types/Id';
-import {Feature} from './types/Feature';
-import {MESSAGES} from './enums/dictionary';
+import {
+  Config,
+  Id,
+  Feature,
+  BucketedFeature,
+  IdentityField,
+  VariableType,
+  Experience,
+  FullStackFeatureChange
+} from '@convertcom/js-sdk-types';
+import {
+  MESSAGES,
+  FeatureStatus,
+  RuleError,
+  VariationChangeType
+} from '@convertcom/js-sdk-enums';
 
-import {BucketedFeature} from './types/BucketedFeature';
-import {FeatureStatus} from './enums/feature-status';
-import {IdentityField} from './types/IndentityField';
-import {VariableType} from './types/VariableType';
-import {castType} from './utils/types-utils';
-import {arrayNotEmpty} from './utils/array-utils';
-import {Entity} from './types/Entity';
-import {VariationType} from './enums/variation-type';
+import {castType, arrayNotEmpty} from '@convertcom/js-sdk-utils';
+import {BucketedVariation} from '@convertcom/js-sdk-types';
 
 /**
  * Provides features specific logic
@@ -50,7 +56,10 @@ export class FeatureManager implements FeatureManagerInterface {
   ) {
     this._dataManager = dataManager;
     this._loggerManager = loggerManager;
-    this._loggerManager?.trace?.(MESSAGES.FEATURE_CONSTRUCTOR);
+    this._loggerManager?.trace?.(
+      'FeatureManager()',
+      MESSAGES.FEATURE_CONSTRUCTOR
+    );
   }
 
   /**
@@ -151,22 +160,22 @@ export class FeatureManager implements FeatureManagerInterface {
    * Get feature and its status
    * @param {Id} visitorId
    * @param {string} featureKey
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {boolean=} typeCasting Defaults to `true`
    * @param {Array<string>=} experienceKeys
    * @param {string=} environment
-   * @return {BucketedFeature | Array<BucketedFeature>}
+   * @return {BucketedFeature | RuleError | Array<BucketedFeature | RuleError>}
    */
   runFeature(
     visitorId: Id,
     featureKey: string,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     typeCasting = true,
     experienceKeys?: Array<string>,
     environment?: string
-  ): BucketedFeature | Array<BucketedFeature> {
+  ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError> {
     const declaredFeature = this._dataManager.getEntity(
       featureKey,
       'features'
@@ -213,8 +222,8 @@ export class FeatureManager implements FeatureManagerInterface {
    * Check is feature enabled.
    * @param {Id} visitorId
    * @param {string} featureKey
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {Array<string>=} experienceKeys
    * @param {string=} environment
    * @return {boolean}
@@ -222,8 +231,8 @@ export class FeatureManager implements FeatureManagerInterface {
   isFeatureEnabled(
     visitorId: Id,
     featureKey: string,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     experienceKeys?: Array<string>,
     environment?: string
   ): boolean {
@@ -252,8 +261,8 @@ export class FeatureManager implements FeatureManagerInterface {
    * Get feature and its status
    * @param {Id} visitorId
    * @param {Id} featureId
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {boolean=} typeCasting Defaults to `true`
    * @param {Array<Id>=} experienceIds
    * @param {string=} environment
@@ -262,12 +271,12 @@ export class FeatureManager implements FeatureManagerInterface {
   runFeatureById(
     visitorId: Id,
     featureId: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     typeCasting = true,
     experienceIds?: Array<Id>,
     environment?: string
-  ): BucketedFeature | Array<BucketedFeature> {
+  ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError> {
     const declaredFeature = this._dataManager.getEntityById(
       featureId,
       'features'
@@ -292,6 +301,11 @@ export class FeatureManager implements FeatureManagerInterface {
           // Return the bucketed feature
           return features[0];
         } else {
+          // Return rule errors if present
+          const matchedErrors = features.filter((match) =>
+            Object.values(RuleError).includes(match as RuleError)
+          );
+          if (matchedErrors.length) return matchedErrors as Array<RuleError>;
           // Return an array of bucketed features. It means the feature is used in different experiences and visitor has been bucketed to those variations
           return features;
         }
@@ -315,61 +329,80 @@ export class FeatureManager implements FeatureManagerInterface {
   /**
    * Get features and their statuses
    * @param {Id} visitorId
-   * @param {Record<string, any>} visitorProperties
-   * @param {string} locationProperties
+   * @param {Record<string, any> | null} visitorProperties
+   * @param {Record<string, any> | null} locationProperties
    * @param {boolean=} typeCasting Defaults to `true`
    * @param {Record<string, Array<string>>=} filter Filter records by experiences and/or features keys
    * @param {Array<string>} filter.experiences Array of experiences keys
    * @param {Array<string>} filter.features Array of features keys
    * @param {string=} environment
-   * @return {Array<BucketedFeature>}
+   * @return {Array<BucketedFeature | RuleError>}
    */
   runFeatures(
     visitorId: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
+    visitorProperties: Record<string, any> | null,
+    locationProperties: Record<string, any> | null,
     typeCasting = true,
     filter?: Record<string, Array<string>>,
     environment?: string
-  ): Array<BucketedFeature> {
+  ): Array<BucketedFeature | RuleError> {
     // Get list of declared features grouped by id
     const declaredFeatures = this.getListAsObject('id');
 
     const bucketedFeatures: Array<BucketedFeature> = [];
 
     // Retrieve all or filtered experiences
-    const experiences =
+    const experiences = (
       filter && arrayNotEmpty(filter?.experiences)
         ? this._dataManager.getEntities(filter.experiences, 'experiences')
-        : (this._dataManager.getEntitiesList('experiences') as Array<Entity>);
+        : this._dataManager.getEntitiesList('experiences')
+    ) as Array<Experience>;
 
     // Retrieve bucketed variations across the experiences
     const bucketedVariations = experiences
       .map((experience) => {
-        return this._dataManager.getBucketing(
+        const variation = this._dataManager.getBucketing(
           visitorId,
           experience?.key,
           visitorProperties,
           locationProperties,
           environment
         );
+        if (Object.values(RuleError).includes(variation as RuleError))
+          return variation as RuleError;
+        return variation as BucketedVariation;
       })
       .filter(Boolean);
 
+    // Return rule errors if present
+    const matchedErrors = bucketedVariations.filter((match) =>
+      Object.values(RuleError).includes(match as RuleError)
+    );
+    if (matchedErrors.length) return matchedErrors as Array<RuleError>;
+
     // Collect features from bucketed variations
     for (const k in bucketedVariations) {
-      for (const v in bucketedVariations[k]?.changes || []) {
+      const bucketedVariation = bucketedVariations[k] as BucketedVariation;
+      for (const v in bucketedVariation?.changes || []) {
+        const changes = bucketedVariation?.changes?.[v]
+          ?.data as FullStackFeatureChange;
         if (
-          bucketedVariations[k]?.changes?.[v]?.type !==
-          VariationType.FULLSTACK_FEATURE
+          bucketedVariation?.changes?.[v]?.type !==
+          VariationChangeType.FULLSTACK_FEATURE
         ) {
-          this._loggerManager?.warn?.(MESSAGES.VARIATION_CHANGE_NOT_SUPPORTED);
+          this._loggerManager?.warn?.(
+            'FeatureManager.runFeatures()',
+            MESSAGES.VARIATION_CHANGE_NOT_SUPPORTED
+          );
           continue;
         }
-        const featureId = bucketedVariations[k]?.changes?.[v]?.data?.feature_id;
+        const featureId = changes?.feature_id;
         // Take the features filter into account
         if (!featureId) {
-          this._loggerManager?.warn?.(MESSAGES.FEATURE_NOT_FOUND);
+          this._loggerManager?.warn?.(
+            'FeatureManager.runFeatures()',
+            MESSAGES.FEATURE_NOT_FOUND
+          );
           continue;
         }
         if (
@@ -379,11 +412,13 @@ export class FeatureManager implements FeatureManagerInterface {
               -1) ||
           !filter?.features
         ) {
-          const variables =
-            bucketedVariations[k]?.changes?.[v]?.data?.variables_data;
+          const variables = changes?.variables_data;
 
           if (!variables) {
-            this._loggerManager?.warn?.(MESSAGES.FEATURE_VARIABLES_NOT_FOUND);
+            this._loggerManager?.warn?.(
+              'FeatureManager.runFeatures()',
+              MESSAGES.FEATURE_VARIABLES_NOT_FOUND
+            );
           }
 
           if (typeCasting && variables.constructor === Object) {
@@ -401,6 +436,7 @@ export class FeatureManager implements FeatureManagerInterface {
                 );
               } else {
                 this._loggerManager?.warn?.(
+                  'FeatureManager.runFeatures()',
                   MESSAGES.FEATURE_VARIABLES_TYPE_NOT_FOUND
                 );
               }
@@ -410,9 +446,9 @@ export class FeatureManager implements FeatureManagerInterface {
           // Build the bucketed feature object
           const bucketedFeature = {
             ...{
-              experienceId: bucketedVariations[k].experienceId,
-              experienceName: bucketedVariations[k].experienceName,
-              experienceKey: bucketedVariations[k].experienceKey
+              experienceId: bucketedVariation.experienceId,
+              experienceName: bucketedVariation.experienceName,
+              experienceKey: bucketedVariation.experienceKey
             },
             ...{
               key: declaredFeatures[featureId]?.key,

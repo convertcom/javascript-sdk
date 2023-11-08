@@ -3,13 +3,13 @@ import {expect} from 'chai';
 import {assert} from 'chai';
 import http from 'http';
 
-import {BucketingManager as bm} from '../src/bucketing-manager';
-import {RuleManager as rm} from '../src/rule-manager';
-import {EventManager as em} from '../src/event-manager';
-import {ApiManager as am} from '../src/api-manager';
-import {DataManager as dm} from '../src/data-manager';
+import {BucketingManager as bm} from '@convertcom/js-sdk-bucketing';
+import {RuleManager as rm} from '@convertcom/js-sdk-rules';
+import {EventManager as em} from '@convertcom/js-sdk-event';
+import {ApiManager as am} from '@convertcom/js-sdk-api';
+import {DataManager as dm} from '@convertcom/js-sdk-data';
 import testConfig from './test-config.json';
-import {Config} from '../src/config';
+import {Config} from '@convertcom/js-sdk-types';
 
 const host = 'http://localhost';
 const port = 8090;
@@ -17,8 +17,9 @@ const release_timeout = 1000;
 const test_timeout = release_timeout + 1000;
 const batch_size = 5;
 
-const configuration = Config({
+const configuration = {
   ...testConfig,
+  tracking: true,
   api: {
     endpoint: {
       config: host + ':' + port,
@@ -29,7 +30,7 @@ const configuration = Config({
     batch_size: batch_size,
     release_interval: release_timeout
   }
-});
+} as unknown as Config;
 const bucketingManager = new bm(configuration);
 const ruleManager = new rm(configuration);
 const eventManager = new em(configuration);
