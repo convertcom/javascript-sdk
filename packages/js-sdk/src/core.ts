@@ -4,22 +4,20 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {ApiManagerInterface} from './interfaces/api-manager';
+import {ApiManagerInterface} from '@convertcom/js-sdk-api';
 import {ContextInterface} from './interfaces/context';
 import {CoreInterface} from './interfaces/core';
-import {DataManagerInterface} from './interfaces/data-manager';
-import {EventManagerInterface} from './interfaces/event-manager';
-import {ExperienceManagerInterface} from './interfaces/experience-manager';
+import {DataManagerInterface} from '@convertcom/js-sdk-data';
+import {EventManagerInterface} from '@convertcom/js-sdk-event';
+import {ExperienceManagerInterface} from '@convertcom/js-sdk-experience';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from './interfaces/log-manager';
-import {SegmentsManagerInterface} from './interfaces/segments-manager';
+import {LogManagerInterface} from '@convertcom/js-sdk-logger';
+import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
 
-import {Config, ConfigData} from './types/Config';
-import {Id} from './types/Id';
+import {Config, ConfigData, Id} from '@convertcom/js-sdk-types';
 
-import {ERROR_MESSAGES, MESSAGES} from './enums/dictionary';
-import {SystemEvents} from './enums/system-events';
-import {objectNotEmpty} from './utils/object-utils';
+import {ERROR_MESSAGES, MESSAGES, SystemEvents} from '@convertcom/js-sdk-enums';
+import {objectNotEmpty} from '@convertcom/js-sdk-utils';
 import {Context} from './context';
 
 const DEFAULT_DATA_REFRESH_INTERVAL = 300000; // in milliseconds (5 minutes)
@@ -86,7 +84,7 @@ export class Core implements CoreInterface {
     this._eventManager = eventManager;
     this._apiManager = apiManager;
     this._loggerManager = loggerManager;
-    this._loggerManager?.trace?.(MESSAGES.CORE_CONSTRUCTOR, this);
+    this._loggerManager?.trace?.('Core()', MESSAGES.CORE_CONSTRUCTOR, this);
     this.initialize(config);
   }
 
@@ -106,10 +104,16 @@ export class Core implements CoreInterface {
     } else if (Object.prototype.hasOwnProperty.call(config, 'data')) {
       this._eventManager.fire(SystemEvents.READY, null, null, true);
       this._dataManager.data = config.data;
-      this._loggerManager?.trace?.(MESSAGES.CORE_INITIALIZED);
+      this._loggerManager?.trace?.(
+        'Core.initialize()',
+        MESSAGES.CORE_INITIALIZED
+      );
       this._initialized = true;
     } else {
-      this._loggerManager?.error?.(ERROR_MESSAGES.SDK_OR_DATA_OBJECT_REQUIRED);
+      this._loggerManager?.error?.(
+        'Core.initialize()',
+        ERROR_MESSAGES.SDK_OR_DATA_OBJECT_REQUIRED
+      );
       this._eventManager.fire(
         SystemEvents.READY,
         {},
@@ -170,6 +174,13 @@ export class Core implements CoreInterface {
   }
 
   /**
+   * Enable tracking
+   */
+  enableTracking(): void {
+    this._apiManager.enableTracking();
+  }
+
+  /**
    * Fetch remote config data
    * @return {Promise<void>}
    */
@@ -189,9 +200,15 @@ export class Core implements CoreInterface {
         true
       );
       if (objectNotEmpty(this._dataManager.data)) {
-        this._loggerManager?.trace?.(MESSAGES.CONFIG_DATA_UPDATED);
+        this._loggerManager?.trace?.(
+          'Core.fetchConfig()',
+          MESSAGES.CONFIG_DATA_UPDATED
+        );
       } else {
-        this._loggerManager?.trace?.(MESSAGES.CORE_INITIALIZED);
+        this._loggerManager?.trace?.(
+          'Core.fetchConfig()',
+          MESSAGES.CORE_INITIALIZED
+        );
         this._initialized = true;
       }
       this._dataManager.data = data;

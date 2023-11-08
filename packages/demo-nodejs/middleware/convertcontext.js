@@ -1,5 +1,9 @@
-module.exports = function (sdkInstance) {
+module.exports = function (sdkInstance, dataStore) {
   return function (req, res, next) {
+    if (dataStore.driver === "cookie") {
+      dataStore.response = res;
+      if (!Object.keys(dataStore.data).length) dataStore.data = req.cookies;
+    }
     var userId =
       req.cookies && req.cookies.userId
         ? req.cookies.userId
