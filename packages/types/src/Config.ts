@@ -61,4 +61,5 @@ export type Config = {
     };
     customLoggers: Array<Record<string, any>>;
   };
+  mapper?: (...args: any) => any;
 };

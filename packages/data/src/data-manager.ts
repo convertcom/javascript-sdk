@@ -72,6 +72,7 @@ export class DataManager implements DataManagerInterface {
   private _localStoreLimit = LOCAL_STORE_LIMIT;
   private _bucketedVisitors = new Map();
   private _environment: string;
+  private _mapper: (...args: any) => any;
   /**
    * @param {Config} config
    * @param {Object} dependencies
@@ -103,6 +104,7 @@ export class DataManager implements DataManagerInterface {
     this._loggerManager = loggerManager;
     this._eventManager = eventManager;
     this._config = config;
+    this._mapper = config?.mapper || ((value: any) => value);
     this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
@@ -172,14 +174,17 @@ export class DataManager implements DataManagerInterface {
     identityField: IdentityField = 'key',
     environment: string = this._environment
   ): Experience | RuleError {
-    this._loggerManager?.trace?.('DataManager.matchRulesByField()', {
-      visitorId: visitorId,
-      identity: identity,
-      visitorProperties: visitorProperties,
-      locationProperties: locationProperties,
-      identityField: identityField,
-      environment: environment
-    });
+    this._loggerManager?.trace?.(
+      'DataManager.matchRulesByField()',
+      this._mapper({
+        visitorId: visitorId,
+        identity: identity,
+        visitorProperties: visitorProperties,
+        locationProperties: locationProperties,
+        identityField: identityField,
+        environment: environment
+      })
+    );
     // Retrieve the experience
     const experience = this._getEntityByField(
       identity,
@@ -331,43 +336,43 @@ export class DataManager implements DataManagerInterface {
             this._loggerManager?.debug?.(
               'DataManager.matchRulesByField()',
               MESSAGES.VARIATIONS_NOT_FOUND,
-              {
+              this._mapper({
                 visitorProperties: visitorProperties,
                 audiences: audiences
-              }
+              })
             );
           }
         } else {
           this._loggerManager?.debug?.(
             'DataManager.matchRulesByField()',
             MESSAGES.AUDIENCE_NOT_MATCH,
-            {
+            this._mapper({
               visitorProperties: visitorProperties,
               audiences: audiences
-            }
+            })
           );
         }
       } else {
         this._loggerManager?.debug?.(
           'DataManager.matchRulesByField()',
           MESSAGES.LOCATION_NOT_MATCH,
-          {
+          this._mapper({
             locationProperties: locationProperties,
             [experience?.locations
               ? 'experiences[].variations[].locations'
               : 'experiences[].variations[].site_area']:
               experience?.locations || experience?.site_area || ''
-          }
+          })
         );
       }
     } else {
       this._loggerManager?.debug?.(
         'DataManager.matchRulesByField()',
         MESSAGES.EXPERIENCE_NOT_FOUND,
-        {
+        this._mapper({
           identity: identity,
           identityField: identityField
-        }
+        })
       );
     }
     return null;
@@ -392,14 +397,17 @@ export class DataManager implements DataManagerInterface {
     identityField: IdentityField = 'key',
     environment: string = this._environment
   ): BucketedVariation | RuleError {
-    this._loggerManager?.trace?.('DataManager._getBucketingByField()', {
-      visitorId: visitorId,
-      identity: identity,
-      visitorProperties: visitorProperties,
-      locationProperties: locationProperties,
-      identityField: identityField,
-      environment: environment
-    });
+    this._loggerManager?.trace?.(
+      'DataManager._getBucketingByField()',
+      this._mapper({
+        visitorId: visitorId,
+        identity: identity,
+        visitorProperties: visitorProperties,
+        locationProperties: locationProperties,
+        identityField: identityField,
+        environment: environment
+      })
+    );
 
     // Retrieve the experience
     const experience = this.matchRulesByField(
@@ -448,11 +456,14 @@ export class DataManager implements DataManagerInterface {
         'DataManager._retrieveBucketing()',
         MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
       );
-      this._loggerManager?.debug?.('DataManager._retrieveBucketing()', {
-        storeKey: storeKey,
-        visitorId: visitorId,
-        variationId: variationId
-      });
+      this._loggerManager?.debug?.(
+        'DataManager._retrieveBucketing()',
+        this._mapper({
+          storeKey: storeKey,
+          visitorId: visitorId,
+          variationId: variationId
+        })
+      );
     } else {
       // Try to find a bucketed visitor in dataStore
       let {bucketing: {[experience.id.toString()]: variationId} = {}} =
@@ -473,11 +484,14 @@ export class DataManager implements DataManagerInterface {
           'DataManager._retrieveBucketing()',
           MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
         );
-        this._loggerManager?.debug?.('DataManager._retrieveBucketing()', {
-          storeKey: storeKey,
-          visitorId: visitorId,
-          variationId: variationId
-        });
+        this._loggerManager?.debug?.(
+          'DataManager._retrieveBucketing()',
+          this._mapper({
+            storeKey: storeKey,
+            visitorId: visitorId,
+            variationId: variationId
+          })
+        );
       } else {
         // Build buckets where key is variation id and value is traffic distribution
         const buckets = experience.variations.reduce((bucket, variation) => {
@@ -515,19 +529,22 @@ export class DataManager implements DataManagerInterface {
             data: bucketingEvent
           };
           this._apiManager.enqueue(visitorId, visitorEvent, segments);
-          this._loggerManager?.trace?.('DataManager._retrieveBucketing()', {
-            visitorEvent
-          });
+          this._loggerManager?.trace?.(
+            'DataManager._retrieveBucketing()',
+            this._mapper({
+              visitorEvent
+            })
+          );
           // Retrieve and return variation
           variation = this.retrieveVariation(experience.id, variationId);
         } else {
           this._loggerManager?.error?.(
             'DataManager._retrieveBucketing()',
             ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
-            {
+            this._mapper({
               visitorId: visitorId,
               experience: experience
-            }
+            })
           );
         }
       }
@@ -575,7 +592,7 @@ export class DataManager implements DataManagerInterface {
     this._bucketedVisitors.set(storeKey, storeData);
     if (this._bucketedVisitors.size > this._localStoreLimit) {
       // Delete one of the oldest record
-      for (const [key, value] of this._bucketedVisitors) {
+      for (const [key] of this._bucketedVisitors) {
         this._bucketedVisitors.delete(key);
         break;
       }
@@ -614,10 +631,13 @@ export class DataManager implements DataManagerInterface {
     locationProperties: Record<string, any>,
     identityField: IdentityField = 'key'
   ): Array<Record<string, any> | RuleError> {
-    this._loggerManager?.trace?.('DataManager.selectLocations()', {
-      items: items,
-      locationProperties: locationProperties
-    });
+    this._loggerManager?.trace?.(
+      'DataManager.selectLocations()',
+      this._mapper({
+        items: items,
+        locationProperties: locationProperties
+      })
+    );
     // Get locations from DataStore
     const storeData = this.getLocalStore(visitorId) || {};
     const {bucketing, locations = [], segments, goals} = storeData;
@@ -693,9 +713,12 @@ export class DataManager implements DataManagerInterface {
       ...(segments ? {segments} : {}),
       ...(goals ? {goals} : {})
     });
-    this._loggerManager?.debug?.('DataManager.selectLocations()', {
-      matchedRecords: matchedRecords
-    });
+    this._loggerManager?.debug?.(
+      'DataManager.selectLocations()',
+      this._mapper({
+        matchedRecords: matchedRecords
+      })
+    );
     return matchedRecords;
   }
 
@@ -809,11 +832,11 @@ export class DataManager implements DataManagerInterface {
       this._loggerManager?.debug?.(
         'DataManager.convert()',
         MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
-        {
+        this._mapper({
           storeKey: storeKey,
           visitorId: visitorId,
           goalId: goalId
-        }
+        })
       );
       return;
     } else {
@@ -824,11 +847,11 @@ export class DataManager implements DataManagerInterface {
         this._loggerManager?.debug?.(
           'DataManager.convert()',
           MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
-          {
+          this._mapper({
             storeKey: storeKey,
             visitorId: visitorId,
             goalId: goalId
-          }
+          })
         );
         return;
       }
@@ -866,9 +889,12 @@ export class DataManager implements DataManagerInterface {
       };
       this._apiManager.enqueue(visitorId, event, segments);
     }
-    this._loggerManager?.trace?.('DataManager.convert()', {
-      event
-    });
+    this._loggerManager?.trace?.(
+      'DataManager.convert()',
+      this._mapper({
+        event
+      })
+    );
 
     return true;
   }
@@ -885,10 +911,13 @@ export class DataManager implements DataManagerInterface {
     entityType: string,
     field: IdentityField = 'id'
   ): Array<Record<string, any> | RuleError> {
-    this._loggerManager?.trace?.('DataManager.filterMatchedRecordsWithRule()', {
-      items: items,
-      visitorProperties: visitorProperties
-    });
+    this._loggerManager?.trace?.(
+      'DataManager.filterMatchedRecordsWithRule()',
+      this._mapper({
+        items: items,
+        visitorProperties: visitorProperties
+      })
+    );
     const matchedRecords = [];
     let match;
     if (arrayNotEmpty(items)) {
@@ -907,9 +936,12 @@ export class DataManager implements DataManagerInterface {
         }
       }
     }
-    this._loggerManager?.debug?.('DataManager.filterMatchedRecordsWithRule()', {
-      matchedRecords: matchedRecords
-    });
+    this._loggerManager?.debug?.(
+      'DataManager.filterMatchedRecordsWithRule()',
+      this._mapper({
+        matchedRecords: matchedRecords
+      })
+    );
     return matchedRecords;
   }
 
@@ -923,10 +955,13 @@ export class DataManager implements DataManagerInterface {
     items: Array<Record<string, any>>,
     visitorId: Id
   ): Array<Record<string, any>> {
-    this._loggerManager?.trace?.('DataManager.filterMatchedCustomSegments()', {
-      items: items,
-      visitorId: visitorId
-    });
+    this._loggerManager?.trace?.(
+      'DataManager.filterMatchedCustomSegments()',
+      this._mapper({
+        items: items,
+        visitorId: visitorId
+      })
+    );
     // Check that custom segments are matched
     const storeData = this.getLocalStore(visitorId) || {};
     // Get custom segments ID from DataStore
@@ -942,9 +977,12 @@ export class DataManager implements DataManagerInterface {
         }
       }
     }
-    this._loggerManager?.debug?.('DataManager.filterMatchedCustomSegments()', {
-      matchedRecords: matchedRecords
-    });
+    this._loggerManager?.debug?.(
+      'DataManager.filterMatchedCustomSegments()',
+      this._mapper({
+        matchedRecords: matchedRecords
+      })
+    );
     return matchedRecords;
   }
 
@@ -958,10 +996,13 @@ export class DataManager implements DataManagerInterface {
     if (this._dataEntities.indexOf(entityType) !== -1) {
       list = objectDeepValue(this._data, entityType) || [];
     }
-    this._loggerManager?.trace?.('DataManager.getEntitiesList()', {
-      entityType: entityType,
-      list: list
-    });
+    this._loggerManager?.trace?.(
+      'DataManager.getEntitiesList()',
+      this._mapper({
+        entityType: entityType,
+        list: list
+      })
+    );
     return list;
   }
 
@@ -994,11 +1035,14 @@ export class DataManager implements DataManagerInterface {
     entityType: string,
     identityField: IdentityField = 'key'
   ): Entity {
-    this._loggerManager?.trace?.('DataManager._getEntityByField()', {
-      identity: identity,
-      entityType: entityType,
-      identityField: identityField
-    });
+    this._loggerManager?.trace?.(
+      'DataManager._getEntityByField()',
+      this._mapper({
+        identity: identity,
+        entityType: entityType,
+        identityField: identityField
+      })
+    );
     const list = this.getEntitiesList(entityType) as Array<Entity>;
     if (arrayNotEmpty(list)) {
       for (let i = 0, length = list.length; i < length; i++) {
@@ -1079,10 +1123,13 @@ export class DataManager implements DataManagerInterface {
    * @return {Array<Record<string, any>>}
    */
   getItemsByIds(ids: Array<Id>, path: string): Array<Record<string, any>> {
-    this._loggerManager?.trace?.('DataManager.getItemsByIds()', {
-      ids: ids,
-      path: path
-    });
+    this._loggerManager?.trace?.(
+      'DataManager.getItemsByIds()',
+      this._mapper({
+        ids: ids,
+        path: path
+      })
+    );
     const items = [];
     if (arrayNotEmpty(ids)) {
       const list = this.getEntitiesList(path) as Array<Entity>;
