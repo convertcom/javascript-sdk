@@ -1,3 +1,7 @@
+// import info from './package.json' assert {type: 'json'}; // ExperimentalWarning: Importing JSON modules is an experimental feature. This feature could change at any time
+import {readFileSync} from 'fs';
+import {dirname} from 'path';
+import {fileURLToPath} from 'url';
 import {babel} from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
@@ -7,18 +11,57 @@ import jsdoc from 'rollup-plugin-jsdoc';
 import json from '@rollup/plugin-json';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 import copy from 'rollup-plugin-copy';
-import replace from '@rollup/plugin-replace';
+import modify from 'rollup-plugin-modify';
 
 import dotenv from 'dotenv';
 dotenv.config();
+const info = JSON.parse(
+  readFileSync(
+    `${dirname(fileURLToPath(import.meta.url))}/package.json`,
+    'utf-8'
+  )
+);
+console.log(`build ${info.name}...`);
 
-const ENV_OPTIONS = {
-  values: {
-    'process.env.CONFIG_ENDPOINT': `'${process.env.CONFIG_ENDPOINT || ''}'`,
-    'process.env.TRACK_ENDPOINT': `'${process.env.TRACK_ENDPOINT || ''}'`
-  },
-  objectGuards: true,
-  preventAssignment: true
+const BUILD_CACHE = Boolean(process.env.NODE_ENV === 'production');
+
+const LOGGER_OPTIONS = {
+  replace: '// eslint-disable-line'
+};
+const logLevel = process.env.LOG_LEVEL ? Number(process.env.LOG_LEVEL) : 0;
+switch (logLevel) {
+  case 1:
+    console.log('log level:', 'debug');
+    LOGGER_OPTIONS.find =
+      /this\._loggerManager(\?)?\.(?!(debug|info|warn|error)).*?;$/gms;
+    break;
+  case 2:
+    console.log('log level:', 'info');
+    LOGGER_OPTIONS.find =
+      /this\._loggerManager(\?)?\.(?!(info|warn|error)).*?;$/gms;
+    break;
+  case 3:
+    console.log('log level:', 'warn');
+    LOGGER_OPTIONS.find = /this\._loggerManager(\?)?\.(?!(warn|error)).*?;$/gms;
+    break;
+  case 4:
+    console.log('log level:', 'error');
+    LOGGER_OPTIONS.find = /this\._loggerManager(\?)?\.(?!(error)).*?;$/gms;
+    break;
+  case 5:
+    console.log('log level:', 'silent');
+    LOGGER_OPTIONS.find = /this\._loggerManager(\?)?\..*?;$/gms;
+    break;
+}
+
+const CONFIG_ENV = {
+  find: 'process.env.CONFIG_ENDPOINT',
+  replace: `'${process.env.CONFIG_ENDPOINT || ''}'`
+};
+
+const TRACK_ENV = {
+  find: 'process.env.TRACK_ENDPOINT',
+  replace: `'${process.env.TRACK_ENDPOINT || ''}'`
 };
 
 const JSDOC_PATH = 'docs';
@@ -51,25 +94,29 @@ const terserConfig = {
   }
 };
 
+const withLogging = logLevel > 0 ? [modify(LOGGER_OPTIONS)] : [];
+
 const commonJSBundle = {
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
-      exports: 'auto',
+      exports: 'named',
       file: './lib/index.js',
       format: 'cjs',
       sourcemap: true
     },
     {
-      exports: 'auto',
+      exports: 'named',
       file: './lib/index.min.js',
       format: 'cjs',
       sourcemap: true,
       plugins: [terser(terserConfig)]
     }
   ],
-  plugins: [
-    replace(ENV_OPTIONS),
+  plugins: withLogging.concat([
+    modify(CONFIG_ENV),
+    modify(TRACK_ENV),
     typescript({
       tsconfigOverride: {exclude: exclude}
     }),
@@ -105,28 +152,30 @@ const commonJSBundle = {
     copy({
       targets: [{src: ['public/**/*', 'coverage/coverage.svg'], dest: 'docs'}]
     })
-  ]
+  ])
 };
 
 const commonJSLegacyBundle = {
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
-      exports: 'auto',
+      exports: 'named',
       file: './lib/legacy/index.js',
       format: 'cjs',
       sourcemap: true
     },
     {
-      exports: 'auto',
+      exports: 'named',
       file: './lib/legacy/index.min.js',
       format: 'cjs',
       sourcemap: true,
       plugins: [terser(terserConfig)]
     }
   ],
-  plugins: [
-    replace(ENV_OPTIONS),
+  plugins: withLogging.concat([
+    modify(CONFIG_ENV),
+    modify(TRACK_ENV),
     typescript({
       tsconfigOverride: {compilerOptions: {target: 'es5'}, exclude: exclude}
     }),
@@ -136,14 +185,16 @@ const commonJSLegacyBundle = {
     }),
     commonjs(),
     babel({
+      babelHelpers: 'bundled',
       exclude: 'node_modules/**',
       presets: [['@babel/preset-env', {targets: 'defaults'}]]
     }),
     json()
-  ]
+  ])
 };
 
 const esmBundle = {
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
@@ -160,8 +211,9 @@ const esmBundle = {
       sourcemap: true
     }
   ],
-  plugins: [
-    replace(ENV_OPTIONS),
+  plugins: withLogging.concat([
+    modify(CONFIG_ENV),
+    modify(TRACK_ENV),
     typescript({
       tsconfigOverride: {exclude: exclude}
     }),
@@ -171,30 +223,32 @@ const esmBundle = {
     }),
     commonjs(),
     json()
-  ]
+  ])
 };
 
 const umdBundle = {
+  cache: BUILD_CACHE,
   input: './index.ts',
   output: [
     {
       name: 'ConvertSDK',
-      exports: 'auto',
+      exports: 'named',
       format: 'umd',
       file: 'lib/index.umd.js',
       sourcemap: true
     },
     {
       name: 'ConvertSDK',
-      exports: 'auto',
+      exports: 'named',
       format: 'umd',
       file: 'lib/index.umd.min.js',
       plugins: [terser(terserConfig)],
       sourcemap: true
     }
   ],
-  plugins: [
-    replace(ENV_OPTIONS),
+  plugins: withLogging.concat([
+    modify(CONFIG_ENV),
+    modify(TRACK_ENV),
     typescript({
       tsconfigOverride: {exclude: exclude}
     }),
@@ -204,8 +258,25 @@ const umdBundle = {
     }),
     commonjs(),
     json()
-  ]
+  ])
 };
+
+const BUNDLES = process.env.BUNDLES
+  ? process.env.BUNDLES.split(',')
+  : ['cjs', 'cjs-legacy', 'esm', 'umd'];
+
 export default () => {
-  return [commonJSBundle, commonJSLegacyBundle, esmBundle, umdBundle];
+  return BUNDLES.map((bundle) => {
+    switch (bundle) {
+      case 'cjs':
+        return [commonJSBundle];
+      case 'cjs-legacy':
+        return [commonJSLegacyBundle];
+      case 'esm':
+        return [esmBundle];
+      case 'umd':
+        return [umdBundle];
+    }
+    return [];
+  }).flat();
 };

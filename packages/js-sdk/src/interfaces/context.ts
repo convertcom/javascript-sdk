@@ -5,35 +5,42 @@
  * License Apache-2.0
  */
 
-import {BucketedFeature} from '../types/BucketedFeature';
-import {BucketedVariation} from '../types/BucketedVariation';
-import {BucketingAttributes} from '../types/BucketingAttributes';
-import {ConversionAttributes} from '../types/ConversionAttributes';
-import {Id} from '../types/Id';
-import {SegmentsAttributes} from '../types/SegmentsAttributes';
-import {SegmentsData} from '../types/SegmentsData';
+import {
+  BucketedFeature,
+  BucketedVariation,
+  BucketingAttributes,
+  ConversionAttributes,
+  Id,
+  SegmentsAttributes,
+  SegmentsData
+} from '@convertcom/js-sdk-types';
+import {RuleError} from '@convertcom/js-sdk-enums';
 
 export interface ContextInterface {
   runExperience(
     experienceKey: string,
     attributes?: BucketingAttributes
-  ): BucketedVariation | null;
+  ): BucketedVariation | RuleError;
 
-  runExperiences(attributes?: BucketingAttributes): Array<BucketedVariation>;
+  runExperiences(
+    attributes?: BucketingAttributes
+  ): Array<BucketedVariation | RuleError>;
 
   runFeature(
     key: string,
     attributes?: BucketingAttributes
-  ): BucketedFeature | Array<BucketedFeature>;
+  ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError>;
 
-  runFeatures(attributes?: BucketingAttributes): Array<BucketedFeature>;
+  runFeatures(
+    attributes?: BucketingAttributes
+  ): Array<BucketedFeature | RuleError>;
 
-  trackConversion(goalKey: Id, attributes?: ConversionAttributes): void;
+  trackConversion(goalKey: Id, attributes?: ConversionAttributes): RuleError;
 
   setDefaultSegments(segments: SegmentsData): void;
 
   setCustomSegments(
     segmentKeys: Array<string>,
     attributes?: SegmentsAttributes
-  ): void;
+  ): RuleError;
 }

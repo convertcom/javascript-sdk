@@ -3,6 +3,72 @@
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": true,
   "packages": {
+    "packages/enums": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/types": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/utils": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/event": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/bucketing": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/logger": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/rules": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/segments": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/api": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/data": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
+    "packages/experience": {
+      "changelog-path": "CHANGELOG.md",
+      "draft": false,
+      "prerelease": false,
+      "monorepo-tags": "true"
+    },
     "packages/js-sdk": {
       "changelog-path": "CHANGELOG.md",
       "draft": false,

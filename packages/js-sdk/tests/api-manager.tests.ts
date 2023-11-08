@@ -2,11 +2,11 @@ import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
 import http from 'http';
-import {ApiManager as am} from '../src/api-manager';
-import {EventManager as em} from '../src/event-manager';
-import {SystemEvents} from '../src/enums/system-events';
+import {ApiManager as am} from '@convertcom/js-sdk-api';
+import {EventManager as em} from '@convertcom/js-sdk-event';
+import {SystemEvents} from '@convertcom/js-sdk-enums';
 import testConfig from './test-config.json';
-import {Config} from '../src/config';
+import {Config} from '@convertcom/js-sdk-types';
 
 const host = 'http://localhost';
 const port = 8090;
@@ -14,8 +14,9 @@ const release_timeout = 1000;
 const test_timeout = release_timeout + 1000;
 const batch_size = 5;
 
-const configuration = Config({
+const configuration = {
   ...testConfig,
+  tracking: true,
   api: {
     endpoint: {
       config: host + ':' + port,
@@ -26,7 +27,7 @@ const configuration = Config({
     batch_size: batch_size,
     release_interval: release_timeout
   }
-});
+} as unknown as Config;
 const eventManager = new em(configuration);
 describe('ApiManager tests', function () {
   it('Should expose ApiManager', function () {
