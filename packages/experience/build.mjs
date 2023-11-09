@@ -8,6 +8,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 import modify from 'rollup-plugin-modify';
+import dts from 'rollup-plugin-dts';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -63,7 +64,11 @@ const exclude = [
   '**/tests'
 ];
 
-const external = ['@convertcom/js-sdk-enums', '@convertcom/js-sdk-utils'];
+const external = [
+  '@convertcom/js-sdk-enums',
+  '@convertcom/js-sdk-utils',
+  'murmurhash'
+];
 
 const minimizedFilesHeader =
   '/*!\n' +
@@ -103,7 +108,11 @@ const commonJSBundle = {
   external: external,
   plugins: withLogging.concat([
     typescript({
-      tsconfigOverride: {include: include, exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {declaration: false},
+        include: include,
+        exclude: exclude
+      }
     }),
     commonjs(),
     generatePackageJson({
@@ -150,7 +159,7 @@ const commonJSLegacyBundle = {
   plugins: withLogging.concat([
     typescript({
       tsconfigOverride: {
-        compilerOptions: {target: 'es5'},
+        compilerOptions: {target: 'es5', declaration: false},
         include: include,
         exclude: exclude
       }
@@ -185,10 +194,26 @@ const esmBundle = {
   external: external,
   plugins: withLogging.concat([
     typescript({
-      tsconfigOverride: {include: include, exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {declaration: false},
+        include: include,
+        exclude: exclude
+      }
     }),
     commonjs()
   ])
+};
+
+const typeDeclarations = {
+  cache: BUILD_CACHE,
+  input: './index.ts',
+  output: [
+    {
+      format: 'es',
+      file: 'lib/index.d.ts'
+    }
+  ],
+  plugins: [dts()]
 };
 
 const BUNDLES = process.env.BUNDLES
@@ -203,7 +228,7 @@ export default () => {
       case 'cjs-legacy':
         return [commonJSLegacyBundle];
       case 'esm':
-        return [esmBundle];
+        return [esmBundle, typeDeclarations];
     }
     return [];
   }).flat();
