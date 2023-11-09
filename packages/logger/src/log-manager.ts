@@ -59,7 +59,7 @@ export class LogManager implements LogManagerInterface {
         } else {
           console.log(
             `Info: Unable to find method "${method}()" in client sdk:`,
-            client.sdk.constructor.name
+            client.sdk?.constructor?.name
           );
           console[method](...args);
         }

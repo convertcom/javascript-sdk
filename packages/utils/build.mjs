@@ -7,6 +7,7 @@ import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
+import dts from 'rollup-plugin-dts';
 
 const info = JSON.parse(
   readFileSync(
@@ -69,7 +70,11 @@ const commonJSBundle = {
   external: external,
   plugins: [
     typescript({
-      tsconfigOverride: {include: include, exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {declaration: false},
+        include: include,
+        exclude: exclude
+      }
     }),
     commonjs(),
     generatePackageJson({
@@ -116,7 +121,7 @@ const commonJSLegacyBundle = {
   plugins: [
     typescript({
       tsconfigOverride: {
-        compilerOptions: {target: 'es5'},
+        compilerOptions: {target: 'es5', declaration: false},
         include: include,
         exclude: exclude
       }
@@ -151,10 +156,26 @@ const esmBundle = {
   external: external,
   plugins: [
     typescript({
-      tsconfigOverride: {include: include, exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {declaration: false},
+        include: include,
+        exclude: exclude
+      }
     }),
     commonjs()
   ]
+};
+
+const typeDeclarations = {
+  cache: BUILD_CACHE,
+  input: './index.ts',
+  output: [
+    {
+      format: 'es',
+      file: 'lib/index.d.ts'
+    }
+  ],
+  plugins: [dts()]
 };
 
 const BUNDLES = process.env.BUNDLES
@@ -169,7 +190,7 @@ export default () => {
       case 'cjs-legacy':
         return [commonJSLegacyBundle];
       case 'esm':
-        return [esmBundle];
+        return [esmBundle, typeDeclarations];
     }
     return [];
   }).flat();

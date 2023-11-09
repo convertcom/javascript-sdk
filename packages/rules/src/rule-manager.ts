@@ -38,6 +38,8 @@ export class RuleManager implements RuleManagerInterface {
   private readonly _negation: string = DEFAULT_NEGATION;
   private readonly _keys_case_sensitive: boolean = DEFAULT_KEYS_CASE_SENSITIVE;
   private _loggerManager: LogManagerInterface | null;
+
+  private _mapper: (...args: any) => any;
   /**
    * @param {Config=} config
    * @param {Object=} dependencies
@@ -63,6 +65,7 @@ export class RuleManager implements RuleManagerInterface {
       DEFAULT_KEYS_CASE_SENSITIVE,
       true
     );
+    this._mapper = config?.mapper || ((value: any) => value);
     this._loggerManager?.trace?.(
       'RuleManager()',
       MESSAGES.RULE_CONSTRUCTOR,
@@ -106,10 +109,13 @@ export class RuleManager implements RuleManagerInterface {
     ruleSet: RuleSet,
     logEntry?: string
   ): boolean | RuleError {
-    this._loggerManager?.trace?.('RuleManager.isRuleMatched()', {
-      data: data,
-      ruleSet: ruleSet
-    });
+    this._loggerManager?.trace?.(
+      'RuleManager.isRuleMatched()',
+      this._mapper({
+        data: data,
+        ruleSet: ruleSet
+      })
+    );
     if (logEntry) {
       this._loggerManager?.info?.(
         'RuleManager.isRuleMatched()',
@@ -159,9 +165,12 @@ export class RuleManager implements RuleManagerInterface {
    * @return {boolean}
    */
   isValidRule(rule: Rule): boolean {
-    this._loggerManager?.trace?.('RuleManager.isValidRule()', {
-      rule: rule
-    });
+    this._loggerManager?.trace?.(
+      'RuleManager.isValidRule()',
+      this._mapper({
+        rule: rule
+      })
+    );
     return (
       Object.prototype.hasOwnProperty.call(rule, 'matching') &&
       typeof rule.matching === 'object' &&
@@ -260,7 +269,7 @@ export class RuleManager implements RuleManagerInterface {
         const negation = rule.matching.negated || false;
         const matching = rule.matching.match_type;
         if (this.getComparisonProcessorMethods().indexOf(matching) !== -1) {
-          if (typeof data === 'object') {
+          if (data && typeof data === 'object' && data?.constructor) {
             // Validate data key-value set.
             if (data.constructor === Object) {
               // Rule object has to have `key` field
@@ -290,7 +299,10 @@ export class RuleManager implements RuleManagerInterface {
                 const rule_method = camelCase(
                   `get ${rule.rule_type.replace(/_/g, ' ')}`
                 );
-                if (method === rule_method) {
+                if (
+                  method === rule_method ||
+                  data?.mapper?.(method) === rule_method
+                ) {
                   const dataValue = data[method](rule);
                   if (Object.values(RuleError).includes(dataValue as RuleError))
                     return dataValue as RuleError;
@@ -302,12 +314,24 @@ export class RuleManager implements RuleManagerInterface {
                   );
                 }
               }
+            } else {
+              this._loggerManager?.trace?.('RuleManager._processRuleItem()', {
+                warn: ERROR_MESSAGES.RULE_DATA_NOT_VALID,
+                data
+              });
             }
           } else {
-            this._loggerManager?.warn?.('RuleManager._processRuleItem()', {
-              warn: ERROR_MESSAGES.RULE_DATA_NOT_VALID
+            this._loggerManager?.trace?.('RuleManager._processRuleItem()', {
+              warn: ERROR_MESSAGES.RULE_NOT_VALID,
+              data,
+              rule
             });
           }
+        } else {
+          this._loggerManager?.warn?.(
+            'RuleManager._processRuleItem()',
+            ERROR_MESSAGES.RULE_MATCH_TYPE_NOT_SUPPORTED.replace('#', matching)
+          );
         }
       } catch (error) {
         this._loggerManager?.error?.('RuleManager._processRuleItem()', {
