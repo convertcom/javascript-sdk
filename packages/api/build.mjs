@@ -1,4 +1,3 @@
-// import info from './package.json' assert {type: 'json'}; // ExperimentalWarning: Importing JSON modules is an experimental feature. This feature could change at any time
 import {readFileSync} from 'fs';
 import {dirname} from 'path';
 import {fileURLToPath} from 'url';
