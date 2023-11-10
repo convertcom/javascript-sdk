@@ -11,6 +11,8 @@ export const ERROR_MESSAGES = {
   SDK_OR_DATA_OBJECT_REQUIRED: 'SDK key or Data object should be provided',
   RULE_NOT_VALID: 'Provided rule is not valid',
   RULE_DATA_NOT_VALID: 'Provided rule data is not valid',
+  RULE_MATCH_TYPE_NOT_SUPPORTED:
+    'Provided rule matching type "#" is not supported',
   RULE_ERROR: 'Rule error',
   DATA_STORE_NOT_VALID:
     'DataStore object is not valid. It should contain get and set methods',

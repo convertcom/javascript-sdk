@@ -37,19 +37,6 @@
   "engines": {
     "node": ">=8.0.0"
   },
-  "peerDependencies": {
-    "@convertcom/js-sdk-api": "workspace:^",
-    "@convertcom/js-sdk-bucketing": "workspace:^",
-    "@convertcom/js-sdk-data": "workspace:^",
-    "@convertcom/js-sdk-enums": "workspace:^",
-    "@convertcom/js-sdk-event": "workspace:^",
-    "@convertcom/js-sdk-experience": "workspace:^",
-    "@convertcom/js-sdk-logger": "workspace:^",
-    "@convertcom/js-sdk-rules": "workspace:^",
-    "@convertcom/js-sdk-segments": "workspace:^",
-    "@convertcom/js-sdk-types": "workspace:^",
-    "@convertcom/js-sdk-utils": "workspace:^"
-  },
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
@@ -96,6 +83,7 @@
     "require": "^2.4.20",
     "rollup": "^3.20.2",
     "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-generate-package-json": "^3.2.0",
     "rollup-plugin-jsdoc": "^0.1.2",
     "rollup-plugin-modify": "^3.0.0",
@@ -108,5 +96,5 @@
     "typings": "^2.1.1",
     "webpack": "^5.89.0"
   },
-  "version": "2.0.0"
+  "version": "2.0.1"
 }

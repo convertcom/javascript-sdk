@@ -20,8 +20,11 @@ export class Comparisons {
     negation?: boolean
   ): boolean {
     if (Array.isArray(value))
-      return this._returnNegationCheck(value.indexOf(testAgainst) !== -1, negation);
-    if (value.constructor === Object && typeof testAgainst === 'string')
+      return this._returnNegationCheck(
+        value.indexOf(testAgainst) !== -1,
+        negation
+      );
+    if (value?.constructor === Object && typeof testAgainst === 'string')
       return this._returnNegationCheck(
         Object.keys(value).indexOf(testAgainst) !== -1,
         negation

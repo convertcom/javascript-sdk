@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.0.0...js-sdk-v2.0.1) (2023-11-09)
+
+
+### Bug Fixes
+
+* correct types declarations at built time ([2141e80](https://github.com/convertcom/javascript-sdk/commit/2141e800049f9bcbf4641444b763443f196de146))
+
 ## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v1.2.1...js-sdk-v2.0.0) (2023-11-08)
 
 

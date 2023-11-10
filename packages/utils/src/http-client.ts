@@ -151,7 +151,11 @@ export const serialize = (
   runtimeResult: RuntimeResult
 ) => {
   let query = '';
-  if (params && params.constructor === Object && !supportsRequestBody(method)) {
+  if (
+    params &&
+    params?.constructor === Object &&
+    !supportsRequestBody(method)
+  ) {
     if (runtimeResult.runtime !== 'nodejs') {
       query = Object.keys(params)
         .map(
