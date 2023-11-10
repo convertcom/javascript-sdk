@@ -108,24 +108,51 @@ interface HttpClientInterface {
   request(config: HttpRequest): Promise<HttpResponse>;
 }
 
-let url, http, https, queryString;
-try {
-  // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
-  url = require('url');
-  http = require('http');
-  https = require('https');
-  queryString = require('querystring');
-} catch (err) {
-  // Should be browser env
-}
-
 const supportsRequestBody = (method: string) =>
   !['GET', 'HEAD', 'DELETE', 'TRACE', 'OPTIONS'].includes(method.toUpperCase());
 
-export const serialize = (params: Record<string, any>, method: string) => {
+type RuntimeResult =
+  | {
+      runtime: 'browser' | 'edge' | 'unknown';
+    }
+  | {
+      runtime: 'nodejs';
+      url: any;
+      http: any;
+      https: any;
+      queryString: any;
+    };
+
+const determineRuntime = (): RuntimeResult => {
+  if (typeof window !== 'undefined') {
+    return {runtime: 'browser'};
+  }
+
+  if (typeof fetch !== 'undefined') {
+    return {runtime: 'edge'};
+  }
+
+  let url: any, http: any, https: any, queryString: any;
+  try {
+    // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
+    url = require('url');
+    http = require('http');
+    https = require('https');
+    queryString = require('querystring');
+  } catch (err) {
+    return {runtime: 'unknown'};
+  }
+  return {runtime: 'nodejs', url, http, https, queryString};
+};
+
+export const serialize = (
+  params: Record<string, any>,
+  method: string,
+  runtimeResult: RuntimeResult
+) => {
   let query = '';
   if (params && params.constructor === Object && !supportsRequestBody(method)) {
-    if (typeof navigator !== 'undefined') {
+    if (runtimeResult.runtime !== 'nodejs') {
       query = Object.keys(params)
         .map(
           (key) =>
@@ -133,7 +160,7 @@ export const serialize = (params: Record<string, any>, method: string) => {
         )
         .join('&');
     } else {
-      query = queryString.stringify(params);
+      query = runtimeResult.queryString.stringify(params);
     }
   }
   return query ? `?${query}` : query;
@@ -156,8 +183,12 @@ export const HttpClient = {
       ? config.baseURL.slice(0, -1)
       : config.baseURL;
     const responseType: HttpResponseType = config?.responseType || 'json';
+    const runtimeResult = determineRuntime();
     return new Promise((resolve, reject) => {
-      if (typeof navigator !== 'undefined') {
+      if (
+        runtimeResult.runtime === 'browser' ||
+        runtimeResult.runtime === 'edge'
+      ) {
         const options: any = {
           method
         };
@@ -165,8 +196,16 @@ export const HttpClient = {
         if (config?.data && supportsRequestBody(method)) {
           options.body = JSON.stringify(config.data);
         }
-        const url = `${baseURL}${path}${serialize(config?.data, method)}`;
-        if (method.toLowerCase() === 'post' && navigator?.sendBeacon) {
+        const url = `${baseURL}${path}${serialize(
+          config?.data,
+          method,
+          runtimeResult
+        )}`;
+        if (
+          method.toLowerCase() === 'post' &&
+          typeof navigator !== 'undefined' &&
+          navigator.sendBeacon
+        ) {
           /**
            * navigator.sendBeacon method is intended for analytics
            * and diagnostics code to send data to a server,
@@ -237,9 +276,9 @@ export const HttpClient = {
               })
             );
         }
-      } else if (url && https && http) {
+      } else if (runtimeResult.runtime === 'nodejs') {
         // Fallback to CommonJS if not targeting a browser
-        const parsedBaseUrl = url.parse(baseURL);
+        const parsedBaseUrl = runtimeResult.url.parse(baseURL);
         if (parsedBaseUrl.port) {
           parsedBaseUrl.port = Number(parsedBaseUrl.port);
         } else {
@@ -248,11 +287,18 @@ export const HttpClient = {
         const pathPrefix = parsedBaseUrl.path.endsWith('/')
           ? parsedBaseUrl.path.slice(0, -1)
           : parsedBaseUrl.path;
-        const client = parsedBaseUrl.protocol === 'https:' ? https : http;
+        const client =
+          parsedBaseUrl.protocol === 'https:'
+            ? runtimeResult.https
+            : runtimeResult.http;
         const body = [];
         const options: any = {
           hostname: parsedBaseUrl.hostname,
-          path: `${pathPrefix}${path}${serialize(config?.data, method)}`,
+          path: `${pathPrefix}${path}${serialize(
+            config?.data,
+            method,
+            runtimeResult
+          )}`,
           port: parsedBaseUrl.port,
           method
         };
