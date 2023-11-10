@@ -91,7 +91,9 @@ const commonJSBundle = {
           directory: 'packages/logger'
         },
         license: 'Apache-2.0',
-        dependencies: {},
+        dependencies: {
+          '@convertcom/js-sdk-enums': '>=1.0.0'
+        },
         version: pkg.version
       })
     })
