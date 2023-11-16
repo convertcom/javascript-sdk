@@ -1779,6 +1779,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@convertcom/js-sdk-demo-nodejs@workspace:packages/demo-nodejs"
   dependencies:
+    "@convertcom/js-sdk": "file:../js-sdk/lib"
     cookie-parser: ^1.4.6
     debug: ^4.3.4
     dotenv: ^16.0.3
@@ -1793,6 +1794,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@convertcom/js-sdk-demo-react@workspace:packages/demo-react"
   dependencies:
+    "@convertcom/js-sdk": "file:../js-sdk/lib"
     feather-icons: ^4.29.0
     framer-motion: ^10.11.2
     react: ^18.0.0
@@ -1803,8 +1805,6 @@ __metadata:
     styled-components: ^5.3.5
     tailwindcss: ^3.0.0
     twin.macro: ^3.0.0-rc.4
-  peerDependencies:
-    "@convertcom/js-sdk": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -2132,6 +2132,20 @@ __metadata:
     webpack: ^5.89.0
   languageName: unknown
   linkType: soft
+
+"@convertcom/js-sdk@file:../js-sdk/lib::locator=%40convertcom%2Fjs-sdk-demo-nodejs%40workspace%3Apackages%2Fdemo-nodejs":
+  version: 2.0.1
+  resolution: "@convertcom/js-sdk@file:../js-sdk/lib#../js-sdk/lib::hash=9e19ba&locator=%40convertcom%2Fjs-sdk-demo-nodejs%40workspace%3Apackages%2Fdemo-nodejs"
+  checksum: 466cd7018b1cd575419bf629f52f439a9a8661a63de8a6725fbfa348113ae8b920f1242c430e0be678d7281e7db8c4dbef74596a2a1356b43ff50496af2be8d6
+  languageName: node
+  linkType: hard
+
+"@convertcom/js-sdk@file:../js-sdk/lib::locator=%40convertcom%2Fjs-sdk-demo-react%40workspace%3Apackages%2Fdemo-react":
+  version: 2.0.1
+  resolution: "@convertcom/js-sdk@file:../js-sdk/lib#../js-sdk/lib::hash=9e19ba&locator=%40convertcom%2Fjs-sdk-demo-react%40workspace%3Apackages%2Fdemo-react"
+  checksum: 466cd7018b1cd575419bf629f52f439a9a8661a63de8a6725fbfa348113ae8b920f1242c430e0be678d7281e7db8c4dbef74596a2a1356b43ff50496af2be8d6
+  languageName: node
+  linkType: hard
 
 "@convertcom/js-sdk@workspace:packages/js-sdk":
   version: 0.0.0-use.local

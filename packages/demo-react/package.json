@@ -4,6 +4,7 @@
   "author": "Convert Insights, Inc",
   "license": "Apache-2.0",
   "dependencies": {
+    "@convertcom/js-sdk": "file:../js-sdk/lib",
     "feather-icons": "^4.29.0",
     "framer-motion": "^10.11.2",
     "react": "^18.0.0",
@@ -14,9 +15,6 @@
     "styled-components": "^5.3.5",
     "tailwindcss": "^3.0.0",
     "twin.macro": "^3.0.0-rc.4"
-  },
-  "peerDependencies": {
-    "@convertcom/js-sdk": "1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
