@@ -4,7 +4,7 @@
   "author": "Convert Insights, Inc",
   "license": "Apache-2.0",
   "dependencies": {
-    "@convertcom/js-sdk": "file:../js-sdk/lib",
+    "@convertcom/js-sdk": ">=2.0.0",
     "feather-icons": "^4.29.0",
     "framer-motion": "^10.11.2",
     "react": "^18.0.0",
