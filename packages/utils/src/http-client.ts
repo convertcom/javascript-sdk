@@ -6,6 +6,7 @@
  */
 
 import {ERROR_MESSAGES, MESSAGES} from '@convertcom/js-sdk-enums';
+import type {RequestOptions} from 'https';
 
 export type HttpMethod =
   | 'GET'
@@ -123,16 +124,10 @@ type RuntimeResult =
       queryString: any;
     };
 
-let url, http, https, queryString;
-try {
-  // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
-  url = require('url');
-  http = require('http');
-  https = require('https');
-  queryString = require('querystring');
-} catch (err) {
-  // Should be browser env
-}
+let url: typeof import('url');
+let https: typeof import('https');
+let http: typeof import('http');
+let queryString: typeof import('querystring');
 
 const determineRuntime = (): RuntimeResult => {
   // if window is available, we're in a browser
@@ -146,8 +141,15 @@ const determineRuntime = (): RuntimeResult => {
   }
 
   // if node.js builtins are available, we're on nodejs
-  if (url && http && https && queryString) {
+  try {
+    // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
+    url = require('url');
+    http = require('http');
+    https = require('https');
+    queryString = require('querystring');
     return {runtime: 'nodejs', url, http, https, queryString};
+  } catch (err) {
+    // not nodejs
   }
 
   // otherwise, this is some unknown runtime
@@ -196,7 +198,6 @@ export const HttpClient = {
       : config.baseURL;
     const responseType: HttpResponseType = config?.responseType || 'json';
     const runtimeResult = determineRuntime();
-    console.debug('runtimeResult', JSON.stringify(runtimeResult));
     return new Promise((resolve, reject) => {
       if (
         runtimeResult.runtime === 'browser' ||
@@ -210,13 +211,11 @@ export const HttpClient = {
           options.body = JSON.stringify(config.data);
         }
         const url = `${baseURL}${path}${serialize(config?.data, method)}`;
-        console.debug('fetching', url, JSON.stringify(options));
         if (
           method.toLowerCase() === 'post' &&
           typeof navigator !== 'undefined' &&
           navigator?.sendBeacon
         ) {
-          console.debug('navigator is present');
           /**
            * navigator.sendBeacon method is intended for analytics
            * and diagnostics code to send data to a server,
@@ -246,7 +245,6 @@ export const HttpClient = {
             });
           }
         } else {
-          console.debug('making fetch request', url, JSON.stringify(options));
           fetch(url, options)
             .then(async (res) => {
               if (res.status === HttpStatusCode.Ok) {
@@ -272,7 +270,6 @@ export const HttpClient = {
                     });
                     return;
                 }
-                console.log('resolving with output', JSON.stringify(output));
                 resolve(output);
               } else {
                 reject({
@@ -282,7 +279,6 @@ export const HttpClient = {
               }
             })
             .catch((err) => {
-              console.error(err?.message);
               reject({
                 message: err?.message,
                 status: err?.status,
@@ -293,17 +289,16 @@ export const HttpClient = {
       } else if (url && https && http) {
         // Fallback to CommonJS if not targeting a browser
         const parsedBaseUrl = url.parse(baseURL);
-        if (parsedBaseUrl.port) {
-          parsedBaseUrl.port = Number(parsedBaseUrl.port);
-        } else {
-          parsedBaseUrl.port = parsedBaseUrl.protocol === 'https:' ? 443 : 80;
+        if (!parsedBaseUrl.port) {
+          parsedBaseUrl.port =
+            parsedBaseUrl.protocol === 'https:' ? '443' : '80';
         }
         const pathPrefix = parsedBaseUrl.path.endsWith('/')
           ? parsedBaseUrl.path.slice(0, -1)
           : parsedBaseUrl.path;
         const client = parsedBaseUrl.protocol === 'https:' ? https : http;
         const body = [];
-        const options: any = {
+        const options: RequestOptions = {
           hostname: parsedBaseUrl.hostname,
           path: `${pathPrefix}${path}${serialize(config?.data, method)}`,
           port: parsedBaseUrl.port,
@@ -318,7 +313,6 @@ export const HttpClient = {
           if (!options.headers) options.headers = {};
           options.headers['Content-Length'] = Buffer.byteLength(postData);
         }
-        console.log('options', options);
         const req = client.request(options, (res) => {
           res.on('data', (chunk) => body.push(chunk));
           res.on('end', () => {
@@ -356,13 +350,18 @@ export const HttpClient = {
             }
           });
         });
-        req.on('error', (err) =>
+        req.on('error', (err) => {
+          const e = err as {
+            message?: string;
+            code?: string;
+            statusText?: string;
+          };
           reject({
-            message: err?.message,
-            status: err?.code,
-            statusText: err?.statusText
-          })
-        );
+            message: e?.message,
+            status: e?.code,
+            statusText: e?.statusText
+          });
+        });
         if (postData) req.write(postData);
         req.end();
       } else {
