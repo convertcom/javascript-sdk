@@ -132,14 +132,6 @@ describe('ApiManager tests', function () {
             variationId: VAR
           }
         };
-        // const testPayload = {
-        //   foo: 'bar',
-        //   some: {
-        //     test: {
-        //       data: 'value'
-        //     }
-        //   }
-        // };
         server.on('request', (request, res) => {
           if (request.url.startsWith('/track')) {
             const body = [];
@@ -172,11 +164,6 @@ describe('ApiManager tests', function () {
             apiManager.enqueue(VID + i, requestData);
           }
         });
-        // await apiManager.request(
-        //   'post',
-        //   {base: host + ':' + testRequestsEnqueuePort, route: '/test'},
-        //   testPayload
-        // );
       }
     );
     it(
