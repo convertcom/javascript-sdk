@@ -124,6 +124,20 @@ type RuntimeResult =
     };
 
 const determineRuntime = (): RuntimeResult => {
+  if (typeof process !== 'undefined') {
+    let url: any, http: any, https: any, queryString: any;
+    try {
+      // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
+      url = require('url');
+      http = require('http');
+      https = require('https');
+      queryString = require('querystring');
+    } catch (err) {
+      return {runtime: 'unknown'};
+    }
+    return {runtime: 'nodejs', url, http, https, queryString};
+  }
+
   if (typeof window !== 'undefined') {
     return {runtime: 'browser'};
   }
@@ -132,17 +146,7 @@ const determineRuntime = (): RuntimeResult => {
     return {runtime: 'edge'};
   }
 
-  let url: any, http: any, https: any, queryString: any;
-  try {
-    // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
-    url = require('url');
-    http = require('http');
-    https = require('https');
-    queryString = require('querystring');
-  } catch (err) {
-    return {runtime: 'unknown'};
-  }
-  return {runtime: 'nodejs', url, http, https, queryString};
+  return {runtime: 'unknown'};
 };
 
 export const serialize = (
