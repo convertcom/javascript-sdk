@@ -10,7 +10,9 @@ import {ApiManager as am} from '@convertcom/js-sdk-api';
 import {DataManager as dm} from '@convertcom/js-sdk-data';
 import {FeatureManager as fm} from '../src/feature-manager';
 import testConfig from './test-config.json';
-import {Config} from '../src/config';
+import {Config as ConfigType} from '@convertcom/js-sdk-types';
+import {objectDeepMerge} from '@convertcom/js-sdk-utils';
+import {defaultConfig} from '../src/config/default';
 
 const host = 'http://localhost';
 const port = 8090;
@@ -18,8 +20,7 @@ const release_timeout = 1000;
 const test_timeout = release_timeout + 1000;
 const batch_size = 5;
 
-const configuration = Config({
-  ...testConfig,
+const configuration = objectDeepMerge(testConfig, defaultConfig, {
   api: {
     endpoint: {
       config: host + ':' + port,
@@ -30,7 +31,7 @@ const configuration = Config({
     batch_size: batch_size,
     release_interval: release_timeout
   }
-});
+}) as unknown as ConfigType;
 const bucketingManager = new bm(configuration);
 const ruleManager = new rm(configuration);
 const eventManager = new em(configuration);
