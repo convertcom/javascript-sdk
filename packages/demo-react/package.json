@@ -16,7 +16,7 @@
     "twin.macro": "^3.0.0-rc.4"
   },
   "peerDependencies": {
-    "@convertcom/js-sdk": "1.0.0"
+    "@convertcom/js-sdk": ">=2.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
