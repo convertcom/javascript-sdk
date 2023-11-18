@@ -108,12 +108,12 @@ interface HttpClientInterface {
   request(config: HttpRequest): Promise<HttpResponse>;
 }
 
-const supportsRequestBody = (method: string) =>
-  !['GET', 'HEAD', 'DELETE', 'TRACE', 'OPTIONS'].includes(method.toUpperCase());
-
 type RuntimeResult =
   | {
-      runtime: 'browser' | 'edge' | 'unknown';
+      runtime:
+        | 'browser'
+        | 'server-with-fetch' // could be nodejs >=17 with fetch or edge runtime
+        | 'unknown';
     }
   | {
       runtime: 'nodejs';
@@ -123,40 +123,48 @@ type RuntimeResult =
       queryString: any;
     };
 
+let url, http, https, queryString;
+try {
+  // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
+  url = require('url');
+  http = require('http');
+  https = require('https');
+  queryString = require('querystring');
+} catch (err) {
+  // Should be browser env
+}
+
 const determineRuntime = (): RuntimeResult => {
+  // if window is available, we're in a browser
   if (typeof window !== 'undefined') {
     return {runtime: 'browser'};
   }
 
-  if (typeof fetch !== 'undefined') {
-    return {runtime: 'edge'};
+  // if window is not available, but fetch is, then we're on a server that has the fetch API available
+  if (typeof fetch === 'function') {
+    return {runtime: 'server-with-fetch'};
   }
 
-  let url: any, http: any, https: any, queryString: any;
-  try {
-    // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
-    url = require('url');
-    http = require('http');
-    https = require('https');
-    queryString = require('querystring');
-  } catch (err) {
-    return {runtime: 'unknown'};
+  // if node.js builtins are available, we're on nodejs
+  if (url && http && https && queryString) {
+    return {runtime: 'nodejs', url, http, https, queryString};
   }
-  return {runtime: 'nodejs', url, http, https, queryString};
+
+  // otherwise, this is some unknown runtime
+  return {runtime: 'unknown'};
 };
 
-export const serialize = (
-  params: Record<string, any>,
-  method: string,
-  runtimeResult: RuntimeResult
-) => {
+const supportsRequestBody = (method: string) =>
+  !['GET', 'HEAD', 'DELETE', 'TRACE', 'OPTIONS'].includes(method.toUpperCase());
+
+export const serialize = (params: Record<string, any>, method: string) => {
   let query = '';
   if (
     params &&
     params?.constructor === Object &&
     !supportsRequestBody(method)
   ) {
-    if (runtimeResult.runtime !== 'nodejs') {
+    if (typeof navigator !== 'undefined') {
       query = Object.keys(params)
         .map(
           (key) =>
@@ -164,7 +172,7 @@ export const serialize = (
         )
         .join('&');
     } else {
-      query = runtimeResult.queryString.stringify(params);
+      query = queryString.stringify(params);
     }
   }
   return query ? `?${query}` : query;
@@ -188,10 +196,11 @@ export const HttpClient = {
       : config.baseURL;
     const responseType: HttpResponseType = config?.responseType || 'json';
     const runtimeResult = determineRuntime();
+    console.debug('runtimeResult', JSON.stringify(runtimeResult));
     return new Promise((resolve, reject) => {
       if (
         runtimeResult.runtime === 'browser' ||
-        runtimeResult.runtime === 'edge'
+        runtimeResult.runtime === 'server-with-fetch'
       ) {
         const options: any = {
           method
@@ -200,16 +209,14 @@ export const HttpClient = {
         if (config?.data && supportsRequestBody(method)) {
           options.body = JSON.stringify(config.data);
         }
-        const url = `${baseURL}${path}${serialize(
-          config?.data,
-          method,
-          runtimeResult
-        )}`;
+        const url = `${baseURL}${path}${serialize(config?.data, method)}`;
+        console.debug('fetching', url, JSON.stringify(options));
         if (
           method.toLowerCase() === 'post' &&
           typeof navigator !== 'undefined' &&
-          navigator.sendBeacon
+          navigator?.sendBeacon
         ) {
+          console.debug('navigator is present');
           /**
            * navigator.sendBeacon method is intended for analytics
            * and diagnostics code to send data to a server,
@@ -239,8 +246,9 @@ export const HttpClient = {
             });
           }
         } else {
+          console.debug('making fetch request', url, JSON.stringify(options));
           fetch(url, options)
-            .then((res) => {
+            .then(async (res) => {
               if (res.status === HttpStatusCode.Ok) {
                 const output: HttpResponse = {
                   status: res.status,
@@ -250,10 +258,10 @@ export const HttpClient = {
                 };
                 switch (responseType) {
                   case 'json':
-                    output.data = res.json();
+                    output.data = await res.json();
                     break;
                   case 'arraybuffer':
-                    output.data = res.arrayBuffer();
+                    output.data = await res.arrayBuffer();
                     break;
                   case 'text':
                     output.data = res;
@@ -264,6 +272,7 @@ export const HttpClient = {
                     });
                     return;
                 }
+                console.log('resolving with output', JSON.stringify(output));
                 resolve(output);
               } else {
                 reject({
@@ -272,17 +281,18 @@ export const HttpClient = {
                 });
               }
             })
-            .catch((err) =>
+            .catch((err) => {
+              console.error(err?.message);
               reject({
                 message: err?.message,
                 status: err?.status,
                 statusText: err?.statusText
-              })
-            );
+              });
+            });
         }
-      } else if (runtimeResult.runtime === 'nodejs') {
+      } else if (url && https && http) {
         // Fallback to CommonJS if not targeting a browser
-        const parsedBaseUrl = runtimeResult.url.parse(baseURL);
+        const parsedBaseUrl = url.parse(baseURL);
         if (parsedBaseUrl.port) {
           parsedBaseUrl.port = Number(parsedBaseUrl.port);
         } else {
@@ -291,18 +301,11 @@ export const HttpClient = {
         const pathPrefix = parsedBaseUrl.path.endsWith('/')
           ? parsedBaseUrl.path.slice(0, -1)
           : parsedBaseUrl.path;
-        const client =
-          parsedBaseUrl.protocol === 'https:'
-            ? runtimeResult.https
-            : runtimeResult.http;
+        const client = parsedBaseUrl.protocol === 'https:' ? https : http;
         const body = [];
         const options: any = {
           hostname: parsedBaseUrl.hostname,
-          path: `${pathPrefix}${path}${serialize(
-            config?.data,
-            method,
-            runtimeResult
-          )}`,
+          path: `${pathPrefix}${path}${serialize(config?.data, method)}`,
           port: parsedBaseUrl.port,
           method
         };
@@ -315,6 +318,7 @@ export const HttpClient = {
           if (!options.headers) options.headers = {};
           options.headers['Content-Length'] = Buffer.byteLength(postData);
         }
+        console.log('options', options);
         const req = client.request(options, (res) => {
           res.on('data', (chunk) => body.push(chunk));
           res.on('end', () => {
