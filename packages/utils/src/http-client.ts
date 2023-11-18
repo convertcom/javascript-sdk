@@ -117,17 +117,12 @@ type RuntimeResult =
         | 'unknown';
     }
   | {
-      runtime: 'nodejs';
-      url: any;
-      http: any;
-      https: any;
-      queryString: any;
+      runtime: 'old-nodejs';
+      url: typeof import('url');
+      http: typeof import('http');
+      https: typeof import('https');
+      queryString: typeof import('querystring');
     };
-
-let url: typeof import('url');
-let https: typeof import('https');
-let http: typeof import('http');
-let queryString: typeof import('querystring');
 
 const determineRuntime = (): RuntimeResult => {
   // if window is available, we're in a browser
@@ -143,11 +138,15 @@ const determineRuntime = (): RuntimeResult => {
   // if node.js builtins are available, we're on nodejs
   try {
     // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
-    url = require('url');
-    http = require('http');
-    https = require('https');
-    queryString = require('querystring');
-    return {runtime: 'nodejs', url, http, https, queryString};
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const url = require('url') as typeof import('url');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const http = require('http') as typeof import('http');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const https = require('https') as typeof import('https');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const queryString = require('querystring') as typeof import('querystring');
+    return {runtime: 'old-nodejs', url, http, https, queryString};
   } catch (err) {
     // not nodejs
   }
@@ -159,14 +158,18 @@ const determineRuntime = (): RuntimeResult => {
 const supportsRequestBody = (method: string) =>
   !['GET', 'HEAD', 'DELETE', 'TRACE', 'OPTIONS'].includes(method.toUpperCase());
 
-export const serialize = (params: Record<string, any>, method: string) => {
+export const serialize = (
+  params: Record<string, any>,
+  method: string,
+  runtimeResult: RuntimeResult
+) => {
   let query = '';
   if (
     params &&
     params?.constructor === Object &&
     !supportsRequestBody(method)
   ) {
-    if (typeof navigator !== 'undefined') {
+    if (runtimeResult.runtime !== 'old-nodejs') {
       query = Object.keys(params)
         .map(
           (key) =>
@@ -174,7 +177,7 @@ export const serialize = (params: Record<string, any>, method: string) => {
         )
         .join('&');
     } else {
-      query = queryString.stringify(params);
+      query = runtimeResult.queryString.stringify(params);
     }
   }
   return query ? `?${query}` : query;
@@ -203,14 +206,18 @@ export const HttpClient = {
         runtimeResult.runtime === 'browser' ||
         runtimeResult.runtime === 'server-with-fetch'
       ) {
-        const options: any = {
+        const options: RequestInit = {
           method
         };
         if (config?.headers) options.headers = config.headers;
         if (config?.data && supportsRequestBody(method)) {
           options.body = JSON.stringify(config.data);
         }
-        const url = `${baseURL}${path}${serialize(config?.data, method)}`;
+        const url = `${baseURL}${path}${serialize(
+          config?.data,
+          method,
+          runtimeResult
+        )}`;
         if (
           method.toLowerCase() === 'post' &&
           typeof navigator !== 'undefined' &&
@@ -286,9 +293,9 @@ export const HttpClient = {
               });
             });
         }
-      } else if (url && https && http) {
+      } else if (runtimeResult.runtime === 'old-nodejs') {
         // Fallback to CommonJS if not targeting a browser
-        const parsedBaseUrl = url.parse(baseURL);
+        const parsedBaseUrl = runtimeResult.url.parse(baseURL);
         if (!parsedBaseUrl.port) {
           parsedBaseUrl.port =
             parsedBaseUrl.protocol === 'https:' ? '443' : '80';
@@ -296,11 +303,18 @@ export const HttpClient = {
         const pathPrefix = parsedBaseUrl.path.endsWith('/')
           ? parsedBaseUrl.path.slice(0, -1)
           : parsedBaseUrl.path;
-        const client = parsedBaseUrl.protocol === 'https:' ? https : http;
+        const client =
+          parsedBaseUrl.protocol === 'https:'
+            ? runtimeResult.https
+            : runtimeResult.http;
         const body = [];
         const options: RequestOptions = {
           hostname: parsedBaseUrl.hostname,
-          path: `${pathPrefix}${path}${serialize(config?.data, method)}`,
+          path: `${pathPrefix}${path}${serialize(
+            config?.data,
+            method,
+            runtimeResult
+          )}`,
           port: parsedBaseUrl.port,
           method
         };
