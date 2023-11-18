@@ -41,7 +41,6 @@ export type Config = {
   data: ConfigData;
   dataStore?: object;
   dataRefreshInterval?: number;
-  tracking?: boolean;
   events?: {
     batch_size?: number;
     release_interval?: number;
@@ -60,6 +59,10 @@ export type Config = {
       logLevel?: LogLevel;
     };
     customLoggers: Array<Record<string, any>>;
+  };
+  network?: {
+    tracking?: boolean;
+    cacheLevel?: string;
   };
   mapper?: (...args: any) => any;
 };

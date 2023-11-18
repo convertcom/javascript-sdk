@@ -1791,7 +1791,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@convertcom/js-sdk-demo-nodejs@workspace:packages/demo-nodejs"
   dependencies:
-    "@convertcom/js-sdk": ">=2.0.0"
     cookie-parser: ^1.4.6
     debug: ^4.3.4
     dotenv: ^16.0.3
@@ -1799,6 +1798,8 @@ __metadata:
     http-errors: ^2.0.0
     morgan: ^1.10.0
     pug: ^3.0.2
+  peerDependencies:
+    "@convertcom/js-sdk": ">=2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -1806,7 +1807,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@convertcom/js-sdk-demo-react@workspace:packages/demo-react"
   dependencies:
-    "@convertcom/js-sdk": ">=2.0.0"
     feather-icons: ^4.29.0
     framer-motion: ^10.11.2
     react: ^18.0.0
@@ -1817,6 +1817,8 @@ __metadata:
     styled-components: ^5.3.5
     tailwindcss: ^3.0.0
     twin.macro: ^3.0.0-rc.4
+  peerDependencies:
+    "@convertcom/js-sdk": ">=2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2145,7 +2147,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@convertcom/js-sdk@>=2.0.0, @convertcom/js-sdk@workspace:packages/js-sdk":
+"@convertcom/js-sdk@workspace:packages/js-sdk":
   version: 0.0.0-use.local
   resolution: "@convertcom/js-sdk@workspace:packages/js-sdk"
   dependencies:
@@ -2472,10 +2474,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:8.53.0":
-  version: 8.53.0
-  resolution: "@eslint/js@npm:8.53.0"
-  checksum: e0d5cfb0000aaee237c8e6d6d6e366faa60b1ef7f928ce17778373aa44d3b886368f6d5e1f97f913f0f16801aad016db8b8df78418c9d18825c15590328028af
+"@eslint/js@npm:8.54.0":
+  version: 8.54.0
+  resolution: "@eslint/js@npm:8.54.0"
+  checksum: 6d88a6f711ef0133566b5340e3178a178fbb297585766460f195d0a9db85688f1e5cf8559fd5748aeb3131e2096c66595b323d8edab22df015acda68f1ebde92
   languageName: node
   linkType: hard
 
@@ -8791,9 +8793,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.535":
-  version: 1.4.587
-  resolution: "electron-to-chromium@npm:1.4.587"
-  checksum: 86d06fd6074bdfd0e726eb5809067d826b7275ac3417dc9caa651b467919231450b7892329c02b857d8f62c5353738e243796639a8b21ede1acc0f8f95ab37fb
+  version: 1.4.588
+  resolution: "electron-to-chromium@npm:1.4.588"
+  checksum: 446bdd4754183a6635c535c31ffc2c61d0679692b72e2b63f13fc0fcdfc0d2a4db9f8214ee71d9b862d8b63b14e2c5ed122bb5cd5538dc8899b76aff7e4628d6
   languageName: node
   linkType: hard
 
@@ -9471,13 +9473,13 @@ __metadata:
   linkType: hard
 
 "eslint@npm:^8.3.0, eslint@npm:^8.52.0":
-  version: 8.53.0
-  resolution: "eslint@npm:8.53.0"
+  version: 8.54.0
+  resolution: "eslint@npm:8.54.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.6.1
     "@eslint/eslintrc": ^2.1.3
-    "@eslint/js": 8.53.0
+    "@eslint/js": 8.54.0
     "@humanwhocodes/config-array": ^0.11.13
     "@humanwhocodes/module-importer": ^1.0.1
     "@nodelib/fs.walk": ^1.2.8
@@ -9514,7 +9516,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: 2da808655c7aa4b33f8970ba30d96b453c3071cc4d6cd60d367163430677e32ff186b65270816b662d29139283138bff81f28dddeb2e73265495245a316ed02c
+  checksum: 7e876e9da2a18a017271cf3733d05a3dfbbe469272d75753408c6ea5b1646c71c6bb18cb91e10ca930144c32c1ce3701e222f1ae6784a3975a69f8f8aa68e49f
   languageName: node
   linkType: hard
 

@@ -40,5 +40,9 @@ export const defaultConfig = {
     keys_case_sensitive: true,
     comparisonProcessor: null // Allows 3rd party comparison processor to be passed
   },
+  network: {
+    tracking: true,
+    cacheLevel: 'default' // can be set to 'low' for short-lived cache (for development purposes only)
+  },
   sdkKey: ''
 };
