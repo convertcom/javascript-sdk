@@ -1,6 +1,6 @@
 import 'mocha';
 import {expect} from 'chai';
-// import {assert} from 'chai';
+import {assert} from 'chai';
 import http from 'http';
 import {ApiManager as am} from '@convertcom/js-sdk-api';
 import {EventManager as em} from '@convertcom/js-sdk-event';
@@ -31,34 +31,35 @@ function buildConfiguration(port: number) {
 }
 
 describe('ApiManager tests', function () {
-  // const eventManager = new em(buildConfiguration(8090));
-  // it('Should expose ApiManager', function () {
-  //   assert.isDefined(am);
-  // });
-  // it('Imported entity should be a constructor of ApiManager instance', function () {
-  //   expect(am)
-  //     .to.be.a('function')
-  //     .that.has.property('name')
-  //     .which.equal('ApiManager');
-  // });
+  it('Should expose ApiManager', function () {
+    assert.isDefined(am);
+  });
+  it('Imported entity should be a constructor of ApiManager instance', function () {
+    expect(am)
+      .to.be.a('function')
+      .that.has.property('name')
+      .which.equal('ApiManager');
+  });
+  let apiManager;
 
-  // it('Should successfully create new ApiManager instance with default config', async function () {
-  //   const apiManager = new am();
-  //   expect(apiManager)
-  //     .to.be.an('object')
-  //     .that.has.property('constructor')
-  //     .that.has.property('name')
-  //     .which.equal('ApiManager');
-  // });
+  it('Should successfully create new ApiManager instance with default config', async function () {
+    const apiManager = new am();
+    expect(apiManager)
+      .to.be.an('object')
+      .that.has.property('constructor')
+      .that.has.property('name')
+      .which.equal('ApiManager');
+  });
 
-  // it('Should create new ApiManager instance with visitor provided configuration and EvenManager dependency', async function () {
-  //   const eventManager = new em(buildConfiguration(8090));
-  //   expect(apiManager)
-  //     .to.be.an('object')
-  //     .that.has.property('constructor')
-  //     .that.has.property('name')
-  //     .which.equal('ApiManager');
-  // });
+  it('Should create new ApiManager instance with visitor provided configuration and EvenManager dependency', async function () {
+    const eventManager = new em(buildConfiguration(8090));
+    apiManager = new am(buildConfiguration(8090), {eventManager});
+    expect(apiManager)
+      .to.be.an('object')
+      .that.has.property('constructor')
+      .that.has.property('name')
+      .which.equal('ApiManager');
+  });
 
   const serverResponseExample = {
     data: 'ok'
@@ -66,7 +67,7 @@ describe('ApiManager tests', function () {
 
   describe('Test API Manager request', function () {
     it('Should successfully send test JSON payload', function (done) {
-      const port = 8090;
+      const port = 8091;
       const server = http.createServer();
       const eventManager = new em(buildConfiguration(port));
       const apiManager = new am(buildConfiguration(port), {eventManager});
@@ -119,7 +120,7 @@ describe('ApiManager tests', function () {
         release_timeout +
         'ms',
       function (done) {
-        const port = 8091;
+        const port = 8092;
         const eventManager = new em(buildConfiguration(port));
         const apiManager = new am(buildConfiguration(port), {eventManager});
         const server = http.createServer();
@@ -173,7 +174,7 @@ describe('ApiManager tests', function () {
         'ms of timeout because batch size limit is ' +
         batch_size,
       function (done) {
-        const port = 8092;
+        const port = 8093;
         const eventManager = new em(buildConfiguration(port));
         const apiManager = new am(buildConfiguration(port), {eventManager});
         const server = http.createServer();
@@ -215,7 +216,7 @@ describe('ApiManager tests', function () {
       }
     );
     it('Should fire the event when enqueued are released because of size and has server response in passed arguments', function (done) {
-      const port = 8093;
+      const port = 8094;
       const eventManager = new em(buildConfiguration(port));
       const apiManager = new am(buildConfiguration(port), {eventManager});
       const server = http.createServer();
@@ -252,7 +253,7 @@ describe('ApiManager tests', function () {
     });
     it('Should fire the event when enqueued are released because of release timeout and has server response in passed arguments', function (done) {
       this.timeout(test_timeout);
-      const port = 8094;
+      const port = 8095;
       const eventManager = new em(buildConfiguration(port));
       const apiManager = new am(buildConfiguration(port), {eventManager});
       const server = http.createServer();
@@ -289,7 +290,7 @@ describe('ApiManager tests', function () {
       });
     });
     it('Should fire the event when enqueued are released with 500 error passed', function (done) {
-      const port = 8095;
+      const port = 8096;
       const server = http.createServer();
       const eventManager = new em(buildConfiguration(port));
       const apiManager = new am(buildConfiguration(port), {eventManager});
