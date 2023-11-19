@@ -62,6 +62,7 @@ export class ApiManager implements ApiManagerInterface {
   private _projectId: Id;
   private _trackingEvent: TrackingEvent;
   private _trackingEnabled: boolean;
+  private _cacheLevel: string;
   private _mapper: (...args: any) => any;
 
   readonly batchSize: number = DEFAULT_BATCH_SIZE;
@@ -116,7 +117,8 @@ export class ApiManager implements ApiManagerInterface {
       projectId: this._projectId,
       visitors: []
     };
-    this._trackingEnabled = config?.tracking;
+    this._trackingEnabled = config?.network?.tracking;
+    this._cacheLevel = config?.network?.cacheLevel;
     this._requestsQueue = {
       length: 0,
       items: [],
@@ -301,10 +303,11 @@ export class ApiManager implements ApiManagerInterface {
     this._loggerManager?.trace?.('ApiManager.getConfigByKey()', {
       sdkKey
     });
+    const query = this._cacheLevel === 'low' ? '?_conv_low_cache=1' : '';
     return new Promise((resolve, reject) => {
       this.request('get', {
         base: this._configEndpoint,
-        route: `/config/${sdkKey}`
+        route: `/config/${sdkKey}${query}`
       })
         .then(({data}) => resolve(data))
         .catch(reject);

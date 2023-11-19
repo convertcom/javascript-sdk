@@ -129,7 +129,12 @@ const commonJSBundle = {
           directory: 'packages/bucketing'
         },
         license: 'Apache-2.0',
-        dependencies: {},
+        dependencies: {
+          '@convertcom/js-sdk-enums': '>=1.0.0',
+          '@convertcom/js-sdk-logger': '>=1.0.0',
+          '@convertcom/js-sdk-types': '>=1.0.0',
+          '@convertcom/js-sdk-utils': '>=1.0.0'
+        },
         version: pkg.version
       })
     })

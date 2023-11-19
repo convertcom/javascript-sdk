@@ -6,7 +6,9 @@ import {ApiManager as am} from '../src/api-manager';
 import {EventManager as em} from '@convertcom/js-sdk-event';
 import {SystemEvents} from '@convertcom/js-sdk-enums';
 import testConfig from './test-config.json';
-import {Config} from '@convertcom/js-sdk-types';
+import {Config as ConfigType} from '@convertcom/js-sdk-types';
+import {objectDeepMerge} from '@convertcom/js-sdk-utils';
+import {defaultConfig} from '../../js-sdk/src/config/default';
 
 const host = 'http://localhost';
 const port = 8090;
@@ -14,9 +16,7 @@ const release_timeout = 1000;
 const test_timeout = release_timeout + 1000;
 const batch_size = 5;
 
-const configuration = {
-  ...testConfig,
-  tracking: true,
+const configuration = objectDeepMerge(testConfig, defaultConfig, {
   api: {
     endpoint: {
       config: host + ':' + port,
@@ -27,7 +27,7 @@ const configuration = {
     batch_size: batch_size,
     release_interval: release_timeout
   }
-} as unknown as Config;
+}) as unknown as ConfigType;
 const eventManager = new em(configuration);
 describe('ApiManager tests', function () {
   it('Should expose ApiManager', function () {
