@@ -304,11 +304,6 @@ export class ApiManager implements ApiManagerInterface {
       sdkKey
     });
     const query = this._cacheLevel === 'low' ? '?_conv_low_cache=1' : '';
-    this._loggerManager?.trace?.('ApiManager.getConfigByKey()', {
-      query,
-      cacheLevel: this._cacheLevel,
-      tracking: this._trackingEnabled
-    });
     return new Promise((resolve, reject) => {
       this.request('get', {
         base: this._configEndpoint,
