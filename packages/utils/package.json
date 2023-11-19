@@ -70,5 +70,5 @@
     "typings": "^2.1.1",
     "webpack": "^5.89.0"
   },
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

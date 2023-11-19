@@ -169,7 +169,7 @@ The following shows the object model for the configuration options:
 import {LogLevel} from '@convertcom/js-sdk');
 
 const config = {
-  sdkKey: '' //either this or 'data' has to be provided
+  sdkKey: '' // either this or 'data' has to be provided
   environment: 'staging',
   logger: {
     logLevel: LogLevel.DEBUG,
@@ -177,7 +177,11 @@ const config = {
   },
   dataStore: null, // Allows 3rd party data store to be passed (optional)
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
-  data: projectData
+  data: projectData,
+  network: {
+    tracking: true, // can be set to false to disable tracking events
+    cacheLevel: 'default' // can be set to 'low' for short-lived cache (for development purposes only)
+  }
 };
 ```
 
