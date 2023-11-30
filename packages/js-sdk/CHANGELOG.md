@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.0.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.0.1...js-sdk-v2.0.2) (2023-11-19)
+
+
+### Bug Fixes
+
+* support edge runtime ([796cc43](https://github.com/convertcom/javascript-sdk/commit/796cc43b207d4d04a44ab93d1a35d4a672f7d9ec))
+
+## [2.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.0.0...js-sdk-v2.0.1) (2023-11-09)
+
+
+### Bug Fixes
+
+* correct types declarations at built time ([2141e80](https://github.com/convertcom/javascript-sdk/commit/2141e800049f9bcbf4641444b763443f196de146))
+
 ## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v1.2.1...js-sdk-v2.0.0) (2023-11-08)
 
 

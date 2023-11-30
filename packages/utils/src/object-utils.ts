@@ -70,6 +70,6 @@ export function objectDeepMerge(...objects) {
  */
 export function objectNotEmpty(object: any): boolean {
   return (
-    object && object.constructor === Object && Object.keys(object).length > 0
+    object && object?.constructor === Object && Object.keys(object).length > 0
   );
 }

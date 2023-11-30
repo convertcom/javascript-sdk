@@ -5,7 +5,9 @@ import {assert} from 'chai';
 import {RuleManager as rm} from '../src/rule-manager';
 import {Comparisons as comparisonProcessor} from '@convertcom/js-sdk-utils';
 import testConfig from './test-config.json';
-import {RuleSet, Config} from '@convertcom/js-sdk-types';
+import {RuleSet, Config as ConfigType} from '@convertcom/js-sdk-types';
+import {objectDeepMerge} from '@convertcom/js-sdk-utils';
+import {defaultConfig} from '../../js-sdk/src/config/default';
 
 describe('RuleManager tests', function () {
   it('Should expose RuleManager', function () {
@@ -34,13 +36,12 @@ describe('RuleManager tests', function () {
     };
 
     // eslint-disable-next-line mocha/no-setup-in-describe
-    const configuration = {
-      ...testConfig,
+    const configuration = objectDeepMerge(testConfig, defaultConfig, {
       rules: {
         comparisonProcessor: customComparisonProcessor,
         keys_case_sensitive: false
       }
-    } as unknown as Config;
+    }) as unknown as ConfigType;
     const testRuleSet1: RuleSet = {
       OR: [
         {
@@ -188,9 +189,10 @@ describe('RuleManager tests', function () {
   describe('RuleManager with default comparison processor', function () {
     let ruleManager;
     // eslint-disable-next-line mocha/no-setup-in-describe
-    const configuration = {
-      ...testConfig
-    } as unknown as Config;
+    const configuration = objectDeepMerge(
+      testConfig,
+      defaultConfig
+    ) as unknown as ConfigType;
     const testRuleSet1: RuleSet = {
       OR: [
         {

@@ -22,6 +22,8 @@ export class EventManager implements EventManagerInterface {
   _listeners: Record<string, Array<any>>;
   _deferred: Record<string, Record<string, unknown>>;
 
+  private _mapper: (...args: any) => any;
+
   /**
    * @param {Config} config
    * @param {Object} dependencies
@@ -35,6 +37,8 @@ export class EventManager implements EventManagerInterface {
     this._deferred = {};
 
     this._loggerManager = loggerManager;
+
+    this._mapper = config?.mapper || ((value: any) => value);
   }
 
   /**
@@ -76,18 +80,21 @@ export class EventManager implements EventManagerInterface {
     err: Error | any = null,
     deferred = false
   ): void {
-    this._loggerManager?.debug?.('EventManager.fire()', {
-      event: event,
-      args: args,
-      err: err,
-      deferred: deferred
-    });
+    this._loggerManager?.debug?.(
+      'EventManager.fire()',
+      this._mapper({
+        event: event,
+        args: args,
+        err: err,
+        deferred: deferred
+      })
+    );
     for (const k in this._listeners[event] || []) {
       if (
         Object.hasOwnProperty.call(this._listeners, event) &&
         typeof this._listeners[event][k] === 'function'
       ) {
-        this._listeners[event][k].apply(null, [args, err]);
+        this._listeners[event][k].apply(null, [this._mapper(args), err]);
       }
     }
     if (deferred && !Object.hasOwnProperty.call(this._deferred, event)) {
