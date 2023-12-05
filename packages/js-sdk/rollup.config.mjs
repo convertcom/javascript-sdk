@@ -1,4 +1,3 @@
-// import info from './package.json' assert {type: 'json'}; // ExperimentalWarning: Importing JSON modules is an experimental feature. This feature could change at any time
 import {readFileSync} from 'fs';
 import {dirname} from 'path';
 import {fileURLToPath} from 'url';
@@ -12,6 +11,7 @@ import json from '@rollup/plugin-json';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 import copy from 'rollup-plugin-copy';
 import modify from 'rollup-plugin-modify';
+import dts from 'rollup-plugin-dts';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -118,7 +118,10 @@ const commonJSBundle = {
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
     typescript({
-      tsconfigOverride: {exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {declaration: false},
+        exclude: exclude
+      }
     }),
     resolve({
       browser: true,
@@ -177,7 +180,10 @@ const commonJSLegacyBundle = {
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
     typescript({
-      tsconfigOverride: {compilerOptions: {target: 'es5'}, exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {target: 'es5', declaration: false},
+        exclude: exclude
+      }
     }),
     resolve({
       browser: true,
@@ -215,7 +221,10 @@ const esmBundle = {
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
     typescript({
-      tsconfigOverride: {exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {declaration: false},
+        exclude: exclude
+      }
     }),
     resolve({
       browser: true,
@@ -250,7 +259,10 @@ const umdBundle = {
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
     typescript({
-      tsconfigOverride: {exclude: exclude}
+      tsconfigOverride: {
+        compilerOptions: {declaration: false},
+        exclude: exclude
+      }
     }),
     resolve({
       browser: true,
@@ -259,6 +271,18 @@ const umdBundle = {
     commonjs(),
     json()
   ])
+};
+
+const typeDeclarations = {
+  cache: BUILD_CACHE,
+  input: './index.ts',
+  output: [
+    {
+      format: 'es',
+      file: 'lib/index.d.ts'
+    }
+  ],
+  plugins: [dts()]
 };
 
 const BUNDLES = process.env.BUNDLES
@@ -273,7 +297,7 @@ export default () => {
       case 'cjs-legacy':
         return [commonJSLegacyBundle];
       case 'esm':
-        return [esmBundle];
+        return [esmBundle, typeDeclarations];
       case 'umd':
         return [umdBundle];
     }

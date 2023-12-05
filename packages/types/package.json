@@ -25,9 +25,6 @@
   "engines": {
     "node": ">=8.0.0"
   },
-  "peerDependencies": {
-    "@convertcom/js-sdk-enums": "workspace:^"
-  },
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
@@ -44,6 +41,7 @@
     "prettier": "^3.0.3",
     "require": "^2.4.20",
     "rollup": "^3.20.2",
+    "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-generate-package-json": "^3.2.0",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-node": "^10.9.1",
@@ -53,5 +51,5 @@
     "typings": "^2.1.1",
     "webpack": "^5.89.0"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

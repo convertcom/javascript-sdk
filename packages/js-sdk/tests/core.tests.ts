@@ -15,6 +15,9 @@ import {Core as c} from '../src/core';
 import {Context} from '../src/context';
 import testConfig from './test-config.json';
 import {Config} from '../src/config';
+import {Config as ConfigType} from '@convertcom/js-sdk-types';
+import {objectDeepMerge} from '@convertcom/js-sdk-utils';
+import {defaultConfig} from '../src/config/default';
 import {SystemEvents, ERROR_MESSAGES} from '@convertcom/js-sdk-enums';
 
 const host = 'http://localhost';
@@ -23,8 +26,7 @@ const release_timeout = 1000;
 const test_timeout = release_timeout + 1000;
 const batch_size = 5;
 
-const configuration = Config({
-  ...testConfig,
+const configuration = objectDeepMerge(testConfig, defaultConfig, {
   api: {
     endpoint: {
       config: host + ':' + port,
@@ -35,7 +37,7 @@ const configuration = Config({
     batch_size: batch_size,
     release_interval: release_timeout
   }
-});
+}) as unknown as ConfigType;
 const bucketingManager = new bm(configuration);
 const ruleManager = new rm(configuration);
 const eventManager = new em(configuration);

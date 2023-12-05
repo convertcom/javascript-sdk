@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v1.0.1...js-sdk-utils-v1.0.2) (2023-11-19)
+
+
+### Bug Fixes
+
+* support edge runtime ([31056bc](https://github.com/convertcom/javascript-sdk/commit/31056bc38db7370e673fc693b5446dce8abf30d1))
+
+## [1.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v1.0.0...js-sdk-utils-v1.0.1) (2023-11-09)
+
+
+### Bug Fixes
+
+* correct types declarations at built time ([2141e80](https://github.com/convertcom/javascript-sdk/commit/2141e800049f9bcbf4641444b763443f196de146))
+
 ## 1.0.0 (2023-11-08)
 
 

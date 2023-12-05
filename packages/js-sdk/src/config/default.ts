@@ -27,7 +27,6 @@ export const defaultConfig = {
   data: {},
   dataStore: null, // Allows 3rd party data store to be passed
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
-  tracking: true,
   events: {
     batch_size: 10,
     release_interval: 1000
@@ -39,6 +38,10 @@ export const defaultConfig = {
   rules: {
     keys_case_sensitive: true,
     comparisonProcessor: null // Allows 3rd party comparison processor to be passed
+  },
+  network: {
+    tracking: true,
+    cacheLevel: 'default' // can be set to 'low' for short-lived cache (for development purposes only)
   },
   sdkKey: ''
 };

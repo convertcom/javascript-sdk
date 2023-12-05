@@ -40,7 +40,6 @@ type ConfigBase = {
   };
   dataStore?: object;
   dataRefreshInterval?: number;
-  tracking?: boolean;
   events?: {
     batch_size?: number;
     release_interval?: number;
@@ -59,6 +58,11 @@ type ConfigBase = {
     };
     customLoggers: Array<Record<string, any>>;
   };
+  network?: {
+    tracking?: boolean;
+    cacheLevel?: string;
+  };
+  mapper?: (...args: any) => any;
 };
 
 type ConfigWithSdkKey = ConfigBase & {

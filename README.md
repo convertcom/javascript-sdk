@@ -10,7 +10,7 @@
 
 ## JavaScript SDK Documentation
 
-1. Build the SDK: `yarn sdk:build`
+1. Build packages: `yarn build`
 2. Start local server: `yarn sdk:docs`
 3. Prevview docs: http://localhost:3001
 
@@ -21,11 +21,11 @@
 ### React
 
 1. Start demo server: `yarn demo:react:start`
-2. Build the SDK: `yarn sdk:build`
+2. Build packages: `yarn build`
 3. Test demo app: http://localhost:3002
 
 ### NodeJS
 
 1. Start demo server: `yarn demo:nodejs:start`
-2. Build the SDK: `yarn sdk:build`
+2. Build packages: `yarn build`
 3. Test demo app: http://localhost:3003
