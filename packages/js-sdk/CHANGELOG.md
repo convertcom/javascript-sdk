@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.0.2...js-sdk-v2.0.3) (2023-12-19)
+
+
+### Bug Fixes
+
+* require either SDk Key or data for initializing config ([eb301ad](https://github.com/convertcom/javascript-sdk/commit/eb301ad4c93d790ea565c13f3281258e1c4daa89))
+
 ## [2.0.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.0.1...js-sdk-v2.0.2) (2023-11-19)
 
 
