@@ -144,8 +144,10 @@ describe('Core tests', function () {
         res.end();
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {data: _data, ...config} = configuration;
       core = new c(
-        {...configuration, sdkKey: `${accountId}/${projectId}`},
+        {...config, sdkKey: `${accountId}/${projectId}`},
         {
           eventManager,
           experienceManager,
