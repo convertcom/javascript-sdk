@@ -4,6 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
+
 import {Experience} from './Experience';
 import {Feature} from './Feature';
 import {Id} from './Id';
@@ -26,7 +27,7 @@ export type ConfigData = {
   segments?: Array<Segments>;
 };
 
-export type Config = {
+type ConfigBase = {
   environment: string;
   api?: {
     endpoint?: {
@@ -38,7 +39,6 @@ export type Config = {
     hash_seed?: number;
     max_traffic?: number;
   };
-  data: ConfigData;
   dataStore?: object;
   dataRefreshInterval?: number;
   events?: {
@@ -50,7 +50,6 @@ export type Config = {
     negation?: string;
     keys_case_sensitive?: boolean;
   };
-  sdkKey: string;
   logger?: {
     logLevel?: LogLevel;
     file?: {
@@ -66,3 +65,15 @@ export type Config = {
   };
   mapper?: (...args: any) => any;
 };
+
+type ConfigWithSdkKey = ConfigBase & {
+  sdkKey: string;
+  data?: never;
+};
+
+type ConfigWithData = ConfigBase & {
+  data: ConfigData;
+  sdkKey?: never;
+};
+
+export type Config = ConfigWithSdkKey | ConfigWithData;
