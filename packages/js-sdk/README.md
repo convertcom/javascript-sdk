@@ -72,7 +72,7 @@ All matching rules apply only to entities having the same `environment`. You can
 
 Install module using `npm` or `yarn`:
 
-```
+```bash
 npm install --save @convertcom/js-sdk
 ```
 
