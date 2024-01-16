@@ -92,7 +92,7 @@ export class Context implements ContextInterface {
 
     if (visitorAttributes && visitorAttributes.constructor === Object) {
       const {attributes, segments} =
-        this.processVisitorAttributes(visitorAttributes);
+        this.filterReportSegments(visitorAttributes);
       if (attributes) this._visitorAttributes = attributes;
       if (segments) segmentsManager.putSegments(visitorId, segments);
     }
@@ -385,11 +385,13 @@ export class Context implements ContextInterface {
   }
 
   /**
-   * Set default segments
+   * Set default segments for reports
    * @param {SegmentsData} segments A segment key
    */
   setDefaultSegments(segments: SegmentsData): void {
-    this._segmentsManager.putSegments(this._visitorId, segments);
+    const {segments: storedSegments} = this.filterReportSegments(segments);
+    if (storedSegments)
+      this._segmentsManager.putSegments(this._visitorId, storedSegments);
   }
 
   /**
@@ -445,11 +447,11 @@ export class Context implements ContextInterface {
   }
 
   /**
-   * Extract segments from other attribues in Visitor properties
+   * Extract report segments from other attribues in Visitor properties
    * @param {Record<string, any>=} visitorAttributes An object of key-value pairs that are used for audience targeting
    * @return {Record<string, any>}
    */
-  private processVisitorAttributes(
+  private filterReportSegments(
     visitorAttributes: Record<string, any>
   ): Record<string, any> {
     const segmentsKeys = Object.values(SegmentsKeys).map(
