@@ -435,15 +435,17 @@ export class Context implements ContextInterface {
 
   /**
    * Get visitor properties
-   * @param {Record<string, any>=} visitorAttributes An object of key-value pairs that are used for audience targeting
+   * @param {Record<string, any>=} attributes An object of key-value pairs that are used for audience targeting
    * @return {Record<string, any>}
    */
   private getVisitorAttributes(
-    visitorAttributes?: Record<string, any>
+    attributes?: Record<string, any>
   ): Record<string, any> {
-    return visitorAttributes
-      ? objectDeepMerge(this._visitorAttributes || {}, visitorAttributes)
+    const segments = this._segmentsManager.getSegments(this._visitorId);
+    const visitorAttributes = attributes
+      ? objectDeepMerge(this._visitorAttributes || {}, attributes)
       : this._visitorAttributes;
+    return objectDeepMerge(segments || {}, visitorAttributes);
   }
 
   /**
