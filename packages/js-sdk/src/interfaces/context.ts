@@ -43,4 +43,9 @@ export interface ContextInterface {
     segmentKeys: Array<string>,
     attributes?: SegmentsAttributes
   ): RuleError;
+
+  runCustomSegments(
+    segmentKeys: Array<string>,
+    attributes?: SegmentsAttributes
+  ): RuleError;
 }

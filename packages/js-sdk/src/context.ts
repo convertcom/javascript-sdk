@@ -393,19 +393,29 @@ export class Context implements ContextInterface {
   }
 
   /**
-   * Set Custom segments
+   * To be deprecated
+   */
+  setCustomSegments(
+    segmentKeys: string[],
+    attributes?: SegmentsAttributes
+  ): RuleError {
+    return this.runCustomSegments(segmentKeys, attributes);
+  }
+
+  /**
+   * Match Custom segments
    * @param {Array<string>} segmentKeys A list of segment keys
    * @param {SegmentsAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<string, any>=} attributes.ruleData An object of key-value pairs that are used for segments matching
    * @return {RuleError}
    */
-  setCustomSegments(
+  runCustomSegments(
     segmentKeys: Array<string>,
     attributes?: SegmentsAttributes
   ): RuleError {
     if (!this._visitorId) {
       this._loggerManager?.error?.(
-        'Context.setCustomSegments()',
+        'Context.runCustomSegments()',
         ERROR_MESSAGES.VISITOR_ID_REQUIRED
       );
       return;
