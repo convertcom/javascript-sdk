@@ -118,7 +118,7 @@ describe('Context tests', function () {
     });
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     afterEach(function () {
-      dataManager.putLocalStore(visitorId, {});
+      dataManager.reset();
       server.close();
     });
     it('Shoud successfully get variation from specific experience', function (done) {
@@ -384,20 +384,20 @@ describe('Context tests', function () {
       expect(response).to.be.undefined;
     });
     it('Should successfully set default segments', function () {
-      const segments = {country: 'US'};
+      const segments = {country: 'UK'};
       context.setDefaultSegments(segments);
-      const localSegments = dataManager.getLocalStore(visitorId);
+      const localSegments = dataManager.getData(visitorId);
       expect(segments).to.deep.equal(localSegments?.segments);
     });
     it('Should successfully set custom segments', function () {
       const segmentKey = 'test-segments-1';
       const segmentId = '200299434';
-      context.setCustomSegments(segmentKey, {
+      context.runCustomSegments(segmentKey, {
         ruleData: {
           enabled: true
         }
       });
-      const {segments} = dataManager.getLocalStore(visitorId) || {};
+      const {segments} = dataManager.getData(visitorId) || {};
       expect(segments)
         .to.be.an('object')
         .that.has.property('customSegments')
@@ -454,7 +454,7 @@ describe('Context tests', function () {
     });
     it('Should fail to set custom segments if no visitor is set', function () {
       const segmentKey = 'test-segments-1';
-      const output = context.setCustomSegments(segmentKey);
+      const output = context.runCustomSegments(segmentKey);
       expect(output).to.be.undefined;
     });
   });

@@ -21,8 +21,11 @@ export interface DataManagerInterface {
   data: ConfigData;
   dataStoreManager: DataStoreManagerInterface;
 
-  putLocalStore(storeKey: Id, storeData: StoreData);
-  getLocalStore(storeKey: Id): StoreData;
+  reset();
+  putData(storeKey: Id, storeData: StoreData);
+  getData(storeKey: Id): StoreData;
+  putLocalStore(storeKey: Id, storeData: StoreData); // To be deprecated
+  getLocalStore(storeKey: Id): StoreData; // To be deprecated
   getStoreKey(visitorId: Id): string;
   selectLocations(
     visitorId: string,
@@ -78,6 +81,10 @@ export interface DataManagerInterface {
     identityField: IdentityField,
     subIdentityField: IdentityField
   ): Record<any, any>;
+
+  filterReportSegments(
+    visitorProperties: Record<string, any>
+  ): Record<string, any>;
 
   isValidConfigData(data: ConfigData): boolean;
 }

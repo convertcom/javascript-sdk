@@ -64,9 +64,11 @@ export class SegmentsManager implements SegmentsManagerInterface {
    * @returns {SegmentsData}
    */
   getSegments(visitorId: Id): SegmentsData {
-    const storeData: StoreData =
-      this._dataManager.getLocalStore(visitorId) || {};
-    return storeData?.segments;
+    const storeData: StoreData = this._dataManager.getData(visitorId) || {};
+    const {segments} = this._dataManager.filterReportSegments(
+      storeData?.segments
+    );
+    return segments;
   }
 
   /**
@@ -75,16 +77,12 @@ export class SegmentsManager implements SegmentsManagerInterface {
    * @param {SegmentsData} segments
    */
   putSegments(visitorId: Id, segments: SegmentsData): void {
-    const storeData: StoreData =
-      this._dataManager.getLocalStore(visitorId) || {};
-    // Store the data in local variable
-    this._dataManager.putLocalStore(visitorId, {...storeData, segments});
-    // Enqueue to store in dataStore
-    const storeKey = this._dataManager.getStoreKey(visitorId);
-    this._dataManager.dataStoreManager.enqueue(storeKey, {
-      ...storeData,
-      segments
-    });
+    const {segments: reportSegments} =
+      this._dataManager.filterReportSegments(segments);
+    if (reportSegments) {
+      // Store the data in local variable
+      this._dataManager.putData(visitorId, {segments: reportSegments});
+    }
   }
 
   private setCustomSegments(
@@ -93,7 +91,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
     segmentRule?: Record<string, any>
   ): SegmentsData | RuleError {
     const storeKey = this._dataManager.getStoreKey(visitorId);
-    let storeData: StoreData = this._dataManager.getLocalStore(visitorId) || {};
+    let storeData: StoreData = this._dataManager.getData(visitorId) || {};
     // Get custom segments ID from DataStore
     let customSegments = [];
     const {
@@ -149,11 +147,6 @@ export class SegmentsManager implements SegmentsManagerInterface {
 
       // Merge custom segments ID into DataStore
       this.putSegments(visitorId, segmentsData);
-      // Enqueue to store in dataStore
-      this._dataManager?.dataStoreManager?.enqueue?.(storeKey, {
-        ...storeData,
-        segments: segmentsData
-      });
     } else {
       this._loggerManager?.warn?.(
         'SegmentsManager.setCustomSegments()',

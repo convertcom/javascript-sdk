@@ -57,7 +57,7 @@ describe('DataManager tests', function () {
   });
   // eslint-disable-next-line mocha/no-hooks-for-single-case
   afterEach(function () {
-    dataManager.putLocalStore(visitorId, {});
+    dataManager.reset();
     server.close();
   });
   it('Should expose DataManager', function () {
@@ -266,10 +266,10 @@ describe('DataManager tests', function () {
       );
       expect(variation).to.be.null;
     });
-    it('Should fail to update local store when reaching size limit', function () {
-      new Array(10000)
+    it('Should never fail on reaching size limit when updating local store', function () {
+      new Array(10001)
         .fill(0)
-        .forEach((v, i) => dataManager.putLocalStore(`a${i}`, {}));
+        .forEach((v, i) => dataManager.putData(`a${i}`, {test: i}));
       assert.equal(true, true);
     });
   });

@@ -19,7 +19,10 @@ import {
   BucketingAttributes,
   ConversionAttributes,
   SegmentsData,
-  SegmentsAttributes
+  SegmentsAttributes,
+  Entity,
+  Experience,
+  Variation
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -46,7 +49,7 @@ export class Context implements ContextInterface {
   private _loggerManager: LogManagerInterface;
   private _config: Config;
   private _visitorId: Id;
-  private _visitorAttributes: Record<string, any>;
+  private _visitorProperties: Record<string, any>;
   private _environment: string;
 
   /**
@@ -77,7 +80,7 @@ export class Context implements ContextInterface {
       dataManager: DataManagerInterface;
       loggerManager?: LogManagerInterface;
     },
-    visitorAttributes?: Record<string, any>
+    visitorProperties?: Record<string, any>
   ) {
     this._environment = config?.environment;
     this._visitorId = visitorId;
@@ -90,11 +93,11 @@ export class Context implements ContextInterface {
     this._segmentsManager = segmentsManager;
     this._loggerManager = loggerManager;
 
-    if (visitorAttributes && visitorAttributes.constructor === Object) {
-      const {attributes, segments} =
-        this.filterReportSegments(visitorAttributes);
-      if (attributes) this._visitorAttributes = attributes;
-      if (segments) segmentsManager.putSegments(visitorId, segments);
+    if (visitorProperties && visitorProperties.constructor === Object) {
+      const {properties} =
+        this._dataManager.filterReportSegments(visitorProperties);
+      if (properties) this._visitorProperties = properties;
+      segmentsManager.putSegments(visitorId, visitorProperties);
     }
   }
 
@@ -118,13 +121,13 @@ export class Context implements ContextInterface {
       );
       return;
     }
-    const visitorAttributes = this.getVisitorAttributes(
+    const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
     const bucketedVariation = this._experienceManager.selectVariation(
       this._visitorId,
       experienceKey,
-      visitorAttributes, // represents audiences
+      visitorProperties, // represents audiences
       attributes?.locationProperties, // represents site_area/locations
       attributes?.environment || this._environment
     );
@@ -163,12 +166,12 @@ export class Context implements ContextInterface {
       );
       return;
     }
-    const visitorAttributes = this.getVisitorAttributes(
+    const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
     const bucketedVariations = this._experienceManager.selectVariations(
       this._visitorId,
-      visitorAttributes,
+      visitorProperties,
       attributes?.locationProperties,
       attributes?.environment || this._environment
     );
@@ -217,13 +220,13 @@ export class Context implements ContextInterface {
       );
       return;
     }
-    const visitorAttributes = this.getVisitorAttributes(
+    const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
     const bucketedFeature = this._featureManager.runFeature(
       this._visitorId,
       key,
-      visitorAttributes,
+      visitorProperties,
       attributes?.locationProperties,
       Object.prototype.hasOwnProperty.call(attributes || {}, 'typeCasting')
         ? attributes.typeCasting
@@ -293,12 +296,12 @@ export class Context implements ContextInterface {
       );
       return;
     }
-    const visitorAttributes = this.getVisitorAttributes(
+    const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
     const bucketedFeatures = this._featureManager.runFeatures(
       this._visitorId,
-      visitorAttributes,
+      visitorProperties,
       attributes?.locationProperties,
       Object.prototype.hasOwnProperty.call(attributes || {}, 'typeCasting')
         ? attributes.typeCasting
@@ -389,7 +392,8 @@ export class Context implements ContextInterface {
    * @param {SegmentsData} segments A segment key
    */
   setDefaultSegments(segments: SegmentsData): void {
-    const {segments: storedSegments} = this.filterReportSegments(segments);
+    const {segments: storedSegments} =
+      this._dataManager.filterReportSegments(segments);
     if (storedSegments)
       this._segmentsManager.putSegments(this._visitorId, storedSegments);
   }
@@ -422,7 +426,7 @@ export class Context implements ContextInterface {
       );
       return;
     }
-    const segmentsRule = this.getVisitorAttributes(attributes?.ruleData);
+    const segmentsRule = this.getVisitorProperties(attributes?.ruleData);
     const error = this._segmentsManager.selectCustomSegments(
       this._visitorId,
       segmentKeys,
@@ -434,43 +438,56 @@ export class Context implements ContextInterface {
   }
 
   /**
+   * Update visitor properties in memory
+   * @param visitorProperties
+   */
+  updateVisitorProperties(
+    visitorId: Id,
+    visitorProperties: Record<string, any>
+  ): void {
+    this._dataManager.putData(visitorId, {segments: visitorProperties});
+  }
+
+  /**
+   * get Config Entity
+   * @param {string} key
+   * @param {string} entityType
+   * @return {Entity}
+   */
+  getConfigEntity(key: string, entityType: string): Entity {
+    if (entityType === 'variations') {
+      const experiences = this._dataManager.getEntitiesList(
+        'experiences'
+      ) as Array<Experience>;
+      for (const {key: experienceKey} of experiences) {
+        const variation = this._dataManager.getSubItem(
+          'experiences',
+          experienceKey,
+          'variations',
+          key,
+          'key',
+          'key'
+        ) as Variation;
+        if (variation) {
+          return variation;
+        }
+      }
+    }
+    return this._dataManager.getEntity(key, entityType);
+  }
+
+  /**
    * Get visitor properties
    * @param {Record<string, any>=} attributes An object of key-value pairs that are used for audience targeting
    * @return {Record<string, any>}
    */
-  private getVisitorAttributes(
+  private getVisitorProperties(
     attributes?: Record<string, any>
   ): Record<string, any> {
-    const segments = this._segmentsManager.getSegments(this._visitorId);
-    const visitorAttributes = attributes
-      ? objectDeepMerge(this._visitorAttributes || {}, attributes)
-      : this._visitorAttributes;
-    return objectDeepMerge(segments || {}, visitorAttributes);
-  }
-
-  /**
-   * Extract report segments from other attribues in Visitor properties
-   * @param {Record<string, any>=} visitorAttributes An object of key-value pairs that are used for audience targeting
-   * @return {Record<string, any>}
-   */
-  private filterReportSegments(
-    visitorAttributes: Record<string, any>
-  ): Record<string, any> {
-    const segmentsKeys = Object.values(SegmentsKeys).map(
-      (key) => key as string
-    );
-    const segments = {};
-    const attributes = {};
-    for (const key in visitorAttributes) {
-      if (segmentsKeys.includes(key)) {
-        segments[key] = visitorAttributes[key];
-      } else {
-        attributes[key] = visitorAttributes[key];
-      }
-    }
-    return {
-      attributes: Object.keys(attributes).length ? attributes : null,
-      segments: Object.keys(segments).length ? segments : null
-    };
+    const {segments} = this._dataManager.getData(this._visitorId) || {};
+    const visitorProperties = attributes
+      ? objectDeepMerge(this._visitorProperties || {}, attributes)
+      : this._visitorProperties;
+    return objectDeepMerge(segments || {}, visitorProperties);
   }
 }

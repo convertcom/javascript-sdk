@@ -398,7 +398,7 @@ convertSDK.onReady().then(() => {
 });
 ```
 
-### Set Custom Segments
+### Run Custom Segments
 
 Decides whether to update custom segments in user context, which is mapped to segments' unique keys. The decision is made against the configured segment rules.
 
@@ -424,7 +424,7 @@ const config = {
 const convertSDK = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context = convertSDK.createContext('user-unique-id');
-  context.setCustomSegments(['segments-key'], {
+  context.runCustomSegments(['segments-key'], {
     enabled: true
   });
 });
