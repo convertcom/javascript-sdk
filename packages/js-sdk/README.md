@@ -445,7 +445,9 @@ You can capture SDK events as well:
 | `config.updated`       | Refreshing the configuration                             | null                                                                                     |
 
 ```javascript
-const convertSDK,{SystemEvents} = new ConvertSDK({sdkKey: 'xxx'});
+import ConvertSDK, {SystemEvents} from '@convertcom/js-sdk';
+
+const convertSDK = new ConvertSDK({sdkKey: 'xxx'});
 
 convertSDK.on(SystemEvents.READY, function (res, err) {
   if (err) {
@@ -453,13 +455,16 @@ convertSDK.on(SystemEvents.READY, function (res, err) {
   }
 });
 
-convertSDK.on(SystemEvents.BUCKETING, function ({visitorId, experienceKey, variationKey, featureKey, status}, err) {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log(visitorId, experienceKey, variationKey, featureKey, status);
+convertSDK.on(
+  SystemEvents.BUCKETING,
+  function ({visitorId, experienceKey, variationKey, featureKey, status}, err) {
+    if (err) {
+      console.error(err);
+    } else {
+      console.log(visitorId, experienceKey, variationKey, featureKey, status);
+    }
   }
-});
+);
 
 convertSDK.on(SystemEvents.CONVERSION, function ({visitorId, goalKey}, err) {
   if (err) {
