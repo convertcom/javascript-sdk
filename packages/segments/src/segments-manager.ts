@@ -92,12 +92,25 @@ export class SegmentsManager implements SegmentsManagerInterface {
     segments: Array<Segments>,
     segmentRule?: Record<string, any>
   ): SegmentsData | RuleError {
-    const storeData: StoreData =
-      this._dataManager.getLocalStore(visitorId) || {};
+    const storeKey = this._dataManager.getStoreKey(visitorId);
+    let storeData: StoreData = this._dataManager.getLocalStore(visitorId) || {};
     // Get custom segments ID from DataStore
+    let customSegments = [];
     const {
-      segments: {[SegmentsKeys.CUSTOM_SEGMENTS]: customSegments = []} = {}
+      segments: {[SegmentsKeys.CUSTOM_SEGMENTS]: localCustomSegments} = {}
     } = storeData;
+    if (Array.isArray(localCustomSegments)) {
+      customSegments = localCustomSegments.slice();
+    } else {
+      // Try to find a custom segments in dataStore
+      storeData = this._dataManager?.dataStoreManager?.get?.(storeKey) || {};
+      const {
+        segments: {[SegmentsKeys.CUSTOM_SEGMENTS]: storedCustomSegments} = {}
+      } = storeData;
+      if (Array.isArray(storedCustomSegments)) {
+        customSegments = storedCustomSegments.slice();
+      }
+    }
 
     const segmentIds = [];
 
@@ -136,6 +149,11 @@ export class SegmentsManager implements SegmentsManagerInterface {
 
       // Merge custom segments ID into DataStore
       this.putSegments(visitorId, segmentsData);
+      // Enqueue to store in dataStore
+      this._dataManager?.dataStoreManager?.enqueue?.(storeKey, {
+        ...storeData,
+        segments: segmentsData
+      });
     } else {
       this._loggerManager?.warn?.(
         'SegmentsManager.setCustomSegments()',
