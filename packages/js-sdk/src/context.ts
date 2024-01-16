@@ -28,8 +28,7 @@ import {
 import {
   ERROR_MESSAGES,
   RuleError,
-  SystemEvents,
-  SegmentsKeys
+  SystemEvents
 } from '@convertcom/js-sdk-enums';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
