@@ -530,12 +530,21 @@ export class DataManager implements DataManagerInterface {
             MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
           );
           // Store the data in local variable
-          this.putData(visitorId, {
-            bucketing: {...bucketing, [experience.id.toString()]: variationId},
-            ...(segments
-              ? {segments: {...segments, ...visitorProperties}}
-              : {segments: visitorProperties || {}})
-          });
+          if (updateVisitorProperties) {
+            this.putData(visitorId, {
+              bucketing: {
+                ...bucketing,
+                [experience.id.toString()]: variationId
+              },
+              ...(segments
+                ? {segments: {...segments, ...visitorProperties}}
+                : {segments: visitorProperties || {}})
+            });
+          } else {
+            this.putData(visitorId, {
+              bucketing: {...bucketing, [experience.id.toString()]: variationId}
+            });
+          }
           // Enqueue bucketing event to api
           const bucketingEvent: BucketingEvent = {
             experienceId: experience.id.toString(),
