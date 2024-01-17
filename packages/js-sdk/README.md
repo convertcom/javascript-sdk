@@ -193,7 +193,7 @@ Once the SDK has been created and instantiated, the next step is to create a uni
 
 When creating the UserContext, a unique `userId` is required to be provided. This will be used in the process of deciding which variation/feature to be presented. As long as this `userId` does not change for a user and the experience configuration remains the same(variations not getting added or removed and traffic allocation not changed), the feature/variation bucketing will stay unchanged. Otherwise, see [Persistent Datastore](#provide-persistent-datastore).
 
-For convenience, a list of **User Properties** that can be later used inside Audience definition evaluation can be provided when creating a UserContext. Any of these can be changed by providing them again when calling any of the functional SDK methods for running experiences, under the `attributes.visitorProperties`
+For convenience, a list of **User Properties** that can be later used inside Audience definition evaluation can be provided when creating a UserContext. Any of these can be changed by providing them again when calling any of the functional SDK methods for running experiences, under the `attributes.visitorProperties` while setting the value for `attributes.updateVisitorProperties` to `true`
 
 ```javascript
 const userContext = convertSDK.createContext('user-unique-id', {
@@ -225,12 +225,13 @@ The method will loop through each of the active experiences, run them and return
 
 #### Parameters
 
-| Parameter  | Type   | Required | Description                                                                            |
-| ---------- | ------ | -------- | -------------------------------------------------------------------------------------- |
-| attributes | object | No       | An object that specifies attributes for the user. Accepts 3 properties:                |
-|            |        |          | `locationProperties` an object of key-value pairs that are used for location matching. |
-|            |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting. |
-|            |        |          | `environment` optional string.                                                         |
+| Parameter  | Type   | Required | Description                                                                                     |
+| ---------- | ------ | -------- | ----------------------------------------------------------------------------------------------- |
+| attributes | object | No       | An object that specifies attributes for the user. Accepts 3 properties:                         |
+|            |        |          | `locationProperties` an object of key-value pairs that are used for location matching.          |
+|            |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting.          |
+|            |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties targeting. |
+|            |        |          | `environment` optional string.                                                                  |
 
 #### Returns
 
@@ -258,13 +259,14 @@ Decides whether the user should be bucketed into a single variation, which is ma
 
 #### Parameters
 
-| Parameter     | Type   | Required | Description                                                                            |
-| ------------- | ------ | -------- | -------------------------------------------------------------------------------------- |
-| experienceKey | string | Yes      | An experience's key that should be activated                                           |
-| attributes    | object | No       | An object that specifies attributes for the user. Accepts 3 properties:                |
-|               |        |          | `locationProperties` an object of key-value pairs that are used for location matching. |
-|               |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting. |
-|               |        |          | `environment` optional string.                                                         |
+| Parameter     | Type   | Required | Description                                                                                     |
+| ------------- | ------ | -------- | ----------------------------------------------------------------------------------------------- |
+| experienceKey | string | Yes      | An experience's key that should be activated                                                    |
+| attributes    | object | No       | An object that specifies attributes for the user. Accepts 3 properties:                         |
+|               |        |          | `locationProperties` an object of key-value pairs that are used for location matching.          |
+|               |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting.          |
+|               |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties targeting. |
+|               |        |          | `environment` optional string.                                                                  |
 
 #### Returns
 
@@ -297,6 +299,7 @@ Retrieves a list of features that the user already bucketed.
 | attributes | object | No       | An object that specifies attributes for the user. Accepts 4 properties:                                                                                     |
 |            |        |          | `locationProperties` an object of key-value pairs that are used for location matching.                                                                      |
 |            |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting.                                                                      |
+|            |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties targeting.                                                             |
 |            |        |          | `environment` optional string.                                                                                                                              |
 |            |        |          | `typeCasting` optional boolean to dontrol automatic type conversion to the variable's defined type. Does not do any JSON validation (_defaults to `true`_). |
 
@@ -332,6 +335,7 @@ Retrieves a single feature that the user already bucketed, which is mapped to a 
 | attributes | object | No       | An object that specifies attributes for the user. Accepts 5 properties:                                                                                     |
 |            |        |          | `locationProperties` an object of key-value pairs that are used for location matching.                                                                      |
 |            |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting.                                                                      |
+|            |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties targeting.                                                             |
 |            |        |          | `environment` optional string.                                                                                                                              |
 |            |        |          | `typeCasting` optional boolean to dontrol automatic type conversion to the variable's defined type. Does not do any JSON validation (_defaults to `true`_). |
 |            |        |          | `experienceKeys` optional array of strings to use only specified experiences.                                                                               |
@@ -430,6 +434,95 @@ convertSDK.onReady().then(() => {
 });
 ```
 
+### Set Default Segments
+
+Permanently update the visitor segments for reporting purposes. Only the following properties are included in Convert Reports: `browser`, `devices`, `source`, `campaign`, `visitorType`, and `country`.
+
+#### Parameters
+
+| Parameter | Type   | Required | Description                                                                                                                 |
+| --------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| segments  | object | Yes      | An object of key-value pairs to be merged with the initial **User Properties** created with [context](#create-user-context) |
+
+#### Returns
+
+Void.
+
+#### Example
+
+```javascript
+import ConvertSDK from '@convertcom/js-sdk';
+const config = {
+  // full configuration options
+};
+
+const convertSDK = new ConvertSDK(config);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.setDefaultSegments({country: 'US'});
+});
+```
+
+### Update Visitor Properties
+
+Permanently update all of the visitor properties used inside Audience definition evaluation.
+
+#### Parameters
+
+| Parameter         | Type   | Required | Description                                                                                                                 |
+| ----------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| visitorId         | string | Yes      | User unique ID                                                                                                              |
+| visitorProperties | object | Yes      | An object of key-value pairs to be merged with the initial **User Properties** created with [context](#create-user-context) |
+
+#### Returns
+
+Void.
+
+#### Example
+
+```javascript
+import ConvertSDK from '@convertcom/js-sdk';
+const config = {
+  // full configuration options
+};
+
+const convertSDK = new ConvertSDK(config);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.updateVisitorProperties({weather: 'rainy'});
+});
+```
+
+### Get Config Entity
+
+Find a single entity in configutation by `key`
+
+#### Parameters
+
+| Parameter  | Type   | Required | Description                                                                                                                   |
+| ---------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| key        | string | Yes      | Entity key as found in configuration                                                                                          |
+| entityType | string | Yes      | One of the configuration entities: `audiences`, `locations`, `segments`, `features`, `goals`, `experiences`, and `variations` |
+
+#### Returns
+
+Void.
+
+#### Example
+
+```javascript
+import ConvertSDK from '@convertcom/js-sdk';
+const config = {
+  // full configuration options
+};
+
+const convertSDK = new ConvertSDK(config);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variation = context.getConfigEntity('variation-key', 'variations');
+});
+```
+
 ### Events
 
 You can capture SDK events as well:
@@ -462,6 +555,17 @@ convertSDK.on(
       console.error(err);
     } else {
       console.log(visitorId, experienceKey, variationKey, featureKey, status);
+      // Exmaple GA integrations can be done here
+      // note that you need to create audiences manually at GA side
+      const {name: experienceName} = context.getConfigEntity(
+        experienceKey,
+        'experiences'
+      );
+      const {name: variationName} = context.getConfigEntity(
+        variationKey,
+        'variations'
+      );
+      gtag('event', 'YOUR_GA_CUSOTM_EVENT', {experienceName, variationName});
     }
   }
 );
