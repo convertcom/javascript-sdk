@@ -40,17 +40,6 @@ export interface ContextInterface {
 
   setDefaultSegments(segments: SegmentsData): void;
 
-  // To be deprecated
-  setCustomSegments(
-    segmentKeys: Array<string>,
-    attributes?: SegmentsAttributes
-  ): RuleError;
-
-  runCustomSegments(
-    segmentKeys: Array<string>,
-    attributes?: SegmentsAttributes
-  ): RuleError;
-
   runCustomSegments(
     segmentKeys: Array<string>,
     attributes?: SegmentsAttributes

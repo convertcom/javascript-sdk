@@ -26,6 +26,7 @@ export interface FeatureManagerInterface {
     featureKey: string,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     typeCasting?: boolean,
     experienceKeys?: Array<string>,
     environment?: string
@@ -44,6 +45,7 @@ export interface FeatureManagerInterface {
     featureId: Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     typeCasting?: boolean,
     experienceIds?: Array<Id>,
     environment?: string
@@ -52,6 +54,7 @@ export interface FeatureManagerInterface {
     visitorId: Id,
     visitorProperties: Record<string, any>,
     locationProperties: Record<string, any>,
+    updateVisitorProperties?: boolean,
     typeCasting?: boolean,
     filter?: Record<string, Array<string>>,
     environment?: string

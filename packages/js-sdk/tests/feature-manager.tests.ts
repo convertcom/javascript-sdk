@@ -238,6 +238,7 @@ describe('FeatureManager tests', function () {
           varName3: 'something'
         },
         {url: 'https://convert.com/'},
+        false,
         true,
         {
           features: filterByFeatures,

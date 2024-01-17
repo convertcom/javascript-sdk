@@ -106,6 +106,7 @@ export class Context implements ContextInterface {
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<any, any>=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
+   * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @return {BucketedVariation}
    */
@@ -128,6 +129,7 @@ export class Context implements ContextInterface {
       experienceKey,
       visitorProperties, // represents audiences
       attributes?.locationProperties, // represents site_area/locations
+      attributes?.updateVisitorProperties,
       attributes?.environment || this._environment
     );
     if (Object.values(RuleError).includes(bucketedVariation as RuleError))
@@ -152,6 +154,7 @@ export class Context implements ContextInterface {
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
    * @param {string=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
+   * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @return {Array<BucketedVariatio | RuleError>}
    */
@@ -172,6 +175,7 @@ export class Context implements ContextInterface {
       this._visitorId,
       visitorProperties,
       attributes?.locationProperties,
+      attributes?.updateVisitorProperties,
       attributes?.environment || this._environment
     );
     // Return rule errors if present
@@ -203,6 +207,7 @@ export class Context implements ContextInterface {
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
    * @param {string=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
+   * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
    * @param {Array<string>=} attributes.experienceKeys Use only specific experiences
@@ -227,6 +232,7 @@ export class Context implements ContextInterface {
       key,
       visitorProperties,
       attributes?.locationProperties,
+      attributes?.updateVisitorProperties,
       Object.prototype.hasOwnProperty.call(attributes || {}, 'typeCasting')
         ? attributes.typeCasting
         : true,
@@ -281,6 +287,7 @@ export class Context implements ContextInterface {
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
    * @param {string=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
+   * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
    * @return {Array<BucketedFeature | RuleError>}
@@ -302,6 +309,7 @@ export class Context implements ContextInterface {
       this._visitorId,
       visitorProperties,
       attributes?.locationProperties,
+      attributes?.updateVisitorProperties,
       Object.prototype.hasOwnProperty.call(attributes || {}, 'typeCasting')
         ? attributes.typeCasting
         : true,

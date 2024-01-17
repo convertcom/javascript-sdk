@@ -11,4 +11,5 @@ export type BucketingAttributes = {
   visitorProperties?: Record<any, any>;
   typeCasting?: boolean;
   experienceKeys?: Array<string>;
+  updateVisitorProperties?: boolean;
 };

@@ -388,6 +388,7 @@ export class DataManager implements DataManagerInterface {
    * @param {string|Id} identity Value of the field which name is provided in identityField
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
+   * @param {boolean=} updateVisitorProperties
    * @param {IdentityField=} identityField Defaults to 'key'
    * @param {string=} environment
    * @return {BucketedVariation | RuleError}
@@ -398,6 +399,7 @@ export class DataManager implements DataManagerInterface {
     identity: string | Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties: boolean = false,
     identityField: IdentityField = 'key',
     environment: string = this._environment
   ): BucketedVariation | RuleError {
@@ -429,6 +431,7 @@ export class DataManager implements DataManagerInterface {
       return this._retrieveBucketing(
         visitorId,
         visitorProperties,
+        updateVisitorProperties,
         experience as Experience
       );
     }
@@ -439,6 +442,7 @@ export class DataManager implements DataManagerInterface {
    * Retrieve bucketing for Visitor
    * @param {Id} visitorId
    * @param {Record<string, any> | null} visitorProperties
+   * @param {boolean} updateVisitorProperties
    * @param {Experience} experience
    * @return {BucketedVariation}
    * @private
@@ -446,6 +450,7 @@ export class DataManager implements DataManagerInterface {
   private _retrieveBucketing(
     visitorId: Id,
     visitorProperties: Record<string, any> | null,
+    updateVisitorProperties: boolean,
     experience: Experience
   ): BucketedVariation {
     if (!visitorId || !experience) return null;
@@ -482,12 +487,18 @@ export class DataManager implements DataManagerInterface {
         (variation = this.retrieveVariation(experience.id, variationId))
       ) {
         // Store the data in local variable
-        this.putData(visitorId, {
-          bucketing: {...bucketing, [experience.id.toString()]: variationId},
-          ...(segments
-            ? {segments: {...segments, ...visitorProperties}}
-            : {segments: visitorProperties || {}})
-        });
+        if (updateVisitorProperties) {
+          this.putData(visitorId, {
+            bucketing: {...bucketing, [experience.id.toString()]: variationId},
+            ...(segments
+              ? {segments: {...segments, ...visitorProperties}}
+              : {segments: visitorProperties || {}})
+          });
+        } else {
+          this.putData(visitorId, {
+            bucketing: {...bucketing, [experience.id.toString()]: variationId}
+          });
+        }
         // If it's found log debug info. The return value will be formed next step
         this._loggerManager?.info?.(
           'DataManager._retrieveBucketing()',
@@ -641,16 +652,6 @@ export class DataManager implements DataManagerInterface {
     return this._bucketedVisitors.get(storeKey) || null;
   }
 
-  // To be deprecated
-  putLocalStore(storeKey: Id, storeData: StoreData) {
-    this.putData(storeKey, storeData);
-  }
-
-  // To be deprecated
-  getLocalStore(storeKey: Id): StoreData {
-    return this.getData(storeKey);
-  }
-
   /**
    * @param {Id} visitorId
    * @return {string} storeKey
@@ -767,6 +768,7 @@ export class DataManager implements DataManagerInterface {
    * @param {string} key
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
+   * @param {boolean=} updateVisitorProperties
    * @param {string=} environment
    * @return {BucketedVariation | RuleError}
    */
@@ -775,6 +777,7 @@ export class DataManager implements DataManagerInterface {
     key: string,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties: boolean = false,
     environment: string = this._environment
   ): BucketedVariation | RuleError {
     return this._getBucketingByField(
@@ -782,6 +785,7 @@ export class DataManager implements DataManagerInterface {
       key,
       visitorProperties,
       locationProperties,
+      updateVisitorProperties,
       'key',
       environment
     );
@@ -793,6 +797,7 @@ export class DataManager implements DataManagerInterface {
    * @param {Id} id
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
+   * @param {boolean=} updateVisitorProperties
    * @param {string=} environment
    * @return {BucketedVariation | RuleError}
    */
@@ -801,6 +806,7 @@ export class DataManager implements DataManagerInterface {
     id: Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties: boolean = false,
     environment: string = this._environment
   ): BucketedVariation | RuleError {
     return this._getBucketingByField(
@@ -808,6 +814,7 @@ export class DataManager implements DataManagerInterface {
       id,
       visitorProperties,
       locationProperties,
+      updateVisitorProperties,
       'id',
       environment
     );

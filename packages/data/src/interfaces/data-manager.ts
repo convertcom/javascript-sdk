@@ -24,8 +24,6 @@ export interface DataManagerInterface {
   reset();
   putData(storeKey: Id, storeData: StoreData);
   getData(storeKey: Id): StoreData;
-  putLocalStore(storeKey: Id, storeData: StoreData); // To be deprecated
-  getLocalStore(storeKey: Id): StoreData; // To be deprecated
   getStoreKey(visitorId: Id): string;
   selectLocations(
     visitorId: string,
@@ -46,6 +44,7 @@ export interface DataManagerInterface {
     experienceKey: string,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     environment?: string
   ): BucketedVariation | RuleError;
   getBucketingById(
@@ -53,6 +52,7 @@ export interface DataManagerInterface {
     experienceId: Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     environment?: string
   ): BucketedVariation | RuleError;
   convert(

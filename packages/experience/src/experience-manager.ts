@@ -97,6 +97,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {string} experienceKey
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
+   * @param {boolean=} updateVisitorProperties
    * @param {string=} environment
    * @return {BucketedVariation | RuleError}
    */
@@ -105,6 +106,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
     experienceKey: string,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     environment?: string
   ): BucketedVariation | RuleError {
     return this._dataManager.getBucketing(
@@ -112,6 +114,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
       experienceKey,
       visitorProperties,
       locationProperties,
+      updateVisitorProperties,
       environment
     );
   }
@@ -122,6 +125,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {Id} experienceId
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
+   * @param {boolean=} updateVisitorProperties
    * @param {string=} environment
    * @return {BucketedVariation | RuleError}
    */
@@ -130,6 +134,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
     experienceId: Id,
     visitorProperties: Record<string, any> | null, // TODO: proceed if null as if visitorProperties matched
     locationProperties: Record<string, any> | null, // TODO: proceed if null as if locationProperties matched
+    updateVisitorProperties?: boolean,
     environment?: string
   ): BucketedVariation | RuleError {
     return this._dataManager.getBucketingById(
@@ -137,6 +142,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
       experienceId,
       visitorProperties,
       locationProperties,
+      updateVisitorProperties,
       environment
     );
   }
@@ -146,6 +152,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {Id} visitorId
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
+   * @param {boolean=} updateVisitorProperties
    * @param {string=} environment
    * @return {Array<BucketedVariation | RuleError>}
    */
@@ -153,6 +160,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
     visitorId: Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     environment?: string
   ): Array<BucketedVariation | RuleError> {
     return this.getList()
@@ -162,6 +170,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
           experience?.key,
           visitorProperties,
           locationProperties,
+          updateVisitorProperties,
           environment
         );
       })
