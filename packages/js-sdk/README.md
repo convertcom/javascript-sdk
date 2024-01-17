@@ -225,13 +225,13 @@ The method will loop through each of the active experiences, run them and return
 
 #### Parameters
 
-| Parameter  | Type   | Required | Description                                                                                     |
-| ---------- | ------ | -------- | ----------------------------------------------------------------------------------------------- |
-| attributes | object | No       | An object that specifies attributes for the user. Accepts 3 properties:                         |
-|            |        |          | `locationProperties` an object of key-value pairs that are used for location matching.          |
-|            |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting.          |
-|            |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties targeting. |
-|            |        |          | `environment` optional string.                                                                  |
+| Parameter  | Type   | Required | Description                                                                            |
+| ---------- | ------ | -------- | -------------------------------------------------------------------------------------- |
+| attributes | object | No       | An object that specifies attributes for the user. Accepts 3 properties:                |
+|            |        |          | `locationProperties` an object of key-value pairs that are used for location matching. |
+|            |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting. |
+|            |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties.  |
+|            |        |          | `environment` optional string.                                                         |
 
 #### Returns
 
@@ -259,14 +259,14 @@ Decides whether the user should be bucketed into a single variation, which is ma
 
 #### Parameters
 
-| Parameter     | Type   | Required | Description                                                                                     |
-| ------------- | ------ | -------- | ----------------------------------------------------------------------------------------------- |
-| experienceKey | string | Yes      | An experience's key that should be activated                                                    |
-| attributes    | object | No       | An object that specifies attributes for the user. Accepts 3 properties:                         |
-|               |        |          | `locationProperties` an object of key-value pairs that are used for location matching.          |
-|               |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting.          |
-|               |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties targeting. |
-|               |        |          | `environment` optional string.                                                                  |
+| Parameter     | Type   | Required | Description                                                                            |
+| ------------- | ------ | -------- | -------------------------------------------------------------------------------------- |
+| experienceKey | string | Yes      | An experience's key that should be activated                                           |
+| attributes    | object | No       | An object that specifies attributes for the user. Accepts 3 properties:                |
+|               |        |          | `locationProperties` an object of key-value pairs that are used for location matching. |
+|               |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting. |
+|               |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties.  |
+|               |        |          | `environment` optional string.                                                         |
 
 #### Returns
 
@@ -299,7 +299,7 @@ Retrieves a list of features that the user already bucketed.
 | attributes | object | No       | An object that specifies attributes for the user. Accepts 4 properties:                                                                                     |
 |            |        |          | `locationProperties` an object of key-value pairs that are used for location matching.                                                                      |
 |            |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting.                                                                      |
-|            |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties targeting.                                                             |
+|            |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties.                                                                       |
 |            |        |          | `environment` optional string.                                                                                                                              |
 |            |        |          | `typeCasting` optional boolean to dontrol automatic type conversion to the variable's defined type. Does not do any JSON validation (_defaults to `true`_). |
 
@@ -335,7 +335,7 @@ Retrieves a single feature that the user already bucketed, which is mapped to a 
 | attributes | object | No       | An object that specifies attributes for the user. Accepts 5 properties:                                                                                     |
 |            |        |          | `locationProperties` an object of key-value pairs that are used for location matching.                                                                      |
 |            |        |          | `visitorProperties` an object of key-value pairs that are used for audience targeting.                                                                      |
-|            |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties targeting.                                                             |
+|            |        |          | `updateVisitorProperties` optional boolean for updating in-memory visitor properties.                                                                       |
 |            |        |          | `environment` optional string.                                                                                                                              |
 |            |        |          | `typeCasting` optional boolean to dontrol automatic type conversion to the variable's defined type. Does not do any JSON validation (_defaults to `true`_). |
 |            |        |          | `experienceKeys` optional array of strings to use only specified experiences.                                                                               |
