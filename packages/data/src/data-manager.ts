@@ -489,14 +489,12 @@ export class DataManager implements DataManagerInterface {
         // Store the data in local variable
         if (updateVisitorProperties) {
           this.putData(visitorId, {
-            bucketing: {...bucketing, [experience.id.toString()]: variationId},
-            ...(segments
-              ? {segments: {...segments, ...visitorProperties}}
-              : {segments: visitorProperties || {}})
+            bucketing: {[experience.id.toString()]: variationId},
+            ...(visitorProperties ? {segments: visitorProperties} : {})
           });
         } else {
           this.putData(visitorId, {
-            bucketing: {...bucketing, [experience.id.toString()]: variationId}
+            bucketing: {[experience.id.toString()]: variationId}
           });
         }
         // If it's found log debug info. The return value will be formed next step
@@ -533,16 +531,13 @@ export class DataManager implements DataManagerInterface {
           if (updateVisitorProperties) {
             this.putData(visitorId, {
               bucketing: {
-                ...bucketing,
                 [experience.id.toString()]: variationId
               },
-              ...(segments
-                ? {segments: {...segments, ...visitorProperties}}
-                : {segments: visitorProperties || {}})
+              ...(visitorProperties ? {segments: visitorProperties} : {})
             });
           } else {
             this.putData(visitorId, {
-              bucketing: {...bucketing, [experience.id.toString()]: variationId}
+              bucketing: {[experience.id.toString()]: variationId}
             });
           }
           // Enqueue bucketing event to api
@@ -691,8 +686,7 @@ export class DataManager implements DataManagerInterface {
       })
     );
     // Get locations from DataStore
-    const storeData = this.getData(visitorId) || {};
-    const {locations = []} = storeData;
+    const {locations = []} = this.getData(visitorId) || {};
     const matchedRecords = [];
     let match;
     if (arrayNotEmpty(items)) {
@@ -911,7 +905,6 @@ export class DataManager implements DataManagerInterface {
     }
     // Store the data in local variable
     this.putData(visitorId, {
-      ...(bucketingData ? {bucketing: bucketingData} : {}),
       goals: {[goalId.toString()]: true}
     });
 
@@ -1010,12 +1003,10 @@ export class DataManager implements DataManagerInterface {
         visitorId: visitorId
       })
     );
-    // Check that custom segments are matched
-    const storeData = this.getData(visitorId) || {};
     // Get custom segments ID from DataStore
     const {
       segments: {[SegmentsKeys.CUSTOM_SEGMENTS]: customSegments = []} = {}
-    } = storeData;
+    } = this.getData(visitorId) || {};
     const matchedRecords = [];
     if (arrayNotEmpty(items)) {
       for (let i = 0, length = items.length; i < length; i++) {
