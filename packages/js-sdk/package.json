@@ -96,5 +96,5 @@
     "typings": "^2.1.1",
     "webpack": "^5.89.0"
   },
-  "version": "2.0.3"
+  "version": "2.1.0"
 }
