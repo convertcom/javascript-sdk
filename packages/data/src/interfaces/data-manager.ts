@@ -21,8 +21,9 @@ export interface DataManagerInterface {
   data: ConfigData;
   dataStoreManager: DataStoreManagerInterface;
 
-  putLocalStore(storeKey: Id, storeData: StoreData);
-  getLocalStore(storeKey: Id): StoreData;
+  reset();
+  putData(storeKey: Id, storeData: StoreData);
+  getData(storeKey: Id): StoreData;
   getStoreKey(visitorId: Id): string;
   selectLocations(
     visitorId: string,
@@ -43,6 +44,7 @@ export interface DataManagerInterface {
     experienceKey: string,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     environment?: string
   ): BucketedVariation | RuleError;
   getBucketingById(
@@ -50,6 +52,7 @@ export interface DataManagerInterface {
     experienceId: Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     environment?: string
   ): BucketedVariation | RuleError;
   convert(
@@ -78,6 +81,10 @@ export interface DataManagerInterface {
     identityField: IdentityField,
     subIdentityField: IdentityField
   ): Record<any, any>;
+
+  filterReportSegments(
+    visitorProperties: Record<string, any>
+  ): Record<string, any>;
 
   isValidConfigData(data: ConfigData): boolean;
 }

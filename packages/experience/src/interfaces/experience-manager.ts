@@ -24,6 +24,7 @@ export interface ExperienceManagerInterface {
     experienceKey: string,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     environment?: string
   ): BucketedVariation | RuleError;
 
@@ -32,6 +33,7 @@ export interface ExperienceManagerInterface {
     experienceId: Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     environment?: string
   ): BucketedVariation | RuleError;
 
@@ -39,6 +41,7 @@ export interface ExperienceManagerInterface {
     visitorId: Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties?: boolean,
     environment?: string
   ): Array<BucketedVariation | RuleError>;
 

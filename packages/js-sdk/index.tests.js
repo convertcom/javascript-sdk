@@ -62,7 +62,7 @@ export default function runTests(bundle) {
         'runFeatures',
         'trackConversion',
         'setDefaultSegments',
-        'setCustomSegments'
+        'runCustomSegments'
       ].forEach((method) => {
         expect(visitorContext).to.have.a.property(method);
       });
@@ -75,9 +75,7 @@ export default function runTests(bundle) {
     });
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     beforeEach(function () {
-      context = convert.createContext(visitorId, {
-        browser: 'chrome'
-      });
+      context = convert.createContext(visitorId, defaultSegments);
     });
     it('Shoud successfully get variation from specific experience', function (done) {
       const experienceKey = 'test-experience-ab-fullstack-2';
@@ -242,12 +240,15 @@ export default function runTests(bundle) {
       const localSegments = dataStore.get(storeKey);
       expect(localSegments)
         .to.have.property('segments')
-        .that.deep.equal({...segments, ...defaultSegments});
+        .that.deep.equal({
+          ...segments,
+          ...defaultSegments
+        });
     });
     it('Should successfully set custom segments', function () {
       const segmentKey = 'test-segments-1';
       const segmentId = '200299434';
-      context.setCustomSegments(segmentKey, {
+      context.runCustomSegments(segmentKey, {
         ruleData: {
           enabled: true
         }
@@ -293,7 +294,7 @@ export default function runTests(bundle) {
     });
     it('Should fail to set custom segments if no visitor is set', function () {
       const segmentKey = 'test-segments-1';
-      const output = context.setCustomSegments(segmentKey);
+      const output = context.runCustomSegments(segmentKey);
       expect(output).to.be.undefined;
     });
   });

@@ -10,6 +10,7 @@ import {Audience} from './Audience';
 import {Location} from './Location';
 import {Segments} from './Segments';
 import {Goal} from './Goal';
+import {Variation} from './Variation';
 
 export type Entity =
   | Experience
@@ -17,4 +18,5 @@ export type Entity =
   | Audience
   | Location
   | Segments
-  | Goal;
+  | Goal
+  | Variation;

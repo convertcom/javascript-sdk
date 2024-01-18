@@ -59,7 +59,7 @@ describe('FeatureManager tests', function () {
   });
   // eslint-disable-next-line mocha/no-hooks-for-single-case
   afterEach(function () {
-    dataManager.putLocalStore(visitorId, {});
+    dataManager.reset();
     server.close();
   });
   it('Should expose FeatureManager', function () {
@@ -238,6 +238,7 @@ describe('FeatureManager tests', function () {
           varName3: 'something'
         },
         {url: 'https://convert.com/'},
+        false,
         true,
         {
           features: filterByFeatures,

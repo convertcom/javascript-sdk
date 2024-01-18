@@ -59,7 +59,7 @@ describe('ExperienceManager tests', function () {
   });
   // eslint-disable-next-line mocha/no-hooks-for-single-case
   afterEach(function () {
-    dataManager.putLocalStore(visitorId, {});
+    dataManager.reset();
     server.close();
   });
   it('Should expose ExperienceManager', function () {
