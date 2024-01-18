@@ -73,3 +73,27 @@ export function objectNotEmpty(object: any): boolean {
     object && object?.constructor === Object && Object.keys(object).length > 0
   );
 }
+
+/**
+ * Compare two objects
+ * @param a
+ * @param b
+ */
+export const objectDeepEqual = (a, b) => {
+  if (a === b) return true;
+  if (typeof a != 'object' || typeof b != 'object' || a == null || b == null)
+    return false;
+  const keysA = Object.keys(a),
+    keysB = Object.keys(b);
+  if (keysA.length != keysB.length) return false;
+  for (const key of keysA) {
+    if (!keysB.includes(key)) return false;
+
+    if (typeof a[key] === 'function' || typeof b[key] === 'function') {
+      if (a[key].toString() != b[key].toString()) return false;
+    } else {
+      if (!objectDeepEqual(a[key], b[key])) return false;
+    }
+  }
+  return true;
+};

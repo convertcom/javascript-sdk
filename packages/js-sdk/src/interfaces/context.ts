@@ -10,6 +10,7 @@ import {
   BucketedVariation,
   BucketingAttributes,
   ConversionAttributes,
+  Entity,
   Id,
   SegmentsAttributes,
   SegmentsData
@@ -39,8 +40,15 @@ export interface ContextInterface {
 
   setDefaultSegments(segments: SegmentsData): void;
 
-  setCustomSegments(
+  runCustomSegments(
     segmentKeys: Array<string>,
     attributes?: SegmentsAttributes
   ): RuleError;
+
+  updateVisitorProperties(
+    visitorId: Id,
+    visitorProperties: Record<string, any>
+  ): void;
+
+  getConfigEntity(key: string, entityType: string): Entity;
 }

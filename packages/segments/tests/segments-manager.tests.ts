@@ -70,7 +70,7 @@ describe('SegmentsManager tests', function () {
     it('Should successfully update segments in DataStore', function () {
       const segments = {country: 'US'};
       segmentsManager.putSegments(visitorId, segments);
-      const localSegments = dataManager.getLocalStore(visitorId);
+      const localSegments = dataManager.getData(visitorId);
       expect(segments).to.deep.equal(localSegments?.segments);
     });
     it('Should successfully update custom segments for specific visitor', function () {

@@ -162,6 +162,7 @@ export class FeatureManager implements FeatureManagerInterface {
    * @param {string} featureKey
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
+   * @param {boolean=} updateVisitorProperties
    * @param {boolean=} typeCasting Defaults to `true`
    * @param {Array<string>=} experienceKeys
    * @param {string=} environment
@@ -172,6 +173,7 @@ export class FeatureManager implements FeatureManagerInterface {
     featureKey: string,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties = false,
     typeCasting = true,
     experienceKeys?: Array<string>,
     environment?: string
@@ -186,6 +188,7 @@ export class FeatureManager implements FeatureManagerInterface {
         visitorId,
         visitorProperties,
         locationProperties,
+        updateVisitorProperties,
         typeCasting,
         {
           features: [featureKey],
@@ -246,6 +249,7 @@ export class FeatureManager implements FeatureManagerInterface {
         visitorProperties,
         locationProperties,
         false,
+        false,
         {
           features: [featureKey],
           experiences: experienceKeys
@@ -263,6 +267,7 @@ export class FeatureManager implements FeatureManagerInterface {
    * @param {Id} featureId
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
+   * @param {boolean=} updateVisitorProperties
    * @param {boolean=} typeCasting Defaults to `true`
    * @param {Array<Id>=} experienceIds
    * @param {string=} environment
@@ -273,6 +278,7 @@ export class FeatureManager implements FeatureManagerInterface {
     featureId: Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties = false,
     typeCasting = true,
     experienceIds?: Array<Id>,
     environment?: string
@@ -287,6 +293,7 @@ export class FeatureManager implements FeatureManagerInterface {
         visitorId,
         visitorProperties,
         locationProperties,
+        updateVisitorProperties,
         typeCasting,
         {
           features: [declaredFeature.key],
@@ -331,6 +338,7 @@ export class FeatureManager implements FeatureManagerInterface {
    * @param {Id} visitorId
    * @param {Record<string, any> | null} visitorProperties
    * @param {Record<string, any> | null} locationProperties
+   * @param {boolean=} updateVisitorProperties
    * @param {boolean=} typeCasting Defaults to `true`
    * @param {Record<string, Array<string>>=} filter Filter records by experiences and/or features keys
    * @param {Array<string>} filter.experiences Array of experiences keys
@@ -342,6 +350,7 @@ export class FeatureManager implements FeatureManagerInterface {
     visitorId: Id,
     visitorProperties: Record<string, any> | null,
     locationProperties: Record<string, any> | null,
+    updateVisitorProperties = false,
     typeCasting = true,
     filter?: Record<string, Array<string>>,
     environment?: string
@@ -366,6 +375,7 @@ export class FeatureManager implements FeatureManagerInterface {
           experience?.key,
           visitorProperties,
           locationProperties,
+          updateVisitorProperties,
           environment
         );
         if (Object.values(RuleError).includes(variation as RuleError))

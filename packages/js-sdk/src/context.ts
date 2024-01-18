@@ -19,14 +19,16 @@ import {
   BucketingAttributes,
   ConversionAttributes,
   SegmentsData,
-  SegmentsAttributes
+  SegmentsAttributes,
+  Entity,
+  Experience,
+  Variation
 } from '@convertcom/js-sdk-types';
 
 import {
   ERROR_MESSAGES,
   RuleError,
-  SystemEvents,
-  SegmentsKeys
+  SystemEvents
 } from '@convertcom/js-sdk-enums';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
@@ -46,7 +48,7 @@ export class Context implements ContextInterface {
   private _loggerManager: LogManagerInterface;
   private _config: Config;
   private _visitorId: Id;
-  private _visitorAttributes: Record<string, any>;
+  private _visitorProperties: Record<string, any>;
   private _environment: string;
 
   /**
@@ -77,7 +79,7 @@ export class Context implements ContextInterface {
       dataManager: DataManagerInterface;
       loggerManager?: LogManagerInterface;
     },
-    visitorAttributes?: Record<string, any>
+    visitorProperties?: Record<string, any>
   ) {
     this._environment = config?.environment;
     this._visitorId = visitorId;
@@ -90,11 +92,11 @@ export class Context implements ContextInterface {
     this._segmentsManager = segmentsManager;
     this._loggerManager = loggerManager;
 
-    if (visitorAttributes && visitorAttributes.constructor === Object) {
-      const {attributes, segments} =
-        this.processVisitorAttributes(visitorAttributes);
-      if (attributes) this._visitorAttributes = attributes;
-      if (segments) segmentsManager.putSegments(visitorId, segments);
+    if (visitorProperties && visitorProperties.constructor === Object) {
+      const {properties} =
+        this._dataManager.filterReportSegments(visitorProperties);
+      if (properties) this._visitorProperties = properties;
+      segmentsManager.putSegments(visitorId, visitorProperties);
     }
   }
 
@@ -104,6 +106,7 @@ export class Context implements ContextInterface {
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<any, any>=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
+   * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @return {BucketedVariation}
    */
@@ -118,14 +121,15 @@ export class Context implements ContextInterface {
       );
       return;
     }
-    const visitorAttributes = this.getVisitorAttributes(
+    const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
     const bucketedVariation = this._experienceManager.selectVariation(
       this._visitorId,
       experienceKey,
-      visitorAttributes, // represents audiences
+      visitorProperties, // represents audiences
       attributes?.locationProperties, // represents site_area/locations
+      attributes?.updateVisitorProperties,
       attributes?.environment || this._environment
     );
     if (Object.values(RuleError).includes(bucketedVariation as RuleError))
@@ -150,6 +154,7 @@ export class Context implements ContextInterface {
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
    * @param {string=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
+   * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @return {Array<BucketedVariatio | RuleError>}
    */
@@ -163,13 +168,14 @@ export class Context implements ContextInterface {
       );
       return;
     }
-    const visitorAttributes = this.getVisitorAttributes(
+    const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
     const bucketedVariations = this._experienceManager.selectVariations(
       this._visitorId,
-      visitorAttributes,
+      visitorProperties,
       attributes?.locationProperties,
+      attributes?.updateVisitorProperties,
       attributes?.environment || this._environment
     );
     // Return rule errors if present
@@ -201,6 +207,7 @@ export class Context implements ContextInterface {
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
    * @param {string=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
+   * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
    * @param {Array<string>=} attributes.experienceKeys Use only specific experiences
@@ -217,14 +224,15 @@ export class Context implements ContextInterface {
       );
       return;
     }
-    const visitorAttributes = this.getVisitorAttributes(
+    const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
     const bucketedFeature = this._featureManager.runFeature(
       this._visitorId,
       key,
-      visitorAttributes,
+      visitorProperties,
       attributes?.locationProperties,
+      attributes?.updateVisitorProperties,
       Object.prototype.hasOwnProperty.call(attributes || {}, 'typeCasting')
         ? attributes.typeCasting
         : true,
@@ -279,6 +287,7 @@ export class Context implements ContextInterface {
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
    * @param {string=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
+   * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
    * @return {Array<BucketedFeature | RuleError>}
@@ -293,13 +302,14 @@ export class Context implements ContextInterface {
       );
       return;
     }
-    const visitorAttributes = this.getVisitorAttributes(
+    const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
     const bucketedFeatures = this._featureManager.runFeatures(
       this._visitorId,
-      visitorAttributes,
+      visitorProperties,
       attributes?.locationProperties,
+      attributes?.updateVisitorProperties,
       Object.prototype.hasOwnProperty.call(attributes || {}, 'typeCasting')
         ? attributes.typeCasting
         : true,
@@ -385,32 +395,45 @@ export class Context implements ContextInterface {
   }
 
   /**
-   * Set default segments
+   * Set default segments for reports
    * @param {SegmentsData} segments A segment key
    */
   setDefaultSegments(segments: SegmentsData): void {
-    this._segmentsManager.putSegments(this._visitorId, segments);
+    const {segments: storedSegments} =
+      this._dataManager.filterReportSegments(segments);
+    if (storedSegments)
+      this._segmentsManager.putSegments(this._visitorId, storedSegments);
   }
 
   /**
-   * Set Custom segments
+   * To be deprecated
+   */
+  setCustomSegments(
+    segmentKeys: string[],
+    attributes?: SegmentsAttributes
+  ): RuleError {
+    return this.runCustomSegments(segmentKeys, attributes);
+  }
+
+  /**
+   * Match Custom segments
    * @param {Array<string>} segmentKeys A list of segment keys
    * @param {SegmentsAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<string, any>=} attributes.ruleData An object of key-value pairs that are used for segments matching
    * @return {RuleError}
    */
-  setCustomSegments(
+  runCustomSegments(
     segmentKeys: Array<string>,
     attributes?: SegmentsAttributes
   ): RuleError {
     if (!this._visitorId) {
       this._loggerManager?.error?.(
-        'Context.setCustomSegments()',
+        'Context.runCustomSegments()',
         ERROR_MESSAGES.VISITOR_ID_REQUIRED
       );
       return;
     }
-    const segmentsRule = this.getVisitorAttributes(attributes?.ruleData);
+    const segmentsRule = this.getVisitorProperties(attributes?.ruleData);
     const error = this._segmentsManager.selectCustomSegments(
       this._visitorId,
       segmentKeys,
@@ -422,41 +445,56 @@ export class Context implements ContextInterface {
   }
 
   /**
-   * Get visitor properties
-   * @param {Record<string, any>=} visitorAttributes An object of key-value pairs that are used for audience targeting
-   * @return {Record<string, any>}
+   * Update visitor properties in memory
+   * @param visitorProperties
    */
-  private getVisitorAttributes(
-    visitorAttributes?: Record<string, any>
-  ): Record<string, any> {
-    return visitorAttributes
-      ? objectDeepMerge(this._visitorAttributes || {}, visitorAttributes)
-      : this._visitorAttributes;
+  updateVisitorProperties(
+    visitorId: Id,
+    visitorProperties: Record<string, any>
+  ): void {
+    this._dataManager.putData(visitorId, {segments: visitorProperties});
   }
 
   /**
-   * Extract segments from other attribues in Visitor properties
-   * @param {Record<string, any>=} visitorAttributes An object of key-value pairs that are used for audience targeting
-   * @return {Record<string, any>}
+   * get Config Entity
+   * @param {string} key
+   * @param {string} entityType
+   * @return {Entity}
    */
-  private processVisitorAttributes(
-    visitorAttributes: Record<string, any>
-  ): Record<string, any> {
-    const segmentsKeys = Object.values(SegmentsKeys).map(
-      (key) => key as string
-    );
-    const segments = {};
-    const attributes = {};
-    for (const key in visitorAttributes) {
-      if (segmentsKeys.includes(key)) {
-        segments[key] = visitorAttributes[key];
-      } else {
-        attributes[key] = visitorAttributes[key];
+  getConfigEntity(key: string, entityType: string): Entity {
+    if (entityType === 'variations') {
+      const experiences = this._dataManager.getEntitiesList(
+        'experiences'
+      ) as Array<Experience>;
+      for (const {key: experienceKey} of experiences) {
+        const variation = this._dataManager.getSubItem(
+          'experiences',
+          experienceKey,
+          'variations',
+          key,
+          'key',
+          'key'
+        ) as Variation;
+        if (variation) {
+          return variation;
+        }
       }
     }
-    return {
-      attributes: Object.keys(attributes).length ? attributes : null,
-      segments: Object.keys(segments).length ? segments : null
-    };
+    return this._dataManager.getEntity(key, entityType);
+  }
+
+  /**
+   * Get visitor properties
+   * @param {Record<string, any>=} attributes An object of key-value pairs that are used for audience targeting
+   * @return {Record<string, any>}
+   */
+  private getVisitorProperties(
+    attributes?: Record<string, any>
+  ): Record<string, any> {
+    const {segments} = this._dataManager.getData(this._visitorId) || {};
+    const visitorProperties = attributes
+      ? objectDeepMerge(this._visitorProperties || {}, attributes)
+      : this._visitorProperties;
+    return objectDeepMerge(segments || {}, visitorProperties);
   }
 }

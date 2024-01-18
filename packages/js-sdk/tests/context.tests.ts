@@ -118,7 +118,7 @@ describe('Context tests', function () {
     });
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     afterEach(function () {
-      dataManager.putLocalStore(visitorId, {});
+      dataManager.reset();
       server.close();
     });
     it('Shoud successfully get variation from specific experience', function (done) {
@@ -384,24 +384,74 @@ describe('Context tests', function () {
       expect(response).to.be.undefined;
     });
     it('Should successfully set default segments', function () {
-      const segments = {country: 'US'};
+      const segments = {country: 'UK'};
       context.setDefaultSegments(segments);
-      const localSegments = dataManager.getLocalStore(visitorId);
+      const localSegments = dataManager.getData(visitorId);
       expect(segments).to.deep.equal(localSegments?.segments);
     });
-    it('Should successfully set custom segments', function () {
+    it('Should successfully run custom segments', function () {
       const segmentKey = 'test-segments-1';
       const segmentId = '200299434';
-      context.setCustomSegments(segmentKey, {
+      context.runCustomSegments(segmentKey, {
         ruleData: {
           enabled: true
         }
       });
-      const {segments} = dataManager.getLocalStore(visitorId) || {};
+      const {segments} = dataManager.getData(visitorId) || {};
       expect(segments)
         .to.be.an('object')
         .that.has.property('customSegments')
         .to.deep.equal([segmentId]);
+    });
+    it('Should successfully update visitor properties', function () {
+      const properties = {weather: 'rainy'};
+      context.updateVisitorProperties(visitorId, properties);
+      const localSegments = dataManager.getData(visitorId);
+      expect(properties).to.deep.equal(localSegments?.segments);
+    });
+    it('Should successfully get config entity', function () {
+      const audienceKey = 'adv-audience';
+      const audienceEntity = context.getConfigEntity(audienceKey, 'audiences');
+      const audience = configuration?.data?.audiences?.find?.(
+        ({key}) => key === audienceKey
+      );
+      expect(audienceEntity).to.deep.equal(audience);
+      const segmentKey = 'test-segments-1';
+      const segmentEntity = context.getConfigEntity(segmentKey, 'segments');
+      const segment = configuration?.data?.segments?.find?.(
+        ({key}) => key === segmentKey
+      );
+      expect(segmentEntity).to.deep.equal(segment);
+      const featureKey = 'feature-2';
+      const featureEntity = context.getConfigEntity(featureKey, 'features');
+      const feature = configuration?.data?.features?.find?.(
+        ({key}) => key === featureKey
+      );
+      expect(featureEntity).to.deep.equal(feature);
+      const goalKey = 'adv-goal-country-browser';
+      const goalEntity = context.getConfigEntity(goalKey, 'goals');
+      const goal = configuration?.data?.goals?.find?.(
+        ({key}) => key === goalKey
+      );
+      expect(goalEntity).to.deep.equal(goal);
+      const experienceKey = 'test-experience-ab-fullstack-3';
+      const experienceEntity = context.getConfigEntity(
+        experienceKey,
+        'experiences'
+      );
+      const experience = configuration?.data?.experiences?.find?.(
+        ({key}) => key === experienceKey
+      );
+      expect(experienceEntity).to.deep.equal(experience);
+      const variationKey = '100299461-variation-1';
+      const variationEntity = context.getConfigEntity(
+        variationKey,
+        'variations'
+      );
+      const variation = experience?.variations?.find?.(
+        ({key}) => key === variationKey
+      );
+      expect(variationEntity).to.deep.equal(variation);
     });
   });
   describe('Test invalid visitor', function () {
