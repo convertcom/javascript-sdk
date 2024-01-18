@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-segments-v1.0.1...js-sdk-segments-v1.1.0) (2024-01-18)
+
+
+### Features
+
+* introduce Context.updateVisitorProperties and Context.getConfigEntity ([0238d18](https://github.com/convertcom/javascript-sdk/commit/0238d18afa1699261c1acc30514931937dd430a1))
+
+
+### Bug Fixes
+
+* run custom segments against data store if not found in memory ([98ae120](https://github.com/convertcom/javascript-sdk/commit/98ae1201cc5e69d88656d13dfb9adac096a4c02e))
+
 ## [1.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-segments-v1.0.0...js-sdk-segments-v1.0.1) (2023-11-09)
 
 

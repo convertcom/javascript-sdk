@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v1.0.2...js-sdk-types-v1.1.0) (2024-01-18)
+
+
+### Features
+
+* introduce Context.updateVisitorProperties and Context.getConfigEntity ([0238d18](https://github.com/convertcom/javascript-sdk/commit/0238d18afa1699261c1acc30514931937dd430a1))
+* optionally update in-memory visitorProperties on running experience(s)/feature(s) ([a8060d2](https://github.com/convertcom/javascript-sdk/commit/a8060d27b66d7aeb160b5cee740e6e716afcb688))
+
 ## [1.0.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v1.0.1...js-sdk-types-v1.0.2) (2023-12-19)
 
 
