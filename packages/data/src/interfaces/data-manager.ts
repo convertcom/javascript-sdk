@@ -12,7 +12,8 @@ import {
   BucketedVariation,
   StoreData,
   SegmentsData,
-  Experience
+  Experience,
+  BucketingAttributes
 } from '@convertcom/js-sdk-types';
 import {DataStoreManagerInterface} from './data-store-manager';
 import {GoalDataKey, RuleError} from '@convertcom/js-sdk-enums';
@@ -34,26 +35,18 @@ export interface DataManagerInterface {
   matchRulesByField(
     visitorId: string,
     identity: string | Id,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
     identityField: IdentityField,
-    environment?: string
+    attributes: BucketingAttributes
   ): Experience | RuleError;
   getBucketing(
     visitorId: Id,
     experienceKey: string,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties?: boolean,
-    environment?: string
+    attributes: BucketingAttributes
   ): BucketedVariation | RuleError;
   getBucketingById(
     visitorId: Id,
     experienceId: Id,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties?: boolean,
-    environment?: string
+    attributes: BucketingAttributes
   ): BucketedVariation | RuleError;
   convert(
     visitorId: Id,

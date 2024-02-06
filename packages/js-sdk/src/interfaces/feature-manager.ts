@@ -8,7 +8,8 @@ import {
   Id,
   Feature,
   IdentityField,
-  BucketedFeature
+  BucketedFeature,
+  BucketingAttributes
 } from '@convertcom/js-sdk-types';
 import {RuleError} from '@convertcom/js-sdk-enums';
 
@@ -24,39 +25,25 @@ export interface FeatureManagerInterface {
   runFeature(
     visitorId: Id,
     featureKey: string,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties?: boolean,
-    typeCasting?: boolean,
-    experienceKeys?: Array<string>,
-    environment?: string
+    attributes: BucketingAttributes,
+    experienceKeys?: Array<string>
   ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError>;
   isFeatureEnabled(
     visitorId: Id,
     featureKey: string,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    experienceKeys?: Array<string>,
-    environment?: string
+    attributes: BucketingAttributes,
+    experienceKeys?: Array<string>
   ): boolean;
   isFeatureDeclared(key: string): boolean;
   runFeatureById(
     visitorId: Id,
     featureId: Id,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties?: boolean,
-    typeCasting?: boolean,
-    experienceIds?: Array<Id>,
-    environment?: string
+    attributes: BucketingAttributes,
+    experienceIds?: Array<Id>
   ): BucketedFeature | RuleError | Array<BucketedFeature | RuleError>;
   runFeatures(
     visitorId: Id,
-    visitorProperties: Record<string, any>,
-    locationProperties: Record<string, any>,
-    updateVisitorProperties?: boolean,
-    typeCasting?: boolean,
-    filter?: Record<string, Array<string>>,
-    environment?: string
+    attributes: BucketingAttributes,
+    filter?: Record<string, Array<string>>
   ): Array<BucketedFeature | RuleError>;
 }

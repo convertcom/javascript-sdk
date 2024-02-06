@@ -123,9 +123,11 @@ describe('ExperienceManager tests', function () {
         visitorId,
         experienceKey,
         {
-          varName3: 'something'
-        },
-        {url: 'https://convert.com/'}
+          visitorProperties: {
+            varName3: 'something'
+          },
+          locationProperties: {url: 'https://convert.com/'}
+        }
       );
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
@@ -148,9 +150,11 @@ describe('ExperienceManager tests', function () {
         visitorId,
         experienceId,
         {
-          varName3: 'something'
-        },
-        {url: 'https://convert.com/'}
+          visitorProperties: {
+            varName3: 'something'
+          },
+          locationProperties: {url: 'https://convert.com/'}
+        }
       );
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
@@ -169,13 +173,12 @@ describe('ExperienceManager tests', function () {
     it('Shoud successfully select all variations across all experiences for specific visitor', function (done) {
       this.timeout(test_timeout);
       const variationIds = [100299456, 100299457, 100299460, 100299461];
-      const variations = experienceManager.selectVariations(
-        visitorId,
-        {
+      const variations = experienceManager.selectVariations(visitorId, {
+        visitorProperties: {
           varName3: 'something'
         },
-        {url: 'https://convert.com/'}
-      );
+        locationProperties: {url: 'https://convert.com/'}
+      });
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
           request.on('end', () => {

@@ -230,14 +230,19 @@ export class Context implements ContextInterface {
     const bucketedFeature = this._featureManager.runFeature(
       this._visitorId,
       key,
-      visitorProperties,
-      attributes?.locationProperties,
-      attributes?.updateVisitorProperties,
-      Object.prototype.hasOwnProperty.call(attributes || {}, 'typeCasting')
-        ? attributes.typeCasting
-        : true,
-      attributes?.experienceKeys,
-      attributes?.environment || this._environment
+      {
+        visitorProperties,
+        locationProperties: attributes?.locationProperties,
+        updateVisitorProperties: attributes?.updateVisitorProperties,
+        typeCasting: Object.prototype.hasOwnProperty.call(
+          attributes || {},
+          'typeCasting'
+        )
+          ? attributes.typeCasting
+          : true,
+        environment: attributes?.environment || this._environment
+      },
+      attributes?.experienceKeys
     );
     if (Array.isArray(bucketedFeature)) {
       // Return rule errors if present
@@ -305,17 +310,18 @@ export class Context implements ContextInterface {
     const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
-    const bucketedFeatures = this._featureManager.runFeatures(
-      this._visitorId,
+    const bucketedFeatures = this._featureManager.runFeatures(this._visitorId, {
       visitorProperties,
-      attributes?.locationProperties,
-      attributes?.updateVisitorProperties,
-      Object.prototype.hasOwnProperty.call(attributes || {}, 'typeCasting')
+      locationProperties: attributes?.locationProperties,
+      updateVisitorProperties: attributes?.updateVisitorProperties,
+      typeCasting: Object.prototype.hasOwnProperty.call(
+        attributes || {},
+        'typeCasting'
+      )
         ? attributes.typeCasting
         : true,
-      null,
-      attributes?.environment || this._environment
-    );
+      environment: attributes?.environment || this._environment
+    });
     // Return rule errors if present
     const matchedErrors = bucketedFeatures.filter((match) =>
       Object.values(RuleError).includes(match as RuleError)

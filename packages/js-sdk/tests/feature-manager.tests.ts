@@ -152,14 +152,12 @@ describe('FeatureManager tests', function () {
       this.timeout(test_timeout);
       const featureKey = 'feature-1';
       const featureIds = [10024, 10025];
-      const features = featureManager.runFeature(
-        visitorId,
-        featureKey,
-        {
+      const features = featureManager.runFeature(visitorId, featureKey, {
+        visitorProperties: {
           varName3: 'something'
         },
-        {url: 'https://convert.com/'}
-      );
+        locationProperties: {url: 'https://convert.com/'}
+      });
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
           request.on('end', () => {
@@ -199,14 +197,12 @@ describe('FeatureManager tests', function () {
       this.timeout(test_timeout);
       const featureId = 10024;
       const featureIds = [10024, 10025];
-      const features = featureManager.runFeatureById(
-        visitorId,
-        featureId,
-        {
+      const features = featureManager.runFeatureById(visitorId, featureId, {
+        visitorProperties: {
           varName3: 'something'
         },
-        {url: 'https://convert.com/'}
-      );
+        locationProperties: {url: 'https://convert.com/'}
+      });
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
           request.on('end', () => {
@@ -235,11 +231,13 @@ describe('FeatureManager tests', function () {
       const features = featureManager.runFeatures(
         visitorId,
         {
-          varName3: 'something'
+          visitorProperties: {
+            varName3: 'something'
+          },
+          locationProperties: {url: 'https://convert.com/'},
+          updateVisitorProperties: false,
+          typeCasting: true
         },
-        {url: 'https://convert.com/'},
-        false,
-        true,
         {
           features: filterByFeatures,
           experiences: filterByExperiences
