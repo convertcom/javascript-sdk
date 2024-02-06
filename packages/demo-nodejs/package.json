@@ -8,13 +8,13 @@
     "start:debug": "NODE_TLS_REJECT_UNAUTHORIZED=0 DEBUG=nodejs:* yarn start"
   },
   "dependencies": {
-    "cookie-parser": "1.4.6",
-    "debug": "4.3.4",
-    "dotenv": "16.0.3",
-    "express": "4.18.2",
-    "http-errors": "2.0.0",
-    "morgan": "1.10.0",
-    "pug": "3.0.2"
+    "cookie-parser": "^1.4.6",
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "http-errors": "^2.0.0",
+    "morgan": "^1.10.0",
+    "pug": "^3.0.2"
   },
   "peerDependencies": {
     "@convertcom/js-sdk": ">=2.0.0"
