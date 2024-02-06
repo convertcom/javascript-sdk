@@ -8,7 +8,8 @@ import {
   Variation,
   Id,
   Experience,
-  BucketedVariation
+  BucketedVariation,
+  BucketingAttributes
 } from '@convertcom/js-sdk-types';
 import {RuleError} from '@convertcom/js-sdk-enums';
 
@@ -22,27 +23,18 @@ export interface ExperienceManagerInterface {
   selectVariation(
     visitorId: Id,
     experienceKey: string,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties?: boolean,
-    environment?: string
+    attributes: BucketingAttributes
   ): BucketedVariation | RuleError;
 
   selectVariationById(
     visitorId: Id,
     experienceId: Id,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties?: boolean,
-    environment?: string
+    attributes: BucketingAttributes
   ): BucketedVariation | RuleError;
 
   selectVariations(
     visitorId: Id,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties?: boolean,
-    environment?: string
+    attributes: BucketingAttributes
   ): Array<BucketedVariation | RuleError>;
 
   getVariation(experienceKey: string, variationKey: string): Variation;

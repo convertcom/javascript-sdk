@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.0.3...js-sdk-v2.1.0) (2024-01-18)
+
+
+### Features
+
+* introduce Context.updateVisitorProperties and Context.getConfigEntity ([0238d18](https://github.com/convertcom/javascript-sdk/commit/0238d18afa1699261c1acc30514931937dd430a1))
+* optionally update in-memory visitorProperties on running experience(s)/feature(s) ([a8060d2](https://github.com/convertcom/javascript-sdk/commit/a8060d27b66d7aeb160b5cee740e6e716afcb688))
+
+
+### Bug Fixes
+
+* always include report segments with visitorProperties for rule matching ([e769717](https://github.com/convertcom/javascript-sdk/commit/e7697173791fdaffe44b23a1ad5dd1194c0997c7))
+* filter report segments on Context.setDefaultSegments ([e1bbd2f](https://github.com/convertcom/javascript-sdk/commit/e1bbd2fba69f22704dd8d83c8a58d53666d45651))
+* rename Context.setCustomSegments to Context.runCustomSegments ([630d134](https://github.com/convertcom/javascript-sdk/commit/630d134b1f9024795b4d9b5b53ede46ffb071b1e))
+
 ## [2.0.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.0.2...js-sdk-v2.0.3) (2023-12-19)
 
 

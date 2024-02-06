@@ -13,7 +13,8 @@ import {
   Experience,
   Id,
   Variation,
-  BucketedVariation
+  BucketedVariation,
+  BucketingAttributes
 } from '@convertcom/js-sdk-types';
 import {MESSAGES, RuleError} from '@convertcom/js-sdk-enums';
 
@@ -95,84 +96,64 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * Select variation for specific visitor
    * @param {Id} visitorId
    * @param {string} experienceKey
-   * @param {Record<string, any> | null} visitorProperties
-   * @param {Record<string, any> | null} locationProperties
-   * @param {boolean=} updateVisitorProperties
-   * @param {string=} environment
+   * @param {BucketingAttributes} attributes
+   * @param {Record<any, any>} attributes.locationProperties
+   * @param {Record<any, any>} attributes.visitorProperties
+   * @param {boolean=} attributes.updateVisitorProperties
+   * @param {boolean=} attributes.enableTracking
+   * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
    */
   selectVariation(
     visitorId: Id,
     experienceKey: string,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties?: boolean,
-    environment?: string
+    attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
-    return this._dataManager.getBucketing(
-      visitorId,
-      experienceKey,
-      visitorProperties,
-      locationProperties,
-      updateVisitorProperties,
-      environment
-    );
+    return this._dataManager.getBucketing(visitorId, experienceKey, attributes);
   }
 
   /**
    * Select variation for specific visitor
    * @param {Id} visitorId
    * @param {Id} experienceId
-   * @param {Record<string, any> | null} visitorProperties
-   * @param {Record<string, any> | null} locationProperties
-   * @param {boolean=} updateVisitorProperties
-   * @param {string=} environment
+   * @param {BucketingAttributes} attributes
+   * @param {Record<any, any>} attributes.locationProperties
+   * @param {Record<any, any>} attributes.visitorProperties
+   * @param {boolean=} attributes.updateVisitorProperties
+   * @param {boolean=} attributes.enableTracking
+   * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
    */
   selectVariationById(
     visitorId: Id,
     experienceId: Id,
-    visitorProperties: Record<string, any> | null, // TODO: proceed if null as if visitorProperties matched
-    locationProperties: Record<string, any> | null, // TODO: proceed if null as if locationProperties matched
-    updateVisitorProperties?: boolean,
-    environment?: string
+    attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
     return this._dataManager.getBucketingById(
       visitorId,
       experienceId,
-      visitorProperties,
-      locationProperties,
-      updateVisitorProperties,
-      environment
+      attributes
     );
   }
 
   /**
    * Select all variations across all experiences for specific visitor
    * @param {Id} visitorId
-   * @param {Record<string, any> | null} visitorProperties
-   * @param {Record<string, any> | null} locationProperties
-   * @param {boolean=} updateVisitorProperties
-   * @param {string=} environment
+   * @param {BucketingAttributes} attributes
+   * @param {Record<any, any>} attributes.locationProperties
+   * @param {Record<any, any>} attributes.visitorProperties
+   * @param {boolean=} attributes.updateVisitorProperties
+   * @param {boolean=} attributes.enableTracking
+   * @param {string=} attributes.environment
    * @return {Array<BucketedVariation | RuleError>}
    */
   selectVariations(
     visitorId: Id,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties?: boolean,
-    environment?: string
+    attributes: BucketingAttributes
   ): Array<BucketedVariation | RuleError> {
     return this.getList()
       .map((experience) => {
-        return this.selectVariation(
-          visitorId,
-          experience?.key,
-          visitorProperties,
-          locationProperties,
-          updateVisitorProperties,
-          environment
-        );
+        return this.selectVariation(visitorId, experience?.key, attributes);
       })
       .filter(Boolean);
   }
