@@ -127,10 +127,12 @@ export class Context implements ContextInterface {
     const bucketedVariation = this._experienceManager.selectVariation(
       this._visitorId,
       experienceKey,
-      visitorProperties, // represents audiences
-      attributes?.locationProperties, // represents site_area/locations
-      attributes?.updateVisitorProperties,
-      attributes?.environment || this._environment
+      {
+        visitorProperties, // represents audiences
+        locationProperties: attributes?.locationProperties, // represents site_area/locations
+        updateVisitorProperties: attributes?.updateVisitorProperties,
+        environment: attributes?.environment || this._environment
+      }
     );
     if (Object.values(RuleError).includes(bucketedVariation as RuleError))
       return bucketedVariation as RuleError;
@@ -173,10 +175,12 @@ export class Context implements ContextInterface {
     );
     const bucketedVariations = this._experienceManager.selectVariations(
       this._visitorId,
-      visitorProperties,
-      attributes?.locationProperties,
-      attributes?.updateVisitorProperties,
-      attributes?.environment || this._environment
+      {
+        visitorProperties, // represents audiences
+        locationProperties: attributes?.locationProperties, // represents site_area/locations
+        updateVisitorProperties: attributes?.updateVisitorProperties,
+        environment: attributes?.environment || this._environment
+      }
     );
     // Return rule errors if present
     const matchedErrors = bucketedVariations.filter((match) =>
