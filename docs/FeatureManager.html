@@ -584,7 +584,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line471">line 471</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line486">line 486</a>
             </span>
         </p>
     
@@ -755,7 +755,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line374">line 374</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line382">line 382</a>
             </span>
         </p>
     
@@ -926,7 +926,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line381">line 381</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line389">line 389</a>
             </span>
         </p>
     
@@ -1097,7 +1097,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line388">line 388</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line396">line 396</a>
             </span>
         </p>
     
@@ -1293,7 +1293,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line396">line 396</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line404">line 404</a>
             </span>
         </p>
     
@@ -1492,7 +1492,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line404">line 404</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line412">line 412</a>
             </span>
         </p>
     
@@ -1615,7 +1615,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line360">line 360</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line368">line 368</a>
             </span>
         </p>
     
@@ -1800,7 +1800,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line367">line 367</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line375">line 375</a>
             </span>
         </p>
     
@@ -1973,7 +1973,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line411">line 411</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line419">line 419</a>
             </span>
         </p>
     
@@ -2033,7 +2033,7 @@
         
         <span class="code-name">
             
-                isFeatureEnabled<span class="signature">(visitorId, featureKey, visitorProperties, locationProperties, experienceKeys<span class="signature-attributes">opt</span>, environment<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span>
+                isFeatureEnabled<span class="signature">(visitorId, featureKey, attributes, experienceKeys<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span>
             
         </span>
     </h4>
@@ -2148,16 +2148,13 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>visitorProperties</code></td>
+      <td class="name"><code>attributes</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">Record.&lt;string, any></code>
-|
-
-<code class="param-type">null</code>
+<code class="param-type">BucketingAttributes</code>
 
 
   
@@ -2178,11 +2175,10 @@
   <td class="description last"></td>
 </tr>
 
-
-        
-
-            
-<tr class="deep-level-0">
+  
+  
+    
+<tr class="deep-level-1">
   
       <td class="name"><code>locationProperties</code></td>
   
@@ -2190,10 +2186,7 @@
   <td class="type">
   
       
-<code class="param-type">Record.&lt;string, any></code>
-|
-
-<code class="param-type">null</code>
+<code class="param-type">Record.&lt;any, any></code>
 
 
   
@@ -2214,19 +2207,48 @@
   <td class="description last"></td>
 </tr>
 
-
-        
-
-            
-<tr class="deep-level-0">
   
-      <td class="name"><code>experienceKeys</code></td>
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>visitorProperties</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">Array.&lt;string></code>
+<code class="param-type">Record.&lt;any, any></code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>environment</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
 
 
   
@@ -2249,19 +2271,21 @@
   <td class="description last"></td>
 </tr>
 
+  
+
 
         
 
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>environment</code></td>
+      <td class="name"><code>experienceKeys</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">string</code>
+<code class="param-type">Array.&lt;string></code>
 
 
   
@@ -2329,7 +2353,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line436">line 436</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line447">line 447</a>
             </span>
         </p>
     
@@ -2389,7 +2413,7 @@
         
         <span class="code-name">
             
-                runFeature<span class="signature">(visitorId, featureKey, visitorProperties, locationProperties, typeCasting<span class="signature-attributes">opt</span>, experienceKeys<span class="signature-attributes">opt</span>, environment<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {BucketedFeature|RuleError|Array.&lt;(BucketedFeature|RuleError)>}</span>
+                runFeature<span class="signature">(visitorId, featureKey, attributes, experienceKeys<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {BucketedFeature|RuleError|Array.&lt;(BucketedFeature|RuleError)>}</span>
             
         </span>
     </h4>
@@ -2504,16 +2528,13 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>visitorProperties</code></td>
+      <td class="name"><code>attributes</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">Record.&lt;string, any></code>
-|
-
-<code class="param-type">null</code>
+<code class="param-type">BucketingAttributes</code>
 
 
   
@@ -2534,11 +2555,10 @@
   <td class="description last"></td>
 </tr>
 
-
-        
-
-            
-<tr class="deep-level-0">
+  
+  
+    
+<tr class="deep-level-1">
   
       <td class="name"><code>locationProperties</code></td>
   
@@ -2546,10 +2566,7 @@
   <td class="type">
   
       
-<code class="param-type">Record.&lt;string, any></code>
-|
-
-<code class="param-type">null</code>
+<code class="param-type">Record.&lt;any, any></code>
 
 
   
@@ -2570,11 +2587,73 @@
   <td class="description last"></td>
 </tr>
 
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>visitorProperties</code></td>
+  
 
-        
+  <td class="type">
+  
+      
+<code class="param-type">Record.&lt;any, any></code>
 
-            
-<tr class="deep-level-0">
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>updateVisitorProperties</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
   
       <td class="name"><code>typeCasting</code></td>
   
@@ -2605,19 +2684,17 @@
   <td class="description last">Defaults to `true`</td>
 </tr>
 
-
-        
-
-            
-<tr class="deep-level-0">
   
-      <td class="name"><code>experienceKeys</code></td>
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>environment</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">Array.&lt;string></code>
+<code class="param-type">string</code>
 
 
   
@@ -2640,19 +2717,21 @@
   <td class="description last"></td>
 </tr>
 
+  
+
 
         
 
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>environment</code></td>
+      <td class="name"><code>experienceKeys</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">string</code>
+<code class="param-type">Array.&lt;string></code>
 
 
   
@@ -2720,7 +2799,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line424">line 424</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line434">line 434</a>
             </span>
         </p>
     
@@ -2786,7 +2865,7 @@
         
         <span class="code-name">
             
-                runFeatureById<span class="signature">(visitorId, featureId, visitorProperties, locationProperties, typeCasting<span class="signature-attributes">opt</span>, experienceIds<span class="signature-attributes">opt</span>, environment<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {BucketedFeature|Array.&lt;BucketedFeature>}</span>
+                runFeatureById<span class="signature">(visitorId, featureId, attributes, experienceIds<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {BucketedFeature|Array.&lt;BucketedFeature>}</span>
             
         </span>
     </h4>
@@ -2901,16 +2980,13 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>visitorProperties</code></td>
+      <td class="name"><code>attributes</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">Record.&lt;string, any></code>
-|
-
-<code class="param-type">null</code>
+<code class="param-type">BucketingAttributes</code>
 
 
   
@@ -2931,11 +3007,10 @@
   <td class="description last"></td>
 </tr>
 
-
-        
-
-            
-<tr class="deep-level-0">
+  
+  
+    
+<tr class="deep-level-1">
   
       <td class="name"><code>locationProperties</code></td>
   
@@ -2943,10 +3018,7 @@
   <td class="type">
   
       
-<code class="param-type">Record.&lt;string, any></code>
-|
-
-<code class="param-type">null</code>
+<code class="param-type">Record.&lt;any, any></code>
 
 
   
@@ -2967,11 +3039,73 @@
   <td class="description last"></td>
 </tr>
 
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>visitorProperties</code></td>
+  
 
-        
+  <td class="type">
+  
+      
+<code class="param-type">Record.&lt;any, any></code>
 
-            
-<tr class="deep-level-0">
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>updateVisitorProperties</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
   
       <td class="name"><code>typeCasting</code></td>
   
@@ -3002,19 +3136,17 @@
   <td class="description last">Defaults to `true`</td>
 </tr>
 
-
-        
-
-            
-<tr class="deep-level-0">
   
-      <td class="name"><code>experienceIds</code></td>
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>environment</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">Array.&lt;Id></code>
+<code class="param-type">string</code>
 
 
   
@@ -3037,19 +3169,21 @@
   <td class="description last"></td>
 </tr>
 
+  
+
 
         
 
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>environment</code></td>
+      <td class="name"><code>experienceIds</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">string</code>
+<code class="param-type">Array.&lt;Id></code>
 
 
   
@@ -3117,7 +3251,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line449">line 449</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line462">line 462</a>
             </span>
         </p>
     
@@ -3180,7 +3314,7 @@
         
         <span class="code-name">
             
-                runFeatures<span class="signature">(visitorId, visitorProperties, locationProperties, typeCasting<span class="signature-attributes">opt</span>, filter<span class="signature-attributes">opt</span>, environment<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;(BucketedFeature|RuleError)>}</span>
+                runFeatures<span class="signature">(visitorId, attributes, filter<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;(BucketedFeature|RuleError)>}</span>
             
         </span>
     </h4>
@@ -3262,16 +3396,13 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>visitorProperties</code></td>
+      <td class="name"><code>attributes</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">Record.&lt;string, any></code>
-|
-
-<code class="param-type">null</code>
+<code class="param-type">BucketingAttributes</code>
 
 
   
@@ -3292,11 +3423,10 @@
   <td class="description last"></td>
 </tr>
 
-
-        
-
-            
-<tr class="deep-level-0">
+  
+  
+    
+<tr class="deep-level-1">
   
       <td class="name"><code>locationProperties</code></td>
   
@@ -3304,10 +3434,7 @@
   <td class="type">
   
       
-<code class="param-type">Record.&lt;string, any></code>
-|
-
-<code class="param-type">null</code>
+<code class="param-type">Record.&lt;any, any></code>
 
 
   
@@ -3328,11 +3455,73 @@
   <td class="description last"></td>
 </tr>
 
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>visitorProperties</code></td>
+  
 
-        
+  <td class="type">
+  
+      
+<code class="param-type">Record.&lt;any, any></code>
 
-            
-<tr class="deep-level-0">
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>updateVisitorProperties</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
   
       <td class="name"><code>typeCasting</code></td>
   
@@ -3362,6 +3551,41 @@
 
   <td class="description last">Defaults to `true`</td>
 </tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>environment</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
 
 
         
@@ -3465,41 +3689,6 @@
 
 
         
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>environment</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-
-        
         </tbody>
     </table>
 </div>
@@ -3543,7 +3732,7 @@
         <p class="tag-source">
             <a href="src_feature-manager.ts.html" class="button">View Source</a>
             <span>
-                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line463">line 463</a>
+                <a href="src_feature-manager.ts.html">src/feature-manager.ts</a>, <a href="src_feature-manager.ts.html#line478">line 478</a>
             </span>
         </p>
     

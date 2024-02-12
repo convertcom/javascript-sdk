@@ -245,13 +245,19 @@ export class Core implements CoreInterface {
       // Get data by sdk key
       this.fetchConfig();
     } else if (Object.prototype.hasOwnProperty.call(config, 'data')) {
-      this._eventManager.fire(SystemEvents.READY, null, null, true);
       this._dataManager.data = config.data;
-      this._loggerManager?.trace?.(
-        'Core.initialize()',
-        MESSAGES.CORE_INITIALIZED
-      );
-      this._initialized = true;
+      if (config.data?.error) {
+        this._loggerManager?.error?.('Core.initialize()', {
+          error: config.data?.error
+        });
+      } else {
+        this._eventManager.fire(SystemEvents.READY, null, null, true);
+        this._loggerManager?.trace?.(
+          'Core.initialize()',
+          MESSAGES.CORE_INITIALIZED
+        );
+        this._initialized = true;
+      }
     } else {
       this._loggerManager?.error?.(
         'Core.initialize()',
@@ -331,44 +337,51 @@ export class Core implements CoreInterface {
     this._promise = this._apiManager.getConfigByKey(this._config.sdkKey);
     try {
       const data: ConfigData = await this._promise;
-      this._loggerManager?.trace?.('Core.fetchConfig()', {
-        data
-      });
-      this._eventManager.fire(
-        objectNotEmpty(this._dataManager.data)
-          ? SystemEvents.CONFIG_UPDATED
-          : SystemEvents.READY,
-        null,
-        null,
-        true
-      );
-      if (objectNotEmpty(this._dataManager.data)) {
-        this._loggerManager?.trace?.(
-          'Core.fetchConfig()',
-          MESSAGES.CONFIG_DATA_UPDATED
-        );
+      if (data?.error) {
+        this._dataManager.data = data;
+        this._loggerManager?.error?.('Core.fetchConfig()', {
+          error: data?.error
+        });
       } else {
-        this._loggerManager?.trace?.(
-          'Core.fetchConfig()',
-          MESSAGES.CORE_INITIALIZED
+        this._loggerManager?.trace?.('Core.fetchConfig()', {
+          data
+        });
+        this._eventManager.fire(
+          objectNotEmpty(this._dataManager.data)
+            ? SystemEvents.CONFIG_UPDATED
+            : SystemEvents.READY,
+          null,
+          null,
+          true
         );
-        this._initialized = true;
+        if (objectNotEmpty(this._dataManager.data)) {
+          this._loggerManager?.trace?.(
+            'Core.fetchConfig()',
+            MESSAGES.CONFIG_DATA_UPDATED
+          );
+        } else {
+          this._loggerManager?.trace?.(
+            'Core.fetchConfig()',
+            MESSAGES.CORE_INITIALIZED
+          );
+          this._initialized = true;
+        }
+        this._dataManager.data = data;
+        this._apiManager.setData(data);
       }
-      this._dataManager.data = data;
-      this._apiManager.setData(data);
+      // Update data periodically in background
+      if (this._fetchConfigTimerID) {
+        clearTimeout(this._fetchConfigTimerID);
+      }
+      this._fetchConfigTimerID = setTimeout(
+        () => this.fetchConfig(),
+        this._config?.dataRefreshInterval || DEFAULT_DATA_REFRESH_INTERVAL
+      ) as any;
     } catch (error) {
       this._loggerManager?.error?.('Core.fetchConfig()', {
         error: error.message
       });
     }
-    // Update data periodically in background
-    if (this._fetchConfigTimerID) {
-      clearTimeout(this._fetchConfigTimerID);
-    }
-    this._fetchConfigTimerID = setTimeout(
-      () => this.fetchConfig(),
-      this._config?.dataRefreshInterval || DEFAULT_DATA_REFRESH_INTERVAL
-    ) as any;
   }
 }
 </code></pre>

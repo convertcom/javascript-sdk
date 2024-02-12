@@ -211,7 +211,7 @@
 </ol>
 <h2>Getting Started</h2>
 <p>Install module using <code>npm</code> or <code>yarn</code>:</p>
-<pre class="prettyprint source"><code>npm install --save @convertcom/js-sdk
+<pre class="prettyprint source lang-bash"><code>npm install --save @convertcom/js-sdk
 </code></pre>
 <p>Package's build contains definitions for generating entry points in different formats:</p>
 <ul>
@@ -296,7 +296,7 @@ const config = {
 <h3>Create User Context</h3>
 <p>Once the SDK has been created and instantiated, the next step is to create a unique context for the user in scope.</p>
 <p>When creating the UserContext, a unique <code>userId</code> is required to be provided. This will be used in the process of deciding which variation/feature to be presented. As long as this <code>userId</code> does not change for a user and the experience configuration remains the same(variations not getting added or removed and traffic allocation not changed), the feature/variation bucketing will stay unchanged. Otherwise, see <a href="#provide-persistent-datastore">Persistent Datastore</a>.</p>
-<p>For convenience, a list of <strong>User Properties</strong> that can be later used inside Audience definition evaluation can be provided when creating a UserContext. Any of these can be changed by providing them again when calling any of the functional SDK methods for running experiences, under the <code>attributes.visitorProperties</code></p>
+<p>For convenience, a list of <strong>User Properties</strong> that can be later used inside Audience definition evaluation can be provided when creating a UserContext. Any of these can be changed by providing them again when calling any of the functional SDK methods for running experiences, under the <code>attributes.visitorProperties</code> while setting the value for <code>attributes.updateVisitorProperties</code> to <code>true</code></p>
 <pre class="prettyprint source lang-javascript"><code>const userContext = convertSDK.createContext('user-unique-id', {
   country: 'US',
   language: 'en'
@@ -343,6 +343,12 @@ const config = {
 <td></td>
 <td></td>
 <td><code>visitorProperties</code> an object of key-value pairs that are used for audience targeting.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td><code>updateVisitorProperties</code> optional boolean for updating in-memory visitor properties.</td>
 </tr>
 <tr>
 <td></td>
@@ -408,6 +414,12 @@ convertSDK.onReady().then(() => {
 <td></td>
 <td></td>
 <td></td>
+<td><code>updateVisitorProperties</code> optional boolean for updating in-memory visitor properties.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
 <td><code>environment</code> optional string.</td>
 </tr>
 </tbody>
@@ -457,6 +469,12 @@ convertSDK.onReady().then(() => {
 <td></td>
 <td></td>
 <td><code>visitorProperties</code> an object of key-value pairs that are used for audience targeting.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td><code>updateVisitorProperties</code> optional boolean for updating in-memory visitor properties.</td>
 </tr>
 <tr>
 <td></td>
@@ -523,6 +541,12 @@ convertSDK.onReady().then(() => {
 <td></td>
 <td></td>
 <td><code>visitorProperties</code> an object of key-value pairs that are used for audience targeting.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td><code>updateVisitorProperties</code> optional boolean for updating in-memory visitor properties.</td>
 </tr>
 <tr>
 <td></td>
@@ -622,7 +646,7 @@ convertSDK.onReady().then(() => {
   });
 });
 </code></pre>
-<h3>Set Custom Segments</h3>
+<h3>Run Custom Segments</h3>
 <p>Decides whether to update custom segments in user context, which is mapped to segments' unique keys. The decision is made against the configured segment rules.</p>
 <h4>Parameters</h4>
 <table>
@@ -660,9 +684,126 @@ const config = {
 const convertSDK = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context = convertSDK.createContext('user-unique-id');
-  context.setCustomSegments(['segments-key'], {
+  context.runCustomSegments(['segments-key'], {
     enabled: true
   });
+});
+</code></pre>
+<h3>Set Default Segments</h3>
+<p>Permanently update the visitor segments for reporting purposes. Only the following properties are included in Convert Reports: <code>browser</code>, <code>devices</code>, <code>source</code>, <code>campaign</code>, <code>visitorType</code>, and <code>country</code>.</p>
+<h4>Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>segments</td>
+<td>object</td>
+<td>Yes</td>
+<td>An object of key-value pairs to be merged with the initial <strong>User Properties</strong> created with <a href="#create-user-context">context</a></td>
+</tr>
+</tbody>
+</table>
+<h4>Returns</h4>
+<p>Void.</p>
+<h4>Example</h4>
+<pre class="prettyprint source lang-javascript"><code>import ConvertSDK from '@convertcom/js-sdk';
+const config = {
+  // full configuration options
+};
+
+const convertSDK = new ConvertSDK(config);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.setDefaultSegments({country: 'US'});
+});
+</code></pre>
+<h3>Update Visitor Properties</h3>
+<p>Permanently update all of the visitor properties used inside Audience definition evaluation.</p>
+<h4>Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>visitorId</td>
+<td>string</td>
+<td>Yes</td>
+<td>User unique ID</td>
+</tr>
+<tr>
+<td>visitorProperties</td>
+<td>object</td>
+<td>Yes</td>
+<td>An object of key-value pairs to be merged with the initial <strong>User Properties</strong> created with <a href="#create-user-context">context</a></td>
+</tr>
+</tbody>
+</table>
+<h4>Returns</h4>
+<p>Void.</p>
+<h4>Example</h4>
+<pre class="prettyprint source lang-javascript"><code>import ConvertSDK from '@convertcom/js-sdk';
+const config = {
+  // full configuration options
+};
+
+const convertSDK = new ConvertSDK(config);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  context.updateVisitorProperties({weather: 'rainy'});
+});
+</code></pre>
+<h3>Get Config Entity</h3>
+<p>Find a single entity in configutation by <code>key</code></p>
+<h4>Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td>string</td>
+<td>Yes</td>
+<td>Entity key as found in configuration</td>
+</tr>
+<tr>
+<td>entityType</td>
+<td>string</td>
+<td>Yes</td>
+<td>One of the configuration entities: <code>audiences</code>, <code>locations</code>, <code>segments</code>, <code>features</code>, <code>goals</code>, <code>experiences</code>, and <code>variations</code></td>
+</tr>
+</tbody>
+</table>
+<h4>Returns</h4>
+<p>Void.</p>
+<h4>Example</h4>
+<pre class="prettyprint source lang-javascript"><code>import ConvertSDK from '@convertcom/js-sdk';
+const config = {
+  // full configuration options
+};
+
+const convertSDK = new ConvertSDK(config);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variation = context.getConfigEntity('variation-key', 'variations');
 });
 </code></pre>
 <h3>Events</h3>
@@ -713,7 +854,9 @@ convertSDK.onReady().then(() => {
 </tr>
 </tbody>
 </table>
-<pre class="prettyprint source lang-javascript"><code>const convertSDK,{SystemEvents} = new ConvertSDK({sdkKey: 'xxx'});
+<pre class="prettyprint source lang-javascript"><code>import ConvertSDK, {SystemEvents} from '@convertcom/js-sdk';
+
+const convertSDK = new ConvertSDK({sdkKey: 'xxx'});
 
 convertSDK.on(SystemEvents.READY, function (res, err) {
   if (err) {
@@ -721,13 +864,27 @@ convertSDK.on(SystemEvents.READY, function (res, err) {
   }
 });
 
-convertSDK.on(SystemEvents.BUCKETING, function ({visitorId, experienceKey, variationKey, featureKey, status}, err) {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log(visitorId, experienceKey, variationKey, featureKey, status);
+convertSDK.on(
+  SystemEvents.BUCKETING,
+  function ({visitorId, experienceKey, variationKey, featureKey, status}, err) {
+    if (err) {
+      console.error(err);
+    } else {
+      console.log(visitorId, experienceKey, variationKey, featureKey, status);
+      // Exmaple GA integrations can be done here
+      // note that you need to create audiences manually at GA side
+      const {name: experienceName} = context.getConfigEntity(
+        experienceKey,
+        'experiences'
+      );
+      const {name: variationName} = context.getConfigEntity(
+        variationKey,
+        'variations'
+      );
+      gtag('event', 'YOUR_GA_CUSOTM_EVENT', {experienceName, variationName});
+    }
   }
-});
+);
 
 convertSDK.on(SystemEvents.CONVERSION, function ({visitorId, goalKey}, err) {
   if (err) {
