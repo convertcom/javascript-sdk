@@ -214,7 +214,7 @@ describe('Core tests', function () {
         done();
       });
     });
-    it('Shoud fail to inisialize if config data is not set', function () {
+    it('Shoud fail to inisiapConflize if config data is not set', function () {
       core = new c(null, {
         eventManager,
         experienceManager,
@@ -224,6 +224,20 @@ describe('Core tests', function () {
         apiManager
       });
       expect(dataManager.data).to.be.null;
+    });
+    it('Shoud fail to inisialize if config data returns server-side errors', async function () {
+      const error = 'this account was canceled';
+      core = new c({...configuration, data: {error}} as ConfigType, {
+        eventManager,
+        experienceManager,
+        featureManager,
+        segmentsManager,
+        dataManager,
+        apiManager
+      });
+      expect(dataManager.data).to.be.an('object');
+      expect(dataManager.data).to.have.property('error');
+      expect(dataManager.data.error).to.equal(error);
     });
     it('Shoud fail to resolve onReady promise if config data is not set', async function () {
       this.timeout(test_timeout);

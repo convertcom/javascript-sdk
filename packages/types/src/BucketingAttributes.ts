@@ -12,4 +12,5 @@ export type BucketingAttributes = {
   typeCasting?: boolean;
   experienceKeys?: Array<string>;
   updateVisitorProperties?: boolean;
+  enableTracking?: boolean;
 };

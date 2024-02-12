@@ -37,7 +37,8 @@ import {
   ConversionEvent,
   Goal,
   SegmentsData,
-  Segments
+  Segments,
+  BucketingAttributes
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -164,28 +165,33 @@ export class DataManager implements DataManagerInterface {
    * Validate locationProperties against locations rules and visitorProperties against audiences rules
    * @param {string} visitorId
    * @param {string|Id} identity Value of the field which name is provided in identityField
-   * @param {Record<string, any> | null} visitorProperties
-   * @param {Record<string, any> | null} locationProperties
    * @param {IdentityField=} identityField Defaults to 'key'
-   * @param {string=} environment
+   * @param {BucketingAttributes} attributes
+   * @param {Record<any, any>} attributes.locationProperties
+   * @param {Record<any, any>} attributes.visitorProperties
+   * @param {boolean=} attributes.updateVisitorProperties
+   * @param {string=} attributes.environment
    * @return {Experience | RuleError}
    */
   matchRulesByField(
     visitorId: string,
     identity: string | Id,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
     identityField: IdentityField = 'key',
-    environment: string = this._environment
+    attributes: BucketingAttributes
   ): Experience | RuleError {
+    const {
+      visitorProperties,
+      locationProperties,
+      environment = this._environment
+    } = attributes;
     this._loggerManager?.trace?.(
       'DataManager.matchRulesByField()',
       this._mapper({
         visitorId: visitorId,
         identity: identity,
+        identityField: identityField,
         visitorProperties: visitorProperties,
         locationProperties: locationProperties,
-        identityField: identityField,
         environment: environment
       })
     );
@@ -386,31 +392,38 @@ export class DataManager implements DataManagerInterface {
    * Retrieve variation for visitor
    * @param {string} visitorId
    * @param {string|Id} identity Value of the field which name is provided in identityField
-   * @param {Record<string, any> | null} visitorProperties
-   * @param {Record<string, any> | null} locationProperties
-   * @param {boolean=} updateVisitorProperties
    * @param {IdentityField=} identityField Defaults to 'key'
-   * @param {string=} environment
+   * @param {BucketingAttributes} attributes
+   * @param {Record<any, any>} attributes.locationProperties
+   * @param {Record<any, any>} attributes.visitorProperties
+   * @param {boolean=} attributes.updateVisitorProperties
+   * @param {boolean=} attributes.enableTracking Defaults to `true`
+   * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
    * @private
    */
   private _getBucketingByField(
     visitorId: string,
     identity: string | Id,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties: boolean = false,
     identityField: IdentityField = 'key',
-    environment: string = this._environment
+    attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
+    const {
+      visitorProperties,
+      locationProperties,
+      updateVisitorProperties,
+      enableTracking = true,
+      environment = this._environment
+    } = attributes;
     this._loggerManager?.trace?.(
       'DataManager._getBucketingByField()',
       this._mapper({
         visitorId: visitorId,
         identity: identity,
+        identityField: identityField,
         visitorProperties: visitorProperties,
         locationProperties: locationProperties,
-        identityField: identityField,
+        enableTracking: enableTracking,
         environment: environment
       })
     );
@@ -419,10 +432,8 @@ export class DataManager implements DataManagerInterface {
     const experience = this.matchRulesByField(
       visitorId,
       identity,
-      visitorProperties,
-      locationProperties,
       identityField,
-      environment
+      {visitorProperties, locationProperties, environment}
     );
     if (experience) {
       if (Object.values(RuleError).includes(experience as RuleError)) {
@@ -432,7 +443,8 @@ export class DataManager implements DataManagerInterface {
         visitorId,
         visitorProperties,
         updateVisitorProperties,
-        experience as Experience
+        experience as Experience,
+        enableTracking
       );
     }
     return null;
@@ -444,6 +456,7 @@ export class DataManager implements DataManagerInterface {
    * @param {Record<string, any> | null} visitorProperties
    * @param {boolean} updateVisitorProperties
    * @param {Experience} experience
+   * @param {boolean=} enableTracking Defaults to `true`
    * @return {BucketedVariation}
    * @private
    */
@@ -451,7 +464,8 @@ export class DataManager implements DataManagerInterface {
     visitorId: Id,
     visitorProperties: Record<string, any> | null,
     updateVisitorProperties: boolean,
-    experience: Experience
+    experience: Experience,
+    enableTracking: boolean = true
   ): BucketedVariation {
     if (!visitorId || !experience) return null;
     if (!experience?.id) return null;
@@ -540,22 +554,24 @@ export class DataManager implements DataManagerInterface {
               bucketing: {[experience.id.toString()]: variationId}
             });
           }
-          // Enqueue bucketing event to api
-          const bucketingEvent: BucketingEvent = {
-            experienceId: experience.id.toString(),
-            variationId: variationId.toString()
-          };
-          const visitorEvent: VisitorEvent = {
-            eventType: EventType.BUCKETING,
-            data: bucketingEvent
-          };
-          this._apiManager.enqueue(visitorId, visitorEvent, segments);
-          this._loggerManager?.trace?.(
-            'DataManager._retrieveBucketing()',
-            this._mapper({
-              visitorEvent
-            })
-          );
+          if (enableTracking) {
+            // Enqueue bucketing event to api
+            const bucketingEvent: BucketingEvent = {
+              experienceId: experience.id.toString(),
+              variationId: variationId.toString()
+            };
+            const visitorEvent: VisitorEvent = {
+              eventType: EventType.BUCKETING,
+              data: bucketingEvent
+            };
+            this._apiManager.enqueue(visitorId, visitorEvent, segments);
+            this._loggerManager?.trace?.(
+              'DataManager._retrieveBucketing()',
+              this._mapper({
+                visitorEvent
+              })
+            );
+          }
           // Retrieve and return variation
           variation = this.retrieveVariation(experience.id, variationId);
         } else {
@@ -769,58 +785,40 @@ export class DataManager implements DataManagerInterface {
    * Retrieve variation for visitor
    * @param {string} visitorId
    * @param {string} key
-   * @param {Record<string, any> | null} visitorProperties
-   * @param {Record<string, any> | null} locationProperties
-   * @param {boolean=} updateVisitorProperties
-   * @param {string=} environment
+   * @param {BucketingAttributes} attributes
+   * @param {Record<any, any>} attributes.locationProperties
+   * @param {Record<any, any>} attributes.visitorProperties
+   * @param {boolean=} attributes.updateVisitorProperties
+   * @param {boolean=} attributes.enableTracking
+   * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
    */
   getBucketing(
     visitorId: string,
     key: string,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties: boolean = false,
-    environment: string = this._environment
+    attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
-    return this._getBucketingByField(
-      visitorId,
-      key,
-      visitorProperties,
-      locationProperties,
-      updateVisitorProperties,
-      'key',
-      environment
-    );
+    return this._getBucketingByField(visitorId, key, 'key', attributes);
   }
 
   /**
    * Retrieve variation for Visitor
    * @param {string} visitorId
    * @param {Id} id
-   * @param {Record<string, any> | null} visitorProperties
-   * @param {Record<string, any> | null} locationProperties
-   * @param {boolean=} updateVisitorProperties
-   * @param {string=} environment
+   * @param {BucketingAttributes} attributes
+   * @param {Record<any, any>} attributes.locationProperties
+   * @param {Record<any, any>} attributes.visitorProperties
+   * @param {boolean=} attributes.updateVisitorProperties
+   * @param {boolean=} attributes.enableTracking
+   * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
    */
   getBucketingById(
     visitorId: string,
     id: Id,
-    visitorProperties: Record<string, any> | null,
-    locationProperties: Record<string, any> | null,
-    updateVisitorProperties: boolean = false,
-    environment: string = this._environment
+    attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
-    return this._getBucketingByField(
-      visitorId,
-      id,
-      visitorProperties,
-      locationProperties,
-      updateVisitorProperties,
-      'id',
-      environment
-    );
+    return this._getBucketingByField(visitorId, id, 'id', attributes);
   }
 
   /**
@@ -1252,6 +1250,9 @@ export class DataManager implements DataManagerInterface {
    * @return {boolean}
    */
   isValidConfigData(data: ConfigData): boolean {
-    return objectNotEmpty(data) && !!data?.account_id && !!data?.project?.id;
+    return (
+      objectNotEmpty(data) &&
+      ((!!data?.account_id && !!data?.project?.id) || Boolean(data?.error))
+    );
   }
 }

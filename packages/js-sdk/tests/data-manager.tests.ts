@@ -85,14 +85,12 @@ describe('DataManager tests', function () {
     it('Should retrieve variation for visitor by key', function (done) {
       this.timeout(test_timeout);
       const experienceKey = 'test-experience-ab-fullstack-2';
-      const variation = dataManager.getBucketing(
-        visitorId,
-        experienceKey,
-        {
+      const variation = dataManager.getBucketing(visitorId, experienceKey, {
+        visitorProperties: {
           varName3: 'something'
         },
-        {url: 'https://convert.com/'}
-      );
+        locationProperties: {url: 'https://convert.com/'}
+      });
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
           request.on('end', () => {
@@ -110,14 +108,12 @@ describe('DataManager tests', function () {
     it('Should retrieve variation for visitor by id', function (done) {
       this.timeout(test_timeout);
       const experienceId = 100218245;
-      const variation = dataManager.getBucketingById(
-        visitorId,
-        experienceId,
-        {
+      const variation = dataManager.getBucketingById(visitorId, experienceId, {
+        visitorProperties: {
           varName3: 'something'
         },
-        {url: 'https://convert.com/'}
-      );
+        locationProperties: {url: 'https://convert.com/'}
+      });
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
           request.on('end', () => {
@@ -256,14 +252,12 @@ describe('DataManager tests', function () {
     it('Should fail to retrieve variation if not exists', function () {
       this.timeout(test_timeout);
       const experienceKey = 'test-experience-ab-fullstack-4';
-      const variation = dataManager.getBucketing(
-        visitorId,
-        experienceKey,
-        {
+      const variation = dataManager.getBucketing(visitorId, experienceKey, {
+        visitorProperties: {
           varName3: 'something'
         },
-        {url: 'https://convert.com/'}
-      );
+        locationProperties: {url: 'https://convert.com/'}
+      });
       expect(variation).to.be.null;
     });
     it('Should never fail on reaching size limit when updating local store', function () {
