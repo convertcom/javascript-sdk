@@ -1250,6 +1250,9 @@ export class DataManager implements DataManagerInterface {
    * @return {boolean}
    */
   isValidConfigData(data: ConfigData): boolean {
-    return objectNotEmpty(data) && !!data?.account_id && !!data?.project?.id;
+    return (
+      objectNotEmpty(data) &&
+      ((!!data?.account_id && !!data?.project?.id) || Boolean(data?.error))
+    );
   }
 }

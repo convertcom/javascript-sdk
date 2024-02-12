@@ -14,18 +14,20 @@ import {Audience} from './Audience';
 import {Location} from './Location';
 import {LogLevel} from '@convertcom/js-sdk-enums';
 import {Segments} from './Segments';
+import {RequireAtLeastOne} from './RequireAtLeastOne';
 
-export type ConfigData = {
+export type ConfigData = RequireAtLeastOne<{
+  error: string;
   account_id: Id;
   project: Project;
-  goals?: Array<Goal>;
-  locations?: Array<Location>;
-  audiences?: Array<Audience>;
-  experiences?: Array<Experience>;
-  archived_experiences?: Array<Id>;
-  features?: Array<Feature>;
-  segments?: Array<Segments>;
-};
+  goals: Array<Goal>;
+  locations: Array<Location>;
+  audiences: Array<Audience>;
+  experiences: Array<Experience>;
+  archived_experiences: Array<Id>;
+  features: Array<Feature>;
+  segments: Array<Segments>;
+}>;
 
 type ConfigBase = {
   environment: string;
