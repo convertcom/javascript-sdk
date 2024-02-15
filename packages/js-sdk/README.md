@@ -698,4 +698,4 @@ Additionaly, you can even include this repository as part of your own `TypeScrip
 
 ## Credits
 
-Copyright(c) 2023 Convert Insights, Inc.
+Copyright(c) 2024 Convert Insights, Inc.
