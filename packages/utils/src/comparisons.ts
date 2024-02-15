@@ -41,7 +41,7 @@ export class Comparisons {
     negation?: boolean
   ): boolean {
     if (typeof value !== typeof testAgainst || value === testAgainst) {
-      return false;
+      return this._returnNegationCheck(false, negation);
     }
     return this._returnNegationCheck(value < testAgainst, negation);
   }
@@ -52,10 +52,10 @@ export class Comparisons {
     negation?: boolean
   ): boolean {
     if (typeof value !== typeof testAgainst) {
-      return false;
+      return this._returnNegationCheck(false, negation);
     }
     if (value === testAgainst) {
-      return true;
+      return this._returnNegationCheck(true, negation);
     }
     return this._returnNegationCheck(value <= testAgainst, negation);
   }
@@ -99,14 +99,11 @@ export class Comparisons {
       return <string>String(item).valueOf().toLowerCase();
     });
     for (let i = 0; i < matchedValuesArray.length; i++) {
-      if (testAgainst.indexOf(matchedValuesArray[i]) === -1 && !negation) {
-        return false;
-      }
-      if (testAgainst.indexOf(matchedValuesArray[i]) !== -1 && negation) {
-        return false;
+      if (testAgainst.indexOf(matchedValuesArray[i]) !== -1) {
+        return this._returnNegationCheck(true, negation);
       }
     }
-    return true;
+    return this._returnNegationCheck(false, negation);
   }
 
   static startsWith(
