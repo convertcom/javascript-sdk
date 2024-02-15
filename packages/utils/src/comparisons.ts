@@ -40,8 +40,8 @@ export class Comparisons {
     testAgainst: string | number,
     negation?: boolean
   ): boolean {
-    if (typeof value !== typeof testAgainst || value === testAgainst) {
-      return this._returnNegationCheck(false, negation);
+    if (typeof value !== typeof testAgainst) {
+      return false;
     }
     return this._returnNegationCheck(value < testAgainst, negation);
   }
@@ -52,10 +52,7 @@ export class Comparisons {
     negation?: boolean
   ): boolean {
     if (typeof value !== typeof testAgainst) {
-      return this._returnNegationCheck(false, negation);
-    }
-    if (value === testAgainst) {
-      return this._returnNegationCheck(true, negation);
+      return false;
     }
     return this._returnNegationCheck(value <= testAgainst, negation);
   }

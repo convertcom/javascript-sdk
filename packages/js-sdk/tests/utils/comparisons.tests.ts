@@ -35,9 +35,9 @@ describe('Comparison Processor utils tests', function () {
     const result = Comparisons['less'](-111, 123, true);
     expect(result).to.equal(false);
   });
-  it('Less should return false comparing numbers 123 against 123 with negation. Because of strict comparison. (Greater case)', function () {
+  it('Less should return true comparing numbers 123 against 123 with negation. (Greater case)', function () {
     const result = Comparisons['less'](123, 123, true);
-    expect(result).to.equal(false);
+    expect(result).to.equal(true);
   });
   it('Less should return false comparing numbers 321 against -123', function () {
     const result = Comparisons['less'](321, -123);
@@ -99,7 +99,7 @@ describe('Comparison Processor utils tests', function () {
     const result = Comparisons['lessEqual']('axyz', 'abcde');
     expect(result).to.equal(false);
   });
-  it('LessEqual should return true comparing numbers 1234 against 1234 with negation. (GreaterEqual case)', function () {
+  it('LessEqual should return false comparing numbers 1234 against 1234 with negation. (GreaterThan case)', function () {
     const result = Comparisons['lessEqual'](1234, 1234, true);
     expect(result).to.equal(false);
   });
