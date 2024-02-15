@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.0...js-sdk-v2.2.1) (2024-02-15)
+
+
+### Bug Fixes
+
+* less/lessEqual comparison negation logic ([8a1ed8f](https://github.com/convertcom/javascript-sdk/commit/8a1ed8f9ddfb0bf89da1619e04c9b04b3c424480))
+
 ## [2.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.1.0...js-sdk-v2.2.0) (2024-02-12)
 
 
