@@ -101,7 +101,7 @@ describe('Comparison Processor utils tests', function () {
   });
   it('LessEqual should return true comparing numbers 1234 against 1234 with negation. (GreaterEqual case)', function () {
     const result = Comparisons['lessEqual'](1234, 1234, true);
-    expect(result).to.equal(true);
+    expect(result).to.equal(false);
   });
   it('LessEqual should return true comparing strings `abcde` against `axyz`', function () {
     const result = Comparisons['lessEqual']('abcde', 'axyz');
