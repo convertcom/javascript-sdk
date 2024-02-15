@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-experience-v1.1.0...js-sdk-experience-v1.2.0) (2024-02-12)
+
+
+### Features
+
+* adding optional property for deciding whether to send tracking  event upon bucketing visitors when using ExperiencManager directly ([1bac32a](https://github.com/convertcom/javascript-sdk/commit/1bac32a2c38f15f47b4009aabec5a381c443ded9))
+
 ## [1.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-experience-v1.0.1...js-sdk-experience-v1.1.0) (2024-01-18)
 
 

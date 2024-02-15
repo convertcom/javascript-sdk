@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v1.1.0...js-sdk-types-v1.2.0) (2024-02-12)
+
+
+### Features
+
+* adding optional property for deciding whether to send tracking  event upon bucketing visitors when using ExperiencManager directly ([1bac32a](https://github.com/convertcom/javascript-sdk/commit/1bac32a2c38f15f47b4009aabec5a381c443ded9))
+
+
+### Bug Fixes
+
+* gracefully handle config server-side errors ([a88d7d3](https://github.com/convertcom/javascript-sdk/commit/a88d7d395d98c850b6af002237d3128f97cad89a))
+
 ## [1.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v1.0.2...js-sdk-types-v1.1.0) (2024-01-18)
 
 
