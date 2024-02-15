@@ -1,8 +1,8 @@
 {
-  "packages/js-sdk": "2.2.0",
+  "packages/js-sdk": "2.2.1",
   "packages/enums": "1.0.1",
   "packages/types": "1.2.0",
-  "packages/utils": "1.1.0",
+  "packages/utils": "1.1.1",
   "packages/event": "1.0.1",
   "packages/bucketing": "1.0.1",
   "packages/logger": "1.0.1",
