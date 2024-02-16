@@ -89,12 +89,12 @@ export class EventManager implements EventManagerInterface {
         deferred: deferred
       })
     );
-    for (const k in this._listeners[event] || []) {
+    for (const fn of this._listeners[event] || []) {
       if (
         Object.hasOwnProperty.call(this._listeners, event) &&
-        typeof this._listeners[event][k] === 'function'
+        typeof fn === 'function'
       ) {
-        this._listeners[event][k].apply(null, [this._mapper(args), err]);
+        fn.apply(null, [this._mapper(args), err]);
       }
     }
     if (deferred && !Object.hasOwnProperty.call(this._deferred, event)) {
