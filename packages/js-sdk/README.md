@@ -684,7 +684,7 @@ Additionaly, you can even include this repository as part of your own `TypeScrip
      "build": "yarn build:sdk && rollup -c"
    }
    ```
-7. You need to run `yarn` inside submodule `javascript-sdk` as well:
+7. You need to run `yarn` inside the submodule `javascript-sdk` as well:
    ```bash
    # update ConvertSDK submodule
    git submodule update --init --remote

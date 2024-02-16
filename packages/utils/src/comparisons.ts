@@ -29,6 +29,10 @@ export class Comparisons {
         Object.keys(value).indexOf(testAgainst) !== -1,
         negation
       );
+    value = String(value);
+    testAgainst = String(testAgainst);
+    value = value.valueOf().toLowerCase();
+    testAgainst = testAgainst.valueOf().toLowerCase();
     return this._returnNegationCheck(value === testAgainst, negation);
   }
 
