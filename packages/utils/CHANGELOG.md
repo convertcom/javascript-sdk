@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v1.1.1...js-sdk-utils-v1.1.2) (2024-02-16)
+
+
+### Bug Fixes
+
+* case-insensitive "equal" and "matches" comparisons ([b9dea18](https://github.com/convertcom/javascript-sdk/commit/b9dea189fe0e4ff52ebfa2ec547205cfe9c30304))
+
 ## [1.1.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v1.1.0...js-sdk-utils-v1.1.1) (2024-02-15)
 
 
