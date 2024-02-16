@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.1...js-sdk-v2.2.2) (2024-02-16)
+
+
+### Bug Fixes
+
+* case-insensitive "equal" and "matches" comparisons ([b9dea18](https://github.com/convertcom/javascript-sdk/commit/b9dea189fe0e4ff52ebfa2ec547205cfe9c30304))
+
 ## [2.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.0...js-sdk-v2.2.1) (2024-02-15)
 
 
