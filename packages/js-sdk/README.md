@@ -1,4 +1,4 @@
-# Convert Insights, Inc JavaScript SDK
+# Convert Insights, Inc. JavaScript SDK
 
 ![coverage](https://convertcom.github.io/javascript-sdk/coverage.svg)
 [![license](https://img.shields.io/badge/license-Apache--2.0-green)](https://choosealicense.com/licenses/apache-2.0/)
