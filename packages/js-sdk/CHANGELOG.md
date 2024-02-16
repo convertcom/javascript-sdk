@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.2...js-sdk-v2.2.3) (2024-02-16)
+
+
+### Bug Fixes
+
+* ignore extended properties when firing events by the EventManager ([f623b9b](https://github.com/convertcom/javascript-sdk/commit/f623b9bdece54d50aa21da76b7c99ea33e632094))
+
 ## [2.2.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.1...js-sdk-v2.2.2) (2024-02-16)
 
 
