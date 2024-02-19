@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.4...js-sdk-v2.3.0) (2024-02-19)
+
+
+### Features
+
+* introduce Context.releaseQueues() that sends  pending API/DataStore queues to server ([d1ae104](https://github.com/convertcom/javascript-sdk/commit/d1ae1045aacb724aaac2512061c6cf1c96b461e7))
+
 ## [2.2.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.3...js-sdk-v2.2.4) (2024-02-19)
 
 
