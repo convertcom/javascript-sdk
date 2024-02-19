@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-event-v1.0.1...js-sdk-event-v1.0.2) (2024-02-16)
+
+
+### Bug Fixes
+
+* ignore extended properties when firing events by the EventManager ([f623b9b](https://github.com/convertcom/javascript-sdk/commit/f623b9bdece54d50aa21da76b7c99ea33e632094))
+
 ## [1.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-event-v1.0.0...js-sdk-event-v1.0.1) (2023-11-09)
 
 
