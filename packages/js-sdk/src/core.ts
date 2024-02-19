@@ -187,6 +187,16 @@ export class Core implements CoreInterface {
   }
 
   /**
+   * Send pending API/DataStore queues to server
+   * @param {string=} reason
+   */
+  releaseQueues(reason?: string): void {
+    this._apiManager.releaseQueue(reason);
+    if (this._dataManager.dataStoreManager)
+      this._dataManager.dataStoreManager.releaseQueue(reason);
+  }
+
+  /**
    * Fetch remote config data
    * @return {Promise<void>}
    */

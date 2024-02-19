@@ -19,4 +19,6 @@ export interface CoreInterface {
   onReady(): Promise<void>;
 
   enableTracking(): void;
+
+  releaseQueues(reason?: string): void;
 }

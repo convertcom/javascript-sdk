@@ -523,6 +523,38 @@ convertSDK.onReady().then(() => {
 });
 ```
 
+### Release Pending Queues
+
+Send all pending API/DataStore queues to server
+
+#### Parameters
+
+| Parameter | Type   | Required | Description                           |
+| --------- | ------ | -------- | ------------------------------------- |
+| reason    | string | No       | Custom message for debugging purposes |
+
+#### Returns
+
+Void.
+
+#### Example
+
+```javascript
+import ConvertSDK from '@convertcom/js-sdk';
+const config = {
+  // full configuration options
+};
+
+const convertSDK = new ConvertSDK(config);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variations = context.runExperiences();
+
+  // manually release all pending queue at some point later, like on click, component unmount
+  context.releaseQueues();
+});
+```
+
 ### Events
 
 You can capture SDK events as well:
