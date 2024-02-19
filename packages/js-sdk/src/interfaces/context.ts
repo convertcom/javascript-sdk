@@ -51,4 +51,6 @@ export interface ContextInterface {
   ): void;
 
   getConfigEntity(key: string, entityType: string): Entity;
+
+  releaseQueues(reason?: string): void;
 }

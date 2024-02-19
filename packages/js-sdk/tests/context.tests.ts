@@ -66,7 +66,8 @@ describe('Context tests', function () {
       experienceManager,
       featureManager,
       segmentsManager,
-      dataManager
+      dataManager,
+      apiManager
     });
     expect(context)
       .to.be.an('object')
@@ -106,7 +107,8 @@ describe('Context tests', function () {
           experienceManager,
           featureManager,
           segmentsManager,
-          dataManager
+          dataManager,
+          apiManager
         },
         {browser: 'chrome', country: 'US'}
       );
@@ -476,7 +478,8 @@ describe('Context tests', function () {
         experienceManager,
         featureManager,
         segmentsManager,
-        dataManager
+        dataManager,
+        apiManager
       });
     });
     it('Shoud fail to get variation from specific experience if no visitor is set', function () {
