@@ -32,6 +32,7 @@ import {
 } from '@convertcom/js-sdk-enums';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
+import {ApiManagerInterface} from '@convertcom/js-sdk-api';
 
 /**
  * Provides visitor context
@@ -45,6 +46,7 @@ export class Context implements ContextInterface {
   private _featureManager: FeatureManagerInterface;
   private _dataManager: DataManagerInterface;
   private _segmentsManager: SegmentsManagerInterface;
+  private _apiManager: ApiManagerInterface;
   private _loggerManager: LogManagerInterface;
   private _config: Config;
   private _visitorId: Id;
@@ -59,6 +61,7 @@ export class Context implements ContextInterface {
    * @param {ExperienceManagerInterface} dependencies.experienceManager
    * @param {FeatureManagerInterface} dependencies.featureManager
    * @param {DataManagerInterface} dependencies.dataManager
+   * @param {ApiManagerInterface} dependencies.apiManager
    * @param {LogManagerInterface} dependencies.loggerManager
    */
   constructor(
@@ -70,6 +73,7 @@ export class Context implements ContextInterface {
       featureManager,
       segmentsManager,
       dataManager,
+      apiManager,
       loggerManager
     }: {
       eventManager: EventManagerInterface;
@@ -77,6 +81,7 @@ export class Context implements ContextInterface {
       featureManager: FeatureManagerInterface;
       segmentsManager: SegmentsManagerInterface;
       dataManager: DataManagerInterface;
+      apiManager: ApiManagerInterface;
       loggerManager?: LogManagerInterface;
     },
     visitorProperties?: Record<string, any>
@@ -90,6 +95,7 @@ export class Context implements ContextInterface {
     this._featureManager = featureManager;
     this._dataManager = dataManager;
     this._segmentsManager = segmentsManager;
+    this._apiManager = apiManager;
     this._loggerManager = loggerManager;
 
     if (visitorProperties && visitorProperties.constructor === Object) {
@@ -491,6 +497,16 @@ export class Context implements ContextInterface {
       }
     }
     return this._dataManager.getEntity(key, entityType);
+  }
+
+  /**
+   * Send pending API/DataStore queues to server
+   * @param {string=} reason
+   */
+  releaseQueues(reason?: string): void {
+    this._apiManager.releaseQueue(reason);
+    if (this._dataManager.dataStoreManager)
+      this._dataManager.dataStoreManager.releaseQueue(reason);
   }
 
   /**

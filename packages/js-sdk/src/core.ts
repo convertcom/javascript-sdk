@@ -148,6 +148,7 @@ export class Core implements CoreInterface {
         experienceManager: this._experienceManager,
         featureManager: this._featureManager,
         segmentsManager: this._segmentsManager,
+        apiManager: this._apiManager,
         dataManager: this._dataManager,
         loggerManager: this._loggerManager
       },
@@ -177,23 +178,6 @@ export class Core implements CoreInterface {
         reject(new Error(ERROR_MESSAGES.DATA_OBJECT_MISSING));
       }
     });
-  }
-
-  /**
-   * Enable tracking
-   */
-  enableTracking(): void {
-    this._apiManager.enableTracking();
-  }
-
-  /**
-   * Send pending API/DataStore queues to server
-   * @param {string=} reason
-   */
-  releaseQueues(reason?: string): void {
-    this._apiManager.releaseQueue(reason);
-    if (this._dataManager.dataStoreManager)
-      this._dataManager.dataStoreManager.releaseQueue(reason);
   }
 
   /**
