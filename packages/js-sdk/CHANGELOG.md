@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.3...js-sdk-v2.2.4) (2024-02-19)
+
+
+### Bug Fixes
+
+* handle undefined default visitor properties ([4a5fd93](https://github.com/convertcom/javascript-sdk/commit/4a5fd93620ef38f65a969b9f950e964b0ee878e9))
+
 ## [2.2.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.2...js-sdk-v2.2.3) (2024-02-16)
 
 
