@@ -505,6 +505,6 @@ export class Context implements ContextInterface {
     const visitorProperties = attributes
       ? objectDeepMerge(this._visitorProperties || {}, attributes)
       : this._visitorProperties;
-    return objectDeepMerge(segments || {}, visitorProperties);
+    return objectDeepMerge(segments || {}, visitorProperties || {});
   }
 }
