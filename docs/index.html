@@ -806,6 +806,44 @@ convertSDK.onReady().then(() => {
   const variation = context.getConfigEntity('variation-key', 'variations');
 });
 </code></pre>
+<h3>Release Pending Queues</h3>
+<p>Send all pending API/DataStore queues to server</p>
+<h4>Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reason</td>
+<td>string</td>
+<td>No</td>
+<td>Custom message for debugging purposes</td>
+</tr>
+</tbody>
+</table>
+<h4>Returns</h4>
+<p>Void.</p>
+<h4>Example</h4>
+<pre class="prettyprint source lang-javascript"><code>import ConvertSDK from '@convertcom/js-sdk';
+const config = {
+  // full configuration options
+};
+
+const convertSDK = new ConvertSDK(config);
+convertSDK.onReady().then(() => {
+  const context = convertSDK.createContext('user-unique-id');
+  const variations = context.runExperiences();
+
+  // manually release all pending queue at some point later, like on click, component unmount
+  context.releaseQueues();
+});
+</code></pre>
 <h3>Events</h3>
 <p>You can capture SDK events as well:</p>
 <table>

@@ -291,6 +291,7 @@ export class Core implements CoreInterface {
         experienceManager: this._experienceManager,
         featureManager: this._featureManager,
         segmentsManager: this._segmentsManager,
+        apiManager: this._apiManager,
         dataManager: this._dataManager,
         loggerManager: this._loggerManager
       },
@@ -320,13 +321,6 @@ export class Core implements CoreInterface {
         reject(new Error(ERROR_MESSAGES.DATA_OBJECT_MISSING));
       }
     });
-  }
-
-  /**
-   * Enable tracking
-   */
-  enableTracking(): void {
-    this._apiManager.enableTracking();
   }
 
   /**
