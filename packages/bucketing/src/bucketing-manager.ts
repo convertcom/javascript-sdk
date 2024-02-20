@@ -8,7 +8,7 @@
 import {BucketingManagerInterface} from './interfaces/bucketing-manager';
 
 import {Config, Id} from '@convertcom/js-sdk-types';
-import {objectDeepValue, generateHash} from '@convertcom/js-sdk-utils';
+import {generateHash} from '@convertcom/js-sdk-utils';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {MESSAGES} from '@convertcom/js-sdk-enums';
 
@@ -37,18 +37,8 @@ export class BucketingManager implements BucketingManagerInterface {
     {loggerManager}: {loggerManager?: LogManagerInterface} = {}
   ) {
     this._loggerManager = loggerManager;
-    this._max_traffic = objectDeepValue(
-      config,
-      'bucketing.max_traffic',
-      DEFAULT_MAX_TRAFFIC,
-      true
-    );
-    this._hash_seed = objectDeepValue(
-      config,
-      'bucketing.hash_seed',
-      DEFAULT_HASH_SEED,
-      true
-    );
+    this._max_traffic = config?.bucketing?.max_traffic || DEFAULT_MAX_TRAFFIC;
+    this._hash_seed = config?.bucketing.hash_seed || DEFAULT_HASH_SEED;
     this._loggerManager?.trace?.(
       'BucketingManager()',
       MESSAGES.BUCKETING_CONSTRUCTOR,

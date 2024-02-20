@@ -16,7 +16,6 @@ import {
 } from '@convertcom/js-sdk-types';
 import {MESSAGES, SegmentsKeys, RuleError} from '@convertcom/js-sdk-enums';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
-import {objectDeepValue} from '@convertcom/js-sdk-utils';
 import {DataManagerInterface} from '@convertcom/js-sdk-data';
 import {RuleManagerInterface} from '@convertcom/js-sdk-rules';
 
@@ -55,7 +54,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
     this._dataManager = dataManager;
     this._ruleManager = ruleManager;
     this._loggerManager = loggerManager;
-    this._data = objectDeepValue(config, 'data');
+    this._data = config?.data;
   }
 
   /**

@@ -18,7 +18,6 @@ import {
   Path
 } from '@convertcom/js-sdk-types';
 import {SystemEvents} from '@convertcom/js-sdk-enums';
-import {objectDeepValue} from '@convertcom/js-sdk-utils';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {EventManagerInterface} from '@convertcom/js-sdk-event';
 import {
@@ -88,26 +87,18 @@ export class ApiManager implements ApiManagerInterface {
     this._loggerManager = loggerManager;
     this._eventManager = eventManager;
 
-    this._configEndpoint = objectDeepValue(
-      config,
-      'api.endpoint.config',
-      DEFAULT_CONFIG_ENDPOINT
-    );
-    this._trackEndpoint = objectDeepValue(
-      config,
-      'api.endpoint.track',
-      DEFAULT_TRACK_ENDPOINT
-    );
-    this._data = objectDeepValue(config, 'data');
+    this._configEndpoint =
+      config?.api?.endpoint.config || DEFAULT_CONFIG_ENDPOINT;
+    this._trackEndpoint = config?.api?.endpoint.track || DEFAULT_TRACK_ENDPOINT;
+    this._data = config?.data;
     this._enrichData = !config?.dataStore;
     this._mapper = config?.mapper || ((value: any) => value);
 
     this.batchSize =
-      Number(objectDeepValue(config, 'events.batch_size')).valueOf() ||
-      DEFAULT_BATCH_SIZE;
+      Number(config?.events?.batch_size).valueOf() || DEFAULT_BATCH_SIZE;
 
     this.releaseInterval =
-      Number(objectDeepValue(config, 'events.release_interval')).valueOf() ||
+      Number(config?.events?.release_interval).valueOf() ||
       DEFAULT_RELEASE_INTERVAL;
 
     this._accountId = this._data?.account_id;

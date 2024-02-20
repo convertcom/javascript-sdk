@@ -60,11 +60,11 @@ export class DataStoreManager implements DataStoreManagerInterface {
 
     // TODO: Make this be configurable by config
     this.batchSize =
-      // Number(objectDeepValue(config, 'events.batch_size')).valueOf() ||
+      // Number(config?.events?.batch_size).valueOf() ||
       DEFAULT_BATCH_SIZE;
 
     this.releaseInterval =
-      // Number(objectDeepValue(config, 'events.release_interval')).valueOf() ||
+      // Number(config?.events?.release_interval).valueOf() ||
       DEFAULT_RELEASE_INTERVAL;
     this.dataStore = dataStore;
     this._mapper = config?.mapper || ((value: any) => value);
