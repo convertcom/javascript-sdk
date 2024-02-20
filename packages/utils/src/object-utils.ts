@@ -7,6 +7,7 @@
 
 /**
  * Returns the value at path of object
+ * TODO: get this utility to work with the optional mapper() helper from config
  * @param {Record<string, any>} object
  * @param {string} path
  * @param {any=} defaultValue

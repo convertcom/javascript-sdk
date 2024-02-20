@@ -111,7 +111,7 @@ export class DataManager implements DataManagerInterface {
     this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
-    this.dataStoreManager = objectDeepValue(config, 'dataStore');
+    this.dataStoreManager = config?.dataStore;
     this._loggerManager?.trace?.(
       'DataManager()',
       MESSAGES.DATA_CONSTRUCTOR,

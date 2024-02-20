@@ -7,8 +7,7 @@
 import {
   arrayNotEmpty,
   camelCase,
-  Comparisons as DEFAULT_COMPARISON_PROCESSOR,
-  objectDeepValue
+  Comparisons as DEFAULT_COMPARISON_PROCESSOR
 } from '@convertcom/js-sdk-utils';
 
 import {RuleManagerInterface} from './interfaces/rule-manager';
@@ -50,21 +49,12 @@ export class RuleManager implements RuleManagerInterface {
     {loggerManager}: {loggerManager?: LogManagerInterface} = {}
   ) {
     this._loggerManager = loggerManager;
-    this._comparisonProcessor = objectDeepValue(
-      config,
-      'rules.comparisonProcessor',
-      DEFAULT_COMPARISON_PROCESSOR
-    );
-    this._negation = String(
-      objectDeepValue(config, 'rules.negation', DEFAULT_NEGATION)
-    ).valueOf();
+    this._comparisonProcessor =
+      config?.rules?.comparisonProcessor || DEFAULT_COMPARISON_PROCESSOR;
+    this._negation = String(config?.rules?.negation || DEFAULT_NEGATION);
 
-    this._keys_case_sensitive = objectDeepValue(
-      config,
-      'rules.keys_case_sensitive',
-      DEFAULT_KEYS_CASE_SENSITIVE,
-      true
-    );
+    this._keys_case_sensitive =
+      config?.rules?.keys_case_sensitive || DEFAULT_KEYS_CASE_SENSITIVE;
     this._mapper = config?.mapper || ((value: any) => value);
     this._loggerManager?.trace?.(
       'RuleManager()',
