@@ -62,6 +62,7 @@ export class ApiManager implements ApiManagerInterface {
   private _projectId: Id;
   private _trackingEvent: TrackingEvent;
   private _trackingEnabled: boolean;
+  private _trackingSource: string;
   private _cacheLevel: string;
   private _mapper: (...args: any) => any;
 
@@ -118,6 +119,7 @@ export class ApiManager implements ApiManagerInterface {
       visitors: []
     };
     this._trackingEnabled = config?.network?.tracking;
+    this._trackingSource = config?.network?.source || 'js-sdk';
     this._cacheLevel = config?.network?.cacheLevel;
     this._requestsQueue = {
       length: 0,
@@ -220,6 +222,7 @@ export class ApiManager implements ApiManagerInterface {
     this.stopQueue();
     const payload: TrackingEvent = this._trackingEvent;
     payload.visitors = this._requestsQueue.items.slice();
+    payload.source = this._trackingSource;
     return this.request(
       'post',
       {

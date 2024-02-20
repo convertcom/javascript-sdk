@@ -47,6 +47,9 @@ class ConvertSDK extends Core {
     }
 
     const configuration = Config(config);
+    if (!configuration?.network) configuration.network = {};
+    if (!configuration.network?.source)
+      configuration.network.source = process.env.VERSION || 'js-sdk';
     const loggerManager = new LogManager(
       console,
       configuration.logger.logLevel
