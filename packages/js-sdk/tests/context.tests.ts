@@ -314,6 +314,7 @@ describe('Context tests', function () {
       this.timeout(test_timeout);
       const goalKey = 'increase-engagement';
       const requestData = {
+        source: 'js-sdk',
         enrichData: true,
         accountId,
         projectId,

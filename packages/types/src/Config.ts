@@ -64,6 +64,7 @@ type ConfigBase = {
   network?: {
     tracking?: boolean;
     cacheLevel?: string;
+    source?: string;
   };
   mapper?: (...args: any) => any;
 };

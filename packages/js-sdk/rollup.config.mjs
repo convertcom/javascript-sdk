@@ -64,6 +64,11 @@ const TRACK_ENV = {
   replace: `'${process.env.TRACK_ENDPOINT || ''}'`
 };
 
+const SDK_VERSION = {
+  find: 'process.env.VERSION',
+  replace: `'js${info.version || 'js-sdk'}'`
+};
+
 const JSDOC_PATH = 'docs';
 
 const exclude = [
@@ -117,6 +122,7 @@ const commonJSBundle = {
   plugins: withLogging.concat([
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
+    modify(SDK_VERSION),
     typescript({
       tsconfigOverride: {
         compilerOptions: {declaration: false},
@@ -179,6 +185,7 @@ const commonJSLegacyBundle = {
   plugins: withLogging.concat([
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
+    modify(SDK_VERSION),
     typescript({
       tsconfigOverride: {
         compilerOptions: {target: 'es5', declaration: false},
@@ -220,6 +227,7 @@ const esmBundle = {
   plugins: withLogging.concat([
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
+    modify(SDK_VERSION),
     typescript({
       tsconfigOverride: {
         compilerOptions: {declaration: false},
@@ -258,6 +266,7 @@ const umdBundle = {
   plugins: withLogging.concat([
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
+    modify(SDK_VERSION),
     typescript({
       tsconfigOverride: {
         compilerOptions: {declaration: false},
