@@ -9,6 +9,7 @@ import {
   camelCase,
   objectDeepEqual,
   objectDeepMerge,
+  objectDeepValue,
   objectNotEmpty
 } from '@convertcom/js-sdk-utils';
 
@@ -107,7 +108,7 @@ export class DataManager implements DataManagerInterface {
     this._eventManager = eventManager;
     this._config = config;
     this._mapper = config?.mapper || ((value: any) => value);
-    this._data = config?.data;
+    this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
     this.dataStoreManager = config?.dataStore;
@@ -1056,7 +1057,7 @@ export class DataManager implements DataManagerInterface {
   getEntitiesList(entityType: string): Array<Entity | Id> {
     let list = [];
     if (this._dataEntities.indexOf(entityType) !== -1) {
-      list = (this._data as any)?.entityType || [];
+      list = objectDeepValue(this._data, entityType) || [];
     }
     this._loggerManager?.trace?.(
       'DataManager.getEntitiesList()',

@@ -51,9 +51,7 @@ export class RuleManager implements RuleManagerInterface {
     this._loggerManager = loggerManager;
     this._comparisonProcessor =
       config?.rules?.comparisonProcessor || DEFAULT_COMPARISON_PROCESSOR;
-    this._negation = String(
-      config?.rules?.negation || DEFAULT_NEGATION
-    ).valueOf();
+    this._negation = String(config?.rules?.negation || DEFAULT_NEGATION);
 
     this._keys_case_sensitive =
       config?.rules?.keys_case_sensitive || DEFAULT_KEYS_CASE_SENSITIVE;

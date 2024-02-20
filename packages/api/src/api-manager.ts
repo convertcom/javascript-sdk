@@ -25,7 +25,8 @@ import {
   HttpMethod,
   HttpResponse,
   HttpResponseType,
-  HttpRequest
+  HttpRequest,
+  objectDeepValue
 } from '@convertcom/js-sdk-utils';
 
 import {
@@ -88,18 +89,17 @@ export class ApiManager implements ApiManagerInterface {
     this._eventManager = eventManager;
 
     this._configEndpoint =
-      config?.api?.endpoint.config || DEFAULT_CONFIG_ENDPOINT;
-    this._trackEndpoint = config?.api?.endpoint.track || DEFAULT_TRACK_ENDPOINT;
-    this._data = config?.data;
-    this._enrichData = !config?.dataStore;
+      config?.api?.endpoint?.config || DEFAULT_CONFIG_ENDPOINT;
+    this._trackEndpoint =
+      config?.api?.endpoint?.track || DEFAULT_TRACK_ENDPOINT;
+    this._data = objectDeepValue(config, 'data');
+    this._enrichData = !objectDeepValue(config, 'dataStore');
     this._mapper = config?.mapper || ((value: any) => value);
 
-    this.batchSize =
-      Number(config?.events?.batch_size).valueOf() || DEFAULT_BATCH_SIZE;
+    this.batchSize = Number(config?.events?.batch_size) || DEFAULT_BATCH_SIZE;
 
     this.releaseInterval =
-      Number(config?.events?.release_interval).valueOf() ||
-      DEFAULT_RELEASE_INTERVAL;
+      Number(config?.events?.release_interval) || DEFAULT_RELEASE_INTERVAL;
 
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
