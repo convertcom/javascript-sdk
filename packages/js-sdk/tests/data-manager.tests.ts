@@ -169,6 +169,7 @@ describe('DataManager tests', function () {
       const goalKey = 'increase-engagement';
       const requestData = {
         enrichData: true,
+        source: 'js-sdk',
         accountId,
         projectId,
         visitors: [
