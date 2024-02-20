@@ -38,7 +38,7 @@ export class BucketingManager implements BucketingManagerInterface {
   ) {
     this._loggerManager = loggerManager;
     this._max_traffic = config?.bucketing?.max_traffic || DEFAULT_MAX_TRAFFIC;
-    this._hash_seed = config?.bucketing.hash_seed || DEFAULT_HASH_SEED;
+    this._hash_seed = config?.bucketing?.hash_seed || DEFAULT_HASH_SEED;
     this._loggerManager?.trace?.(
       'BucketingManager()',
       MESSAGES.BUCKETING_CONSTRUCTOR,
