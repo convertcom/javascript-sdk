@@ -27,6 +27,7 @@ import {
 
 import {
   ERROR_MESSAGES,
+  EntityType,
   RuleError,
   SystemEvents
 } from '@convertcom/js-sdk-enums';
@@ -474,19 +475,19 @@ export class Context implements ContextInterface {
   /**
    * get Config Entity
    * @param {string} key
-   * @param {string} entityType
+   * @param {EntityType} entityType
    * @return {Entity}
    */
-  getConfigEntity(key: string, entityType: string): Entity {
-    if (entityType === 'variations') {
+  getConfigEntity(key: string, entityType: EntityType): Entity {
+    if (entityType === EntityType.VARIATIONS) {
       const experiences = this._dataManager.getEntitiesList(
-        'experiences'
+        EntityType.EXPERIENCES
       ) as Array<Experience>;
       for (const {key: experienceKey} of experiences) {
         const variation = this._dataManager.getSubItem(
-          'experiences',
+          EntityType.EXPERIENCES,
           experienceKey,
-          'variations',
+          EntityType.VARIATIONS,
           key,
           'key',
           'key'
@@ -497,6 +498,34 @@ export class Context implements ContextInterface {
       }
     }
     return this._dataManager.getEntity(key, entityType);
+  }
+
+  /**
+   * get Config Entity by Id
+   * @param {Id} id
+   * @param {EntityType} entityType
+   * @return {Entity}
+   */
+  getConfigEntityById(id: Id, entityType: EntityType): Entity {
+    if (entityType === EntityType.VARIATIONS) {
+      const experiences = this._dataManager.getEntitiesList(
+        EntityType.EXPERIENCES
+      ) as Array<Experience>;
+      for (const {id: experienceId} of experiences) {
+        const variation = this._dataManager.getSubItem(
+          EntityType.EXPERIENCES,
+          experienceId,
+          EntityType.VARIATIONS,
+          id,
+          'id',
+          'id'
+        ) as Variation;
+        if (variation) {
+          return variation;
+        }
+      }
+    }
+    return this._dataManager.getEntityById(id, entityType);
   }
 
   /**
