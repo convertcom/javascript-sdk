@@ -485,9 +485,9 @@ export class Context implements ContextInterface {
       ) as Array<Experience>;
       for (const {key: experienceKey} of experiences) {
         const variation = this._dataManager.getSubItem(
-          EntityType.EXPERIENCE,
+          'experiences',
           experienceKey,
-          EntityType.VARIATION,
+          'variations',
           key,
           'key',
           'key'
@@ -513,9 +513,9 @@ export class Context implements ContextInterface {
       ) as Array<Experience>;
       for (const {id: experienceId} of experiences) {
         const variation = this._dataManager.getSubItem(
-          EntityType.EXPERIENCE,
+          'experiences',
           experienceId,
-          EntityType.VARIATION,
+          'variations',
           id,
           'id',
           'id'

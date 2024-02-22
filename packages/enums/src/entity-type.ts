@@ -5,11 +5,11 @@
  * License Apache-2.0
  */
 export enum EntityType {
-  AUDIENCE = 'audiences',
-  LOCATION = 'locations',
-  SEGMENT = 'segments',
-  FEATURE = 'features',
-  GOAL = 'goals',
-  EXPERIENCE = 'experiences',
-  VARIATION = 'variations'
+  AUDIENCE = 'audience',
+  LOCATION = 'location',
+  SEGMENT = 'segment',
+  FEATURE = 'feature',
+  GOAL = 'goal',
+  EXPERIENCE = 'experience',
+  VARIATION = 'variation'
 }
