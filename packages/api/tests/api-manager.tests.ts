@@ -89,7 +89,7 @@ describe('ApiManager tests', function () {
             });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
       apiManager.request(
         'post',
@@ -99,6 +99,7 @@ describe('ApiManager tests', function () {
     });
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     after(function () {
+      server.closeAllConnections();
       server.close();
     });
   });
@@ -112,6 +113,7 @@ describe('ApiManager tests', function () {
     });
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     afterEach(function () {
+      server.closeAllConnections();
       server.close();
     });
 
@@ -162,7 +164,7 @@ describe('ApiManager tests', function () {
               });
           }
           res.writeHead(200, {'Content-Type': 'application/json'});
-          res.end();
+          res.end('{}');
         });
       }
     );
@@ -199,7 +201,7 @@ describe('ApiManager tests', function () {
               });
           }
           res.writeHead(200, {'Content-Type': 'application/json'});
-          res.end();
+          res.end('{}');
         });
         for (let i = 1; i <= batch_size; i++) {
           apiManager.enqueue(VID + i, requestData);
@@ -287,7 +289,7 @@ describe('ApiManager tests', function () {
       server.on('request', (request, res) => {
         if (request.url.startsWith('/track')) {
           res.writeHead(500, {'Content-Type': 'application/json'});
-          res.end();
+          res.end('{}');
         }
       });
       for (let i = 1; i <= batch_size; i++) {
