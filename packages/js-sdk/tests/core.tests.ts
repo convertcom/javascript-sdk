@@ -110,6 +110,7 @@ describe('Core tests', function () {
     });
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     afterEach(function () {
+      server.closeAllConnections();
       server.close();
     });
     it('Should expose Core', function () {
@@ -141,7 +142,7 @@ describe('Core tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -189,6 +190,7 @@ describe('Core tests', function () {
     });
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     afterEach(function () {
+      server.closeAllConnections();
       server.close();
     });
     it('Shoud fail to inisialize if config data is invalid', function (done) {
@@ -245,7 +247,7 @@ describe('Core tests', function () {
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/config/${accountId}/${projectId}`)) {
           res.writeHead(200, {'Content-Type': 'application/json'});
-          res.end();
+          res.end('{}');
         }
       });
 

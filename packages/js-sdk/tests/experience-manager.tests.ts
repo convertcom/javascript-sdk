@@ -60,6 +60,7 @@ describe('ExperienceManager tests', function () {
   // eslint-disable-next-line mocha/no-hooks-for-single-case
   afterEach(function () {
     dataManager.reset();
+    server.closeAllConnections();
     server.close();
   });
   it('Should expose ExperienceManager', function () {
@@ -140,7 +141,7 @@ describe('ExperienceManager tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully select variation for specific visitor by id', function (done) {
@@ -167,7 +168,7 @@ describe('ExperienceManager tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully select all variations across all experiences for specific visitor', function (done) {
@@ -189,7 +190,7 @@ describe('ExperienceManager tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get experience variation by key', function () {
