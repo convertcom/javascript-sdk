@@ -555,10 +555,10 @@ Find a single entity in configutation by `key`
 
 #### Parameters
 
-| Parameter  | Type       | Required | Description                                                                                                                                                                                                |
-| ---------- | ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| key        | string     | Yes      | Entity key as found in configuration                                                                                                                                                                       |
-| entityType | EntityType | Yes      | One of the configuration entities: `EntityType.AUDIENCES`, `EntityType.LOCATIONS`, `EntityType.SEGMENTS`, `EntityType.FEATURES`, `EntityType.GOALS`, `EntityType.EXPERIENCES`, and `EntityType.VARIATIONS` |
+| Parameter  | Type       | Required | Description                                                                                                                                                                                         |
+| ---------- | ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| key        | string     | Yes      | Entity key as found in configuration                                                                                                                                                                |
+| entityType | EntityType | Yes      | One of the configuration entities: `EntityType.AUDIENCE`, `EntityType.LOCATION`, `EntityType.SEGMENT`, `EntityType.FEATURE`, `EntityType.GOAL`, `EntityType.EXPERIENCE`, and `EntityType.VARIATION` |
 
 #### Returns
 
@@ -587,7 +587,7 @@ convertSDK.onReady().then(() => {
     userContext.runExperience('experience-key');
   const feature: Feature = userContext.getConfigEntity(
     variation.key,
-    EntityType.FEATURES
+    EntityType.FEATURE
   );
 });
 ```
@@ -598,10 +598,10 @@ Find a single entity in configutation by `id`
 
 #### Parameters
 
-| Parameter  | Type       | Required | Description                                                                                                                                                                                                |
-| ---------- | ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| id         | string     | number   | Yes                                                                                                                                                                                                        | Entity id as found in configuration |
-| entityType | EntityType | Yes      | One of the configuration entities: `EntityType.AUDIENCES`, `EntityType.LOCATIONS`, `EntityType.SEGMENTS`, `EntityType.FEATURES`, `EntityType.GOALS`, `EntityType.EXPERIENCES`, and `EntityType.VARIATIONS` |
+| Parameter  | Type       | Required | Description                                                                                                                                                                                         |
+| ---------- | ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| id         | string     | number   | Yes                                                                                                                                                                                                 | Entity id as found in configuration |
+| entityType | EntityType | Yes      | One of the configuration entities: `EntityType.AUDIENCE`, `EntityType.LOCATION`, `EntityType.SEGMENT`, `EntityType.FEATURE`, `EntityType.GOAL`, `EntityType.EXPERIENCE`, and `EntityType.VARIATION` |
 
 #### Returns
 
@@ -630,7 +630,7 @@ convertSDK.onReady().then(() => {
     userContext.runExperience('experience-key');
   const feature: Feature = userContext.getConfigEntityById(
     variation.id,
-    EntityType.FEATURES
+    EntityType.FEATURE
   );
 });
 ```
@@ -717,11 +717,11 @@ convertSDK.on(
       // note that you need to create audiences manually at GA side
       const {name: experienceName} as Experience = context.getConfigEntity(
         experienceKey,
-        EntityType.EXPERIENCES
+        EntityType.EXPERIENCE
       );
       const {name: variationName} as Variation = context.getConfigEntity(
         variationKey,
-        EntityType.VARIATIONS
+        EntityType.VARIATION
       );
       gtag('event', 'YOUR_GA_CUSOTM_EVENT', {experienceName, variationName});
     }

@@ -479,15 +479,15 @@ export class Context implements ContextInterface {
    * @return {Entity}
    */
   getConfigEntity(key: string, entityType: EntityType): Entity {
-    if (entityType === EntityType.VARIATIONS) {
+    if (entityType === EntityType.VARIATION) {
       const experiences = this._dataManager.getEntitiesList(
-        EntityType.EXPERIENCES
+        EntityType.EXPERIENCE
       ) as Array<Experience>;
       for (const {key: experienceKey} of experiences) {
         const variation = this._dataManager.getSubItem(
-          EntityType.EXPERIENCES,
+          EntityType.EXPERIENCE,
           experienceKey,
-          EntityType.VARIATIONS,
+          EntityType.VARIATION,
           key,
           'key',
           'key'
@@ -507,15 +507,15 @@ export class Context implements ContextInterface {
    * @return {Entity}
    */
   getConfigEntityById(id: Id, entityType: EntityType): Entity {
-    if (entityType === EntityType.VARIATIONS) {
+    if (entityType === EntityType.VARIATION) {
       const experiences = this._dataManager.getEntitiesList(
-        EntityType.EXPERIENCES
+        EntityType.EXPERIENCE
       ) as Array<Experience>;
       for (const {id: experienceId} of experiences) {
         const variation = this._dataManager.getSubItem(
-          EntityType.EXPERIENCES,
+          EntityType.EXPERIENCE,
           experienceId,
-          EntityType.VARIATIONS,
+          EntityType.VARIATION,
           id,
           'id',
           'id'
