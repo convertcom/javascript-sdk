@@ -121,6 +121,7 @@ describe('Context tests', function () {
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     afterEach(function () {
       dataManager.reset();
+      server.closeAllConnections();
       server.close();
     });
     it('Shoud successfully get variation from specific experience', function (done) {
@@ -154,7 +155,7 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get variations across all experiences', function (done) {
@@ -192,7 +193,7 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get a single feature and its status', function (done) {
@@ -225,7 +226,7 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get multiple features and its status', function (done) {
@@ -262,7 +263,7 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get features and their statuses', function (done) {
@@ -307,7 +308,7 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Should trigger Conversion', function (done) {
@@ -358,7 +359,7 @@ describe('Context tests', function () {
             });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
       context.trackConversion(goalKey, {
         ruleData: {
