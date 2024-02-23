@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.4.0...js-sdk-v2.4.1) (2024-02-23)
+
+
+### Bug Fixes
+
+* expose VariationChange, VariationChangeType, and FullStackFeatureChang ([d90aec0](https://github.com/convertcom/javascript-sdk/commit/d90aec09391c41630d72854d8416cd6a39ef77b7))
+
 ## [2.4.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.3.0...js-sdk-v2.4.0) (2024-02-23)
 
 
