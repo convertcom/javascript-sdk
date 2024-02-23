@@ -1058,7 +1058,6 @@ export class DataManager implements DataManagerInterface {
   getEntitiesList(entityType: string): Array<Entity | Id> {
     let list = [];
     const mappedEntityType = DATA_ENTITIES_MAP[entityType] || entityType;
-    if (entityType === 'variation') console.log(mappedEntityType);
     if (this._dataEntities.indexOf(mappedEntityType) !== -1) {
       list = objectDeepValue(this._data, mappedEntityType) || [];
     }
