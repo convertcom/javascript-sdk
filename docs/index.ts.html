@@ -154,17 +154,30 @@
 import {ApiManager} from '@convertcom/js-sdk-api';
 import {BucketingManager} from '@convertcom/js-sdk-bucketing';
 import {Core} from './src/core';
-import {DataManager} from '@convertcom/js-sdk-data';
-import {EventManager} from '@convertcom/js-sdk-event';
-import {ExperienceManager} from '@convertcom/js-sdk-experience';
+import {CoreInterface} from 'src/interfaces/core';
+import {ContextInterface} from 'src/interfaces/context';
+import {
+  DataManager,
+  DataManagerInterface,
+  DataStoreManagerInterface
+} from '@convertcom/js-sdk-data';
+import {EventManager, EventManagerInterface} from '@convertcom/js-sdk-event';
+import {
+  ExperienceManager,
+  ExperienceManagerInterface
+} from '@convertcom/js-sdk-experience';
 import {FeatureManager} from './src/feature-manager';
-import {RuleManager} from '@convertcom/js-sdk-rules';
-import {SegmentsManager} from '@convertcom/js-sdk-segments';
-import {LogManager} from '@convertcom/js-sdk-logger';
+import {FeatureManagerInterface} from 'src/interfaces/feature-manager';
+import {RuleManager, RuleManagerInterface} from '@convertcom/js-sdk-rules';
+import {
+  SegmentsManager,
+  SegmentsManagerInterface
+} from '@convertcom/js-sdk-segments';
+import {LogManager, LogManagerInterface} from '@convertcom/js-sdk-logger';
 
 import {Config} from './src/config';
-import {ERROR_MESSAGES} from '@convertcom/js-sdk-enums';
 import {Config as ConfigType} from '@convertcom/js-sdk-types';
+import {ERROR_MESSAGES} from '@convertcom/js-sdk-enums';
 
 //todo: add config attributes definition
 /**
@@ -190,6 +203,9 @@ class ConvertSDK extends Core {
     }
 
     const configuration = Config(config);
+    if (!configuration?.network) configuration.network = {};
+    if (!configuration.network?.source)
+      configuration.network.source = process.env.VERSION || 'js-sdk';
     const loggerManager = new LogManager(
       console,
       configuration.logger.logLevel
@@ -269,8 +285,54 @@ class ConvertSDK extends Core {
 
 export default ConvertSDK;
 
-export {LogLevel, SystemEvents} from '@convertcom/js-sdk-enums';
+export {
+  ConfigData,
+  StoreData,
+  BucketedFeature,
+  BucketedVariation,
+  BucketingAttributes,
+  ConversionAttributes,
+  Entity,
+  Id,
+  IdentityField,
+  SegmentsAttributes,
+  SegmentsData,
+  Experience,
+  Variation,
+  VariationChange,
+  Feature,
+  FullStackFeatureChange,
+  Project,
+  Goal,
+  Audience,
+  Location,
+  RequireAtLeastOne,
+  VisitorEvent,
+  Path
+} from '@convertcom/js-sdk-types';
+export {
+  EntityType,
+  RuleError,
+  GoalDataKey,
+  LogLevel,
+  SystemEvents,
+  VariationChangeType
+} from '@convertcom/js-sdk-enums';
 export {FileLogger, DataStore} from '@convertcom/js-sdk-utils';
+
+export {
+  ConfigType as ConvertConfig,
+  CoreInterface as ConvertInterface,
+  ContextInterface,
+  FeatureManagerInterface,
+  DataManagerInterface,
+  DataStoreManagerInterface,
+  EventManagerInterface,
+  ExperienceManagerInterface,
+  RuleManagerInterface,
+  SegmentsManagerInterface,
+  LogManagerInterface
+};
 </code></pre>
         </article>
     </section>
