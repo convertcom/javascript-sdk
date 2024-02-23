@@ -10,5 +10,6 @@ export type TrackingEvent = {
   accountId?: Id;
   projectId?: Id;
   enrichData?: boolean;
+  source?: string;
   visitors: Array<Visitor>;
 };

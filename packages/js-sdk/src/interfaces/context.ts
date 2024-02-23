@@ -15,7 +15,7 @@ import {
   SegmentsAttributes,
   SegmentsData
 } from '@convertcom/js-sdk-types';
-import {RuleError} from '@convertcom/js-sdk-enums';
+import {EntityType, RuleError} from '@convertcom/js-sdk-enums';
 
 export interface ContextInterface {
   runExperience(
@@ -50,7 +50,8 @@ export interface ContextInterface {
     visitorProperties: Record<string, any>
   ): void;
 
-  getConfigEntity(key: string, entityType: string): Entity;
+  getConfigEntity(key: string, entityType: EntityType): Entity;
+  getConfigEntityById(id: Id, entityType: EntityType): Entity;
 
   releaseQueues(reason?: string): void;
 }

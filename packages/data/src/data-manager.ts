@@ -43,6 +43,7 @@ import {
 
 import {
   DATA_ENTITIES,
+  DATA_ENTITIES_MAP,
   ERROR_MESSAGES,
   MESSAGES,
   RuleError,
@@ -111,7 +112,7 @@ export class DataManager implements DataManagerInterface {
     this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
-    this.dataStoreManager = objectDeepValue(config, 'dataStore');
+    this.dataStoreManager = config?.dataStore;
     this._loggerManager?.trace?.(
       'DataManager()',
       MESSAGES.DATA_CONSTRUCTOR,
@@ -1056,13 +1057,14 @@ export class DataManager implements DataManagerInterface {
    */
   getEntitiesList(entityType: string): Array<Entity | Id> {
     let list = [];
-    if (this._dataEntities.indexOf(entityType) !== -1) {
-      list = objectDeepValue(this._data, entityType) || [];
+    const mappedEntityType = DATA_ENTITIES_MAP[entityType] || entityType;
+    if (this._dataEntities.indexOf(mappedEntityType) !== -1) {
+      list = objectDeepValue(this._data, mappedEntityType) || [];
     }
     this._loggerManager?.trace?.(
       'DataManager.getEntitiesList()',
       this._mapper({
-        entityType: entityType,
+        entityType: mappedEntityType,
         list: list
       })
     );
@@ -1098,15 +1100,16 @@ export class DataManager implements DataManagerInterface {
     entityType: string,
     identityField: IdentityField = 'key'
   ): Entity {
+    const mappedEntityType = DATA_ENTITIES_MAP[entityType] || entityType;
     this._loggerManager?.trace?.(
       'DataManager._getEntityByField()',
       this._mapper({
         identity: identity,
-        entityType: entityType,
+        entityType: mappedEntityType,
         identityField: identityField
       })
     );
-    const list = this.getEntitiesList(entityType) as Array<Entity>;
+    const list = this.getEntitiesList(mappedEntityType) as Array<Entity>;
     if (arrayNotEmpty(list)) {
       for (let i = 0, length = list.length; i < length; i++) {
         if (list[i] && String(list[i]?.[identityField]) === String(identity)) {

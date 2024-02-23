@@ -15,6 +15,7 @@ import {Context as c} from '../src/context';
 import testConfig from './test-config.json';
 import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
+import {EntityType} from '@convertcom/js-sdk-enums';
 import {defaultConfig} from '../src/config/default';
 
 const host = 'http://localhost';
@@ -121,6 +122,7 @@ describe('Context tests', function () {
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     afterEach(function () {
       dataManager.reset();
+      server.closeAllConnections();
       server.close();
     });
     it('Shoud successfully get variation from specific experience', function (done) {
@@ -154,7 +156,7 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get variations across all experiences', function (done) {
@@ -192,7 +194,7 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get a single feature and its status', function (done) {
@@ -225,7 +227,7 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get multiple features and its status', function (done) {
@@ -262,7 +264,7 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get features and their statuses', function (done) {
@@ -307,13 +309,14 @@ describe('Context tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Should trigger Conversion', function (done) {
       this.timeout(test_timeout);
       const goalKey = 'increase-engagement';
       const requestData = {
+        source: 'js-sdk',
         enrichData: true,
         accountId,
         projectId,
@@ -357,7 +360,7 @@ describe('Context tests', function () {
             });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
       context.trackConversion(goalKey, {
         ruleData: {
@@ -413,25 +416,34 @@ describe('Context tests', function () {
     });
     it('Should successfully get config entity', function () {
       const audienceKey = 'adv-audience';
-      const audienceEntity = context.getConfigEntity(audienceKey, 'audiences');
+      const audienceEntity = context.getConfigEntity(
+        audienceKey,
+        EntityType.AUDIENCE
+      );
       const audience = configuration?.data?.audiences?.find?.(
         ({key}) => key === audienceKey
       );
       expect(audienceEntity).to.deep.equal(audience);
       const segmentKey = 'test-segments-1';
-      const segmentEntity = context.getConfigEntity(segmentKey, 'segments');
+      const segmentEntity = context.getConfigEntity(
+        segmentKey,
+        EntityType.SEGMENT
+      );
       const segment = configuration?.data?.segments?.find?.(
         ({key}) => key === segmentKey
       );
       expect(segmentEntity).to.deep.equal(segment);
       const featureKey = 'feature-2';
-      const featureEntity = context.getConfigEntity(featureKey, 'features');
+      const featureEntity = context.getConfigEntity(
+        featureKey,
+        EntityType.FEATURE
+      );
       const feature = configuration?.data?.features?.find?.(
         ({key}) => key === featureKey
       );
       expect(featureEntity).to.deep.equal(feature);
       const goalKey = 'adv-goal-country-browser';
-      const goalEntity = context.getConfigEntity(goalKey, 'goals');
+      const goalEntity = context.getConfigEntity(goalKey, EntityType.GOAL);
       const goal = configuration?.data?.goals?.find?.(
         ({key}) => key === goalKey
       );
@@ -439,7 +451,7 @@ describe('Context tests', function () {
       const experienceKey = 'test-experience-ab-fullstack-3';
       const experienceEntity = context.getConfigEntity(
         experienceKey,
-        'experiences'
+        EntityType.EXPERIENCE
       );
       const experience = configuration?.data?.experiences?.find?.(
         ({key}) => key === experienceKey
@@ -448,10 +460,61 @@ describe('Context tests', function () {
       const variationKey = '100299461-variation-1';
       const variationEntity = context.getConfigEntity(
         variationKey,
-        'variations'
+        EntityType.VARIATION
       );
       const variation = experience?.variations?.find?.(
         ({key}) => key === variationKey
+      );
+      expect(variationEntity).to.deep.equal(variation);
+    });
+    it('Should successfully get config entity by id', function () {
+      const audienceId = 100299433;
+      const audienceEntity = context.getConfigEntityById(
+        audienceId,
+        EntityType.AUDIENCE
+      );
+      const audience = configuration?.data?.audiences?.find?.(
+        ({id}) => id === audienceId
+      );
+      expect(audienceEntity).to.deep.equal(audience);
+      const segmentId = 200299434;
+      const segmentEntity = context.getConfigEntityById(
+        segmentId,
+        EntityType.SEGMENT
+      );
+      const segment = configuration?.data?.segments?.find?.(
+        ({id}) => id === segmentId
+      );
+      expect(segmentEntity).to.deep.equal(segment);
+      const featureId = 10025;
+      const featureEntity = context.getConfigEntityById(
+        featureId,
+        EntityType.FEATURE
+      );
+      const feature = configuration?.data?.features?.find?.(
+        ({id}) => id === featureId
+      );
+      expect(featureEntity).to.deep.equal(feature);
+      const goalId = 100215961;
+      const goalEntity = context.getConfigEntityById(goalId, EntityType.GOAL);
+      const goal = configuration?.data?.goals?.find?.(({id}) => id === goalId);
+      expect(goalEntity).to.deep.equal(goal);
+      const experienceId = 100218246;
+      const experienceEntity = context.getConfigEntityById(
+        experienceId,
+        EntityType.EXPERIENCE
+      );
+      const experience = configuration?.data?.experiences?.find?.(
+        ({id}) => id === experienceId
+      );
+      expect(experienceEntity).to.deep.equal(experience);
+      const variationId = 100299461;
+      const variationEntity = context.getConfigEntityById(
+        variationId,
+        EntityType.VARIATION
+      );
+      const variation = experience?.variations?.find?.(
+        ({id}) => id === variationId
       );
       expect(variationEntity).to.deep.equal(variation);
     });

@@ -80,7 +80,7 @@
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "prettier": "^3.0.3",
-    "puppeteer": "^21.4.0",
+    "puppeteer": "^22.2.0",
     "require": "^2.4.20",
     "rollup": "^3.20.2",
     "rollup-plugin-copy": "^3.5.0",

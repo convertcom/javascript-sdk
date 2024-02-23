@@ -58,6 +58,7 @@ describe('DataManager tests', function () {
   // eslint-disable-next-line mocha/no-hooks-for-single-case
   afterEach(function () {
     dataManager.reset();
+    server.closeAllConnections();
     server.close();
   });
   it('Should expose DataManager', function () {
@@ -102,7 +103,7 @@ describe('DataManager tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Should retrieve variation for visitor by id', function (done) {
@@ -125,7 +126,7 @@ describe('DataManager tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Should get list of data entities grouped by field', function () {
@@ -169,6 +170,7 @@ describe('DataManager tests', function () {
       const goalKey = 'increase-engagement';
       const requestData = {
         enrichData: true,
+        source: 'js-sdk',
         accountId,
         projectId,
         visitors: [
@@ -211,7 +213,7 @@ describe('DataManager tests', function () {
             });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
       dataManager.convert(
         visitorId,

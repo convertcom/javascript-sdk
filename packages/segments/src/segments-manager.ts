@@ -16,9 +16,9 @@ import {
 } from '@convertcom/js-sdk-types';
 import {MESSAGES, SegmentsKeys, RuleError} from '@convertcom/js-sdk-enums';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
-import {objectDeepValue} from '@convertcom/js-sdk-utils';
 import {DataManagerInterface} from '@convertcom/js-sdk-data';
 import {RuleManagerInterface} from '@convertcom/js-sdk-rules';
+import {objectDeepValue} from '@convertcom/js-sdk-utils';
 
 /**
  * Provides segments specific logic

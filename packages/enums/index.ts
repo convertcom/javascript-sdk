@@ -9,6 +9,7 @@ export * from './src/audience-type';
 export * from './src/data-enitites';
 export * from './src/dictionary';
 export * from './src/do-not-track';
+export * from './src/entity-type';
 export * from './src/event-type';
 export * from './src/experience-type';
 export * from './src/feature-status';

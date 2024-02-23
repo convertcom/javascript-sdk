@@ -60,6 +60,7 @@ describe('FeatureManager tests', function () {
   // eslint-disable-next-line mocha/no-hooks-for-single-case
   afterEach(function () {
     dataManager.reset();
+    server.closeAllConnections();
     server.close();
   });
   it('Should expose FeatureManager', function () {
@@ -168,7 +169,7 @@ describe('FeatureManager tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully check is feature enabled', function (done) {
@@ -190,7 +191,7 @@ describe('FeatureManager tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get feature and its status by id', function (done) {
@@ -213,7 +214,7 @@ describe('FeatureManager tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Shoud successfully get features and their statuses', function (done) {
@@ -253,7 +254,7 @@ describe('FeatureManager tests', function () {
           });
         }
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end();
+        res.end('{}');
       });
     });
     it('Convert value type', function () {
