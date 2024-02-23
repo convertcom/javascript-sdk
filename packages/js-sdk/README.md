@@ -573,7 +573,7 @@ import ConvertSDK, {
   ContextInterface,
   BucketedVariation,
   EntityType,
-  Feature
+  Experience
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -583,11 +583,9 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  const variation: BucketedVariation =
-    userContext.runExperience('experience-key');
-  const feature: Feature = userContext.getConfigEntity(
-    variation.key,
-    EntityType.FEATURE
+  const exprience: Experience = context.getConfigEntity(
+    'experience-key',
+    EntityType.EXPERIENCE
   );
 });
 ```
@@ -616,7 +614,9 @@ import ConvertSDK, {
   ContextInterface,
   BucketedVariation,
   EntityType,
-  Feature
+  Feature,
+  VariationChange,
+  VariationChangeType
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -626,10 +626,12 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  const variation: BucketedVariation =
-    userContext.runExperience('experience-key');
-  const feature: Feature = userContext.getConfigEntityById(
-    variation.id,
+  const variation: BucketedVariation = context.runExperience('experience-key');
+  const changesData: VariationChange = variation.changes.find(
+    ({type}) => type === VariationChangeType.FULLSTACK_FEATURE
+  );
+  const feature: Feature = context.getConfigEntityById(
+    changesData.data.feature_id,
     EntityType.FEATURE
   );
 });

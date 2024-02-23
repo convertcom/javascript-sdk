@@ -12,7 +12,9 @@ jobs:
         with:
           node-version: "18.x"
           registry-url: "https://registry.npmjs.org"
-      - run: yarn install
+      - run: |
+          yarn set version berry
+          yarn
       - if: ${{ startsWith(github.event.release.name, 'js-sdk-enums:') }}
         run: |
           yarn enums:build
