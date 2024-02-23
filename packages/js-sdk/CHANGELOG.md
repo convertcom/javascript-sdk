@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.3.0...js-sdk-v2.4.0) (2024-02-23)
+
+
+### Features
+
+* introduce "Context.getConfigEntityById()" ([58ce097](https://github.com/convertcom/javascript-sdk/commit/58ce097f0bf048825d010a7ccc93225854311380))
+
 ## [2.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.2.4...js-sdk-v2.3.0) (2024-02-19)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v1.2.0...js-sdk-types-v1.3.0) (2024-02-23)
+
+
+### Features
+
+* introduce "Context.getConfigEntityById()" ([58ce097](https://github.com/convertcom/javascript-sdk/commit/58ce097f0bf048825d010a7ccc93225854311380))
+
 ## [1.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v1.1.0...js-sdk-types-v1.2.0) (2024-02-12)
 
 

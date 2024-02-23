@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v1.0.1...js-sdk-enums-v1.1.0) (2024-02-23)
+
+
+### Features
+
+* introduce "Context.getConfigEntityById()" ([58ce097](https://github.com/convertcom/javascript-sdk/commit/58ce097f0bf048825d010a7ccc93225854311380))
+
 ## [1.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v1.0.0...js-sdk-enums-v1.0.1) (2023-11-09)
 
 
