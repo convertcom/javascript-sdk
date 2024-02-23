@@ -97,12 +97,23 @@ The above entry points can also be loaded through [unpkg](https://unpkg.com/) bu
 
 **ES6:**
 
-Supports `import` and `export` statements in modern JS (_i.e. React, Vue, Angular, .. etc_).
+Supports `import` and `export` statements in modern browsers (_i.e. React, Vue, Angular, .. etc_).
 
 > Must be transpiled to work in client browsers.
 
 ```typescript
 import ConvertSDK from '@convertcom/js-sdk';
+```
+
+**ESM:**
+
+Supports `import` and `export` statements in ES Module packages (_type `module` in `package.json`_).
+
+> Must be transpiled to work in client browsers.
+
+```typescript
+import ConvertSDKModule from '@convertcom/js-sdk';
+const ConvertSDK = (ConvertSDKModule as any).default;
 ```
 
 **CommonJS:**
