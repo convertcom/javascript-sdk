@@ -156,7 +156,9 @@ export {
   SegmentsData,
   Experience,
   Variation,
+  VariationChange,
   Feature,
+  FullStackFeatureChange,
   Project,
   Goal,
   Audience,
@@ -170,7 +172,8 @@ export {
   RuleError,
   GoalDataKey,
   LogLevel,
-  SystemEvents
+  SystemEvents,
+  VariationChangeType
 } from '@convertcom/js-sdk-enums';
 export {FileLogger, DataStore} from '@convertcom/js-sdk-utils';
 
