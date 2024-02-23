@@ -97,7 +97,7 @@ The above entry points can also be loaded through [unpkg](https://unpkg.com/) bu
 
 **ES6:**
 
-Supports `import` and `export` statements in modern browsers (_i.e. React, Vue, Angular, .. etc_).
+Supports `import` and `export` statements in modern frontend frameworks (_i.e. React, Vue, Angular, .. etc_).
 
 > Must be transpiled to work in client browsers.
 
@@ -811,56 +811,59 @@ You can use a customized build in certain situations. For example:
 Additionaly, you can even include this repository as part of your own `TypeScript` project:
 
 1. Add Convert JavaScriptSDK repository to your own as a submodule: `git submodule add https://github.com/convertcom/javascript-sdk javascript-sdk`
-2. Add the following `workspaces` to your `package.json` (_assuming that the submodule located under you repository root_):
-   ```json
-   "workspaces": [
-     "javascript-sdk/packages/*"
-   ]
-   ```
-3. If using PnP, the following `packages` to your `pnpm-workspace.yaml` instead:
-   ```yaml
-   packages:
-     - 'javascript-sdk/packages/*'
-   ```
-4. Add the following `paths` under `compilerOptions` of your `tsconfig.json`:
-   ```json
-   {
-     "compilerOptions": {
-       "paths": {
-         "@convertcom/js-sdk-api": ["./javascript-sdk/packages/api"],
-         "@convertcom/js-sdk-bucketing": [
-           "./javascript-sdk/packages/bucketing"
-         ],
-         "@convertcom/js-sdk-data": ["./javascript-sdk/packages/data"],
-         "@convertcom/js-sdk-enums": ["./javascript-sdk/packages/enums"],
-         "@convertcom/js-sdk-event": ["./javascript-sdk/packages/event"],
-         "@convertcom/js-sdk-experience": [
-           "./javascript-sdk/packages/experience"
-         ],
-         "@convertcom/js-sdk-logger": ["./javascript-sdk/packages/logger"],
-         "@convertcom/js-sdk-rules": ["./javascript-sdk/packages/rules"],
-         "@convertcom/js-sdk-segments": ["./javascript-sdk/packages/segments"],
-         "@convertcom/js-sdk-types": ["./javascript-sdk/packages/types"],
-         "@convertcom/js-sdk-utils": ["./javascript-sdk/packages/utils"],
-         "@convertcom/js-sdk": ["./javascript-sdk/packages/js-sdk"]
-       }
-     }
-   }
-   ```
-5. Add the following script to your `package.json`:
+2. Choose one of the following:
+   1. Workspaces: Add the following `workspaces` to your `package.json` (_assuming that the submodule located under you repository root_):
+      ```json
+      "workspaces": [
+        "javascript-sdk/packages/*"
+      ]
+      ```
+      If using PnP, the following `packages` to your `pnpm-workspace.yaml` instead:
+      ```yaml
+      packages:
+        - 'javascript-sdk/packages/*'
+      ```
+   2. Compiler Options: Add the following `paths` under `compilerOptions` of your `tsconfig.json`:
+      ```json
+      {
+        "compilerOptions": {
+          "paths": {
+            "@convertcom/js-sdk-api": ["./javascript-sdk/packages/api"],
+            "@convertcom/js-sdk-bucketing": [
+              "./javascript-sdk/packages/bucketing"
+            ],
+            "@convertcom/js-sdk-data": ["./javascript-sdk/packages/data"],
+            "@convertcom/js-sdk-enums": ["./javascript-sdk/packages/enums"],
+            "@convertcom/js-sdk-event": ["./javascript-sdk/packages/event"],
+            "@convertcom/js-sdk-experience": [
+              "./javascript-sdk/packages/experience"
+            ],
+            "@convertcom/js-sdk-logger": ["./javascript-sdk/packages/logger"],
+            "@convertcom/js-sdk-rules": ["./javascript-sdk/packages/rules"],
+            "@convertcom/js-sdk-segments": [
+              "./javascript-sdk/packages/segments"
+            ],
+            "@convertcom/js-sdk-types": ["./javascript-sdk/packages/types"],
+            "@convertcom/js-sdk-utils": ["./javascript-sdk/packages/utils"],
+            "@convertcom/js-sdk": ["./javascript-sdk/packages/js-sdk"]
+          }
+        }
+      }
+      ```
+3. Add the following script to your `package.json`:
    ```json
    "scripts": {
      "build:sdk": "cd javascript-sdk && BUNDLES=cjs,esm LOG_LEVEL=5 yarn sdk:build"
    }
    ```
    > Note that both `BUNDLES` and `LOG_LEVEL` are optional (_see [Build Environment Variables](#build-environment-variables) above_)
-6. Now you can build Convert JavaScriptSDK alongside your project (_assuming that you use `rollup` for bundling_):
+4. Now you can build Convert JavaScriptSDK alongside your project (_assuming that you use `rollup` for bundling_):
    ```json
    "scripts": {
      "build": "yarn build:sdk && rollup -c"
    }
    ```
-7. You need to run `yarn` inside the submodule `javascript-sdk` as well:
+5. You need to run `yarn` inside the submodule `javascript-sdk` as well:
    ```bash
    # update ConvertSDK submodule
    git submodule update --init --remote
