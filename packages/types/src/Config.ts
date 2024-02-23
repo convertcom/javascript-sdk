@@ -41,7 +41,7 @@ type ConfigBase = {
     hash_seed?: number;
     max_traffic?: number;
   };
-  dataStore?: object;
+  dataStore?: object | null;
   dataRefreshInterval?: number;
   events?: {
     batch_size?: number;
@@ -59,7 +59,7 @@ type ConfigBase = {
       path?: string;
       logLevel?: LogLevel;
     };
-    customLoggers: Array<Record<string, any>>;
+    customLoggers?: Array<Record<string, any>>;
   };
   network?: {
     tracking?: boolean;
