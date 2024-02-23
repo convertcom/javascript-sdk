@@ -30,7 +30,9 @@ jobs:
           sudo apt-get install -y google-chrome-stable
 
       - name: Installing npm packages
-        run: yarn install
+        run: |
+          yarn set version berry
+          yarn
 
       - name: Generating coverage and docs
         run: |
