@@ -12,42 +12,11 @@ jobs:
       pull-requests: write
     steps:
       - name: Run auto-approve steps
-        if: startsWith(github.head_ref, 'hotfix/') || startsWith(github.head_ref, 'revert-') || github.event.pull_request.user.login == 'release-please[bot]'
+        if: github.event.pull_request.user.login == 'release-please[bot]'
         id: autoapprove
         run: echo "run=true" >> $GITHUB_OUTPUT  
       - name: Auto approve Hotfix or revert PR
-        if: steps.autoapprove.outputs.run == 'true'
+        if: github.event.pull_request.user.login == 'release-please[bot]'
         uses: hmarr/auto-approve-action@v4
         with:
-          review-message: 🚨⚠️ Hotfix PR approved, merge with caution. ⚠️🚨
-      - name: Get date for three days from now
-        if: steps.autoapprove.outputs.run == 'true'
-        id: date
-        run: echo "date=$(date -d+3days '+%Y-%m-%d')" >> $GITHUB_OUTPUT
-      - name: Create asana task when hotfix merged
-        id: asana
-        if: steps.autoapprove.outputs.run == 'true'
-        uses: convertcom/gh-create-asana-task@main
-        with:
-          asana-secret: ${{ secrets.ASANA_PAT }}
-          asana-workspace-id: ${{ secrets.ASANA_WORKSPACE }}
-          asana-project-id: ${{ secrets.ASANA_HOTFIX_PROJECT }}
-          asana-task-name: Review ${{ github.event.repository.name }} - PR ${{ github.event.number  }} 
-          asana-task-description: |
-            It seems the following PR was urgent and it could not wait for a proper review. 
-            
-            To stay compliant, please review it and complete this task.
-
-            ${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.number }}
-          asana-due-date: ${{ steps.date.outputs.date }}
-          asana-tags: '["${{ github.repository }}"]' # optional
-      - name: Comment PR with asana Link
-        if: steps.autoapprove.outputs.run == 'true'
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            The following asana task has been created for this PR to be reviewed: 
-            
-            ${{ steps.asana.outputs.task_url }}
-
-            🚨⚠️ To stay compliant, please assign it to the right peer to be completed as soon as possible. ⚠️🚨
+          review-message: 🚨⚠️ Automated PR approved ⚠️🚨
