@@ -26,7 +26,7 @@ import {
   VariationChangeType
 } from '@convertcom/js-sdk-enums';
 
-import {castType, arrayNotEmpty} from '@convertcom/js-sdk-utils';
+import {castType, arrayNotEmpty, isPlainObject} from '@convertcom/js-sdk-utils';
 import {BucketedVariation} from '@convertcom/js-sdk-types';
 
 /**
@@ -396,7 +396,7 @@ export class FeatureManager implements FeatureManagerInterface {
             );
           }
 
-          if (typeCasting && variables.constructor === Object) {
+          if (typeCasting && isPlainObject(variables)) {
             // Convert variables values types
             for (const variableName in variables) {
               const variableDefinition = declaredFeatures[

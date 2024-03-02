@@ -7,6 +7,7 @@
 
 import {ERROR_MESSAGES, MESSAGES} from '@convertcom/js-sdk-enums';
 import type {RequestOptions} from 'https';
+import {isPlainObject} from './object-utils';
 
 export type HttpMethod =
   | 'GET'
@@ -164,11 +165,7 @@ export const serialize = (
   runtimeResult: RuntimeResult
 ) => {
   let query = '';
-  if (
-    params &&
-    params?.constructor === Object &&
-    !supportsRequestBody(method)
-  ) {
+  if (isPlainObject(params) && !supportsRequestBody(method)) {
     if (runtimeResult.runtime !== 'old-nodejs') {
       query = Object.keys(params)
         .map(
