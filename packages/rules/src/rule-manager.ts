@@ -7,7 +7,8 @@
 import {
   arrayNotEmpty,
   camelCase,
-  Comparisons as DEFAULT_COMPARISON_PROCESSOR
+  Comparisons as DEFAULT_COMPARISON_PROCESSOR,
+  isPlainObject
 } from '@convertcom/js-sdk-utils';
 
 import {RuleManagerInterface} from './interfaces/rule-manager';
@@ -259,9 +260,9 @@ export class RuleManager implements RuleManagerInterface {
         const negation = rule.matching.negated || false;
         const matching = rule.matching.match_type;
         if (this.getComparisonProcessorMethods().indexOf(matching) !== -1) {
-          if (data && typeof data === 'object' && data?.constructor) {
+          if (data && typeof data === 'object') {
             // Validate data key-value set.
-            if (data.constructor === Object) {
+            if (isPlainObject(data)) {
               // Rule object has to have `key` field
               for (const key of Object.keys(data)) {
                 const k = this._keys_case_sensitive ? key : key.toLowerCase();
