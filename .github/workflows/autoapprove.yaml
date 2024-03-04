@@ -1,0 +1,22 @@
+name: Auto approve PRs
+
+on: 
+  pull_request:
+    branches: [ main, main-convert ]
+    types: [opened]
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Run auto-approve steps
+        if: github.event.pull_request.user.login == 'release-please[bot]'
+        id: autoapprove
+        run: echo "run=true" >> $GITHUB_OUTPUT  
+      - name: Auto approve Hotfix or revert PR
+        if: github.event.pull_request.user.login == 'release-please[bot]'
+        uses: hmarr/auto-approve-action@v4
+        with:
+          review-message: 🚨⚠️ Automated PR approved ⚠️🚨
