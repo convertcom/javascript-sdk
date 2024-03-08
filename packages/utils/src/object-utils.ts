@@ -66,24 +66,15 @@ export function objectDeepMerge(...objects) {
 }
 
 /**
- * Check if plain object
- * @param object
- */
-export const isPlainObject = (object: any): boolean => {
-  return (
-    typeof object === 'object' &&
-    object !== null &&
-    Object.prototype.toString.call(object) === '[object Object]' && // check if an Object
-    Object.getPrototypeOf(object) === Object.prototype // check if a plain object
-  );
-};
-
-/**
  * Validates variable is object and not empty
  * @param object
  */
 export function objectNotEmpty(object: any): boolean {
-  return isPlainObject(object) && Object.keys(object).length > 0;
+  return (
+    typeof object === 'object' &&
+    object !== null &&
+    Object.keys(object).length > 0
+  );
 }
 
 /**

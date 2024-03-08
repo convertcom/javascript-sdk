@@ -5,7 +5,7 @@
  * License Apache-2.0
  */
 
-import {isPlainObject} from './object-utils';
+import {objectNotEmpty} from './object-utils';
 
 /**
  * Comparison Processor. Provides comparison methods for rules validation
@@ -26,7 +26,7 @@ export class Comparisons {
         value.indexOf(testAgainst) !== -1,
         negation
       );
-    if (isPlainObject(value) && typeof testAgainst === 'string')
+    if (objectNotEmpty(value) && typeof testAgainst === 'string')
       return this._returnNegationCheck(
         Object.keys(value).indexOf(testAgainst) !== -1,
         negation

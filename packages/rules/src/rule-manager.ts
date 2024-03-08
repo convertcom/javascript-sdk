@@ -8,7 +8,7 @@ import {
   arrayNotEmpty,
   camelCase,
   Comparisons as DEFAULT_COMPARISON_PROCESSOR,
-  isPlainObject
+  objectNotEmpty
 } from '@convertcom/js-sdk-utils';
 
 import {RuleManagerInterface} from './interfaces/rule-manager';
@@ -262,7 +262,39 @@ export class RuleManager implements RuleManagerInterface {
         if (this.getComparisonProcessorMethods().indexOf(matching) !== -1) {
           if (data && typeof data === 'object') {
             // Validate data key-value set.
-            if (isPlainObject(data)) {
+            if (this.isUsingCustomInterface(data)) {
+              // Rule object has to have `rule_type` field
+              if (rule?.rule_type) {
+                this._loggerManager?.info?.(
+                  'RuleManager._processRuleItem()',
+                  MESSAGES.RULE_MATCH_START.replace('#', rule.rule_type)
+                );
+                for (const method of Object.getOwnPropertyNames(
+                  data.constructor.prototype
+                )) {
+                  if (method === 'constructor') continue;
+                  const rule_method = camelCase(
+                    `get ${rule.rule_type.replace(/_/g, ' ')}`
+                  );
+                  if (
+                    method === rule_method ||
+                    data?.mapper?.(method) === rule_method
+                  ) {
+                    const dataValue = data[method](rule);
+                    if (
+                      Object.values(RuleError).includes(dataValue as RuleError)
+                    )
+                      return dataValue as RuleError;
+                    if (rule.rule_type === 'js_condition') return dataValue;
+                    return this._comparisonProcessor[matching](
+                      dataValue,
+                      rule.value,
+                      negation
+                    );
+                  }
+                }
+              }
+            } else if (objectNotEmpty(data)) {
               // Rule object has to have `key` field
               for (const key of Object.keys(data)) {
                 const k = this._keys_case_sensitive ? key : key.toLowerCase();
@@ -272,34 +304,6 @@ export class RuleManager implements RuleManagerInterface {
                 if (k === rule_k) {
                   return this._comparisonProcessor[matching](
                     data[key],
-                    rule.value,
-                    negation
-                  );
-                }
-              }
-            } else if (rule?.rule_type) {
-              // Rule object has to have `rule_type` field
-              this._loggerManager?.info?.(
-                'RuleManager._processRuleItem()',
-                MESSAGES.RULE_MATCH_START.replace('#', rule.rule_type)
-              );
-              for (const method of Object.getOwnPropertyNames(
-                data.constructor.prototype
-              )) {
-                if (method === 'constructor') continue;
-                const rule_method = camelCase(
-                  `get ${rule.rule_type.replace(/_/g, ' ')}`
-                );
-                if (
-                  method === rule_method ||
-                  data?.mapper?.(method) === rule_method
-                ) {
-                  const dataValue = data[method](rule);
-                  if (Object.values(RuleError).includes(dataValue as RuleError))
-                    return dataValue as RuleError;
-                  if (rule.rule_type === 'js_condition') return dataValue;
-                  return this._comparisonProcessor[matching](
-                    dataValue,
                     rule.value,
                     negation
                   );
@@ -336,5 +340,18 @@ export class RuleManager implements RuleManagerInterface {
       );
     }
     return false;
+  }
+
+  /**
+   * Check is rule data object is a custom interface instead of a literal object
+   * @param {Record<string, any>} data Single value or key-value data set to compare
+   * @return {boolean}
+   */
+  private isUsingCustomInterface(data: Record<string, any>): boolean {
+    return (
+      objectNotEmpty(data) &&
+      Object.prototype.hasOwnProperty.call(data, 'name') &&
+      data.name === 'RuleData'
+    );
   }
 }

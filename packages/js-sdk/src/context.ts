@@ -31,7 +31,7 @@ import {
   RuleError,
   SystemEvents
 } from '@convertcom/js-sdk-enums';
-import {isPlainObject, objectDeepMerge} from '@convertcom/js-sdk-utils';
+import {objectDeepMerge, objectNotEmpty} from '@convertcom/js-sdk-utils';
 import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
 import {ApiManagerInterface} from '@convertcom/js-sdk-api';
 
@@ -99,7 +99,7 @@ export class Context implements ContextInterface {
     this._apiManager = apiManager;
     this._loggerManager = loggerManager;
 
-    if (isPlainObject(visitorProperties)) {
+    if (objectNotEmpty(visitorProperties)) {
       const {properties} =
         this._dataManager.filterReportSegments(visitorProperties);
       if (properties) this._visitorProperties = properties;
