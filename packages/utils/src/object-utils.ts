@@ -70,12 +70,45 @@ export function objectDeepMerge(...objects) {
  * @param object
  */
 export const isPlainObject = (object: any): boolean => {
-  return (
-    typeof object === 'object' &&
-    object !== null &&
-    Object.prototype.toString.call(object) === '[object Object]' && // check if an Object
-    Object.getPrototypeOf(object) === Object.prototype // check if a plain object
-  );
+  /**
+   * Perfect performance but returns false if code runs
+   * in an environment where the global Object has been overridden or shadowed.
+   */
+  // return object?.constructor === Object;
+
+  /**
+   * Works without checking the constructor directly, but with poor performance
+   * due to the use of Object.getPrototypeOf and Object.prototype.toString.call().
+   * These methods, while precise for type checking, can be performance-intensive
+   * when called repeatedly in performance-critical or high-frequency scenarios.
+   */
+  // return (
+  //   typeof object === 'object' &&
+  //   object !== null &&
+  //   Object.prototype.toString.call(object) === '[object Object]' && // check if an Object
+  //   Object.getPrototypeOf(object) === Object.prototype // check if a plain object
+  // );
+
+  /**
+   * A more performant approach without relying on the constructor property
+   * or the more intensive checks like Object.getPrototypeOf and Object.prototype.toString.call().
+   */
+  if (typeof object !== 'object' || object === null) return false;
+  // check if the object is not an Array or other built-in types.
+  if (
+    Array.isArray(object) ||
+    object instanceof Date ||
+    object instanceof RegExp
+  )
+    return false;
+  // check for objects created with Object.create(null)
+  if (Object.getPrototypeOf(object) === null) return true;
+  // final attempt to catch objects that are likely "plain"
+  let proto = object;
+  while (Object.getPrototypeOf(proto) !== null) {
+    proto = Object.getPrototypeOf(proto);
+  }
+  return Object.getPrototypeOf(object) === proto;
 };
 
 /**
