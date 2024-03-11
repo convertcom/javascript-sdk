@@ -106,8 +106,12 @@ describe('BucketingManager tests', function () {
     expect(value).to.be.a('number');
   });
   it('Should return different values generated with help of murmurhash based on Visitor id with seeds', function () {
-    const value1 = bucketingManager.getValueVisitorBased('100123456', 11223344);
-    const value2 = bucketingManager.getValueVisitorBased('100123456', 99887766);
+    const value1 = bucketingManager.getValueVisitorBased('100123456', {
+      seed: 11223344
+    });
+    const value2 = bucketingManager.getValueVisitorBased('100123456', {
+      seed: 99887766
+    });
     expect(value2).to.not.equal(value1);
   });
 

@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Id} from '@convertcom/js-sdk-types';
+import {BucketingHash, Id} from '@convertcom/js-sdk-types';
 
 export interface BucketingManagerInterface {
   selectBucket(
@@ -13,12 +13,11 @@ export interface BucketingManagerInterface {
     redistribute?: number
   ): string | null;
 
-  getValueVisitorBased(visitorId: Id, seed?: number): number;
+  getValueVisitorBased(visitorId: Id, options?: BucketingHash): number;
 
   getBucketForVisitor(
     buckets: Record<string, number>,
     visitorId: Id,
-    redistribute?: number,
-    seed?: number
+    options?: BucketingHash
   ): string | null;
 }
