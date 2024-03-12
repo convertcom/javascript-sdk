@@ -295,12 +295,22 @@ const config = {
     logLevel: LogLevel.DEBUG,
     customLoggers: [] // Allows 3rd party loggers to be passed
   },
+  bucketing: {
+    hash_seed: 9999; // murmurhash seed
+    max_traffic: 10000; // max hash (representing 100% traffic allocation)
+    includeExperienceKeyHash: false; // whether to prefix teh generated hash with the experience key
+  },
   dataStore: null, // Allows 3rd party data store to be passed (optional)
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   data: projectData,
+  events: {
+    batch_size: 10; // max network requests to be released per call
+    release_interval: 10000; // time in milliseconds between network releasing queue (including the intial release)
+  },
   network: {
     tracking: true, // can be set to false to disable tracking events
-    cacheLevel: 'default' // can be set to 'low' for short-lived cache (for development purposes only)
+    cacheLevel: 'default', // can be set to 'low' for short-lived cache (for development purposes only)
+    source: 'js-sdk' // string identifier indicating the source of network requests
   }
 };
 </code></pre>
