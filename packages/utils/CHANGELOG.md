@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v1.1.2...js-sdk-utils-v1.1.3) (2024-03-12)
+
+
+### Bug Fixes
+
+* more robust utility for checking plain object ([c4c28bf](https://github.com/convertcom/javascript-sdk/commit/c4c28bf82765054011a170bceeaa0488cf364437))
+
 ## [1.1.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v1.1.1...js-sdk-utils-v1.1.2) (2024-02-16)
 
 

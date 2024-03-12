@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.4.1...js-sdk-v3.0.0) (2024-03-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* include experience key hash bucketing
+
+### Features
+
+* include experience key hash bucketing ([2b7df97](https://github.com/convertcom/javascript-sdk/commit/2b7df976506666b9ef251563008c18a5a00ed7ff))
+
+
+### Bug Fixes
+
+* more robust utility for checking plain object ([c4c28bf](https://github.com/convertcom/javascript-sdk/commit/c4c28bf82765054011a170bceeaa0488cf364437))
+
 ## [2.4.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.4.0...js-sdk-v2.4.1) (2024-02-23)
 
 
