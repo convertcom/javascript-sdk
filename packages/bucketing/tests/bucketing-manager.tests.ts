@@ -105,7 +105,6 @@ describe('BucketingManager tests', function () {
     const value = bucketingManager.getValueVisitorBased('100123456');
     expect(value).to.be.a('number');
   });
-
   it('Should return different values generated with help of murmurhash based on Visitor id with seeds', function () {
     const value1 = bucketingManager.getValueVisitorBased('100123456', {
       seed: 11223344
