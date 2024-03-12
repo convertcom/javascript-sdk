@@ -7,7 +7,7 @@
 
 import {BucketingManagerInterface} from './interfaces/bucketing-manager';
 
-import {Config, Id} from '@convertcom/js-sdk-types';
+import {BucketingHash, Config, Id} from '@convertcom/js-sdk-types';
 import {generateHash} from '@convertcom/js-sdk-utils';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {MESSAGES} from '@convertcom/js-sdk-enums';
@@ -83,16 +83,20 @@ export class BucketingManager implements BucketingManagerInterface {
   /**
    * Get a value based on hash from Visitor id to use for bucket selecting
    * @param {Id} visitorId
-   * @param {number=} seed
+   * @param {BucketingHash=} options
+   * @param {number=} [options.seed=]
+   * @param {string=} [options.experienceKey=]
    * @return {number}
    */
-  getValueVisitorBased(visitorId: Id, seed = this._hash_seed): number {
-    const hash = generateHash(String(visitorId), seed);
+  getValueVisitorBased(visitorId: Id, options?: BucketingHash): number {
+    const {seed = this._hash_seed, experienceKey = ''} = options || {};
+    const hash = generateHash(experienceKey + String(visitorId), seed);
     const val = (hash / DEFAULT_MAX_HASH) * this._max_traffic;
     const result = parseInt(String(val), 10);
     this._loggerManager?.debug?.('BucketingManager.getValueVisitorBased()', {
       visitorId: visitorId,
       seed: seed,
+      experienceKey: experienceKey,
       val: val,
       result: result
     });
@@ -103,17 +107,18 @@ export class BucketingManager implements BucketingManagerInterface {
    * Get a bucket for the visitor
    * @param {object} buckets Key-value object with variations IDs as keys and percentages as values
    * @param {Id} visitorId
-   * @param {number} [redistribute=0]
-   * @param {number} [seed=]
+   * @param {BucketingHash=} options
+   * @param {number=} [options.redistribute=0]
+   * @param {number=} [options.seed=]
+   * @param {string=} [options.experienceKey=]
    * @return {string | null}
    */
   getBucketForVisitor(
     buckets: Record<string, number>,
     visitorId: Id,
-    redistribute = 0,
-    seed?: number
+    options?: BucketingHash
   ): string | null {
-    const value = this.getValueVisitorBased(visitorId, seed);
-    return this.selectBucket(buckets, value, redistribute);
+    const value = this.getValueVisitorBased(visitorId, options);
+    return this.selectBucket(buckets, value, options?.redistribute);
   }
 }
