@@ -40,6 +40,7 @@ type ConfigBase = {
   bucketing?: {
     hash_seed?: number;
     max_traffic?: number;
+    includeExperienceKeyHash?: boolean;
   };
   dataStore?: object | null;
   dataRefreshInterval?: number;
