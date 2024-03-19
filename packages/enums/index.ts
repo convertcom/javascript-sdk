@@ -11,7 +11,6 @@ export * from './src/dictionary';
 export * from './src/do-not-track';
 export * from './src/entity-type';
 export * from './src/feature-status';
-export * from './src/ga-type';
 export * from './src/goal-data-key';
 export * from './src/log-level';
 export * from './src/log-method';
