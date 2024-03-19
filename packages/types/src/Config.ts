@@ -5,29 +5,10 @@
  * License Apache-2.0
  */
 
-import {Experience} from './Experience';
-import {Feature} from './Feature';
-import {Id} from './Id';
-import {Project} from './Project';
-import {Goal} from './Goal';
-import {Audience} from './Audience';
-import {Location} from './Location';
+import {ConfigResponseData} from './config/index';
 import {LogLevel} from '@convertcom/js-sdk-enums';
-import {Segments} from './Segments';
-import {RequireAtLeastOne} from './RequireAtLeastOne';
 
-export type ConfigData = RequireAtLeastOne<{
-  error: string;
-  account_id: Id;
-  project: Project;
-  goals: Array<Goal>;
-  locations: Array<Location>;
-  audiences: Array<Audience>;
-  experiences: Array<Experience>;
-  archived_experiences: Array<Id>;
-  features: Array<Feature>;
-  segments: Array<Segments>;
-}>;
+export * from './config/index';
 
 type ConfigBase = {
   environment: string;
@@ -76,7 +57,7 @@ type ConfigWithSdkKey = ConfigBase & {
 };
 
 type ConfigWithData = ConfigBase & {
-  data: ConfigData;
+  data: ConfigResponseData;
   sdkKey?: never;
 };
 

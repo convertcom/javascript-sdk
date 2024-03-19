@@ -49,15 +49,18 @@ describe('SegmentsManager tests', function () {
     });
     segmentsManager = new sm(configuration, {dataManager, ruleManager});
   });
+
   it('Should expose SegmentsManager', function () {
     assert.isDefined(sm);
   });
+
   it('Imported entity should be a constructor of SegmentsManager instance', function () {
     expect(sm)
       .to.be.a('function')
       .that.has.property('name')
       .which.equal('SegmentsManager');
   });
+
   it('Should successfully create new SegmentsManager instance', async function () {
     expect(segmentsManager)
       .to.be.an('object')
@@ -66,13 +69,14 @@ describe('SegmentsManager tests', function () {
       .which.equal('SegmentsManager');
   });
 
-  describe('Test Segments Manager', function () {
+  describe('Test ConfigSegment Manager', function () {
     it('Should successfully update segments in DataStore', function () {
       const segments = {country: 'US'};
       segmentsManager.putSegments(visitorId, segments);
       const localSegments = dataManager.getData(visitorId);
       expect(segments).to.deep.equal(localSegments?.segments);
     });
+
     it('Should successfully update custom segments for specific visitor', function () {
       const segmentKey = 'test-segments-1';
       const segmentId = '200299434';
@@ -88,6 +92,7 @@ describe('SegmentsManager tests', function () {
         .that.has.property('customSegments')
         .to.deep.equal([segmentId]);
     });
+
     it('Should keep custom segments intact if already set for specific visitor', function () {
       const segmentKey = 'test-segments-1';
       const updatedSegments = segmentsManager.selectCustomSegments(
@@ -99,6 +104,7 @@ describe('SegmentsManager tests', function () {
       );
       expect(updatedSegments).to.be.undefined;
     });
+
     it('Should keep custom segments intact if key is not found for specific visitor', function () {
       const segmentKey = 'test-segments-2';
       const updatedSegments = segmentsManager.selectCustomSegments(

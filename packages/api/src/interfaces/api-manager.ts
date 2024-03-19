@@ -6,11 +6,10 @@
  */
 
 import {
-  Id,
-  SegmentsData,
-  VisitorEvent,
-  ConfigData,
-  Path
+  VisitorSegments,
+  ConfigResponseData,
+  Path,
+  VisitorTrackingEvents
 } from '@convertcom/js-sdk-types';
 
 export interface ApiManagerInterface {
@@ -25,9 +24,9 @@ export interface ApiManagerInterface {
   ): Promise<any>;
 
   enqueue(
-    visitorId: Id,
-    eventRequest: VisitorEvent,
-    segments?: SegmentsData
+    visitorId: string,
+    eventRequest: VisitorTrackingEvents,
+    segments?: VisitorSegments
   ): void;
 
   releaseQueue(reason?: string): Promise<any>;
@@ -40,7 +39,7 @@ export interface ApiManagerInterface {
 
   disableTracking(): void;
 
-  setData(data: ConfigData): void;
+  setData(data: ConfigResponseData): void;
 
-  getConfigByKey(sdkKey: string): Promise<ConfigData>;
+  getConfigByKey(sdkKey: string): Promise<ConfigResponseData>;
 }

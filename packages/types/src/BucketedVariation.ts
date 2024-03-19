@@ -4,11 +4,11 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Id} from './Id';
-import {Variation} from './Variation';
 
-export type BucketedVariation = Variation & {
-  experienceId?: Id;
+import {ExperienceVariationConfig} from './config/index';
+
+export type BucketedVariation = ExperienceVariationConfig & {
+  experienceId?: string;
   experienceKey?: string;
   experienceName?: string;
 };

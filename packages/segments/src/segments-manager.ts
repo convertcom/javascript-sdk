@@ -8,11 +8,11 @@
 import {SegmentsManagerInterface} from './interfaces/segments-manager';
 import {
   Config,
-  ConfigData,
-  Id,
-  Segments,
-  SegmentsData,
-  StoreData
+  ConfigResponseData,
+  ConfigSegment,
+  VisitorSegments,
+  StoreData,
+  RuleObject
 } from '@convertcom/js-sdk-types';
 import {MESSAGES, SegmentsKeys, RuleError} from '@convertcom/js-sdk-enums';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
@@ -27,7 +27,7 @@ import {objectDeepValue} from '@convertcom/js-sdk-utils';
  * @implements {SegmentsManagerInterface}
  */
 export class SegmentsManager implements SegmentsManagerInterface {
-  private _data: ConfigData;
+  private _data: ConfigResponseData;
 
   private _dataManager: DataManagerInterface;
   private _ruleManager: RuleManagerInterface;
@@ -60,10 +60,10 @@ export class SegmentsManager implements SegmentsManagerInterface {
 
   /**
    * Get segments in DataStore
-   * @param {Id} visitorId
-   * @returns {SegmentsData}
+   * @param {string} visitorId
+   * @returns {VisitorSegments}
    */
-  getSegments(visitorId: Id): SegmentsData {
+  getSegments(visitorId: string): VisitorSegments {
     const storeData: StoreData = this._dataManager.getData(visitorId) || {};
     const {segments} = this._dataManager.filterReportSegments(
       storeData?.segments
@@ -73,10 +73,10 @@ export class SegmentsManager implements SegmentsManagerInterface {
 
   /**
    * Update segments in DataStore
-   * @param {Id} visitorId
-   * @param {SegmentsData} segments
+   * @param {string} visitorId
+   * @param {VisitorSegments} segments
    */
-  putSegments(visitorId: Id, segments: SegmentsData): void {
+  putSegments(visitorId: string, segments: VisitorSegments): void {
     const {segments: reportSegments} =
       this._dataManager.filterReportSegments(segments);
     if (reportSegments) {
@@ -86,10 +86,10 @@ export class SegmentsManager implements SegmentsManagerInterface {
   }
 
   private setCustomSegments(
-    visitorId: Id,
-    segments: Array<Segments>,
+    visitorId: string,
+    segments: Array<ConfigSegment>,
     segmentRule?: Record<string, any>
-  ): SegmentsData | RuleError {
+  ): VisitorSegments | RuleError {
     const storeKey = this._dataManager.getStoreKey(visitorId);
     let storeData: StoreData = this._dataManager.getData(visitorId) || {};
     // Get custom segments ID from DataStore
@@ -117,8 +117,8 @@ export class SegmentsManager implements SegmentsManagerInterface {
       if (segmentRule && !segmentsMatched) {
         segmentsMatched = this._ruleManager.isRuleMatched(
           segmentRule,
-          segment?.rules,
-          `Segments #${segment?.id}`
+          segment?.rules as RuleObject,
+          `ConfigSegment #${segment?.id}`
         );
         // Return rule errors if present
         if (Object.values(RuleError).includes(segmentsMatched as RuleError))
@@ -138,7 +138,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
       }
     }
 
-    let segmentsData: SegmentsData;
+    let segmentsData: VisitorSegments;
     if (segmentIds.length) {
       segmentsData = {
         ...(storeData.segments || {}),
@@ -159,42 +159,42 @@ export class SegmentsManager implements SegmentsManagerInterface {
 
   /**
    * Update custom segments for specific visitor
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @param {Array<string>} segmentKeys A list of segment keys
    * @param {Record<string, any>=} segmentRule An object of key-value pairs that are used for segments matching
    * @param {string=} environment
-   * @return {SegmentsData | RuleError}
+   * @return {VisitorSegments | RuleError}
    */
   selectCustomSegments(
-    visitorId: Id,
+    visitorId: string,
     segmentKeys: Array<string>,
     segmentRule?: Record<string, any>
-  ): SegmentsData | RuleError {
+  ): VisitorSegments | RuleError {
     const segments = this._dataManager.getEntities(
       segmentKeys,
       'segments'
-    ) as Array<Segments>;
+    ) as Array<ConfigSegment>;
 
     return this.setCustomSegments(visitorId, segments, segmentRule);
   }
 
   /**
    * Update custom segments for specific visitor
-   * @param {Id} visitorId
-   * @param {Array<Id>} segmentIds A list of segment ids
+   * @param {string} visitorId
+   * @param {Array<string>} segmentIds A list of segment ids
    * @param {Record<string, any>=} segmentRule An object of key-value pairs that are used for segments matching
    * @param {string=} environment
-   * @return {SegmentsData | RuleError}
+   * @return {VisitorSegments | RuleError}
    */
   selectCustomSegmentsByIds(
-    visitorId: Id,
-    segmentIds: Array<Id>,
+    visitorId: string,
+    segmentIds: Array<string>,
     segmentRule?: Record<string, any>
-  ): SegmentsData | RuleError {
+  ): VisitorSegments | RuleError {
     const segments = this._dataManager.getEntitiesByIds(
       segmentIds,
       'segments'
-    ) as Array<Segments>;
+    ) as Array<ConfigSegment>;
 
     return this.setCustomSegments(visitorId, segments, segmentRule);
   }

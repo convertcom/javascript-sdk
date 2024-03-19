@@ -14,7 +14,7 @@ import {FeatureManagerInterface} from './interfaces/feature-manager';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
 
-import {Config, ConfigData, Id} from '@convertcom/js-sdk-types';
+import {Config, ConfigResponseData} from '@convertcom/js-sdk-types';
 
 import {ERROR_MESSAGES, MESSAGES, SystemEvents} from '@convertcom/js-sdk-enums';
 import {objectNotEmpty} from '@convertcom/js-sdk-utils';
@@ -37,7 +37,7 @@ export class Core implements CoreInterface {
   private _loggerManager: LogManagerInterface;
   private _apiManager: ApiManagerInterface;
   private _config: Config;
-  private _promise: Promise<ConfigData>;
+  private _promise: Promise<ConfigResponseData>;
   private _fetchConfigTimerID: number;
   private _environment: string;
   private _initialized: boolean;
@@ -103,9 +103,9 @@ export class Core implements CoreInterface {
       this.fetchConfig();
     } else if (Object.prototype.hasOwnProperty.call(config, 'data')) {
       this._dataManager.data = config.data;
-      if (config.data?.error) {
+      if (config.data['error']) {
         this._loggerManager?.error?.('Core.initialize()', {
-          error: config.data?.error
+          error: config.data['error']
         });
       } else {
         this._eventManager.fire(SystemEvents.READY, null, null, true);
@@ -131,12 +131,12 @@ export class Core implements CoreInterface {
 
   /**
    * Create visitor context
-   * @param {Id} visitorId A visitor id
+   * @param {string} visitorId A visitor id
    * @param {Record<string, any>=} visitorAttributes An object of key-value pairs that are used for audience and/or segments targeting
    * @return {ContextInterface | null}
    */
   createContext(
-    visitorId: Id,
+    visitorId: string,
     visitorAttributes?: Record<string, any>
   ): ContextInterface | null {
     if (!this._initialized) return null;
@@ -187,11 +187,11 @@ export class Core implements CoreInterface {
   private async fetchConfig(): Promise<void> {
     this._promise = this._apiManager.getConfigByKey(this._config.sdkKey);
     try {
-      const data: ConfigData = await this._promise;
-      if (data?.error) {
+      const data: ConfigResponseData = await this._promise;
+      if (data['error']) {
         this._dataManager.data = data;
         this._loggerManager?.error?.('Core.fetchConfig()', {
-          error: data?.error
+          error: data['error']
         });
       } else {
         this._loggerManager?.trace?.('Core.fetchConfig()', {

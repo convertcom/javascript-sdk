@@ -64,71 +64,84 @@ function captureError() {
 
 describe('LogManager tests', function () {
   let mockConsole, hookLog, hookError, logger;
+
   beforeEach(function () {
     mockConsole = captureConsole();
     hookLog = captureLog();
     hookError = captureError();
     logger = new lm();
   });
+
   afterEach(function () {
     mockConsole.unhook();
     logger = null;
   });
+
   it('Should expose LogManager', function () {
     assert.isDefined(lm);
   });
+
   it('Imported entity should be a constructor of LogManager instance', function () {
     expect(lm)
       .to.be.a('function')
       .that.has.property('name')
       .which.equal('LogManager');
   });
+
   it('Should log to Console by default', function () {
     const output = 'testing trace message';
     logger.log(lv.TRACE, output);
     assert.equal(hookLog.captured(), `${output}\n`);
   });
+
   it('Should support log method with multiple arguments', function () {
     const output = 'testing log method';
     const argument = 'with multiple arguments';
     logger.log(lv.TRACE, output, argument);
     assert.equal(hookLog.captured(), `${output} ${argument}\n`);
   });
+
   it('Should support trace method with multiple arguments', function () {
     const output = 'testing trace method';
     const argument = 'with multiple arguments';
     logger.trace(output, argument);
     assert.equal(hookLog.captured(), `${output} ${argument}\n`);
   });
+
   it('Should support debug method with multiple arguments', function () {
     const output = 'testing debug method';
     const argument = 'with multiple arguments';
     logger.debug(output, argument);
     assert.equal(hookLog.captured(), `${output} ${argument}\n`);
   });
+
   it('Should support info method with multiple arguments', function () {
     const output = 'testing info method';
     const argument = 'with multiple arguments';
     logger.info(output, argument);
     assert.equal(hookLog.captured(), `${output} ${argument}\n`);
   });
+
   it('Should support warn method with multiple arguments', function () {
     const output = 'testing warn method';
     const argument = 'with multiple arguments';
     logger.warn(output, argument);
     assert.equal(hookError.captured(), `${output} ${argument}\n`);
   });
+
   it('Should support error method with multiple arguments', function () {
     const output = 'testing error method';
     const argument = 'with multiple arguments';
     logger.error(output, argument);
     assert.equal(hookError.captured(), `${output} ${argument}\n`);
   });
+
   it('Should not log anything when using silent LogLevel', function () {
     const output = 'testing silent log level';
     logger.log(lv.SILENT, output);
     assert.equal(hookLog.captured(), '');
   });
+
   it('Should return an error when using an invalid LogLevel', function () {
     // expect(function () {
     //   logger.log(6, 'testing invalid log level');
@@ -136,6 +149,7 @@ describe('LogManager tests', function () {
     logger.log(6, 'testing invalid log level');
     assert.equal(hookError.captured(), 'Invalid Log Level\n');
   });
+
   it('Should return an error when adding new client with an invalid SDK', function () {
     // expect(function () {
     //   logger.addClient(null);
@@ -143,6 +157,7 @@ describe('LogManager tests', function () {
     logger.addClient(null);
     assert.equal(hookError.captured(), 'Invalid Client SDK\n');
   });
+
   it('Should return an error when adding new client with an invalid LogLevel', function () {
     // expect(function () {
     //   logger.addClient(console, 6);
@@ -150,12 +165,14 @@ describe('LogManager tests', function () {
     logger.addClient(console, 6);
     assert.equal(hookError.captured(), 'Invalid Log Level\n');
   });
+
   it('Should log to Console and to third-party when adding a new client', function () {
     logger.addClient(console);
     const output = 'testing third-party logger';
     logger.trace(output);
     assert.equal(hookLog.captured(), `${output}\n${output}\n`);
   });
+
   it('Should map custom log method when adding a new client', function () {
     logger.addClient(
       {
@@ -170,6 +187,7 @@ describe('LogManager tests', function () {
     logger.trace(output);
     assert.equal(hookLog.captured(), `${output}\n${output}\n`);
   });
+
   it('Should fallback to Console using a missing method by a new client', function () {
     logger.addClient(
       {
@@ -184,6 +202,7 @@ describe('LogManager tests', function () {
       `${output}\nInfo: Unable to find method "info()" in client sdk: Object\n${output}\n`
     );
   });
+
   it('Should log only matching levels when using a new client', function () {
     logger.addClient(console, lv.ERROR);
     const output = 'testing third-party matching log level';

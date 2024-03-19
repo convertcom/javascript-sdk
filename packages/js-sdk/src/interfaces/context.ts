@@ -11,9 +11,8 @@ import {
   BucketingAttributes,
   ConversionAttributes,
   Entity,
-  Id,
   SegmentsAttributes,
-  SegmentsData
+  VisitorSegments
 } from '@convertcom/js-sdk-types';
 import {EntityType, RuleError} from '@convertcom/js-sdk-enums';
 
@@ -36,9 +35,12 @@ export interface ContextInterface {
     attributes?: BucketingAttributes
   ): Array<BucketedFeature | RuleError>;
 
-  trackConversion(goalKey: Id, attributes?: ConversionAttributes): RuleError;
+  trackConversion(
+    goalKey: string,
+    attributes?: ConversionAttributes
+  ): RuleError;
 
-  setDefaultSegments(segments: SegmentsData): void;
+  setDefaultSegments(segments: VisitorSegments): void;
 
   runCustomSegments(
     segmentKeys: Array<string>,
@@ -46,12 +48,12 @@ export interface ContextInterface {
   ): RuleError;
 
   updateVisitorProperties(
-    visitorId: Id,
+    visitorId: string,
     visitorProperties: Record<string, any>
   ): void;
 
   getConfigEntity(key: string, entityType: EntityType): Entity;
-  getConfigEntityById(id: Id, entityType: EntityType): Entity;
+  getConfigEntityById(id: string, entityType: EntityType): Entity;
 
   releaseQueues(reason?: string): void;
 }

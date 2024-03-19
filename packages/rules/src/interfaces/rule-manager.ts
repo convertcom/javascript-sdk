@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Rule, RuleSet} from '@convertcom/js-sdk-types';
+import {RuleElement, RuleObject} from '@convertcom/js-sdk-types';
 import {RuleError} from '@convertcom/js-sdk-enums';
 
 export interface RuleManagerInterface {
@@ -14,9 +14,9 @@ export interface RuleManagerInterface {
 
   isRuleMatched(
     data: Record<string, any>,
-    ruleSet: RuleSet,
+    ruleSet: RuleObject,
     logEntry?: string
   ): boolean | RuleError;
 
-  isValidRule(rule: Rule): boolean;
+  isValidRule(rule: RuleElement): boolean;
 }

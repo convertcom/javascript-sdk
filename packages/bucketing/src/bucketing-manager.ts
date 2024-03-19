@@ -7,7 +7,7 @@
 
 import {BucketingManagerInterface} from './interfaces/bucketing-manager';
 
-import {BucketingHash, Config, Id} from '@convertcom/js-sdk-types';
+import {BucketingHash, Config} from '@convertcom/js-sdk-types';
 import {generateHash} from '@convertcom/js-sdk-utils';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {MESSAGES} from '@convertcom/js-sdk-enums';
@@ -82,13 +82,13 @@ export class BucketingManager implements BucketingManagerInterface {
 
   /**
    * Get a value based on hash from Visitor id to use for bucket selecting
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @param {BucketingHash=} options
    * @param {number=} [options.seed=]
    * @param {string=} [options.experienceKey=]
    * @return {number}
    */
-  getValueVisitorBased(visitorId: Id, options?: BucketingHash): number {
+  getValueVisitorBased(visitorId: string, options?: BucketingHash): number {
     const {seed = this._hash_seed, experienceKey = ''} = options || {};
     const hash = generateHash(experienceKey + String(visitorId), seed);
     const val = (hash / DEFAULT_MAX_HASH) * this._max_traffic;
@@ -106,7 +106,7 @@ export class BucketingManager implements BucketingManagerInterface {
   /**
    * Get a bucket for the visitor
    * @param {object} buckets Key-value object with variations IDs as keys and percentages as values
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @param {BucketingHash=} options
    * @param {number=} [options.redistribute=0]
    * @param {number=} [options.seed=]
@@ -115,7 +115,7 @@ export class BucketingManager implements BucketingManagerInterface {
    */
   getBucketForVisitor(
     buckets: Record<string, number>,
-    visitorId: Id,
+    visitorId: string,
     options?: BucketingHash
   ): string | null {
     const value = this.getValueVisitorBased(visitorId, options);

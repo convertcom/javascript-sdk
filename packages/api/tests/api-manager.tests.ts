@@ -33,6 +33,7 @@ describe('ApiManager tests', function () {
   it('Should expose ApiManager', function () {
     assert.isDefined(am);
   });
+
   it('Imported entity should be a constructor of ApiManager instance', function () {
     expect(am)
       .to.be.a('function')
@@ -66,6 +67,7 @@ describe('ApiManager tests', function () {
       server = http.createServer();
       server.listen(port);
     });
+
     it('Should successfully send test JSON payload', function (done) {
       const testPayload = {
         foo: 'bar',
@@ -121,6 +123,7 @@ describe('ApiManager tests', function () {
     const EXP = '11';
     const VAR = '12';
     const N = batch_size - 2;
+
     it(
       N +
         ' enqueued requests should be released before exceeding ' +
@@ -168,6 +171,7 @@ describe('ApiManager tests', function () {
         });
       }
     );
+
     it(
       batch_size +
         ' enqueued requests should be released before exceeding ' +
@@ -208,6 +212,7 @@ describe('ApiManager tests', function () {
         }
       }
     );
+
     it('Should fire the event when enqueued are released because of size and has server response in passed arguments', function (done) {
       const requestData = {
         eventType: 'bucketing',
@@ -239,6 +244,7 @@ describe('ApiManager tests', function () {
         apiManager.enqueue(VID + i, requestData);
       }
     });
+
     it('Should fire the event when enqueued are released because of release timeout and has server response in passed arguments', function (done) {
       this.timeout(test_timeout);
       const requestData = {
@@ -271,6 +277,7 @@ describe('ApiManager tests', function () {
         apiManager.enqueue(VID + i, requestData);
       }
     });
+
     it('Should fire the event when enqueued are released with 500 error passed', function (done) {
       const requestData = {
         eventType: 'bucketing',

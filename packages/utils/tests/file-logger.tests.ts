@@ -45,10 +45,12 @@ function captureError() {
 
 describe('File Logger utils tests', function () {
   let mockConsole, hookError, logger;
+
   beforeEach(function () {
     mockConsole = captureConsole();
     hookError = captureError();
   });
+
   afterEach(function () {
     mockConsole.unhook();
     logger = null;
@@ -56,6 +58,7 @@ describe('File Logger utils tests', function () {
       fs.rmSync(testFile);
     }
   });
+
   it('Should return an error when using FileLogger with an invalid file', async function () {
     logger = new FileLogger('', fs);
     const log = async function () {
@@ -67,6 +70,7 @@ describe('File Logger utils tests', function () {
     };
     await log();
   });
+
   it('Should return an error when using FileLogger with a read-only file', async function () {
     fs.writeFileSync(testFile, '');
     fs.chmodSync(testFile, 0o444);
@@ -80,6 +84,7 @@ describe('File Logger utils tests', function () {
     };
     await log();
   });
+
   it('Should log to file when using FileLogger', async function () {
     logger = new FileLogger(testFile, fs);
     const log = async function () {

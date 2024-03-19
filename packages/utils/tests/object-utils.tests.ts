@@ -12,6 +12,7 @@ describe('Object utils tool tests', function () {
     const res = objectDeepValue(obj, 'api.endpoint');
     expect(res).to.eql(obj.api.endpoint);
   });
+
   it('Should return default value when path not found with provided path of object', function () {
     const obj = {
       api: {
@@ -22,6 +23,7 @@ describe('Object utils tool tests', function () {
     const res = objectDeepValue(obj, 'api.notFound', defaultValue);
     expect(res).to.eql(defaultValue);
   });
+
   it('Should consiter the number zero as normal value with provided path of object', function () {
     const obj = {
       api: {
@@ -31,6 +33,7 @@ describe('Object utils tool tests', function () {
     const res = objectDeepValue(obj, 'api.maxResults', 1, true);
     expect(res).to.eql(obj.api.maxResults);
   });
+
   it('Should consiter the boolean false as normal value with provided path of object', function () {
     const obj = {
       api: {
@@ -40,6 +43,7 @@ describe('Object utils tool tests', function () {
     const res = objectDeepValue(obj, 'api.hasLimit', 0, true);
     expect(res).to.eql(obj.api.hasLimit);
   });
+
   it('Should merge objects and their keys and nested objects', function () {
     const obj1 = {
       api: {

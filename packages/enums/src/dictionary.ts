@@ -16,7 +16,7 @@ export const ERROR_MESSAGES = {
   RULE_ERROR: 'Rule error',
   DATA_STORE_NOT_VALID:
     'DataStore object is not valid. It should contain get and set methods',
-  VISITOR_ID_REQUIRED: 'Visitor Id string is not present',
+  VISITOR_ID_REQUIRED: 'Visitor string string is not present',
   GOAL_DATA_NOT_VALID: 'GoalData object is not valid',
   UNABLE_TO_SELECT_BUCKET_FOR_VISITOR: 'Unable to bucket visitor',
   UNABLE_TO_PERFORM_NETWORK_REQUEST: 'Unable to perform network request',

@@ -19,12 +19,14 @@ describe('EventManager tests', function () {
   it('Should expose EventManager', function () {
     assert.isDefined(em);
   });
+
   it('Imported entity should be a constructor of EventManager instance', function () {
     expect(em)
       .to.be.a('function')
       .that.has.property('name')
       .which.equal('EventManager');
   });
+
   it('Should successfully create new EventManager instance with default config', function () {
     eventManager = new em(<Config>{}, {});
     expect(eventManager)
@@ -33,6 +35,7 @@ describe('EventManager tests', function () {
       .that.has.property('name')
       .which.equal('EventManager');
   });
+
   it('Should create new EventManager instance', function () {
     eventManager = new em(configuration as unknown as Config, {});
     expect(eventManager)
@@ -41,6 +44,7 @@ describe('EventManager tests', function () {
       .that.has.property('name')
       .which.equal('EventManager');
   });
+
   it('Should subscribe to event and be fired with provided data and no errors', function () {
     const args = {
       foo: 'bar',
@@ -62,6 +66,7 @@ describe('EventManager tests', function () {
     // @ts-ignore
     chai.expect(fnA).to.have.been.called.once;
   });
+
   it('Should not be fired because event listeners are removed', function () {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -75,6 +80,7 @@ describe('EventManager tests', function () {
     // @ts-ignore
     chai.expect(fnA).to.not.have.been.called.once;
   });
+
   it('Deferred event listener should be fired even if subscribed after the event', function (done) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -90,6 +96,7 @@ describe('EventManager tests', function () {
       done();
     }, 100);
   });
+
   it('Should subscribe to event and be fired with error provided', function (done) {
     eventManager.on('EVENT3', (inputArgs, err) => {
       expect(err).to.be.an.instanceOf(Error);

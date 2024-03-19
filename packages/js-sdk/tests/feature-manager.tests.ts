@@ -63,15 +63,18 @@ describe('FeatureManager tests', function () {
     server.closeAllConnections();
     server.close();
   });
+
   it('Should expose FeatureManager', function () {
     assert.isDefined(fm);
   });
+
   it('Imported entity should be a constructor of FeatureManager instance', function () {
     expect(fm)
       .to.be.a('function')
       .that.has.property('name')
       .which.equal('FeatureManager');
   });
+
   it('Should successfully create new FeatureManager instance', async function () {
     expect(featureManager)
       .to.be.an('object')
@@ -80,7 +83,7 @@ describe('FeatureManager tests', function () {
       .which.equal('FeatureManager');
   });
 
-  describe('Test Feature Manager', function () {
+  describe('Test ConfigFeature Manager', function () {
     it('Shoud successfully get a list of all entities', function () {
       const entities = featureManager.getList();
       expect(entities)
@@ -88,6 +91,7 @@ describe('FeatureManager tests', function () {
         .that.has.length(3)
         .to.deep.equal(configuration?.data?.features);
     });
+
     it('Shoud successfully get a list of all entities as object of entities grouped by identity field', function () {
       const field = 'id';
       const entities = featureManager.getListAsObject(field);
@@ -99,24 +103,27 @@ describe('FeatureManager tests', function () {
       );
       expect(entities).to.be.an('object').that.deep.equal(featuresList);
     });
+
     it('Shoud successfully get the entity by key', function () {
       const featureKey = 'feature-1';
-      const featureId = 10024;
+      const featureId = '10024';
       const entity = featureManager.getFeature(featureKey);
       expect(entity)
         .to.be.an('object')
         .that.has.property('id')
         .to.equal(featureId);
     });
+
     it('Shoud successfully get the entity by id', function () {
       const featureKey = 'feature-1';
-      const featureId = 10024;
+      const featureId = '10024';
       const entity = featureManager.getFeatureById(featureId);
       expect(entity)
         .to.be.an('object')
         .that.has.property('key')
         .to.equal(featureKey);
     });
+
     it('Shoud successfully specific entities by array of keys', function () {
       const featureKeys = ['feature-1', 'feature-2', 'not-attached-feature-3'];
       const entities = featureManager.getFeatures(featureKeys);
@@ -124,6 +131,7 @@ describe('FeatureManager tests', function () {
         .to.be.an('array')
         .to.deep.equal(configuration?.data?.features);
     });
+
     it('Shoud successfully get a specific variable type defined in a specific feature', function () {
       const featureKey = 'feature-1';
       const variableName = 'enabled';
@@ -134,8 +142,9 @@ describe('FeatureManager tests', function () {
       );
       expect(type).to.equal(variableType);
     });
+
     it('Shoud successfully get specific variable type defined in a specific feature by id', function () {
-      const featureId = 10024;
+      const featureId = '10024';
       const variableName = 'enabled';
       const variableType = 'boolean';
       const type = featureManager.getFeatureVariableTypeById(
@@ -144,15 +153,17 @@ describe('FeatureManager tests', function () {
       );
       expect(type).to.equal(variableType);
     });
+
     it('Shoud successfully check that feature is declared', function () {
       const featureKey = 'feature-1';
       const check = featureManager.isFeatureDeclared(featureKey);
       expect(check).to.equal(true);
     });
+
     it('Shoud successfully get feature and its status', function (done) {
       this.timeout(test_timeout);
       const featureKey = 'feature-1';
-      const featureIds = [10024, 10025];
+      const featureIds = ['10024', '10025'];
       const features = featureManager.runFeature(visitorId, featureKey, {
         visitorProperties: {
           varName3: 'something'
@@ -172,6 +183,7 @@ describe('FeatureManager tests', function () {
         res.end('{}');
       });
     });
+
     it('Shoud successfully check is feature enabled', function (done) {
       this.timeout(test_timeout);
       const featureKey = 'feature-1';
@@ -194,10 +206,11 @@ describe('FeatureManager tests', function () {
         res.end('{}');
       });
     });
+
     it('Shoud successfully get feature and its status by id', function (done) {
       this.timeout(test_timeout);
-      const featureId = 10024;
-      const featureIds = [10024, 10025];
+      const featureId = '10024';
+      const featureIds = ['10024', '10025'];
       const features = featureManager.runFeatureById(visitorId, featureId, {
         visitorProperties: {
           varName3: 'something'
@@ -217,6 +230,7 @@ describe('FeatureManager tests', function () {
         res.end('{}');
       });
     });
+
     it('Shoud successfully get features and their statuses', function (done) {
       this.timeout(test_timeout);
       const filterByFeatures = [
@@ -228,7 +242,7 @@ describe('FeatureManager tests', function () {
         'test-experience-ab-fullstack-2',
         'test-experience-ab-fullstack-3'
       ];
-      const featureIds = [10024, 10025, 10026];
+      const featureIds = ['10024', '10025', '10026'];
       const features = featureManager.runFeatures(
         visitorId,
         {
@@ -257,6 +271,7 @@ describe('FeatureManager tests', function () {
         res.end('{}');
       });
     });
+
     it('Convert value type', function () {
       let value = featureManager.castType('123', 'integer');
       expect(typeof value).to.equal('number');

@@ -5,7 +5,7 @@ import {assert} from 'chai';
 import {RuleManager as rm} from '../src/rule-manager';
 import {Comparisons as comparisonProcessor} from '@convertcom/js-sdk-utils';
 import testConfig from './test-config.json';
-import {RuleSet, Config as ConfigType} from '@convertcom/js-sdk-types';
+import {RuleObject, Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {defaultConfig} from '../../js-sdk/src/config/default';
 
@@ -13,6 +13,7 @@ describe('RuleManager tests', function () {
   it('Should expose RuleManager', function () {
     assert.isDefined(rm);
   });
+
   it('Imported entity should be a constructor of RuleManager instance', function () {
     expect(rm)
       .to.be.a('function')
@@ -42,7 +43,7 @@ describe('RuleManager tests', function () {
         keys_case_sensitive: false
       }
     }) as unknown as ConfigType;
-    const testRuleSet1: RuleSet = {
+    const testRuleSet1 = {
       OR: [
         {
           AND: [
@@ -62,7 +63,7 @@ describe('RuleManager tests', function () {
         }
       ]
     };
-    const testRuleSet2: RuleSet = {
+    const testRuleSet2 = {
       OR: [
         {
           AND: [
@@ -82,7 +83,7 @@ describe('RuleManager tests', function () {
         }
       ]
     };
-    const testRuleSet3: RuleSet = {
+    const testRuleSet3 = {
       OR: [
         {
           AND: [
@@ -108,6 +109,7 @@ describe('RuleManager tests', function () {
     const data2 = {
       sum: 44
     };
+
     it('Should successfully create a RuleManager instance with default config', function () {
       const ruleManager = new rm();
       expect(ruleManager)
@@ -116,6 +118,7 @@ describe('RuleManager tests', function () {
         .that.has.property('name')
         .which.equal('RuleManager');
     });
+
     it('Should create a RuleManager instance', function () {
       ruleManager = new rm(configuration);
       expect(ruleManager)
@@ -124,11 +127,13 @@ describe('RuleManager tests', function () {
         .that.has.property('name')
         .which.equal('RuleManager');
     });
+
     it('Should has custom Comparison processor', function () {
       expect(ruleManager)
         .to.has.property('comparisonProcessor')
         .which.is.an('object');
     });
+
     it('getComparisonProcessorMethods should return comparisons list which is equal Custom Comparison processor list', function () {
       expect(ruleManager.getComparisonProcessorMethods()).to.have.deep.members(
         Object.getOwnPropertyNames(customComparisonProcessor).filter(
@@ -136,6 +141,7 @@ describe('RuleManager tests', function () {
         )
       );
     });
+
     it(
       'isRuleMatched should return false checking data ' +
         JSON.stringify(data1) +
@@ -145,6 +151,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data1, testRuleSet1)).to.equal(false);
       }
     );
+
     it(
       'isRuleMatched should return true checking data ' +
         JSON.stringify(data2) +
@@ -154,6 +161,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data2, testRuleSet1)).to.equal(true);
       }
     );
+
     it(
       'isRuleMatched should return false checking data ' +
         JSON.stringify(data1) +
@@ -164,6 +172,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data1, testRuleSet2)).to.equal(true);
       }
     );
+
     it(
       'isRuleMatched should return false checking data ' +
         JSON.stringify(data2) +
@@ -174,6 +183,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data2, testRuleSet2)).to.equal(false);
       }
     );
+
     it(
       'isRuleMatched should return true checking data ' +
         JSON.stringify(data2) +
@@ -193,7 +203,7 @@ describe('RuleManager tests', function () {
       testConfig,
       defaultConfig
     ) as unknown as ConfigType;
-    const testRuleSet1: RuleSet = {
+    const testRuleSet1 = {
       OR: [
         {
           AND: [
@@ -221,7 +231,7 @@ describe('RuleManager tests', function () {
         }
       ]
     };
-    const testRuleSet2: RuleSet = {
+    const testRuleSet2 = {
       OR: [
         {
           AND: [
@@ -249,7 +259,7 @@ describe('RuleManager tests', function () {
         }
       ]
     };
-    const testRuleSet3: RuleSet = {
+    const testRuleSet3 = {
       OR: [
         {
           AND: [
@@ -372,6 +382,7 @@ describe('RuleManager tests', function () {
       browser: 'Chrome',
       age: 31
     };
+
     it('Should create a RuleManager instance', function () {
       ruleManager = new rm(configuration);
       expect(ruleManager)
@@ -380,6 +391,7 @@ describe('RuleManager tests', function () {
         .that.has.property('name')
         .which.equal('RuleManager');
     });
+
     it('isValidRule should return true', function () {
       expect(
         ruleManager.isValidRule({
@@ -392,6 +404,7 @@ describe('RuleManager tests', function () {
         })
       ).to.equal(true);
     });
+
     it('isValidRule should return false (bad structure)', function () {
       expect(
         ruleManager.isValidRule({
@@ -400,6 +413,7 @@ describe('RuleManager tests', function () {
         })
       ).to.equal(false);
     });
+
     it('isValidRule should return false (no `matching` field)', function () {
       expect(
         ruleManager.isValidRule({
@@ -408,6 +422,7 @@ describe('RuleManager tests', function () {
         })
       ).to.equal(false);
     });
+
     it('isValidRule should return false (no `value` field)', function () {
       expect(
         ruleManager.isValidRule({
@@ -419,12 +434,14 @@ describe('RuleManager tests', function () {
         })
       ).to.equal(false);
     });
+
     it('Should has default Comparison processor instance because external is not provided', function () {
       expect(ruleManager)
         .to.has.property('comparisonProcessor')
         .which.has.property('name')
         .which.equal('Comparisons');
     });
+
     it('getComparisonProcessorMethods should return comparisons list which is equal default Comparison processor list', function () {
       expect(ruleManager.getComparisonProcessorMethods()).to.have.deep.members(
         Object.getOwnPropertyNames(comparisonProcessor).filter(
@@ -432,6 +449,7 @@ describe('RuleManager tests', function () {
         )
       );
     });
+
     it(
       'isRuleMatched should return true checking data ' +
         JSON.stringify(data1) +
@@ -441,6 +459,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data1, testRuleSet1)).to.equal(true);
       }
     );
+
     it(
       'isRuleMatched should return true checking data ' +
         JSON.stringify(data12) +
@@ -450,6 +469,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data12, testRuleSet1)).to.equal(true);
       }
     );
+
     it(
       'isRuleMatched should return false checking data ' +
         JSON.stringify(data13) +
@@ -460,6 +480,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data13, testRuleSet1)).to.equal(false);
       }
     );
+
     it(
       'isRuleMatched should return false checking data ' +
         JSON.stringify(data1) +
@@ -469,6 +490,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data1, testRuleSet2)).to.equal(false);
       }
     );
+
     it(
       'isRuleMatched should return true checking data ' +
         JSON.stringify(data22) +
@@ -478,6 +500,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data22, testRuleSet2)).to.equal(true);
       }
     );
+
     it(
       'isRuleMatched should return false checking single string value "' +
         data21 +
@@ -487,6 +510,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data21, testRuleSet2)).to.equal(false);
       }
     );
+
     it(
       'isRuleMatched should return false checking data ' +
         JSON.stringify(data2) +
@@ -499,6 +523,7 @@ describe('RuleManager tests', function () {
         );
       }
     );
+
     it(
       'isRuleMatched should return false checking data ' +
         JSON.stringify(data2) +
@@ -511,15 +536,19 @@ describe('RuleManager tests', function () {
         );
       }
     );
+
     it('isRuleMatched should return just false because empty data provided', function () {
       expect(ruleManager.isRuleMatched([], {})).to.equal(false);
     });
+
     it('isRuleMatched should return just false because wrong data provided', function () {
       expect(ruleManager.isRuleMatched('a string', 1234567)).to.equal(false);
     });
+
     it('isRuleMatched should return just false because wrong rule record provided', function () {
       expect(ruleManager.isRuleMatched({}, [[['a string']]])).to.equal(false);
     });
+
     it(
       'isRuleMatched should return true checking data ' +
         JSON.stringify(data31) +
@@ -529,6 +558,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data31, testRuleSet3)).to.equal(true);
       }
     );
+
     it(
       'isRuleMatched should return true checking data ' +
         JSON.stringify(data32) +
@@ -538,6 +568,7 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data32, testRuleSet3)).to.equal(true);
       }
     );
+
     it('Should allow to change comparison processor on fly', function () {
       const customComparisonProcessor = {
         isTypeOf: function (

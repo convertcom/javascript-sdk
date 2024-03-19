@@ -6,26 +6,25 @@
  */
 import {
   Entity,
-  ConfigData,
-  Id,
+  ConfigResponseData,
   IdentityField,
   BucketedVariation,
   StoreData,
-  SegmentsData,
-  Experience,
+  VisitorSegments,
+  ConfigExperience,
   BucketingAttributes
 } from '@convertcom/js-sdk-types';
 import {DataStoreManagerInterface} from './data-store-manager';
-import {GoalDataKey, RuleError} from '@convertcom/js-sdk-enums';
+import {RuleError} from '@convertcom/js-sdk-enums';
 
 export interface DataManagerInterface {
-  data: ConfigData;
+  data: ConfigResponseData;
   dataStoreManager: DataStoreManagerInterface;
 
   reset();
-  putData(storeKey: Id, storeData: StoreData);
-  getData(storeKey: Id): StoreData;
-  getStoreKey(visitorId: Id): string;
+  putData(storeKey: string, storeData: StoreData);
+  getData(storeKey: string): StoreData;
+  getStoreKey(visitorId: string): string;
   selectLocations(
     visitorId: string,
     items: Array<Record<string, any>>,
@@ -34,43 +33,43 @@ export interface DataManagerInterface {
   ): Array<Record<string, any> | RuleError>;
   matchRulesByField(
     visitorId: string,
-    identity: string | Id,
+    identity: string | string,
     identityField: IdentityField,
     attributes: BucketingAttributes
-  ): Experience | RuleError;
+  ): ConfigExperience | RuleError;
   getBucketing(
-    visitorId: Id,
+    visitorId: string,
     experienceKey: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError;
   getBucketingById(
-    visitorId: Id,
-    experienceId: Id,
+    visitorId: string,
+    experienceId: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError;
   convert(
-    visitorId: Id,
-    goalId: Id,
+    visitorId: string,
+    goalId: string,
     goalRule?: Record<string, any>,
-    goalData?: Array<Record<GoalDataKey, number>>,
-    segments?: SegmentsData
+    goalData?: Array<Record<string, number>>,
+    segments?: VisitorSegments
   ): RuleError | boolean;
-  getEntitiesList(entityType: string): Array<Entity | Id>;
+  getEntitiesList(entityType: string): Array<Entity | string>;
   getEntitiesListObject(
     entityType: string,
     field?: IdentityField
   ): Record<string, Entity>;
   getEntity(key: string, entityType: string): Entity;
   getEntities(keys: Array<string>, entityType: string): Array<Entity>;
-  getEntityById(id: Id, entityType: string): Entity;
-  getEntitiesByIds(ids: Array<Id>, entityType: string): Array<Entity>;
+  getEntityById(id: string, entityType: string): Entity;
+  getEntitiesByIds(ids: Array<string>, entityType: string): Array<Entity>;
   getItemsByKeys(keys: Array<string>, path: string): Array<Record<string, any>>;
-  getItemsByIds(ids: Array<Id>, path: string): Array<Record<string, any>>;
+  getItemsByIds(ids: Array<string>, path: string): Array<Record<string, any>>;
   getSubItem(
     entityType: string,
-    entityIdentity: string | number,
+    entityIdentity: string,
     subEntityType: string,
-    subEntityIdentity: string | number,
+    subEntityIdentity: string,
     identityField: IdentityField,
     subIdentityField: IdentityField
   ): Record<any, any>;
@@ -79,5 +78,5 @@ export interface DataManagerInterface {
     visitorProperties: Record<string, any>
   ): Record<string, any>;
 
-  isValidConfigData(data: ConfigData): boolean;
+  isValidConfigData(data: ConfigResponseData): boolean;
 }

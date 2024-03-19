@@ -4,7 +4,7 @@
     "account_id": "10022898",
     "audiences": [
       {
-        "id": 100299433,
+        "id": "100299433",
         "name": "Adv Audience",
         "type": "transient",
         "status": "active",
@@ -65,7 +65,7 @@
     ],
     "segments": [
       {
-        "id": 200299434,
+        "id": "200299434",
         "name": "Test Segments",
         "status": "active",
         "key": "test-segments-1",
@@ -95,7 +95,7 @@
     ],
     "experiences": [
       {
-        "id": 100218245,
+        "id": "100218245",
         "name": "Test Experience AB Fullstack",
         "key": "test-experience-ab-fullstack-2",
         "type": "a/b_fullstack",
@@ -127,20 +127,20 @@
             }
           ]
         },
-        "audiences": [100299433],
-        "goals": [100215959, 100215960, 100215961],
+        "audiences": ["100299433"],
+        "goals": ["100215959", "100215960", "100215961"],
         "variations": [
           {
-            "id": 100299456,
+            "id": "100299456",
             "name": "Original Page",
             "status": "running",
             "is_baseline": true,
             "changes": [
               {
-                "id": 100240519,
+                "id": "100240519",
                 "type": "fullStackFeature",
                 "data": {
-                  "feature_id": 10024,
+                  "feature_id": "10024",
                   "variables_data": {
                     "enabled": "true",
                     "caption": "Click that"
@@ -148,10 +148,10 @@
                 }
               },
               {
-                "id": 100240521,
+                "id": "100240521",
                 "type": "fullStackFeature",
                 "data": {
-                  "feature_id": 10025,
+                  "feature_id": "10025",
                   "variables_data": {
                     "price": 100,
                     "button-height": 40,
@@ -164,16 +164,16 @@
             "traffic_allocation": 50.0
           },
           {
-            "id": 100299457,
+            "id": "100299457",
             "name": "Variation 1",
             "status": "running",
             "is_baseline": false,
             "changes": [
               {
-                "id": 100240520,
+                "id": "100240520",
                 "type": "fullStackFeature",
                 "data": {
-                  "feature_id": 10024,
+                  "feature_id": "10024",
                   "variables_data": {
                     "enabled": "false",
                     "caption": "Not allowed"
@@ -187,7 +187,7 @@
         ]
       },
       {
-        "id": 100218246,
+        "id": "100218246",
         "name": "Test Experience AB Fullstack",
         "key": "test-experience-ab-fullstack-3",
         "type": "a/b_fullstack",
@@ -219,20 +219,20 @@
             }
           ]
         },
-        "audiences": [100299433],
-        "goals": [100215959, 100215960, 100215961],
+        "audiences": ["100299433"],
+        "goals": ["100215959", "100215960", "100215961"],
         "variations": [
           {
-            "id": 100299460,
+            "id": "100299460",
             "name": "Original Page",
             "status": "running",
             "is_baseline": true,
             "changes": [
               {
-                "id": 100240529,
+                "id": "100240529",
                 "type": "fullStackFeature",
                 "data": {
-                  "feature_id": 10024,
+                  "feature_id": "10024",
                   "variables_data": {
                     "enabled": "true",
                     "caption": "Click that"
@@ -244,16 +244,16 @@
             "traffic_allocation": 50.0
           },
           {
-            "id": 100299461,
+            "id": "100299461",
             "name": "Variation 1",
             "status": "running",
             "is_baseline": false,
             "changes": [
               {
-                "id": 100240532,
+                "id": "100240532",
                 "type": "fullStackFeature",
                 "data": {
-                  "feature_id": 10024,
+                  "feature_id": "10024",
                   "variables_data": {
                     "enabled": "true",
                     "caption": "Allowed"
@@ -267,7 +267,7 @@
         ]
       },
       {
-        "id": 100218247,
+        "id": "100218247",
         "name": "Test Experience AB Fullstack",
         "key": "test-experience-ab-fullstack-4",
         "type": "a/b_fullstack",
@@ -299,14 +299,14 @@
             }
           ]
         },
-        "audiences": [100299433],
-        "goals": [100215959, 100215960, 100215961],
+        "audiences": ["100299433"],
+        "goals": ["100215959", "100215960", "100215961"],
         "variations": [{}]
       }
     ],
     "features": [
       {
-        "id": 10024,
+        "id": "10024",
         "name": "Feature 1",
         "key": "feature-1",
         "variables": [
@@ -321,7 +321,7 @@
         ]
       },
       {
-        "id": 10025,
+        "id": "10025",
         "name": "Feature 2",
         "key": "feature-2",
         "variables": [
@@ -340,7 +340,7 @@
         ]
       },
       {
-        "id": 10026,
+        "id": "10026",
         "name": "Not Attached Feature 3",
         "key": "not-attached-feature-3",
         "variables": [
@@ -361,7 +361,7 @@
     ],
     "goals": [
       {
-        "id": 100215960,
+        "id": "100215960",
         "name": "Increase Engagement",
         "selected_default": true,
         "status": "active",
@@ -412,7 +412,7 @@
         }
       },
       {
-        "id": 100215959,
+        "id": "100215959",
         "name": "Decrease BounceRate",
         "selected_default": true,
         "status": "active",
@@ -451,7 +451,7 @@
         }
       },
       {
-        "id": 100215961,
+        "id": "100215961",
         "name": "adv goal country browser",
         "selected_default": false,
         "status": "active",
@@ -524,7 +524,7 @@
         }
       },
       {
-        "id": 100215962,
+        "id": "100215962",
         "key": "goal-without-rule"
       }
     ],
@@ -535,7 +535,7 @@
       "utc_offset": 0,
       "domains": [
         {
-          "id": 10029181,
+          "id": "10029181",
           "hosts": "https://convert.com/",
           "tld": false
         }
