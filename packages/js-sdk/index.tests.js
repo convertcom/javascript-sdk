@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import {expect} from 'chai';
 import {assert} from 'chai';
 import testConfig from './tests/test-config.json';
@@ -28,21 +29,17 @@ const defaultSegments = {browser: 'chrome'};
 export default function runTests(bundle) {
   const ConvertSDK = bundle.default;
   let convert, context;
-
   describe('Basic SDK instance', function () {
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     beforeEach(function () {
       convert = new ConvertSDK(testConfig);
     });
-
     it('Should have an SDK instance as an object', function () {
       expect(bundle).to.be.an('object');
     });
-
     it('Should have a constructor', function () {
       expect(ConvertSDK).to.be.a('function');
     });
-
     it('Should create a default SDK instance and fire ready event. Expect no errors', function (done) {
       convert.on('ready', function (args, err) {
         expect(err).to.be.null;
@@ -51,12 +48,10 @@ export default function runTests(bundle) {
         done();
       });
     });
-
     it('Should create a default SDK instance and resolve a promise. Expect no errors', async function () {
       await convert.onReady();
       assert.equal(true, true);
     });
-
     it('Shoud successfully create visitor context', function () {
       const visitorContext = convert.createContext(visitorId, defaultSegments);
       expect(visitorContext).to.be.an('object');
@@ -73,7 +68,6 @@ export default function runTests(bundle) {
       });
     });
   });
-
   describe('Basic SDK methods', function () {
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     before(function () {
@@ -83,7 +77,6 @@ export default function runTests(bundle) {
     beforeEach(function () {
       context = convert.createContext(visitorId, defaultSegments);
     });
-
     it('Shoud successfully get variation from specific experience', function (done) {
       const experienceKey = 'test-experience-ab-fullstack-2';
       const variation = context.runExperience(experienceKey, {
@@ -109,7 +102,6 @@ export default function runTests(bundle) {
       expect(variation.experienceKey).to.equal(experienceKey);
       done();
     });
-
     it('Shoud successfully get variations across all experiences', function (done) {
       const variationIds = ['100299456', '100299457', '100299460', '100299461'];
       const variations = context.runExperiences({
@@ -139,7 +131,6 @@ export default function runTests(bundle) {
       expect(variationIds).to.include.deep.members(selectedVariations);
       done();
     });
-
     it('Shoud successfully get a single feature and its status', function (done) {
       const featureKey = 'feature-2';
       const featureId = '10025';
@@ -164,7 +155,6 @@ export default function runTests(bundle) {
       expect(feature.id).to.equal(featureId);
       done();
     });
-
     it('Shoud successfully get multiple features and its status', function (done) {
       const featureKey = 'feature-1';
       const featureIds = ['10024', '10025'];
@@ -193,7 +183,6 @@ export default function runTests(bundle) {
       expect(featureIds).to.include.deep.members(selectedFeatures);
       done();
     });
-
     it('Shoud successfully get features and their statuses', function (done) {
       const featureIds = ['10024', '10025', '10026'];
       const features = context.runFeatures({
@@ -230,7 +219,6 @@ export default function runTests(bundle) {
       expect(featureIds).to.include.deep.members(selectedFeatures);
       done();
     });
-
     it('Should trigger Conversion', function () {
       const goalKey = 'increase-engagement';
       const response = context.trackConversion(goalKey, {
@@ -246,7 +234,6 @@ export default function runTests(bundle) {
       });
       expect(response).to.be.undefined;
     });
-
     it('Should successfully set default segments', function () {
       const segments = {country: 'US'};
       context.setDefaultSegments(segments);
@@ -258,7 +245,6 @@ export default function runTests(bundle) {
           ...defaultSegments
         });
     });
-
     it('Should successfully set custom segments', function () {
       const segmentKey = 'test-segments-1';
       const segmentId = '200299434';
@@ -274,7 +260,6 @@ export default function runTests(bundle) {
         .to.deep.equal([segmentId]);
     });
   });
-
   describe('Test invalid visitor', function () {
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     before(function () {
@@ -284,35 +269,29 @@ export default function runTests(bundle) {
     beforeEach(function () {
       context = convert.createContext();
     });
-
     it('Shoud fail to get variation from specific experience if no visitor is set', function () {
       const experienceKey = 'test-experience-ab-fullstack-2';
       const variation = context.runExperience(experienceKey);
       expect(variation).to.be.undefined;
     });
-
     it('Shoud fail to get variations across all experiences if no visitor is set', function () {
       const variations = context.runExperiences();
       expect(variations).to.be.undefined;
     });
-
     it('Shoud fail to get feature and its status if no visitor is set', function () {
       const featureKey = 'feature-1';
       const features = context.runFeature(featureKey);
       expect(features).to.be.undefined;
     });
-
     it('Shoud fail to get features and their statuses if no visitor is set', function () {
       const features = context.runFeatures();
       expect(features).to.be.undefined;
     });
-
     it('Should fail to trigger Conversion if no visitor is set', function () {
       const goalKey = 'increase-engagement';
       const output = context.trackConversion(goalKey);
       expect(output).to.be.undefined;
     });
-
     it('Should fail to set custom segments if no visitor is set', function () {
       const segmentKey = 'test-segments-1';
       const output = context.runCustomSegments(segmentKey);

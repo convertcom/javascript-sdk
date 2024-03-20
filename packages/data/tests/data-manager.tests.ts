@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -61,18 +62,15 @@ describe('DataManager tests', function () {
     server.closeAllConnections();
     server.close();
   });
-
   it('Should expose DataManager', function () {
     assert.isDefined(dm);
   });
-
   it('Imported entity should be a constructor of DataManager instance', function () {
     expect(dm)
       .to.be.a('function')
       .that.has.property('name')
       .which.equal('DataManager');
   });
-
   it('Should successfully create new DataManager instance', async function () {
     expect(dataManager)
       .to.be.an('object')
@@ -80,13 +78,11 @@ describe('DataManager tests', function () {
       .that.has.property('name')
       .which.equal('DataManager');
   });
-
   describe('Test Data Manager', function () {
     it('Should successfully validate configuration', function () {
       const check = dataManager.isValidConfigData(configuration?.data);
       expect(check).to.equal(true);
     });
-
     it('Should retrieve variation for visitor by key', function (done) {
       this.timeout(test_timeout);
       const experienceKey = 'test-experience-ab-fullstack-2';
@@ -110,7 +106,6 @@ describe('DataManager tests', function () {
         res.end('{}');
       });
     });
-
     it('Should retrieve variation for visitor by id', function (done) {
       this.timeout(test_timeout);
       const experienceId = '100218245';
@@ -134,7 +129,6 @@ describe('DataManager tests', function () {
         res.end('{}');
       });
     });
-
     it('Should get list of data entities grouped by field', function () {
       const audiences = dataManager.getEntitiesListObject('audiences');
       const {id} = configuration?.data?.audiences?.[0] || {};
@@ -144,7 +138,6 @@ describe('DataManager tests', function () {
           [id]: configuration?.data?.audiences?.[0]
         });
     });
-
     it('Should find the entity in list by keys', function () {
       const keys = ['feature-1', 'feature-2'];
       const entityType = 'features';
@@ -157,7 +150,6 @@ describe('DataManager tests', function () {
           )
         );
     });
-
     it('Should find the entity in list by ids', function () {
       const ids = ['10024', '10025'];
       const entityType = 'features';
@@ -169,7 +161,6 @@ describe('DataManager tests', function () {
         );
     });
   });
-
   describe('Test requests enqueuing', function () {
     it('Should process conversion event', function (done) {
       this.timeout(test_timeout);
@@ -235,14 +226,12 @@ describe('DataManager tests', function () {
         ]
       );
     });
-
     it('Should fail if conversion event has an invalid goal', function () {
       this.timeout(test_timeout);
       const goalKey = 'invalid-goal';
       const response = dataManager.convert(visitorId, goalKey);
       expect(response).to.be.undefined;
     });
-
     it('Should fail if conversion event has a mismatched rule', function () {
       this.timeout(test_timeout);
       const goalKey = 'increase-engagement';
@@ -251,7 +240,6 @@ describe('DataManager tests', function () {
       });
       expect(response).to.be.undefined;
     });
-
     it('Should fail if conversion event has an no rule', function () {
       this.timeout(test_timeout);
       const goalKey = 'goal-without-rule';
@@ -260,7 +248,6 @@ describe('DataManager tests', function () {
       });
       expect(response).to.be.undefined;
     });
-
     it('Should fail to retrieve variation if not exists', function () {
       this.timeout(test_timeout);
       const experienceKey = 'test-experience-ab-fullstack-4';
@@ -272,7 +259,6 @@ describe('DataManager tests', function () {
       });
       expect(variation).to.be.null;
     });
-
     it('Should never fail on reaching size limit when updating local store', function () {
       new Array(10001)
         .fill(0)

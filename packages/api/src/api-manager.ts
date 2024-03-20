@@ -211,7 +211,7 @@ export class ApiManager implements ApiManagerInterface {
     });
     this.stopQueue();
     const payload: TrackingEvent = this._trackingEvent;
-    payload.visitors = this._requestsQueue.items.slice() as Array<Visitor>;
+    payload.visitors = this._requestsQueue.items.slice();
     payload.source = this._trackingSource;
     return this.request(
       'post',

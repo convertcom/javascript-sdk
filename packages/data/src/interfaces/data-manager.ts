@@ -33,7 +33,7 @@ export interface DataManagerInterface {
   ): Array<Record<string, any> | RuleError>;
   matchRulesByField(
     visitorId: string,
-    identity: string | string,
+    identity: string,
     identityField: IdentityField,
     attributes: BucketingAttributes
   ): ConfigExperience | RuleError;

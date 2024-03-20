@@ -5,7 +5,7 @@ import {assert} from 'chai';
 import {RuleManager as rm} from '../src/rule-manager';
 import {Comparisons as comparisonProcessor} from '@convertcom/js-sdk-utils';
 import testConfig from './test-config.json';
-import {RuleObject, Config as ConfigType} from '@convertcom/js-sdk-types';
+import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {defaultConfig} from '../../js-sdk/src/config/default';
 

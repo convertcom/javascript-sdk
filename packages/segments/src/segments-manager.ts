@@ -117,7 +117,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
       if (segmentRule && !segmentsMatched) {
         segmentsMatched = this._ruleManager.isRuleMatched(
           segmentRule,
-          segment?.rules as RuleObject,
+          segment?.rules,
           `ConfigSegment #${segment?.id}`
         );
         // Return rule errors if present

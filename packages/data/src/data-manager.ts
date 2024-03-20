@@ -163,7 +163,7 @@ export class DataManager implements DataManagerInterface {
   /**
    * Validate locationProperties against locations rules and visitorProperties against audiences rules
    * @param {string} visitorId
-   * @param {string|string} identity Value of the field which name is provided in identityField
+   * @param {string} identity Value of the field which name is provided in identityField
    * @param {IdentityField=} identityField Defaults to 'key'
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
@@ -174,7 +174,7 @@ export class DataManager implements DataManagerInterface {
    */
   matchRulesByField(
     visitorId: string,
-    identity: string | string,
+    identity: string,
     identityField: IdentityField = 'key',
     attributes: BucketingAttributes
   ): ConfigExperience | RuleError {
@@ -390,7 +390,7 @@ export class DataManager implements DataManagerInterface {
   /**
    * Retrieve variation for visitor
    * @param {string} visitorId
-   * @param {string|string} identity Value of the field which name is provided in identityField
+   * @param {string} identity Value of the field which name is provided in identityField
    * @param {IdentityField=} identityField Defaults to 'key'
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
@@ -403,7 +403,7 @@ export class DataManager implements DataManagerInterface {
    */
   private _getBucketingByField(
     visitorId: string,
-    identity: string | string,
+    identity: string,
     identityField: IdentityField = 'key',
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
@@ -537,7 +537,7 @@ export class DataManager implements DataManagerInterface {
           this._config?.bucketing?.includeExperienceKeyHash
             ? {experienceKey: experience?.key}
             : null
-        ) as string;
+        );
         if (variationId) {
           this._loggerManager?.info?.(
             'DataManager._retrieveBucketing()',
@@ -843,7 +843,7 @@ export class DataManager implements DataManagerInterface {
   ): RuleError | boolean {
     const goal =
       typeof goalId === 'string'
-        ? (this.getEntity(goalId as string, 'goals') as ConfigGoal)
+        ? (this.getEntity(goalId, 'goals') as ConfigGoal)
         : (this.getEntityById(goalId, 'goals') as ConfigGoal);
     if (!goal?.id) {
       this._loggerManager?.error?.(
@@ -1093,14 +1093,14 @@ export class DataManager implements DataManagerInterface {
 
   /**
    *
-   * @param {string|string} identity Value of the field which name is provided in identityField
+   * @param {string} identity Value of the field which name is provided in identityField
    * @param {string} entityType
    * @param {IdentityField=} identityField Defaults to 'key'
    * @return {Entity}
    * @private
    */
   private _getEntityByField(
-    identity: string | string,
+    identity: string,
     entityType: string,
     identityField: IdentityField = 'key'
   ): Entity {

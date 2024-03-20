@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -63,18 +64,15 @@ describe('ExperienceManager tests', function () {
     server.closeAllConnections();
     server.close();
   });
-
   it('Should expose ExperienceManager', function () {
     assert.isDefined(exm);
   });
-
   it('Imported entity should be a constructor of ExperienceManager instance', function () {
     expect(exm)
       .to.be.a('function')
       .that.has.property('name')
       .which.equal('ExperienceManager');
   });
-
   it('Should successfully create new ExperienceManager instance', async function () {
     expect(experienceManager)
       .to.be.an('object')
@@ -82,7 +80,6 @@ describe('ExperienceManager tests', function () {
       .that.has.property('name')
       .which.equal('ExperienceManager');
   });
-
   describe('Test ConfigExperience Manager', function () {
     it('Shoud successfully get a list of all entities', function () {
       const entities = experienceManager.getList();
@@ -91,7 +88,6 @@ describe('ExperienceManager tests', function () {
         .that.has.length(3)
         .to.deep.equal(configuration?.data?.experiences);
     });
-
     it('Shoud successfully get the entity by key', function () {
       const experienceKey = 'test-experience-ab-fullstack-2';
       const experienceId = '100218245';
@@ -101,7 +97,6 @@ describe('ExperienceManager tests', function () {
         .that.has.property('id')
         .to.equal(experienceId);
     });
-
     it('Shoud successfully get the entity by id', function () {
       const experienceKey = 'test-experience-ab-fullstack-2';
       const experienceId = '100218245';
@@ -111,7 +106,6 @@ describe('ExperienceManager tests', function () {
         .that.has.property('key')
         .to.equal(experienceKey);
     });
-
     it('Shoud successfully specific entities by array of keys', function () {
       const experienceKeys = [
         'test-experience-ab-fullstack-2',
@@ -123,7 +117,6 @@ describe('ExperienceManager tests', function () {
         .to.be.an('array')
         .to.deep.equal(configuration?.data?.experiences);
     });
-
     it('Shoud successfully select variation for specific visitor', function (done) {
       this.timeout(test_timeout);
       const experienceKey = 'test-experience-ab-fullstack-2';
@@ -151,7 +144,6 @@ describe('ExperienceManager tests', function () {
         res.end('{}');
       });
     });
-
     it('Shoud successfully select variation for specific visitor by id', function (done) {
       this.timeout(test_timeout);
       const experienceId = '100218245';
@@ -179,7 +171,6 @@ describe('ExperienceManager tests', function () {
         res.end('{}');
       });
     });
-
     it('Shoud successfully select all variations across all experiences for specific visitor', function (done) {
       this.timeout(test_timeout);
       const variationIds = ['100299456', '100299457', '100299460', '100299461'];
@@ -202,7 +193,6 @@ describe('ExperienceManager tests', function () {
         res.end('{}');
       });
     });
-
     it('Shoud successfully get experience variation by key', function () {
       const experienceKey = 'test-experience-ab-fullstack-2';
       const variationKey = '100299457-variation-1';
@@ -216,7 +206,6 @@ describe('ExperienceManager tests', function () {
         .that.has.property('id')
         .to.equal(variationId);
     });
-
     it('Shoud successfully get experience variation by id', function () {
       const experienceId = '100218245';
       const variationKey = '100299457-variation-1';
