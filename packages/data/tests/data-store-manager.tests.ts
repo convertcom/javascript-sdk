@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -12,7 +13,6 @@ describe('DataStoreManager tests', function () {
   it('Should expose DataStoreManager', function () {
     assert.isDefined(dsm);
   });
-
   it('Imported entity should be a constructor of DataStoreManager instance', function () {
     expect(dsm)
       .to.be.a('function')

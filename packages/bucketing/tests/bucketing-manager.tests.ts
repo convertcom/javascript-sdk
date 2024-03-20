@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -27,18 +28,15 @@ const getTestResultsForVisitor = function (
 
 describe('BucketingManager tests', function () {
   let bucketingManager;
-
   it('Should expose BucketingManager', function () {
     assert.isDefined(bm);
   });
-
   it('Imported entity should be a constructor of BucketingManager instance', function () {
     expect(bm)
       .to.be.a('function')
       .that.has.property('name')
       .which.equal('BucketingManager');
   });
-
   it('Should create new BucketingManager instance with default config', function () {
     const bucketingManager = new bm();
     expect(bucketingManager)
@@ -47,7 +45,6 @@ describe('BucketingManager tests', function () {
       .that.has.property('name')
       .which.equal('BucketingManager');
   });
-
   it('Should create new BucketingManager instance with provided config', function () {
     bucketingManager = new bm(configuration as unknown as Config);
     expect(bucketingManager)
@@ -56,7 +53,6 @@ describe('BucketingManager tests', function () {
       .that.has.property('name')
       .which.equal('BucketingManager');
   });
-
   it('Should select a bucket', function () {
     const testVariations = {
       '100234567': 30,
@@ -70,7 +66,6 @@ describe('BucketingManager tests', function () {
       .to.be.oneOf(Object.keys(testVariations))
       .and.equal(variationId2);
   });
-
   it('Should select another bucket', function () {
     const testVariations = {
       '100234567': 30,
@@ -84,7 +79,6 @@ describe('BucketingManager tests', function () {
       .to.be.oneOf(Object.keys(testVariations))
       .and.equal(variationId2);
   });
-
   it('Should not select a bucket and return null', function () {
     let testVariations = {
       '100234567': 0,
@@ -94,7 +88,6 @@ describe('BucketingManager tests', function () {
     };
     let variationId = bucketingManager.selectBucket(testVariations, 6000);
     expect(variationId).to.equal(null);
-
     testVariations = {
       '100234567': 30,
       '100234568': 10,
@@ -107,12 +100,10 @@ describe('BucketingManager tests', function () {
     );
     expect(variationId).to.equal(null);
   });
-
   it('Should return a value generated with help of murmurhash based on Visitor id', function () {
     const value = bucketingManager.getValueVisitorBased('100123456');
     expect(value).to.be.a('number');
   });
-
   it('Should return different values generated with help of murmurhash based on Visitor id with seeds', function () {
     const value1 = bucketingManager.getValueVisitorBased('100123456', {
       seed: 11223344
@@ -122,7 +113,6 @@ describe('BucketingManager tests', function () {
     });
     expect(value2).to.not.equal(value1);
   });
-
   it('Should return the same bucket based on Visitor string for every attempt', function () {
     const testVariations = {
       '100234567': 10,
