@@ -11,8 +11,7 @@ import {
   ConfigResponseData,
   ConfigSegment,
   VisitorSegments,
-  StoreData,
-  RuleObject
+  StoreData
 } from '@convertcom/js-sdk-types';
 import {MESSAGES, SegmentsKeys, RuleError} from '@convertcom/js-sdk-enums';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
