@@ -4,12 +4,12 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Id} from './Id';
-import {SegmentsData} from './SegmentsData';
+
+import {VisitorSegments} from './config/index';
 
 export type StoreData = {
-  bucketing?: Record<string, Id>;
-  locations?: Array<Id>;
-  segments?: SegmentsData;
+  bucketing?: Record<string, string>;
+  locations?: Array<string>;
+  segments?: VisitorSegments;
   goals?: Record<string, boolean>;
 };

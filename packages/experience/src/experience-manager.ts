@@ -10,9 +10,8 @@ import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 
 import {
   Config,
-  Experience,
-  Id,
-  Variation,
+  ConfigExperience,
+  ExperienceVariationConfig,
   BucketedVariation,
   BucketingAttributes
 } from '@convertcom/js-sdk-types';
@@ -54,47 +53,50 @@ export class ExperienceManager implements ExperienceManagerInterface {
 
   /**
    * Get a list of all entities
-   * @return {Array<Experience>} Experiences list
+   * @return {Array<ConfigExperience>} Experiences list
    */
-  getList(): Array<Experience> {
+  getList(): Array<ConfigExperience> {
     return this._dataManager.getEntitiesList(
       'experiences'
-    ) as Array<Experience>;
+    ) as Array<ConfigExperience>;
   }
 
   /**
    * Get the entity by key
    * @param {string} key
-   * @return {Experience} An experience
+   * @return {ConfigExperience} An experience
    */
-  getExperience(key: string): Experience {
-    return this._dataManager.getEntity(key, 'experiences') as Experience;
+  getExperience(key: string): ConfigExperience {
+    return this._dataManager.getEntity(key, 'experiences') as ConfigExperience;
   }
 
   /**
    * Get the entity by id
-   * @param {Id} id
-   * @return {Experience} Get single experience
+   * @param {string} id
+   * @return {ConfigExperience} Get single experience
    */
-  getExperienceById(id: Id): Experience {
-    return this._dataManager.getEntityById(id, 'experiences') as Experience;
+  getExperienceById(id: string): ConfigExperience {
+    return this._dataManager.getEntityById(
+      id,
+      'experiences'
+    ) as ConfigExperience;
   }
 
   /**
    * Get specific entities by array of keys
    * @param {Array<string>} keys
-   * @return {Array<Experience>}
+   * @return {Array<ConfigExperience>}
    */
-  getExperiences(keys: Array<string>): Array<Experience> {
+  getExperiences(keys: Array<string>): Array<ConfigExperience> {
     return this._dataManager.getItemsByKeys(
       keys,
       'experiences'
-    ) as Array<Experience>;
+    ) as Array<ConfigExperience>;
   }
 
   /**
    * Select variation for specific visitor
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @param {string} experienceKey
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
@@ -105,7 +107,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @return {BucketedVariation | RuleError}
    */
   selectVariation(
-    visitorId: Id,
+    visitorId: string,
     experienceKey: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
@@ -114,8 +116,8 @@ export class ExperienceManager implements ExperienceManagerInterface {
 
   /**
    * Select variation for specific visitor
-   * @param {Id} visitorId
-   * @param {Id} experienceId
+   * @param {string} visitorId
+   * @param {string} experienceId
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
@@ -125,8 +127,8 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @return {BucketedVariation | RuleError}
    */
   selectVariationById(
-    visitorId: Id,
-    experienceId: Id,
+    visitorId: string,
+    experienceId: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
     return this._dataManager.getBucketingById(
@@ -138,7 +140,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
 
   /**
    * Select all variations across all experiences for specific visitor
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
@@ -148,7 +150,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @return {Array<BucketedVariation | RuleError>}
    */
   selectVariations(
-    visitorId: Id,
+    visitorId: string,
     attributes: BucketingAttributes
   ): Array<BucketedVariation | RuleError> {
     return this.getList()
@@ -163,7 +165,10 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {string} experienceKey
    * @param {string}variationKey
    */
-  getVariation(experienceKey: string, variationKey: string): Variation {
+  getVariation(
+    experienceKey: string,
+    variationKey: string
+  ): ExperienceVariationConfig {
     return this._dataManager.getSubItem(
       'experiences',
       experienceKey,
@@ -171,7 +176,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
       variationKey,
       'key',
       'key'
-    ) as Variation;
+    ) as ExperienceVariationConfig;
   }
 
   /**
@@ -179,7 +184,10 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param experienceId
    * @param variationId
    */
-  getVariationById(experienceId: Id, variationId: Id): Variation {
+  getVariationById(
+    experienceId: string,
+    variationId: string
+  ): ExperienceVariationConfig {
     return this._dataManager.getSubItem(
       'experiences',
       experienceId,
@@ -187,6 +195,6 @@ export class ExperienceManager implements ExperienceManagerInterface {
       variationId,
       'id',
       'id'
-    ) as Variation;
+    ) as ExperienceVariationConfig;
   }
 }

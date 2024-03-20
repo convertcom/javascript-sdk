@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import chai from 'chai';
 import chaiString from 'chai-string';

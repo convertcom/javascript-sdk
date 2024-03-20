@@ -8,14 +8,13 @@ import {ApiManagerInterface} from './interfaces/api-manager';
 
 import {
   Config,
-  ConfigData,
-  Id,
-  TrackingEvent,
-  SegmentsData,
+  ConfigResponseData,
+  VisitorSegments,
   Visitor,
-  VisitorEvent,
   VisitorsQueue,
-  Path
+  Path,
+  TrackingEvent,
+  VisitorTrackingEvents
 } from '@convertcom/js-sdk-types';
 import {SystemEvents} from '@convertcom/js-sdk-enums';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
@@ -54,12 +53,12 @@ export class ApiManager implements ApiManagerInterface {
   private readonly _trackEndpoint: string = DEFAULT_TRACK_ENDPOINT;
   private readonly _defaultHeaders: Record<string, string> = DEFAULT_HEADERS;
 
-  private _data: ConfigData;
+  private _data: ConfigResponseData;
   private _enrichData: boolean;
   private _loggerManager: LogManagerInterface | null;
   private _eventManager: EventManagerInterface | null;
-  private _accountId: Id;
-  private _projectId: Id;
+  private _accountId: string;
+  private _projectId: string;
   private _trackingEvent: TrackingEvent;
   private _trackingEnabled: boolean;
   private _trackingSource: string;
@@ -108,7 +107,7 @@ export class ApiManager implements ApiManagerInterface {
       accountId: this._accountId,
       projectId: this._projectId,
       visitors: []
-    };
+    } as TrackingEvent;
     this._trackingEnabled = config?.network?.tracking;
     this._trackingSource = config?.network?.source || 'js-sdk';
     this._cacheLevel = config?.network?.cacheLevel;
@@ -116,9 +115,9 @@ export class ApiManager implements ApiManagerInterface {
       length: 0,
       items: [],
       push(
-        visitorId: Id,
-        eventRequest: VisitorEvent,
-        segments?: SegmentsData
+        visitorId: string,
+        eventRequest: VisitorTrackingEvents,
+        segments?: VisitorSegments
       ): void {
         const visitorIndex = this.items.findIndex(
           (event) => event.visitorId === visitorId
@@ -173,14 +172,14 @@ export class ApiManager implements ApiManagerInterface {
 
   /**
    * Add request to queue for sending to server
-   * @param {Id} visitorId
-   * @param {VisitorEvent} eventRequest
-   * @param {SegmentsData} segments
+   * @param {string} visitorId
+   * @param {VisitorTrackingEvents} eventRequest
+   * @param {VisitorSegments} segments
    */
   enqueue(
-    visitorId: Id,
-    eventRequest: VisitorEvent,
-    segments?: SegmentsData
+    visitorId: string,
+    eventRequest: VisitorTrackingEvents,
+    segments?: VisitorSegments
   ): void {
     this._loggerManager?.trace?.(
       'ApiManager.enqueue()',
@@ -280,7 +279,7 @@ export class ApiManager implements ApiManagerInterface {
   /**
    * Set data
    */
-  setData(data: ConfigData) {
+  setData(data: ConfigResponseData) {
     this._data = data;
     this._accountId = data?.account_id;
     this._projectId = data?.project?.id;
@@ -291,9 +290,9 @@ export class ApiManager implements ApiManagerInterface {
   /**
    * Get config data by SDK key
    * @param {string} sdkKey
-   * @return {Promise<ConfigData>}
+   * @return {Promise<ConfigResponseData>}
    */
-  getConfigByKey(sdkKey: string): Promise<ConfigData> {
+  getConfigByKey(sdkKey: string): Promise<ConfigResponseData> {
     this._loggerManager?.trace?.('ApiManager.getConfigByKey()', {
       sdkKey
     });

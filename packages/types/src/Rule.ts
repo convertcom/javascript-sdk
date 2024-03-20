@@ -5,6 +5,8 @@
  * License Apache-2.0
  */
 
+import {RuleElement} from './config/index';
+
 /* Example
 {
   "OR": [
@@ -59,24 +61,10 @@
 }
 */
 
-export type Rule = {
-  rule_type?: string;
-  key?: string;
-  matching: {
-    match_type: string;
-    negated?: boolean;
-  };
-  value: string | number | boolean | ((...args: any) => any | undefined);
-};
-
 export type RuleOrWhen = {
-  OR_WHEN: Array<Rule>;
+  OR_WHEN: Array<RuleElement>;
 };
 
 export type RuleAnd = {
   AND: Array<RuleOrWhen>;
-};
-
-export type RuleSet = {
-  OR: Array<RuleAnd>;
 };

@@ -15,10 +15,10 @@ import {RuleManagerInterface} from './interfaces/rule-manager';
 
 import {
   Config,
-  Rule,
+  RuleElement,
   RuleAnd,
   RuleOrWhen,
-  RuleSet
+  RuleObject
 } from '@convertcom/js-sdk-types';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {ERROR_MESSAGES, MESSAGES, RuleError} from '@convertcom/js-sdk-enums';
@@ -92,12 +92,12 @@ export class RuleManager implements RuleManagerInterface {
   /**
    * Check input data matching to rule set
    * @param {Record<string, any>} data Single value or key-value data set to compare
-   * @param {RuleSet} ruleSet
+   * @param {RuleObject} ruleSet
    * @return {boolean | RuleError}
    */
   isRuleMatched(
     data: Record<string, any>,
-    ruleSet: RuleSet,
+    ruleSet: RuleObject,
     logEntry?: string
   ): boolean | RuleError {
     this._loggerManager?.trace?.(
@@ -120,7 +120,7 @@ export class RuleManager implements RuleManagerInterface {
       arrayNotEmpty(ruleSet?.OR)
     ) {
       for (let i = 0, l = ruleSet.OR.length; i < l; i++) {
-        match = this._processAND(data, ruleSet.OR[i]);
+        match = this._processAND(data, ruleSet.OR[i] as RuleAnd);
         if (Object.values(RuleError).includes(match as RuleError)) {
           this._loggerManager?.info?.(
             'RuleManager.isRuleMatched()',
@@ -152,10 +152,10 @@ export class RuleManager implements RuleManagerInterface {
 
   /**
    * Check is rule object valid
-   * @param {Rule} rule
+   * @param {RuleElement} rule
    * @return {boolean}
    */
-  isValidRule(rule: Rule): boolean {
+  isValidRule(rule: RuleElement): boolean {
     this._loggerManager?.trace?.(
       'RuleManager.isValidRule()',
       this._mapper({
@@ -247,13 +247,13 @@ export class RuleManager implements RuleManagerInterface {
   /**
    * Process single rule item
    * @param {Record<string, any>} data Single value or key-value data set to compare
-   * @param {Rule} rule A single rule to compare
+   * @param {RuleElement} rule A single rule to compare
    * @return {boolean | RuleError} Comparison result
    * @private
    */
   private _processRuleItem(
     data: Record<string, any>,
-    rule: Rule
+    rule: RuleElement
   ): boolean | RuleError {
     if (this.isValidRule(rule)) {
       try {
@@ -263,7 +263,7 @@ export class RuleManager implements RuleManagerInterface {
           if (data && typeof data === 'object') {
             // Validate data key-value set.
             if (this.isUsingCustomInterface(data)) {
-              // Rule object has to have `rule_type` field
+              // RuleElement object has to have `rule_type` field
               if (rule?.rule_type) {
                 this._loggerManager?.info?.(
                   'RuleManager._processRuleItem()',
@@ -295,12 +295,12 @@ export class RuleManager implements RuleManagerInterface {
                 }
               }
             } else if (objectNotEmpty(data)) {
-              // Rule object has to have `key` field
+              // only handle RuleElement with a `key` field
               for (const key of Object.keys(data)) {
                 const k = this._keys_case_sensitive ? key : key.toLowerCase();
                 const rule_k = this._keys_case_sensitive
-                  ? rule.key
-                  : rule.key.toLowerCase();
+                  ? rule['key']
+                  : String(rule['key']).toLowerCase();
                 if (k === rule_k) {
                   return this._comparisonProcessor[matching](
                     data[key],

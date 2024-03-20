@@ -5,39 +5,44 @@
  * License Apache-2.0
  */
 import {
-  Variation,
-  Id,
-  Experience,
+  ExperienceVariationConfig,
+  ConfigExperience,
   BucketedVariation,
   BucketingAttributes
 } from '@convertcom/js-sdk-types';
 import {RuleError} from '@convertcom/js-sdk-enums';
 
 export interface ExperienceManagerInterface {
-  getList(): Array<Experience>;
+  getList(): Array<ConfigExperience>;
 
-  getExperience(key: string): Experience;
-  getExperienceById(id: Id): Experience;
-  getExperiences(keys: Array<string>): Array<Experience>;
+  getExperience(key: string): ConfigExperience;
+  getExperienceById(id: string): ConfigExperience;
+  getExperiences(keys: Array<string>): Array<ConfigExperience>;
 
   selectVariation(
-    visitorId: Id,
+    visitorId: string,
     experienceKey: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError;
 
   selectVariationById(
-    visitorId: Id,
-    experienceId: Id,
+    visitorId: string,
+    experienceId: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError;
 
   selectVariations(
-    visitorId: Id,
+    visitorId: string,
     attributes: BucketingAttributes
   ): Array<BucketedVariation | RuleError>;
 
-  getVariation(experienceKey: string, variationKey: string): Variation;
+  getVariation(
+    experienceKey: string,
+    variationKey: string
+  ): ExperienceVariationConfig;
 
-  getVariationById(experienceId: Id, variationId: Id): Variation;
+  getVariationById(
+    experienceId: string,
+    variationId: string
+  ): ExperienceVariationConfig;
 }

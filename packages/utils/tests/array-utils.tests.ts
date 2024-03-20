@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import {expect} from 'chai';
 import 'mocha';
 import * as arrayUtils from '../src/array-utils';

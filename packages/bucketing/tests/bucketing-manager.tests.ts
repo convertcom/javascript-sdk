@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -27,7 +28,6 @@ const getTestResultsForVisitor = function (
 
 describe('BucketingManager tests', function () {
   let bucketingManager;
-
   it('Should expose BucketingManager', function () {
     assert.isDefined(bm);
   });
@@ -88,7 +88,6 @@ describe('BucketingManager tests', function () {
     };
     let variationId = bucketingManager.selectBucket(testVariations, 6000);
     expect(variationId).to.equal(null);
-
     testVariations = {
       '100234567': 30,
       '100234568': 10,
@@ -114,8 +113,7 @@ describe('BucketingManager tests', function () {
     });
     expect(value2).to.not.equal(value1);
   });
-
-  it('Should return the same bucket based on Visitor Id for every attempt', function () {
+  it('Should return the same bucket based on Visitor string for every attempt', function () {
     const testVariations = {
       '100234567': 10,
       '100234568': 30,

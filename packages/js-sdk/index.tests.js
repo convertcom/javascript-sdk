@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import {expect} from 'chai';
 import {assert} from 'chai';
 import testConfig from './tests/test-config.json';
@@ -28,7 +29,6 @@ const defaultSegments = {browser: 'chrome'};
 export default function runTests(bundle) {
   const ConvertSDK = bundle.default;
   let convert, context;
-
   describe('Basic SDK instance', function () {
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     beforeEach(function () {
@@ -103,7 +103,7 @@ export default function runTests(bundle) {
       done();
     });
     it('Shoud successfully get variations across all experiences', function (done) {
-      const variationIds = [100299456, 100299457, 100299460, 100299461];
+      const variationIds = ['100299456', '100299457', '100299460', '100299461'];
       const variations = context.runExperiences({
         locationProperties: {url: 'https://convert.com/'},
         visitorProperties: {
@@ -133,7 +133,7 @@ export default function runTests(bundle) {
     });
     it('Shoud successfully get a single feature and its status', function (done) {
       const featureKey = 'feature-2';
-      const featureId = 10025;
+      const featureId = '10025';
       const feature = context.runFeature(featureKey, {
         locationProperties: {url: 'https://convert.com/'},
         visitorProperties: {
@@ -157,7 +157,7 @@ export default function runTests(bundle) {
     });
     it('Shoud successfully get multiple features and its status', function (done) {
       const featureKey = 'feature-1';
-      const featureIds = [10024, 10025];
+      const featureIds = ['10024', '10025'];
       const features = context.runFeature(featureKey, {
         locationProperties: {url: 'https://convert.com/'},
         visitorProperties: {
@@ -184,7 +184,7 @@ export default function runTests(bundle) {
       done();
     });
     it('Shoud successfully get features and their statuses', function (done) {
-      const featureIds = [10024, 10025, 10026];
+      const featureIds = ['10024', '10025', '10026'];
       const features = context.runFeatures({
         locationProperties: {url: 'https://convert.com/'},
         visitorProperties: {
