@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-bucketing-v1.0.1...js-sdk-bucketing-v2.0.0) (2024-03-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* include experience key hash bucketing
+
+### Features
+
+* include experience key hash bucketing ([2b7df97](https://github.com/convertcom/javascript-sdk/commit/2b7df976506666b9ef251563008c18a5a00ed7ff))
+
 ## [1.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-bucketing-v1.0.0...js-sdk-bucketing-v1.0.1) (2023-11-09)
 
 
