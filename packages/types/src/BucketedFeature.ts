@@ -4,17 +4,17 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {Id} from './Id';
+
 import {FeatureStatus} from '@convertcom/js-sdk-enums';
 import {RequireAtLeastOne} from './RequireAtLeastOne';
 
 // Not enabled feature can have only disabled status but have to contain id or key
 type NotEnabledFeature = RequireAtLeastOne<
   {
-    experienceId?: Id;
+    experienceId?: string;
     experienceKey?: string;
     experienceName?: string;
-    id?: Id;
+    id?: string;
     key?: string;
     name?: string;
     status: FeatureStatus.DISABLED;
@@ -25,10 +25,10 @@ type NotEnabledFeature = RequireAtLeastOne<
 
 export type BucketedFeature =
   | {
-      experienceId?: Id;
+      experienceId?: string;
       experienceKey?: string;
       experienceName?: string;
-      id?: Id;
+      id?: string;
       key?: string;
       name?: string;
       status: FeatureStatus;

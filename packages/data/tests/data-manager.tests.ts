@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -77,7 +78,6 @@ describe('DataManager tests', function () {
       .that.has.property('name')
       .which.equal('DataManager');
   });
-
   describe('Test Data Manager', function () {
     it('Should successfully validate configuration', function () {
       const check = dataManager.isValidConfigData(configuration?.data);
@@ -108,7 +108,7 @@ describe('DataManager tests', function () {
     });
     it('Should retrieve variation for visitor by id', function (done) {
       this.timeout(test_timeout);
-      const experienceId = 100218245;
+      const experienceId = '100218245';
       const variation = dataManager.getBucketingById(visitorId, experienceId, {
         visitorProperties: {
           varName3: 'something'
@@ -151,19 +151,16 @@ describe('DataManager tests', function () {
         );
     });
     it('Should find the entity in list by ids', function () {
-      const ids = [10024, 10025];
+      const ids = ['10024', '10025'];
       const entityType = 'features';
       const entities = dataManager.getEntitiesByIds(ids, entityType);
       expect(entities)
         .to.be.an('array')
         .that.deep.equal(
-          configuration?.data?.[entityType]?.filter(({id}) =>
-            ids.includes(id as number)
-          )
+          configuration?.data?.[entityType]?.filter(({id}) => ids.includes(id))
         );
     });
   });
-
   describe('Test requests enqueuing', function () {
     it('Should process conversion event', function (done) {
       this.timeout(test_timeout);
@@ -180,13 +177,13 @@ describe('DataManager tests', function () {
               {
                 eventType: 'conversion',
                 data: {
-                  goalId: 100215960
+                  goalId: '100215960'
                 }
               },
               {
                 eventType: 'conversion',
                 data: {
-                  goalId: 100215960,
+                  goalId: '100215960',
                   goalData: [
                     {
                       amount: 10.3,

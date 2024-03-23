@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -43,6 +44,7 @@ const apiManager = new am(configuration, {eventManager});
 
 describe('Context tests', function () {
   const visitorId = 'XXX';
+  const featureId = '10025';
   it('Should expose Context', function () {
     assert.isDefined(c);
   });
@@ -76,7 +78,6 @@ describe('Context tests', function () {
       .that.has.property('name')
       .which.equal('Context');
   });
-
   describe('Test Context', function () {
     const visitorId = 'XXX';
     let dataManager,
@@ -161,7 +162,7 @@ describe('Context tests', function () {
     });
     it('Shoud successfully get variations across all experiences', function (done) {
       this.timeout(test_timeout);
-      const variationIds = [100299456, 100299457, 100299460, 100299461];
+      const variationIds = ['100299456', '100299457', '100299460', '100299461'];
       const variations = context.runExperiences({
         locationProperties: {url: 'https://convert.com/'},
         visitorProperties: {
@@ -200,7 +201,6 @@ describe('Context tests', function () {
     it('Shoud successfully get a single feature and its status', function (done) {
       this.timeout(test_timeout);
       const featureKey = 'feature-2';
-      const featureId = 10025;
       const feature = context.runFeature(featureKey, {
         locationProperties: {url: 'https://convert.com/'},
         visitorProperties: {
@@ -233,7 +233,7 @@ describe('Context tests', function () {
     it('Shoud successfully get multiple features and its status', function (done) {
       this.timeout(test_timeout);
       const featureKey = 'feature-1';
-      const featureIds = [10024, 10025];
+      const featureIds = ['10024', '10025'];
       const features = context.runFeature(featureKey, {
         locationProperties: {url: 'https://convert.com/'},
         visitorProperties: {
@@ -269,7 +269,7 @@ describe('Context tests', function () {
     });
     it('Shoud successfully get features and their statuses', function (done) {
       this.timeout(test_timeout);
-      const featureIds = [10024, 10025, 10026];
+      const featureIds = ['10024', '10025', '10026'];
       const features = context.runFeatures({
         locationProperties: {url: 'https://convert.com/'},
         visitorProperties: {
@@ -327,13 +327,13 @@ describe('Context tests', function () {
               {
                 eventType: 'conversion',
                 data: {
-                  goalId: 100215960
+                  goalId: '100215960'
                 }
               },
               {
                 eventType: 'conversion',
                 data: {
-                  goalId: 100215960,
+                  goalId: '100215960',
                   goalData: [
                     {
                       amount: 10.3,
@@ -468,7 +468,7 @@ describe('Context tests', function () {
       expect(variationEntity).to.deep.equal(variation);
     });
     it('Should successfully get config entity by id', function () {
-      const audienceId = 100299433;
+      const audienceId = '100299433';
       const audienceEntity = context.getConfigEntityById(
         audienceId,
         EntityType.AUDIENCE
@@ -477,7 +477,7 @@ describe('Context tests', function () {
         ({id}) => id === audienceId
       );
       expect(audienceEntity).to.deep.equal(audience);
-      const segmentId = 200299434;
+      const segmentId = '200299434';
       const segmentEntity = context.getConfigEntityById(
         segmentId,
         EntityType.SEGMENT
@@ -486,7 +486,6 @@ describe('Context tests', function () {
         ({id}) => id === segmentId
       );
       expect(segmentEntity).to.deep.equal(segment);
-      const featureId = 10025;
       const featureEntity = context.getConfigEntityById(
         featureId,
         EntityType.FEATURE
@@ -495,11 +494,11 @@ describe('Context tests', function () {
         ({id}) => id === featureId
       );
       expect(featureEntity).to.deep.equal(feature);
-      const goalId = 100215961;
+      const goalId = '100215961';
       const goalEntity = context.getConfigEntityById(goalId, EntityType.GOAL);
       const goal = configuration?.data?.goals?.find?.(({id}) => id === goalId);
       expect(goalEntity).to.deep.equal(goal);
-      const experienceId = 100218246;
+      const experienceId = '100218246';
       const experienceEntity = context.getConfigEntityById(
         experienceId,
         EntityType.EXPERIENCE
@@ -508,7 +507,7 @@ describe('Context tests', function () {
         ({id}) => id === experienceId
       );
       expect(experienceEntity).to.deep.equal(experience);
-      const variationId = 100299461;
+      const variationId = '100299461';
       const variationEntity = context.getConfigEntityById(
         variationId,
         EntityType.VARIATION

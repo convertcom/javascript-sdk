@@ -13,16 +13,15 @@ import {DataManagerInterface} from '@convertcom/js-sdk-data';
 
 import {
   Config,
-  Id,
   BucketedFeature,
   BucketedVariation,
   BucketingAttributes,
   ConversionAttributes,
-  SegmentsData,
+  VisitorSegments,
   SegmentsAttributes,
   Entity,
-  Experience,
-  Variation
+  ConfigExperience,
+  ExperienceVariationConfig
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -50,7 +49,7 @@ export class Context implements ContextInterface {
   private _apiManager: ApiManagerInterface;
   private _loggerManager: LogManagerInterface;
   private _config: Config;
-  private _visitorId: Id;
+  private _visitorId: string;
   private _visitorProperties: Record<string, any>;
   private _environment: string;
 
@@ -67,7 +66,7 @@ export class Context implements ContextInterface {
    */
   constructor(
     config: Config,
-    visitorId: Id,
+    visitorId: string,
     {
       eventManager,
       experienceManager,
@@ -359,13 +358,16 @@ export class Context implements ContextInterface {
 
   /**
    * Trigger Conversion
-   * @param {Id} goalKey A goal key
+   * @param {string} goalKey A goal key
    * @param {ConversionAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<string, any>=} attributes.ruleData An object of key-value pairs that are used for goal matching
    * @param {Array<Record<GoalDataKey, number>>=} attributes.conversionData An object of key-value pairs that are used for audience targeting
    * @return {RuleError}
    */
-  trackConversion(goalKey: Id, attributes?: ConversionAttributes): RuleError {
+  trackConversion(
+    goalKey: string,
+    attributes?: ConversionAttributes
+  ): RuleError {
     if (!this._visitorId) {
       this._loggerManager?.error?.(
         'Context.trackConversion()',
@@ -413,9 +415,9 @@ export class Context implements ContextInterface {
 
   /**
    * Set default segments for reports
-   * @param {SegmentsData} segments A segment key
+   * @param {VisitorSegments} segments A segment key
    */
-  setDefaultSegments(segments: SegmentsData): void {
+  setDefaultSegments(segments: VisitorSegments): void {
     const {segments: storedSegments} =
       this._dataManager.filterReportSegments(segments);
     if (storedSegments)
@@ -466,7 +468,7 @@ export class Context implements ContextInterface {
    * @param visitorProperties
    */
   updateVisitorProperties(
-    visitorId: Id,
+    visitorId: string,
     visitorProperties: Record<string, any>
   ): void {
     this._dataManager.putData(visitorId, {segments: visitorProperties});
@@ -482,7 +484,7 @@ export class Context implements ContextInterface {
     if (entityType === EntityType.VARIATION) {
       const experiences = this._dataManager.getEntitiesList(
         EntityType.EXPERIENCE
-      ) as Array<Experience>;
+      ) as Array<ConfigExperience>;
       for (const {key: experienceKey} of experiences) {
         const variation = this._dataManager.getSubItem(
           'experiences',
@@ -491,7 +493,7 @@ export class Context implements ContextInterface {
           key,
           'key',
           'key'
-        ) as Variation;
+        ) as ExperienceVariationConfig;
         if (variation) {
           return variation;
         }
@@ -501,16 +503,16 @@ export class Context implements ContextInterface {
   }
 
   /**
-   * get Config Entity by Id
-   * @param {Id} id
+   * get Config Entity by string
+   * @param {string} id
    * @param {EntityType} entityType
    * @return {Entity}
    */
-  getConfigEntityById(id: Id, entityType: EntityType): Entity {
+  getConfigEntityById(id: string, entityType: EntityType): Entity {
     if (entityType === EntityType.VARIATION) {
       const experiences = this._dataManager.getEntitiesList(
         EntityType.EXPERIENCE
-      ) as Array<Experience>;
+      ) as Array<ConfigExperience>;
       for (const {id: experienceId} of experiences) {
         const variation = this._dataManager.getSubItem(
           'experiences',
@@ -519,7 +521,7 @@ export class Context implements ContextInterface {
           id,
           'id',
           'id'
-        ) as Variation;
+        ) as ExperienceVariationConfig;
         if (variation) {
           return variation;
         }

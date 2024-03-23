@@ -22,22 +22,21 @@ import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {RuleManagerInterface} from '@convertcom/js-sdk-rules';
 import {
   Entity,
-  Variation,
-  Id,
-  Audience,
-  Location,
+  ExperienceVariationConfig,
+  ConfigAudience,
+  ConfigLocation,
   Config,
-  ConfigData,
-  Experience,
+  ConfigResponseData,
+  ConfigExperience,
   IdentityField,
   BucketedVariation,
   StoreData,
   BucketingEvent,
-  VisitorEvent,
+  VisitorTrackingEvents,
   ConversionEvent,
-  Goal,
-  SegmentsData,
-  Segments,
+  ConfigGoal,
+  VisitorSegments,
+  ConfigSegment,
   BucketingAttributes
 } from '@convertcom/js-sdk-types';
 
@@ -47,7 +46,6 @@ import {
   ERROR_MESSAGES,
   MESSAGES,
   RuleError,
-  EventType,
   GoalDataKey,
   SegmentsKeys,
   SystemEvents
@@ -62,9 +60,9 @@ const LOCAL_STORE_LIMIT = 10000;
  * @implements {DataManagerInterface}
  */
 export class DataManager implements DataManagerInterface {
-  private _data: ConfigData;
-  private _accountId: Id;
-  private _projectId: Id;
+  private _data: ConfigResponseData;
+  private _accountId: string;
+  private _projectId: string;
   private _config: Config;
   private _bucketingManager: BucketingManagerInterface;
   private _loggerManager: LogManagerInterface;
@@ -120,7 +118,7 @@ export class DataManager implements DataManagerInterface {
     );
   }
 
-  set data(data: ConfigData) {
+  set data(data: ConfigResponseData) {
     if (this.isValidConfigData(data)) {
       this._data = data;
       this._accountId = data?.account_id;
@@ -136,7 +134,7 @@ export class DataManager implements DataManagerInterface {
   /**
    * data getter
    */
-  get data(): ConfigData {
+  get data(): ConfigResponseData {
     return this._data;
   }
 
@@ -165,21 +163,21 @@ export class DataManager implements DataManagerInterface {
   /**
    * Validate locationProperties against locations rules and visitorProperties against audiences rules
    * @param {string} visitorId
-   * @param {string|Id} identity Value of the field which name is provided in identityField
+   * @param {string} identity Value of the field which name is provided in identityField
    * @param {IdentityField=} identityField Defaults to 'key'
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
    * @param {boolean=} attributes.updateVisitorProperties
    * @param {string=} attributes.environment
-   * @return {Experience | RuleError}
+   * @return {ConfigExperience | RuleError}
    */
   matchRulesByField(
     visitorId: string,
-    identity: string | Id,
+    identity: string,
     identityField: IdentityField = 'key',
     attributes: BucketingAttributes
-  ): Experience | RuleError {
+  ): ConfigExperience | RuleError {
     const {
       visitorProperties,
       locationProperties,
@@ -201,11 +199,11 @@ export class DataManager implements DataManagerInterface {
       identity,
       'experiences',
       identityField
-    ) as Experience;
+    ) as ConfigExperience;
     // Retrieve archived experiences
     const archivedExperiences = this.getEntitiesList(
       'archived_experiences'
-    ) as Array<Id>;
+    ) as Array<string>;
     // Check whether the experience is archived
     const isArchivedExperience = !!archivedExperiences.find(
       (id) => String(experience?.id) === String(id)
@@ -229,7 +227,7 @@ export class DataManager implements DataManagerInterface {
           const locations = this.getItemsByIds(
             experience.locations,
             'locations'
-          ) as Array<Location>;
+          ) as Array<ConfigLocation>;
           if (locations.length) {
             // Validate locationProperties against locations rules
             // and trigger activated/deactivated events
@@ -276,7 +274,7 @@ export class DataManager implements DataManagerInterface {
             audiences = this.getItemsByIds(
               experience.audiences,
               'audiences'
-            ) as Array<Audience>;
+            ) as Array<ConfigAudience>;
             if (audiences.length) {
               // Validate visitorProperties against audiences rules
               matchedAudiences = this.filterMatchedRecordsWithRule(
@@ -303,7 +301,7 @@ export class DataManager implements DataManagerInterface {
             segmentations = this.getItemsByIds(
               experience.audiences,
               'segments'
-            ) as Array<Segments>;
+            ) as Array<ConfigSegment>;
             if (segmentations.length) {
               // Validate custom segments against segmentations
               matchedSegmentations = this.filterMatchedCustomSegments(
@@ -392,7 +390,7 @@ export class DataManager implements DataManagerInterface {
   /**
    * Retrieve variation for visitor
    * @param {string} visitorId
-   * @param {string|Id} identity Value of the field which name is provided in identityField
+   * @param {string} identity Value of the field which name is provided in identityField
    * @param {IdentityField=} identityField Defaults to 'key'
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
@@ -405,7 +403,7 @@ export class DataManager implements DataManagerInterface {
    */
   private _getBucketingByField(
     visitorId: string,
-    identity: string | Id,
+    identity: string,
     identityField: IdentityField = 'key',
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
@@ -444,7 +442,7 @@ export class DataManager implements DataManagerInterface {
         visitorId,
         visitorProperties,
         updateVisitorProperties,
-        experience as Experience,
+        experience as ConfigExperience,
         enableTracking
       );
     }
@@ -453,19 +451,19 @@ export class DataManager implements DataManagerInterface {
 
   /**
    * Retrieve bucketing for Visitor
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @param {Record<string, any> | null} visitorProperties
    * @param {boolean} updateVisitorProperties
-   * @param {Experience} experience
+   * @param {ConfigExperience} experience
    * @param {boolean=} enableTracking Defaults to `true`
    * @return {BucketedVariation}
    * @private
    */
   private _retrieveBucketing(
-    visitorId: Id,
+    visitorId: string,
     visitorProperties: Record<string, any> | null,
     updateVisitorProperties: boolean,
-    experience: Experience,
+    experience: ConfigExperience,
     enableTracking: boolean = true
   ): BucketedVariation {
     if (!visitorId || !experience) return null;
@@ -531,7 +529,7 @@ export class DataManager implements DataManagerInterface {
           if (variation?.id)
             bucket[variation.id] = variation?.traffic_allocation || 100.0;
           return bucket;
-        }, {});
+        }, {}) as Record<string, number>;
         // Select bucket based for provided visitor id
         variationId = this._bucketingManager.getBucketForVisitor(
           buckets,
@@ -539,7 +537,7 @@ export class DataManager implements DataManagerInterface {
           this._config?.bucketing?.includeExperienceKeyHash
             ? {experienceKey: experience?.key}
             : null
-        ) as Id;
+        );
         if (variationId) {
           this._loggerManager?.info?.(
             'DataManager._retrieveBucketing()',
@@ -564,8 +562,8 @@ export class DataManager implements DataManagerInterface {
               experienceId: experience.id.toString(),
               variationId: variationId.toString()
             };
-            const visitorEvent: VisitorEvent = {
-              eventType: EventType.BUCKETING,
+            const visitorEvent: VisitorTrackingEvents = {
+              eventType: VisitorTrackingEvents.eventType.BUCKETING,
               data: bucketingEvent
             };
             this._apiManager.enqueue(visitorId, visitorEvent, segments);
@@ -607,12 +605,15 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
-   * @param {Id} experienceId
-   * @param {Id} variationId
-   * @return {Variation}
+   * @param {string} experienceId
+   * @param {string} variationId
+   * @return {ExperienceVariationConfig}
    * @private
    */
-  private retrieveVariation(experienceId: Id, variationId: Id): Variation {
+  private retrieveVariation(
+    experienceId: string,
+    variationId: string
+  ): ExperienceVariationConfig {
     return this.getSubItem(
       'experiences',
       experienceId,
@@ -620,7 +621,7 @@ export class DataManager implements DataManagerInterface {
       variationId,
       'id',
       'id'
-    ) as Variation;
+    ) as ExperienceVariationConfig;
   }
 
   reset() {
@@ -628,11 +629,11 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @param {StoreData} newData
    * @private
    */
-  putData(visitorId: Id, newData: StoreData = {}) {
+  putData(visitorId: string, newData: StoreData = {}) {
     const storeKey = this.getStoreKey(visitorId);
     const storeData = this.getData(visitorId) || {};
     const isChanged = !objectDeepEqual(storeData, newData);
@@ -667,21 +668,21 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @return {StoreData} variation id
    * @private
    */
-  getData(visitorId: Id): StoreData {
+  getData(visitorId: string): StoreData {
     const storeKey = this.getStoreKey(visitorId);
     return this._bucketedVisitors.get(storeKey) || null;
   }
 
   /**
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @return {string} storeKey
    * @private
    */
-  getStoreKey(visitorId: Id): string {
+  getStoreKey(visitorId: string): string {
     return `${this._accountId}-${this._projectId}-${visitorId}`;
   }
 
@@ -715,7 +716,7 @@ export class DataManager implements DataManagerInterface {
         match = this._ruleManager.isRuleMatched(
           locationProperties,
           items[i].rules,
-          `Location #${items[i][identityField]}`
+          `ConfigLocation #${items[i][identityField]}`
         );
         const identity = items?.[i]?.[identityField]?.toString?.();
         if (match === true) {
@@ -808,7 +809,7 @@ export class DataManager implements DataManagerInterface {
   /**
    * Retrieve variation for Visitor
    * @param {string} visitorId
-   * @param {Id} id
+   * @param {string} id
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
@@ -819,7 +820,7 @@ export class DataManager implements DataManagerInterface {
    */
   getBucketingById(
     visitorId: string,
-    id: Id,
+    id: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError {
     return this._getBucketingByField(visitorId, id, 'id', attributes);
@@ -827,23 +828,23 @@ export class DataManager implements DataManagerInterface {
 
   /**
    * Process conversion event
-   * @param {Id} visitorId
-   * @param {Id} goalId
+   * @param {string} visitorId
+   * @param {string} goalId
    * @param {Record<string, any>=} goalRule An object of key-value pairs that are used for goal matching
    * @param {Array<Record<GoalDataKey, number>>} goalData An array of object of key-value pairs
-   * @param {SegmentsData} segments
+   * @param {VisitorSegments} segments
    */
   convert(
-    visitorId: Id,
-    goalId: Id,
+    visitorId: string,
+    goalId: string,
     goalRule?: Record<string, any>,
     goalData?: Array<Record<GoalDataKey, number>>,
-    segments?: SegmentsData
+    segments?: VisitorSegments
   ): RuleError | boolean {
     const goal =
       typeof goalId === 'string'
-        ? (this.getEntity(goalId as string, 'goals') as Goal)
-        : (this.getEntityById(goalId, 'goals') as Goal);
+        ? (this.getEntity(goalId, 'goals') as ConfigGoal)
+        : (this.getEntityById(goalId, 'goals') as ConfigGoal);
     if (!goal?.id) {
       this._loggerManager?.error?.(
         'DataManager.convert()',
@@ -857,7 +858,7 @@ export class DataManager implements DataManagerInterface {
       const ruleMatched = this._ruleManager.isRuleMatched(
         goalRule,
         goal.rules,
-        `Goal #${goalId}`
+        `ConfigGoal #${goalId}`
       );
       // Return rule errors if present
       if (Object.values(RuleError).includes(ruleMatched as RuleError))
@@ -914,8 +915,8 @@ export class DataManager implements DataManagerInterface {
       goalId: goal.id
     };
     if (bucketingData) data.bucketingData = bucketingData;
-    const event: VisitorEvent = {
-      eventType: EventType.CONVERSION,
+    const event: VisitorTrackingEvents = {
+      eventType: VisitorTrackingEvents.eventType.CONVERSION,
       data
     };
     this._apiManager.enqueue(visitorId, event, segments);
@@ -923,11 +924,11 @@ export class DataManager implements DataManagerInterface {
     if (goalData) {
       const data: ConversionEvent = {
         goalId: goal.id,
-        goalData
+        goalData: goalData as Array<Record<string, number>>
       };
       if (bucketingData) data.bucketingData = bucketingData;
-      const event: VisitorEvent = {
-        eventType: EventType.CONVERSION,
+      const event: VisitorTrackingEvents = {
+        eventType: VisitorTrackingEvents.eventType.CONVERSION,
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);
@@ -991,12 +992,12 @@ export class DataManager implements DataManagerInterface {
   /**
    * Get audiences that meet the custom segments
    * @param {Array<Record<any, any>>} items
-   * @param {Id} visitorId
+   * @param {string} visitorId
    * @return {Array<Record<string, any>>}
    */
   filterMatchedCustomSegments(
     items: Array<Record<string, any>>,
-    visitorId: Id
+    visitorId: string
   ): Array<Record<string, any>> {
     this._loggerManager?.trace?.(
       'DataManager.filterMatchedCustomSegments()',
@@ -1056,9 +1057,9 @@ export class DataManager implements DataManagerInterface {
   /**
    * Get list of data entities
    * @param {string} entityType
-   * @return {Array<Entity | Id>}
+   * @return {Array<Entity | string>}
    */
-  getEntitiesList(entityType: string): Array<Entity | Id> {
+  getEntitiesList(entityType: string): Array<Entity | string> {
     let list = [];
     const mappedEntityType = DATA_ENTITIES_MAP[entityType] || entityType;
     if (this._dataEntities.indexOf(mappedEntityType) !== -1) {
@@ -1087,19 +1088,19 @@ export class DataManager implements DataManagerInterface {
     return this.getEntitiesList(entityType).reduce((target, entity) => {
       target[entity[field]] = entity;
       return target;
-    }, {});
+    }, {}) as Record<string, Entity>;
   }
 
   /**
    *
-   * @param {string|Id} identity Value of the field which name is provided in identityField
+   * @param {string} identity Value of the field which name is provided in identityField
    * @param {string} entityType
    * @param {IdentityField=} identityField Defaults to 'key'
    * @return {Entity}
    * @private
    */
   private _getEntityByField(
-    identity: string | Id,
+    identity: string,
     entityType: string,
     identityField: IdentityField = 'key'
   ): Entity {
@@ -1145,21 +1146,21 @@ export class DataManager implements DataManagerInterface {
 
   /**
    * Find the entity in list by id
-   * @param {Id} id
+   * @param {string} id
    * @param {string} entityType
    * @return {Entity}
    */
-  getEntityById(id: Id, entityType: string): Entity {
+  getEntityById(id: string, entityType: string): Entity {
     return this._getEntityByField(id, entityType, 'id');
   }
 
   /**
    * Find the entity in list by ids
-   * @param {Array<Id>} ids
+   * @param {Array<string>} ids
    * @param {string} entityType
    * @return {Array<Entity>}
    */
-  getEntitiesByIds(ids: Array<Id>, entityType: string): Array<Entity> {
+  getEntitiesByIds(ids: Array<string>, entityType: string): Array<Entity> {
     return this.getItemsByIds(ids, entityType) as Array<Entity>;
   }
 
@@ -1187,11 +1188,11 @@ export class DataManager implements DataManagerInterface {
 
   /**
    * Find the items in list by ids
-   * @param {Array<Id>} ids
+   * @param {Array<string>} ids
    * @param {String} path
    * @return {Array<Record<string, any>>}
    */
-  getItemsByIds(ids: Array<Id>, path: string): Array<Record<string, any>> {
+  getItemsByIds(ids: Array<string>, path: string): Array<Record<string, any>> {
     this._loggerManager?.trace?.(
       'DataManager.getItemsByIds()',
       this._mapper({
@@ -1204,10 +1205,7 @@ export class DataManager implements DataManagerInterface {
       const list = this.getEntitiesList(path) as Array<Entity>;
       if (arrayNotEmpty(list)) {
         for (let i = 0, length = list.length; i < length; i++) {
-          if (
-            ids.indexOf(Number(list[i]?.id)) !== -1 ||
-            ids.indexOf(String(list[i]?.id)) !== -1
-          ) {
+          if (ids.indexOf(list[i]?.id) !== -1) {
             items.push(list[i]);
           }
         }
@@ -1228,9 +1226,9 @@ export class DataManager implements DataManagerInterface {
    */
   getSubItem(
     entityType: string,
-    entityIdentity: string | number,
+    entityIdentity: string,
     subEntityType: string,
-    subEntityIdentity: string | number,
+    subEntityIdentity: string,
     identityField: IdentityField,
     subIdentityField: IdentityField
   ): Record<any, any> {
@@ -1240,10 +1238,7 @@ export class DataManager implements DataManagerInterface {
       identityField
     );
     for (const k in entity[subEntityType]) {
-      if (
-        String(entity[subEntityType][k]?.[subIdentityField]) ===
-        String(subEntityIdentity)
-      ) {
+      if (entity[subEntityType][k]?.[subIdentityField] === subEntityIdentity) {
         return entity[subEntityType][k];
       }
     }
@@ -1255,10 +1250,10 @@ export class DataManager implements DataManagerInterface {
    * @param data
    * @return {boolean}
    */
-  isValidConfigData(data: ConfigData): boolean {
+  isValidConfigData(data: ConfigResponseData): boolean {
     return (
       objectNotEmpty(data) &&
-      ((!!data?.account_id && !!data?.project?.id) || Boolean(data?.error))
+      ((!!data?.account_id && !!data?.project?.id) || Boolean(data['error']))
     );
   }
 }

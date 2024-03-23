@@ -6,16 +6,42 @@
  */
 
 import {
-  GoogleAnalyticsType,
-  IntegrationProvider
-} from '@convertcom/js-sdk-enums';
+  ExperienceIntegrationBaidu,
+  ExperienceIntegrationClicktale,
+  ExperienceIntegrationClicky,
+  ExperienceIntegrationCnzz,
+  ExperienceIntegrationCrazyegg,
+  ExperienceIntegrationEconda,
+  ExperienceIntegrationEulerian,
+  ExperienceIntegrationGAServing,
+  ExperienceIntegrationGosquared,
+  ExperienceIntegrationHeapanalytics,
+  ExperienceIntegrationHotjar,
+  ExperienceIntegrationMixpanel,
+  ExperienceIntegrationMouseflow,
+  ExperienceIntegrationPiwik,
+  ExperienceIntegrationSegmentio,
+  ExperienceIntegrationSitecatalyst,
+  ExperienceIntegrationWoopra,
+  ExperienceIntegrationYsance
+} from './config/index';
 
-export type Integration = {
-  provider: IntegrationProvider;
-  enabled?: boolean;
-  custom_dimension?: string;
-  type?: GoogleAnalyticsType;
-  measurementId?: string;
-  property_UA?: string;
-  evar?: string;
-};
+export type Integration =
+  | ExperienceIntegrationBaidu
+  | ExperienceIntegrationClicktale
+  | ExperienceIntegrationClicky
+  | ExperienceIntegrationCnzz
+  | ExperienceIntegrationCrazyegg
+  | ExperienceIntegrationEconda
+  | ExperienceIntegrationEulerian
+  | ExperienceIntegrationGAServing
+  | ExperienceIntegrationGosquared
+  | ExperienceIntegrationHeapanalytics
+  | ExperienceIntegrationHotjar
+  | ExperienceIntegrationMixpanel
+  | ExperienceIntegrationMouseflow
+  | ExperienceIntegrationPiwik
+  | ExperienceIntegrationSegmentio
+  | ExperienceIntegrationSitecatalyst
+  | ExperienceIntegrationWoopra
+  | ExperienceIntegrationYsance;

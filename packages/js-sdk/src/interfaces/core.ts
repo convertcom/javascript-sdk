@@ -5,12 +5,11 @@
  * License Apache-2.0
  */
 import {SystemEvents} from '@convertcom/js-sdk-enums';
-import {Id} from '@convertcom/js-sdk-types';
 import {ContextInterface} from './context';
 
 export interface CoreInterface {
   createContext(
-    visitorId: Id,
+    visitorId: string,
     visitorAttributes?: Record<any, any>
   ): ContextInterface;
 

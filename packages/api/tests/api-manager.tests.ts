@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -40,7 +41,6 @@ describe('ApiManager tests', function () {
       .which.equal('ApiManager');
   });
   let apiManager;
-
   it('Should successfully create new ApiManager instance with default config', async function () {
     const apiManager = new am();
     expect(apiManager)
@@ -49,7 +49,6 @@ describe('ApiManager tests', function () {
       .that.has.property('name')
       .which.equal('ApiManager');
   });
-
   it('Should create new ApiManager instance with visitor provided configuration and EvenManager dependency', async function () {
     apiManager = new am(configuration, {eventManager});
     expect(apiManager)
@@ -58,7 +57,6 @@ describe('ApiManager tests', function () {
       .that.has.property('name')
       .which.equal('ApiManager');
   });
-
   describe('Test API Manager request', function () {
     let server;
     // eslint-disable-next-line mocha/no-hooks-for-single-case
@@ -103,7 +101,6 @@ describe('ApiManager tests', function () {
       server.close();
     });
   });
-
   describe('Test requests enqueuing', function () {
     let server;
     // eslint-disable-next-line mocha/no-hooks-for-single-case
@@ -116,11 +113,11 @@ describe('ApiManager tests', function () {
       server.closeAllConnections();
       server.close();
     });
-
     const VID = '1';
     const EXP = '11';
     const VAR = '12';
     const N = batch_size - 2;
+
     it(
       N +
         ' enqueued requests should be released before exceeding ' +
@@ -168,6 +165,7 @@ describe('ApiManager tests', function () {
         });
       }
     );
+
     it(
       batch_size +
         ' enqueued requests should be released before exceeding ' +
@@ -208,6 +206,7 @@ describe('ApiManager tests', function () {
         }
       }
     );
+
     it('Should fire the event when enqueued are released because of size and has server response in passed arguments', function (done) {
       const requestData = {
         eventType: 'bucketing',

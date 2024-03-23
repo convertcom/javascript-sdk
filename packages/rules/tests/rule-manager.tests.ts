@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -5,7 +6,7 @@ import {assert} from 'chai';
 import {RuleManager as rm} from '../src/rule-manager';
 import {Comparisons as comparisonProcessor} from '@convertcom/js-sdk-utils';
 import testConfig from './test-config.json';
-import {RuleSet, Config as ConfigType} from '@convertcom/js-sdk-types';
+import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {defaultConfig} from '../../js-sdk/src/config/default';
 
@@ -19,7 +20,6 @@ describe('RuleManager tests', function () {
       .that.has.property('name')
       .which.equal('RuleManager');
   });
-
   describe('RuleManager with custom comparison processor', function () {
     let ruleManager;
     const customComparisonProcessor = {
@@ -34,7 +34,6 @@ describe('RuleManager tests', function () {
         return typeof value === testAgainst;
       }
     };
-
     // eslint-disable-next-line mocha/no-setup-in-describe
     const configuration = objectDeepMerge(testConfig, defaultConfig, {
       rules: {
@@ -42,7 +41,7 @@ describe('RuleManager tests', function () {
         keys_case_sensitive: false
       }
     }) as unknown as ConfigType;
-    const testRuleSet1: RuleSet = {
+    const testRuleSet1 = {
       OR: [
         {
           AND: [
@@ -62,7 +61,7 @@ describe('RuleManager tests', function () {
         }
       ]
     };
-    const testRuleSet2: RuleSet = {
+    const testRuleSet2 = {
       OR: [
         {
           AND: [
@@ -82,7 +81,7 @@ describe('RuleManager tests', function () {
         }
       ]
     };
-    const testRuleSet3: RuleSet = {
+    const testRuleSet3 = {
       OR: [
         {
           AND: [
@@ -185,7 +184,6 @@ describe('RuleManager tests', function () {
       }
     );
   });
-
   describe('RuleManager with default comparison processor', function () {
     let ruleManager;
     // eslint-disable-next-line mocha/no-setup-in-describe
@@ -193,7 +191,7 @@ describe('RuleManager tests', function () {
       testConfig,
       defaultConfig
     ) as unknown as ConfigType;
-    const testRuleSet1: RuleSet = {
+    const testRuleSet1 = {
       OR: [
         {
           AND: [
@@ -221,7 +219,7 @@ describe('RuleManager tests', function () {
         }
       ]
     };
-    const testRuleSet2: RuleSet = {
+    const testRuleSet2 = {
       OR: [
         {
           AND: [
@@ -249,7 +247,7 @@ describe('RuleManager tests', function () {
         }
       ]
     };
-    const testRuleSet3: RuleSet = {
+    const testRuleSet3 = {
       OR: [
         {
           AND: [
@@ -339,7 +337,6 @@ describe('RuleManager tests', function () {
         }
       ]
     };
-
     const data1 = {
       device: 'pc',
       browser: 'Mozilla',

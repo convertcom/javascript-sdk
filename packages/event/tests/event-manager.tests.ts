@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 // import * as chai from 'chai';
 import {expect} from 'chai';
@@ -15,7 +16,6 @@ chai.use(spies);
 
 describe('EventManager tests', function () {
   let eventManager;
-
   it('Should expose EventManager', function () {
     assert.isDefined(em);
   });

@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -79,8 +80,7 @@ describe('FeatureManager tests', function () {
       .that.has.property('name')
       .which.equal('FeatureManager');
   });
-
-  describe('Test Feature Manager', function () {
+  describe('Test ConfigFeature Manager', function () {
     it('Shoud successfully get a list of all entities', function () {
       const entities = featureManager.getList();
       expect(entities)
@@ -101,7 +101,7 @@ describe('FeatureManager tests', function () {
     });
     it('Shoud successfully get the entity by key', function () {
       const featureKey = 'feature-1';
-      const featureId = 10024;
+      const featureId = '10024';
       const entity = featureManager.getFeature(featureKey);
       expect(entity)
         .to.be.an('object')
@@ -110,7 +110,7 @@ describe('FeatureManager tests', function () {
     });
     it('Shoud successfully get the entity by id', function () {
       const featureKey = 'feature-1';
-      const featureId = 10024;
+      const featureId = '10024';
       const entity = featureManager.getFeatureById(featureId);
       expect(entity)
         .to.be.an('object')
@@ -135,7 +135,7 @@ describe('FeatureManager tests', function () {
       expect(type).to.equal(variableType);
     });
     it('Shoud successfully get specific variable type defined in a specific feature by id', function () {
-      const featureId = 10024;
+      const featureId = '10024';
       const variableName = 'enabled';
       const variableType = 'boolean';
       const type = featureManager.getFeatureVariableTypeById(
@@ -152,7 +152,7 @@ describe('FeatureManager tests', function () {
     it('Shoud successfully get feature and its status', function (done) {
       this.timeout(test_timeout);
       const featureKey = 'feature-1';
-      const featureIds = [10024, 10025];
+      const featureIds = ['10024', '10025'];
       const features = featureManager.runFeature(visitorId, featureKey, {
         visitorProperties: {
           varName3: 'something'
@@ -196,8 +196,8 @@ describe('FeatureManager tests', function () {
     });
     it('Shoud successfully get feature and its status by id', function (done) {
       this.timeout(test_timeout);
-      const featureId = 10024;
-      const featureIds = [10024, 10025];
+      const featureId = '10024';
+      const featureIds = ['10024', '10025'];
       const features = featureManager.runFeatureById(visitorId, featureId, {
         visitorProperties: {
           varName3: 'something'
@@ -228,7 +228,7 @@ describe('FeatureManager tests', function () {
         'test-experience-ab-fullstack-2',
         'test-experience-ab-fullstack-3'
       ];
-      const featureIds = [10024, 10025, 10026];
+      const featureIds = ['10024', '10025', '10026'];
       const features = featureManager.runFeatures(
         visitorId,
         {

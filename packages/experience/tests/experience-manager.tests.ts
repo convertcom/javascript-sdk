@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -79,8 +80,7 @@ describe('ExperienceManager tests', function () {
       .that.has.property('name')
       .which.equal('ExperienceManager');
   });
-
-  describe('Test Experience Manager', function () {
+  describe('Test ConfigExperience Manager', function () {
     it('Shoud successfully get a list of all entities', function () {
       const entities = experienceManager.getList();
       expect(entities)
@@ -90,7 +90,7 @@ describe('ExperienceManager tests', function () {
     });
     it('Shoud successfully get the entity by key', function () {
       const experienceKey = 'test-experience-ab-fullstack-2';
-      const experienceId = 100218245;
+      const experienceId = '100218245';
       const entity = experienceManager.getExperience(experienceKey);
       expect(entity)
         .to.be.an('object')
@@ -99,7 +99,7 @@ describe('ExperienceManager tests', function () {
     });
     it('Shoud successfully get the entity by id', function () {
       const experienceKey = 'test-experience-ab-fullstack-2';
-      const experienceId = 100218245;
+      const experienceId = '100218245';
       const entity = experienceManager.getExperienceById(experienceId);
       expect(entity)
         .to.be.an('object')
@@ -146,7 +146,7 @@ describe('ExperienceManager tests', function () {
     });
     it('Shoud successfully select variation for specific visitor by id', function (done) {
       this.timeout(test_timeout);
-      const experienceId = 100218245;
+      const experienceId = '100218245';
       const variation = experienceManager.selectVariationById(
         visitorId,
         experienceId,
@@ -173,7 +173,7 @@ describe('ExperienceManager tests', function () {
     });
     it('Shoud successfully select all variations across all experiences for specific visitor', function (done) {
       this.timeout(test_timeout);
-      const variationIds = [100299456, 100299457, 100299460, 100299461];
+      const variationIds = ['100299456', '100299457', '100299460', '100299461'];
       const variations = experienceManager.selectVariations(visitorId, {
         visitorProperties: {
           varName3: 'something'
@@ -196,7 +196,7 @@ describe('ExperienceManager tests', function () {
     it('Shoud successfully get experience variation by key', function () {
       const experienceKey = 'test-experience-ab-fullstack-2';
       const variationKey = '100299457-variation-1';
-      const variationId = 100299457;
+      const variationId = '100299457';
       const variation = experienceManager.getVariation(
         experienceKey,
         variationKey
@@ -207,9 +207,9 @@ describe('ExperienceManager tests', function () {
         .to.equal(variationId);
     });
     it('Shoud successfully get experience variation by id', function () {
-      const experienceId = 100218245;
+      const experienceId = '100218245';
       const variationKey = '100299457-variation-1';
-      const variationId = 100299457;
+      const variationId = '100299457';
       const variation = experienceManager.getVariationById(
         experienceId,
         variationId

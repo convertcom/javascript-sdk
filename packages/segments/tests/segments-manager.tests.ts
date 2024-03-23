@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 import {expect} from 'chai';
 import {assert} from 'chai';
@@ -65,8 +66,7 @@ describe('SegmentsManager tests', function () {
       .that.has.property('name')
       .which.equal('SegmentsManager');
   });
-
-  describe('Test Segments Manager', function () {
+  describe('Test ConfigSegment Manager', function () {
     it('Should successfully update segments in DataStore', function () {
       const segments = {country: 'US'};
       segmentsManager.putSegments(visitorId, segments);
