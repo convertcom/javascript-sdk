@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-experience-v1.2.0...js-sdk-experience-v2.0.0) (2024-03-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* use generated API config types to match the published specs at https://api.convert.com/doc/serving/
+
+### Features
+
+* use generated API config types to match the published specs at https://api.convert.com/doc/serving/ ([681d038](https://github.com/convertcom/javascript-sdk/commit/681d03845c2d36e303930865275677e8a37faa15))
+
 ## [1.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-experience-v1.1.0...js-sdk-experience-v1.2.0) (2024-02-12)
 
 
