@@ -1,14 +1,14 @@
 {
-  "packages/js-sdk": "3.0.0",
-  "packages/enums": "1.1.0",
-  "packages/types": "2.0.0",
-  "packages/utils": "1.1.3",
-  "packages/event": "1.0.2",
-  "packages/bucketing": "2.0.0",
-  "packages/logger": "1.0.1",
-  "packages/rules": "1.0.2",
-  "packages/segments": "1.1.0",
-  "packages/api": "1.0.1",
-  "packages/data": "2.0.0",
-  "packages/experience": "1.2.0"
+  "packages/js-sdk": "4.0.0",
+  "packages/enums": "2.0.0",
+  "packages/types": "3.0.0",
+  "packages/utils": "2.0.0",
+  "packages/event": "2.0.0",
+  "packages/bucketing": "3.0.0",
+  "packages/logger": "2.0.0",
+  "packages/rules": "2.0.0",
+  "packages/segments": "2.0.0",
+  "packages/api": "2.0.0",
+  "packages/data": "3.0.0",
+  "packages/experience": "2.0.0"
 }
