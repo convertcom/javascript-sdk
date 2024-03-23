@@ -534,9 +534,9 @@ export class DataManager implements DataManagerInterface {
         variationId = this._bucketingManager.getBucketForVisitor(
           buckets,
           visitorId,
-          this._config?.bucketing?.includeExperienceKeyHash
-            ? {experienceKey: experience?.key}
-            : null
+          this._config?.bucketing?.excludeExperienceIdHash
+            ? null
+            : {experienceId: experience.id.toString()}
         );
         if (variationId) {
           this._loggerManager?.info?.(
