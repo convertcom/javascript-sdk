@@ -50,7 +50,7 @@ export type ConfigProject = {
          * make cross domain tracking possible) is done automatically on page
          *
          */
-        auto_link?: boolean;
+        allow_crossdomain_tracking?: boolean;
         /**
          * Whether or not data is [anonymized](https://convert.zendesk.com/hc/en-us/articles/204506339-Prevent-Experiment-Details-Data-Leak-with-Data-Anonymization).
          */

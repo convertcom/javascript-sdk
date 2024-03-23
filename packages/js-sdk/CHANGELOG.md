@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v3.0.0...js-sdk-v4.0.0) (2024-03-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* use generated API config types to match the published specs at https://api.convert.com/doc/serving/
+
+### Features
+
+* use generated API config types to match the published specs at https://api.convert.com/doc/serving/ ([681d038](https://github.com/convertcom/javascript-sdk/commit/681d03845c2d36e303930865275677e8a37faa15))
+
 ## [3.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v2.4.1...js-sdk-v3.0.0) (2024-03-12)
 
 
