@@ -86,6 +86,12 @@ export type ConfigProject = {
                  */
                 enabled?: boolean;
             };
+            shopify?: {
+                /**
+                 * ID of the selected goal at Convert Shopify App
+                 */
+                revenueGoalId?: string;
+            };
         };
         /**
          * Minimum order value for transactions outliers
