@@ -161,6 +161,20 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
+   * Set dataStoreManager at run-time
+   */
+  setDataStore(dataStore: any) {
+    this._dataStoreManager = null;
+    if (dataStore) {
+      this._dataStoreManager = new DataStoreManager(this._config, {
+        dataStore: dataStore,
+        eventManager: this._eventManager,
+        loggerManager: this._loggerManager
+      });
+    }
+  }
+
+  /**
    * Validate locationProperties against locations rules and visitorProperties against audiences rules
    * @param {string} visitorId
    * @param {string} identity Value of the field which name is provided in identityField
@@ -476,7 +490,7 @@ export class DataManager implements DataManagerInterface {
     const {[experience.id.toString()]: variationId} = bucketing || {};
     if (
       variationId &&
-      (variation = this.retrieveVariation(experience.id, variationId))
+      (variation = this.retrieveVariation(experience.id, String(variationId)))
     ) {
       // If it's found log debug info. The return value will be formed next step
       this._loggerManager?.info?.(
@@ -492,17 +506,31 @@ export class DataManager implements DataManagerInterface {
         })
       );
     } else {
-      // Try to find a bucketed visitor in dataStore
-      let {bucketing: {[experience.id.toString()]: variationId} = {}} =
-        this.dataStoreManager?.get?.(storeKey) || {};
-      if (
-        variationId &&
-        (variation = this.retrieveVariation(experience.id, variationId))
-      ) {
+      // Build buckets where key is variation id and value is traffic distribution
+      const buckets = experience.variations.reduce((bucket, variation) => {
+        if (variation?.id)
+          bucket[variation.id] = variation?.traffic_allocation || 100.0;
+        return bucket;
+      }, {}) as Record<string, number>;
+      // Select bucket based for provided visitor id
+      const variationId = this._bucketingManager.getBucketForVisitor(
+        buckets,
+        visitorId,
+        this._config?.bucketing?.excludeExperienceIdHash
+          ? null
+          : {experienceId: experience.id.toString()}
+      );
+      if (variationId) {
+        this._loggerManager?.info?.(
+          'DataManager._retrieveBucketing()',
+          MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
+        );
         // Store the data in local variable
         if (updateVisitorProperties) {
           this.putData(visitorId, {
-            bucketing: {[experience.id.toString()]: variationId},
+            bucketing: {
+              [experience.id.toString()]: variationId
+            },
             ...(visitorProperties ? {segments: visitorProperties} : {})
           });
         } else {
@@ -510,82 +538,35 @@ export class DataManager implements DataManagerInterface {
             bucketing: {[experience.id.toString()]: variationId}
           });
         }
-        // If it's found log debug info. The return value will be formed next step
-        this._loggerManager?.info?.(
-          'DataManager._retrieveBucketing()',
-          MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
-        );
-        this._loggerManager?.debug?.(
-          'DataManager._retrieveBucketing()',
-          this._mapper({
-            storeKey: storeKey,
-            visitorId: visitorId,
-            variationId: variationId
-          })
-        );
-      } else {
-        // Build buckets where key is variation id and value is traffic distribution
-        const buckets = experience.variations.reduce((bucket, variation) => {
-          if (variation?.id)
-            bucket[variation.id] = variation?.traffic_allocation || 100.0;
-          return bucket;
-        }, {}) as Record<string, number>;
-        // Select bucket based for provided visitor id
-        variationId = this._bucketingManager.getBucketForVisitor(
-          buckets,
-          visitorId,
-          this._config?.bucketing?.excludeExperienceIdHash
-            ? null
-            : {experienceId: experience.id.toString()}
-        );
-        if (variationId) {
-          this._loggerManager?.info?.(
+        if (enableTracking) {
+          // Enqueue bucketing event to api
+          const bucketingEvent: BucketingEvent = {
+            experienceId: experience.id.toString(),
+            variationId: variationId.toString()
+          };
+          const visitorEvent: VisitorTrackingEvents = {
+            eventType: VisitorTrackingEvents.eventType.BUCKETING,
+            data: bucketingEvent
+          };
+          this._apiManager.enqueue(visitorId, visitorEvent, segments);
+          this._loggerManager?.trace?.(
             'DataManager._retrieveBucketing()',
-            MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
-          );
-          // Store the data in local variable
-          if (updateVisitorProperties) {
-            this.putData(visitorId, {
-              bucketing: {
-                [experience.id.toString()]: variationId
-              },
-              ...(visitorProperties ? {segments: visitorProperties} : {})
-            });
-          } else {
-            this.putData(visitorId, {
-              bucketing: {[experience.id.toString()]: variationId}
-            });
-          }
-          if (enableTracking) {
-            // Enqueue bucketing event to api
-            const bucketingEvent: BucketingEvent = {
-              experienceId: experience.id.toString(),
-              variationId: variationId.toString()
-            };
-            const visitorEvent: VisitorTrackingEvents = {
-              eventType: VisitorTrackingEvents.eventType.BUCKETING,
-              data: bucketingEvent
-            };
-            this._apiManager.enqueue(visitorId, visitorEvent, segments);
-            this._loggerManager?.trace?.(
-              'DataManager._retrieveBucketing()',
-              this._mapper({
-                visitorEvent
-              })
-            );
-          }
-          // Retrieve and return variation
-          variation = this.retrieveVariation(experience.id, variationId);
-        } else {
-          this._loggerManager?.error?.(
-            'DataManager._retrieveBucketing()',
-            ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
             this._mapper({
-              visitorId: visitorId,
-              experience: experience
+              visitorEvent
             })
           );
         }
+        // Retrieve and return variation
+        variation = this.retrieveVariation(experience.id, String(variationId));
+      } else {
+        this._loggerManager?.error?.(
+          'DataManager._retrieveBucketing()',
+          ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
+          this._mapper({
+            visitorId: visitorId,
+            experience: experience
+          })
+        );
       }
     }
 
@@ -647,22 +628,12 @@ export class DataManager implements DataManagerInterface {
           break;
         }
       }
-      if (this.dataStoreManager && newData?.segments) {
-        const {segments: storedSegments = {}, ...data} = storeData;
-        const {segments: reportSegments = {}} =
-          this.filterReportSegments(storedSegments);
-        const {segments: newSegments} = this.filterReportSegments(
-          newData.segments
+      if (this.dataStoreManager) {
+        // Enqueue to store in dataStore
+        this.dataStoreManager.enqueue(
+          storeKey,
+          objectDeepMerge(storeData, newData)
         );
-        if (newSegments) {
-          // Enqueue to store in dataStore
-          this.dataStoreManager.enqueue(
-            storeKey,
-            objectDeepMerge(data, {
-              segments: {...reportSegments, ...newSegments}
-            })
-          );
-        }
       }
     }
   }
@@ -674,6 +645,9 @@ export class DataManager implements DataManagerInterface {
    */
   getData(visitorId: string): StoreData {
     const storeKey = this.getStoreKey(visitorId);
+    if (this.dataStoreManager) {
+      return this.dataStoreManager.get(storeKey) || null;
+    }
     return this._bucketedVisitors.get(storeKey) || null;
   }
 
