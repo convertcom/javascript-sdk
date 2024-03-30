@@ -347,7 +347,7 @@ export class RuleManager implements RuleManagerInterface {
    * @param {Record<string, any>} data Single value or key-value data set to compare
    * @return {boolean}
    */
-  private isUsingCustomInterface(data: Record<string, any>): boolean {
+  isUsingCustomInterface(data: Record<string, any>): boolean {
     return (
       objectNotEmpty(data) &&
       Object.prototype.hasOwnProperty.call(data, 'name') &&

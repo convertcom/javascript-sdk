@@ -526,6 +526,11 @@ export class DataManager implements DataManagerInterface {
           MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
         );
         // Store the data in local variable
+        const visitorSegments = this._ruleManager.isUsingCustomInterface(
+          visitorProperties
+        )
+          ? visitorProperties?.get?.() || segments
+          : segments;
         if (updateVisitorProperties) {
           this.putData(visitorId, {
             bucketing: {
@@ -548,7 +553,7 @@ export class DataManager implements DataManagerInterface {
             eventType: VisitorTrackingEvents.eventType.BUCKETING,
             data: bucketingEvent
           };
-          this._apiManager.enqueue(visitorId, visitorEvent, segments);
+          this._apiManager.enqueue(visitorId, visitorEvent, visitorSegments);
           this._loggerManager?.trace?.(
             'DataManager._retrieveBucketing()',
             this._mapper({
