@@ -410,6 +410,7 @@ export class DataManager implements DataManagerInterface {
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
    * @param {boolean=} attributes.updateVisitorProperties
+   * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking Defaults to `true`
    * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
@@ -425,6 +426,7 @@ export class DataManager implements DataManagerInterface {
       visitorProperties,
       locationProperties,
       updateVisitorProperties,
+      forceVariationId,
       enableTracking = true,
       environment = this._environment
     } = attributes;
@@ -457,6 +459,7 @@ export class DataManager implements DataManagerInterface {
         visitorProperties,
         updateVisitorProperties,
         experience as ConfigExperience,
+        forceVariationId,
         enableTracking
       );
     }
@@ -469,6 +472,7 @@ export class DataManager implements DataManagerInterface {
    * @param {Record<string, any> | null} visitorProperties
    * @param {boolean} updateVisitorProperties
    * @param {ConfigExperience} experience
+   * @param {string=} forceVariationId
    * @param {boolean=} enableTracking Defaults to `true`
    * @return {BucketedVariation}
    * @private
@@ -478,6 +482,7 @@ export class DataManager implements DataManagerInterface {
     visitorProperties: Record<string, any> | null,
     updateVisitorProperties: boolean,
     experience: ConfigExperience,
+    forceVariationId: string,
     enableTracking: boolean = true
   ): BucketedVariation {
     if (!visitorId || !experience) return null;
@@ -503,6 +508,26 @@ export class DataManager implements DataManagerInterface {
           storeKey: storeKey,
           visitorId: visitorId,
           variationId: variationId
+        })
+      );
+    } else if (
+      forceVariationId &&
+      (variation = this.retrieveVariation(
+        experience.id,
+        String(forceVariationId)
+      ))
+    ) {
+      // If it's found log debug info. The return value will be formed next step
+      this._loggerManager?.info?.(
+        'DataManager._retrieveBucketing()',
+        MESSAGES.BUCKETED_VISITOR_FORCED.replace('#', `#${forceVariationId}`)
+      );
+      this._loggerManager?.debug?.(
+        'DataManager._retrieveBucketing()',
+        this._mapper({
+          storeKey: storeKey,
+          visitorId: visitorId,
+          variationId: forceVariationId
         })
       );
     } else {
