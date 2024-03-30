@@ -482,7 +482,7 @@ export class DataManager implements DataManagerInterface {
     visitorProperties: Record<string, any> | null,
     updateVisitorProperties: boolean,
     experience: ConfigExperience,
-    forceVariationId: string,
+    forceVariationId?: string,
     enableTracking: boolean = true
   ): BucketedVariation {
     if (!visitorId || !experience) return null;
@@ -510,41 +510,45 @@ export class DataManager implements DataManagerInterface {
           variationId: variationId
         })
       );
-    } else if (
-      forceVariationId &&
-      (variation = this.retrieveVariation(
-        experience.id,
-        String(forceVariationId)
-      ))
-    ) {
-      // If it's found log debug info. The return value will be formed next step
-      this._loggerManager?.info?.(
-        'DataManager._retrieveBucketing()',
-        MESSAGES.BUCKETED_VISITOR_FORCED.replace('#', `#${forceVariationId}`)
-      );
-      this._loggerManager?.debug?.(
-        'DataManager._retrieveBucketing()',
-        this._mapper({
-          storeKey: storeKey,
-          visitorId: visitorId,
-          variationId: forceVariationId
-        })
-      );
     } else {
-      // Build buckets where key is variation id and value is traffic distribution
-      const buckets = experience.variations.reduce((bucket, variation) => {
-        if (variation?.id)
-          bucket[variation.id] = variation?.traffic_allocation || 100.0;
-        return bucket;
-      }, {}) as Record<string, number>;
-      // Select bucket based for provided visitor id
-      const variationId = this._bucketingManager.getBucketForVisitor(
-        buckets,
-        visitorId,
-        this._config?.bucketing?.excludeExperienceIdHash
-          ? null
-          : {experienceId: experience.id.toString()}
-      );
+      let variationId;
+      if (
+        forceVariationId &&
+        (variation = this.retrieveVariation(
+          experience.id,
+          String(forceVariationId)
+        ))
+      ) {
+        variationId = forceVariationId;
+        // If it's found log debug info. The return value will be formed next step
+        this._loggerManager?.info?.(
+          'DataManager._retrieveBucketing()',
+          MESSAGES.BUCKETED_VISITOR_FORCED.replace('#', `#${forceVariationId}`)
+        );
+        this._loggerManager?.debug?.(
+          'DataManager._retrieveBucketing()',
+          this._mapper({
+            storeKey: storeKey,
+            visitorId: visitorId,
+            variationId: forceVariationId
+          })
+        );
+      } else {
+        // Build buckets where key is variation id and value is traffic distribution
+        const buckets = experience.variations.reduce((bucket, variation) => {
+          if (variation?.id)
+            bucket[variation.id] = variation?.traffic_allocation || 100.0;
+          return bucket;
+        }, {}) as Record<string, number>;
+        // Select bucket based for provided visitor id
+        variationId = this._bucketingManager.getBucketForVisitor(
+          buckets,
+          visitorId,
+          this._config?.bucketing?.excludeExperienceIdHash
+            ? null
+            : {experienceId: experience.id.toString()}
+        );
+      }
       if (variationId) {
         this._loggerManager?.info?.(
           'DataManager._retrieveBucketing()',
@@ -1247,9 +1251,9 @@ export class DataManager implements DataManagerInterface {
       entityType,
       identityField
     );
-    for (const k in entity[subEntityType]) {
-      if (entity[subEntityType][k]?.[subIdentityField] === subEntityIdentity) {
-        return entity[subEntityType][k];
+    for (const subEntity of entity[subEntityType]) {
+      if (subEntity[subIdentityField] === subEntityIdentity) {
+        return subEntity;
       }
     }
     return null;
