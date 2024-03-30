@@ -526,17 +526,17 @@ export class DataManager implements DataManagerInterface {
           MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
         );
         // Store the data in local variable
-        const visitorSegments = this._ruleManager.isUsingCustomInterface(
-          visitorProperties
-        )
-          ? visitorProperties?.get?.() || segments
-          : segments;
         if (updateVisitorProperties) {
+          const visitorSegments = this._ruleManager.isUsingCustomInterface(
+            visitorProperties
+          )
+            ? visitorProperties?.get?.() || {}
+            : visitorProperties;
           this.putData(visitorId, {
             bucketing: {
               [experience.id.toString()]: variationId
             },
-            ...(visitorProperties ? {segments: visitorProperties} : {})
+            ...(visitorProperties ? {segments: visitorSegments} : {})
           });
         } else {
           this.putData(visitorId, {
@@ -553,7 +553,13 @@ export class DataManager implements DataManagerInterface {
             eventType: VisitorTrackingEvents.eventType.BUCKETING,
             data: bucketingEvent
           };
-          this._apiManager.enqueue(visitorId, visitorEvent, visitorSegments);
+          this._apiManager.enqueue(
+            visitorId,
+            visitorEvent,
+            this._ruleManager.isUsingCustomInterface(visitorProperties)
+              ? visitorProperties?.get?.()
+              : segments
+          );
           this._loggerManager?.trace?.(
             'DataManager._retrieveBucketing()',
             this._mapper({
