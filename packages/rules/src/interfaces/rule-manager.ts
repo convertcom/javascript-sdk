@@ -19,6 +19,4 @@ export interface RuleManagerInterface {
   ): boolean | RuleError;
 
   isValidRule(rule: RuleElement): boolean;
-
-  isUsingCustomInterface(data: Record<string, any>): boolean;
 }

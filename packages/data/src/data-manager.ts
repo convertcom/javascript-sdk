@@ -556,16 +556,11 @@ export class DataManager implements DataManagerInterface {
         );
         // Store the data in local variable
         if (updateVisitorProperties) {
-          const visitorSegments = this._ruleManager.isUsingCustomInterface(
-            visitorProperties
-          )
-            ? visitorProperties?.get?.() || {}
-            : visitorProperties;
           this.putData(visitorId, {
             bucketing: {
               [experience.id.toString()]: variationId
             },
-            ...(visitorProperties ? {segments: visitorSegments} : {})
+            ...(visitorProperties ? {segments: visitorProperties} : {})
           });
         } else {
           this.putData(visitorId, {
@@ -582,13 +577,7 @@ export class DataManager implements DataManagerInterface {
             eventType: VisitorTrackingEvents.eventType.BUCKETING,
             data: bucketingEvent
           };
-          this._apiManager.enqueue(
-            visitorId,
-            visitorEvent,
-            this._ruleManager.isUsingCustomInterface(visitorProperties)
-              ? visitorProperties?.get?.()
-              : segments
-          );
+          this._apiManager.enqueue(visitorId, visitorEvent, segments);
           this._loggerManager?.trace?.(
             'DataManager._retrieveBucketing()',
             this._mapper({
@@ -668,12 +657,22 @@ export class DataManager implements DataManagerInterface {
           break;
         }
       }
-      if (this.dataStoreManager) {
-        // Enqueue to store in dataStore
-        this.dataStoreManager.enqueue(
-          storeKey,
-          objectDeepMerge(storeData, newData)
+      if (this.dataStoreManager && newData?.segments) {
+        const {segments: storedSegments = {}, ...data} = storeData;
+        const {segments: reportSegments = {}} =
+          this.filterReportSegments(storedSegments);
+        const {segments: newSegments} = this.filterReportSegments(
+          newData.segments
         );
+        if (newSegments) {
+          // Enqueue to store in dataStore
+          this.dataStoreManager.enqueue(
+            storeKey,
+            objectDeepMerge(data, {
+              segments: {...reportSegments, ...newSegments}
+            })
+          );
+        }
       }
     }
   }
@@ -685,9 +684,6 @@ export class DataManager implements DataManagerInterface {
    */
   getData(visitorId: string): StoreData {
     const storeKey = this.getStoreKey(visitorId);
-    if (this.dataStoreManager) {
-      return this.dataStoreManager.get(storeKey) || null;
-    }
     return this._bucketedVisitors.get(storeKey) || null;
   }
 
