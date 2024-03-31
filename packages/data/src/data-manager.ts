@@ -684,7 +684,14 @@ export class DataManager implements DataManagerInterface {
    */
   getData(visitorId: string): StoreData {
     const storeKey = this.getStoreKey(visitorId);
-    return this._bucketedVisitors.get(storeKey) || null;
+    const memoryData = this._bucketedVisitors.get(storeKey) || null;
+    if (this.dataStoreManager) {
+      return objectDeepMerge(
+        memoryData || {},
+        this.dataStoreManager.get(storeKey) || {}
+      );
+    }
+    return memoryData;
   }
 
   /**
