@@ -238,6 +238,7 @@ export default function runTests(bundle) {
       const segments = {country: 'US'};
       context.setDefaultSegments(segments);
       const localSegments = dataStore.get(storeKey);
+      console.log('localSegments:', localSegments);
       expect(localSegments)
         .to.have.property('segments')
         .that.deep.equal({

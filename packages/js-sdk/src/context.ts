@@ -465,7 +465,8 @@ export class Context implements ContextInterface {
 
   /**
    * Update visitor properties in memory
-   * @param visitorProperties
+   * @param {string} visitorId
+   * @param {Record<string, any>} visitorProperties
    */
   updateVisitorProperties(
     visitorId: string,

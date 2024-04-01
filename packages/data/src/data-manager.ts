@@ -73,6 +73,7 @@ export class DataManager implements DataManagerInterface {
   private _dataEntities = DATA_ENTITIES;
   private _localStoreLimit = LOCAL_STORE_LIMIT;
   private _bucketedVisitors = new Map();
+  private _asyncStorage: boolean;
   private _environment: string;
   private _mapper: (...args: any) => any;
   /**
@@ -97,7 +98,12 @@ export class DataManager implements DataManagerInterface {
       eventManager: EventManagerInterface;
       apiManager: ApiManagerInterface;
       loggerManager?: LogManagerInterface;
-    }
+    },
+    {
+      asyncStorage = true
+    }: {
+      asyncStorage?: boolean;
+    } = {}
   ) {
     this._environment = config?.environment;
     this._apiManager = apiManager;
@@ -107,6 +113,7 @@ export class DataManager implements DataManagerInterface {
     this._eventManager = eventManager;
     this._config = config;
     this._mapper = config?.mapper || ((value: any) => value);
+    this._asyncStorage = asyncStorage;
     this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
@@ -412,6 +419,7 @@ export class DataManager implements DataManagerInterface {
    * @param {boolean=} attributes.updateVisitorProperties
    * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking Defaults to `true`
+   * @param {boolean=} attributes.asyncStorage Defaults to `true`
    * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
    * @private
@@ -438,6 +446,7 @@ export class DataManager implements DataManagerInterface {
         identityField: identityField,
         visitorProperties: visitorProperties,
         locationProperties: locationProperties,
+        forceVariationId: enableTracking,
         enableTracking: enableTracking,
         environment: environment
       })
@@ -665,13 +674,23 @@ export class DataManager implements DataManagerInterface {
           newData.segments
         );
         if (newSegments) {
-          // Enqueue to store in dataStore
-          this.dataStoreManager.enqueue(
-            storeKey,
-            objectDeepMerge(data, {
-              segments: {...reportSegments, ...newSegments}
-            })
-          );
+          if (this._asyncStorage) {
+            // Enqueue to store in dataStore
+            this.dataStoreManager.enqueue(
+              storeKey,
+              objectDeepMerge(data, {
+                segments: {...reportSegments, ...newSegments}
+              })
+            );
+          } else {
+            // Save now to store in dataStore
+            this.dataStoreManager.set(
+              storeKey,
+              objectDeepMerge(data, {
+                segments: {...reportSegments, ...newSegments}
+              })
+            );
+          }
         }
       }
     }
