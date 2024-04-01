@@ -33,6 +33,7 @@ export type { ClicksElementGoalSettings } from './models/ClicksElementGoalSettin
 export { ClicksLinkGoal } from './models/ClicksLinkGoal';
 export type { ClicksLinkGoalSettings } from './models/ClicksLinkGoalSettings';
 export type { ConfigAudience } from './models/ConfigAudience';
+export { ConfigAudienceTypes } from './models/ConfigAudienceTypes';
 export type { ConfigExperience } from './models/ConfigExperience';
 export type { ConfigFeature } from './models/ConfigFeature';
 export type { ConfigGoal } from './models/ConfigGoal';
