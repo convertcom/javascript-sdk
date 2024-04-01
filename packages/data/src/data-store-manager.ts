@@ -58,14 +58,10 @@ export class DataStoreManager implements DataStoreManagerInterface {
     this._loggerManager = loggerManager;
     this._eventManager = eventManager;
 
-    // TODO: Make this be configurable by config
-    this.batchSize =
-      // Number(config?.events?.batch_size) ||
-      DEFAULT_BATCH_SIZE;
+    this.batchSize = Number(config?.events?.batch_size) || DEFAULT_BATCH_SIZE;
 
     this.releaseInterval =
-      // Number(config?.events?.release_interval) ||
-      DEFAULT_RELEASE_INTERVAL;
+      Number(config?.events?.release_interval) || DEFAULT_RELEASE_INTERVAL;
     this.dataStore = dataStore;
     this._mapper = config?.mapper || ((value: any) => value);
     this._requestsQueue = {};

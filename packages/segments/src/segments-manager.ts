@@ -79,7 +79,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
     const {segments: reportSegments} =
       this._dataManager.filterReportSegments(segments);
     if (reportSegments) {
-      // Store the data in local variable
+      // Store the data
       this._dataManager.putData(visitorId, {segments: reportSegments});
     }
   }

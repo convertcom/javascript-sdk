@@ -17,6 +17,10 @@ class DataStore {
 
 const dataStore = new DataStore();
 testConfig.dataStore = dataStore;
+testConfig.events = {
+  batch_size: 1,
+  release_interval: 1000
+};
 
 const accountId = testConfig.data.account_id;
 const projectId = testConfig.data.project.id;
@@ -234,18 +238,21 @@ export default function runTests(bundle) {
       });
       expect(response).to.be.undefined;
     });
-    it('Should successfully set default segments', function () {
+    it('Should successfully set default segments', function (done) {
       const segments = {country: 'US'};
       context.setDefaultSegments(segments);
-      const localSegments = dataStore.get(storeKey);
-      expect(localSegments)
-        .to.have.property('segments')
-        .that.deep.equal({
-          ...segments,
-          ...defaultSegments
-        });
+      setTimeout(function () {
+        const localSegments = dataStore.get(storeKey);
+        expect(localSegments)
+          .to.have.property('segments')
+          .that.deep.equal({
+            ...segments,
+            ...defaultSegments
+          });
+        done();
+      }, testConfig.events.release_interval + 1);
     });
-    it('Should successfully set custom segments', function () {
+    it('Should successfully set custom segments', function (done) {
       const segmentKey = 'test-segments-1';
       const segmentId = '200299434';
       context.runCustomSegments(segmentKey, {
@@ -253,11 +260,14 @@ export default function runTests(bundle) {
           enabled: true
         }
       });
-      const {segments} = dataStore.get(storeKey) || {};
-      expect(segments)
-        .to.be.an('object')
-        .that.has.property('customSegments')
-        .to.deep.equal([segmentId]);
+      setTimeout(function () {
+        const {segments} = dataStore.get(storeKey) || {};
+        expect(segments)
+          .to.be.an('object')
+          .that.has.property('customSegments')
+          .to.deep.equal([segmentId]);
+        done();
+      }, testConfig.events.release_interval + 1);
     });
   });
   describe('Test invalid visitor', function () {

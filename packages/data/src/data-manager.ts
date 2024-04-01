@@ -563,7 +563,7 @@ export class DataManager implements DataManagerInterface {
           'DataManager._retrieveBucketing()',
           MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
         );
-        // Store the data in local variable
+        // Store the data
         if (updateVisitorProperties) {
           this.putData(visitorId, {
             bucketing: {
@@ -666,12 +666,12 @@ export class DataManager implements DataManagerInterface {
           break;
         }
       }
-      if (this.dataStoreManager && newData?.segments) {
+      if (this.dataStoreManager) {
         const {segments: storedSegments = {}, ...data} = storeData;
         const {segments: reportSegments = {}} =
           this.filterReportSegments(storedSegments);
         const {segments: newSegments} = this.filterReportSegments(
-          newData.segments
+          newData?.segments || {}
         );
         if (newSegments) {
           if (this._asyncStorage) {
@@ -690,6 +690,14 @@ export class DataManager implements DataManagerInterface {
                 segments: {...reportSegments, ...newSegments}
               })
             );
+          }
+        } else {
+          if (this._asyncStorage) {
+            // Enqueue to store in dataStore
+            this.dataStoreManager.enqueue(storeKey, updatedData);
+          } else {
+            // Save now to store in dataStore
+            this.dataStoreManager.set(storeKey, updatedData);
           }
         }
       }
@@ -809,7 +817,7 @@ export class DataManager implements DataManagerInterface {
         }
       }
     }
-    // Store the data in local variable
+    // Store the data
     this.putData(visitorId, {
       locations
     });
@@ -942,7 +950,7 @@ export class DataManager implements DataManagerInterface {
         return;
       }
     }
-    // Store the data in local variable
+    // Store the data
     this.putData(visitorId, {
       goals: {[goalId.toString()]: true}
     });

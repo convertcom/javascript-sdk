@@ -14,11 +14,24 @@ import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {defaultConfig} from '../../js-sdk/src/config/default';
 
+class DataStore {
+  data = {};
+  get(key) {
+    if (!key) return this.data;
+    return this.data[key.toString()];
+  }
+  set(key, value) {
+    if (!key) throw new Error('Invalid DataStore key!');
+    this.data[key.toString()] = value;
+  }
+}
+
+const dataStore = new DataStore();
 const host = 'http://localhost';
 const port = 8090;
 const release_timeout = 1000;
 const test_timeout = release_timeout + 1000;
-const batch_size = 5;
+const batch_size = 10;
 
 const configuration = objectDeepMerge(testConfig, defaultConfig, {
   api: {
@@ -38,12 +51,30 @@ const eventManager = new em(configuration);
 const apiManager = new am(configuration, {eventManager});
 
 describe('DataManager tests', function () {
-  const visitorId = 'XXX';
-  let dataManager, accountId, projectId, server;
+  const visitorId = 'XXX',
+    bucketing = {
+      exp1: 'var1',
+      exp2: 'var2'
+    },
+    goals = {
+      goal1: true,
+      goal2: true
+    },
+    segments = {
+      browser: 'CH',
+      devices: 'ALLPH',
+      source: 'test',
+      campaign: 'test',
+      visitorType: 'new',
+      country: 'US',
+      customSegments: ['seg1', 'seg2']
+    };
+  let dataManager, accountId, projectId, storeKey, server;
   // eslint-disable-next-line mocha/no-hooks-for-single-case
   before(function () {
     accountId = configuration?.data?.account_id;
     projectId = configuration?.data?.project?.id;
+    storeKey = `${accountId}-${projectId}-${visitorId}`;
     dataManager = new dm(configuration, {
       bucketingManager,
       ruleManager,
@@ -94,7 +125,7 @@ describe('DataManager tests', function () {
       });
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
+          request.on('end', function () {
             expect(variation)
               .to.be.an('object')
               .that.have.property('experienceKey');
@@ -117,7 +148,7 @@ describe('DataManager tests', function () {
       });
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
+          request.on('end', function () {
             expect(variation)
               .to.be.an('object')
               .that.have.property('experienceId');
@@ -203,7 +234,7 @@ describe('DataManager tests', function () {
             .on('data', (chunk) => {
               body.push(chunk);
             })
-            .on('end', () => {
+            .on('end', function () {
               const data = JSON.parse(Buffer.concat(body).toString());
               expect(data).to.be.an('object').that.deep.equal(requestData);
               done();
@@ -264,6 +295,98 @@ describe('DataManager tests', function () {
         .fill(0)
         .forEach((v, i) => dataManager.putData(`a${i}`, {test: i}));
       assert.equal(true, true);
+    });
+  });
+  describe('Persistent Data Store enqueue tests', function () {
+    // eslint-disable-next-line mocha/no-hooks-for-single-case
+    before(function () {
+      configuration.dataStore = dataStore;
+      dataManager = new dm(
+        configuration,
+        {
+          bucketingManager,
+          ruleManager,
+          eventManager,
+          apiManager
+        },
+        {
+          asyncStorage: true
+        }
+      );
+      // dataManager.dataStoreManager = dataStore;
+    });
+    it('Should successfully visitor bucketing (enqueuing)', function (done) {
+      dataManager.putData(visitorId, {bucketing});
+      setTimeout(function () {
+        const check = dataManager.dataStoreManager.get(storeKey);
+        expect(check).to.deep.equal({bucketing});
+        done();
+      }, release_timeout + 1);
+    });
+    it('Should successfully enqueue visitor goals', function (done) {
+      dataManager.putData(visitorId, {goals});
+      setTimeout(function () {
+        const check = dataManager.dataStoreManager.get(storeKey);
+        expect(check).to.deep.equal({bucketing, goals});
+        done();
+      }, release_timeout + 1);
+    });
+    it('Should successfully enqueue visitor segments', function (done) {
+      dataManager.putData(visitorId, {segments});
+      setTimeout(function () {
+        const check = dataManager.dataStoreManager.get(storeKey);
+        expect(check).to.deep.equal({bucketing, goals, segments});
+        done();
+      }, release_timeout + 1);
+    });
+    it('Should have the correct shape for visitor data', function () {
+      const check = dataManager.dataStoreManager.get(storeKey);
+      expect(check).to.be.an('object');
+      expect(check).to.have.property('bucketing').that.deep.equal(bucketing);
+      expect(check).to.have.property('goals').that.deep.equal(goals);
+      expect(check).to.have.property('segments').that.deep.equal(segments);
+    });
+  });
+  describe('Persistent Data Store tests (set immediately)', function () {
+    // eslint-disable-next-line mocha/no-hooks-for-single-case
+    before(function () {
+      dataStore.data = {};
+      delete configuration.dataStore;
+      dataManager = new dm(
+        configuration,
+        {
+          bucketingManager,
+          ruleManager,
+          eventManager,
+          apiManager
+        },
+        {
+          asyncStorage: false
+        }
+      );
+      dataManager.setDataStore(dataStore);
+    });
+    it('Should successfully set visitor bucketing', function () {
+      dataManager.putData(visitorId, {bucketing});
+      const check = dataManager.dataStoreManager.get(storeKey);
+      expect(check).to.deep.equal({bucketing});
+    });
+    it('Should successfully set visitor goals', function () {
+      dataManager.putData(visitorId, {goals});
+      const check = dataManager.dataStoreManager.get(storeKey);
+      expect(check).to.deep.equal({bucketing, goals});
+    });
+    it('Should successfully set visitor segments', function () {
+      dataManager.putData(visitorId, {segments});
+      const check = dataManager.dataStoreManager.get(storeKey);
+      expect(check).to.deep.equal({bucketing, goals, segments});
+    });
+    it('Should have the correct shape for visitor data', function () {
+      const check = dataManager.dataStoreManager.get(storeKey);
+      expect(check).to.be.an('object');
+      expect(check).to.have.property('bucketing').that.deep.equal(bucketing);
+      expect(check).to.have.property('goals').that.deep.equal(goals);
+      expect(check).to.have.property('segments').that.deep.equal(segments);
     });
   });
 });
