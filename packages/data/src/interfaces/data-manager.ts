@@ -79,4 +79,5 @@ export interface DataManagerInterface {
   ): Record<string, any>;
 
   isValidConfigData(data: ConfigResponseData): boolean;
+  setDataStore(dataStore: any): void;
 }
