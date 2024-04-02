@@ -73,6 +73,7 @@ export class DataManager implements DataManagerInterface {
   private _dataEntities = DATA_ENTITIES;
   private _localStoreLimit = LOCAL_STORE_LIMIT;
   private _bucketedVisitors = new Map();
+  private _asyncStorage: boolean;
   private _environment: string;
   private _mapper: (...args: any) => any;
   /**
@@ -97,7 +98,12 @@ export class DataManager implements DataManagerInterface {
       eventManager: EventManagerInterface;
       apiManager: ApiManagerInterface;
       loggerManager?: LogManagerInterface;
-    }
+    },
+    {
+      asyncStorage = true
+    }: {
+      asyncStorage?: boolean;
+    } = {}
   ) {
     this._environment = config?.environment;
     this._apiManager = apiManager;
@@ -107,6 +113,7 @@ export class DataManager implements DataManagerInterface {
     this._eventManager = eventManager;
     this._config = config;
     this._mapper = config?.mapper || ((value: any) => value);
+    this._asyncStorage = asyncStorage;
     this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
@@ -158,6 +165,20 @@ export class DataManager implements DataManagerInterface {
    */
   get dataStoreManager(): DataStoreManagerInterface {
     return this._dataStoreManager;
+  }
+
+  /**
+   * Set dataStoreManager at run-time
+   */
+  setDataStore(dataStore: any) {
+    this._dataStoreManager = null;
+    if (dataStore) {
+      this._dataStoreManager = new DataStoreManager(this._config, {
+        dataStore: dataStore,
+        eventManager: this._eventManager,
+        loggerManager: this._loggerManager
+      });
+    }
   }
 
   /**
@@ -396,7 +417,9 @@ export class DataManager implements DataManagerInterface {
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
    * @param {boolean=} attributes.updateVisitorProperties
+   * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking Defaults to `true`
+   * @param {boolean=} attributes.asyncStorage Defaults to `true`
    * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
    * @private
@@ -411,6 +434,7 @@ export class DataManager implements DataManagerInterface {
       visitorProperties,
       locationProperties,
       updateVisitorProperties,
+      forceVariationId,
       enableTracking = true,
       environment = this._environment
     } = attributes;
@@ -422,6 +446,7 @@ export class DataManager implements DataManagerInterface {
         identityField: identityField,
         visitorProperties: visitorProperties,
         locationProperties: locationProperties,
+        forceVariationId: enableTracking,
         enableTracking: enableTracking,
         environment: environment
       })
@@ -443,6 +468,7 @@ export class DataManager implements DataManagerInterface {
         visitorProperties,
         updateVisitorProperties,
         experience as ConfigExperience,
+        forceVariationId,
         enableTracking
       );
     }
@@ -455,6 +481,7 @@ export class DataManager implements DataManagerInterface {
    * @param {Record<string, any> | null} visitorProperties
    * @param {boolean} updateVisitorProperties
    * @param {ConfigExperience} experience
+   * @param {string=} forceVariationId
    * @param {boolean=} enableTracking Defaults to `true`
    * @return {BucketedVariation}
    * @private
@@ -464,6 +491,7 @@ export class DataManager implements DataManagerInterface {
     visitorProperties: Record<string, any> | null,
     updateVisitorProperties: boolean,
     experience: ConfigExperience,
+    forceVariationId?: string,
     enableTracking: boolean = true
   ): BucketedVariation {
     if (!visitorId || !experience) return null;
@@ -476,7 +504,7 @@ export class DataManager implements DataManagerInterface {
     const {[experience.id.toString()]: variationId} = bucketing || {};
     if (
       variationId &&
-      (variation = this.retrieveVariation(experience.id, variationId))
+      (variation = this.retrieveVariation(experience.id, String(variationId)))
     ) {
       // If it's found log debug info. The return value will be formed next step
       this._loggerManager?.info?.(
@@ -492,35 +520,26 @@ export class DataManager implements DataManagerInterface {
         })
       );
     } else {
-      // Try to find a bucketed visitor in dataStore
-      let {bucketing: {[experience.id.toString()]: variationId} = {}} =
-        this.dataStoreManager?.get?.(storeKey) || {};
+      let variationId;
       if (
-        variationId &&
-        (variation = this.retrieveVariation(experience.id, variationId))
+        forceVariationId &&
+        (variation = this.retrieveVariation(
+          experience.id,
+          String(forceVariationId)
+        ))
       ) {
-        // Store the data in local variable
-        if (updateVisitorProperties) {
-          this.putData(visitorId, {
-            bucketing: {[experience.id.toString()]: variationId},
-            ...(visitorProperties ? {segments: visitorProperties} : {})
-          });
-        } else {
-          this.putData(visitorId, {
-            bucketing: {[experience.id.toString()]: variationId}
-          });
-        }
+        variationId = forceVariationId;
         // If it's found log debug info. The return value will be formed next step
         this._loggerManager?.info?.(
           'DataManager._retrieveBucketing()',
-          MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
+          MESSAGES.BUCKETED_VISITOR_FORCED.replace('#', `#${forceVariationId}`)
         );
         this._loggerManager?.debug?.(
           'DataManager._retrieveBucketing()',
           this._mapper({
             storeKey: storeKey,
             visitorId: visitorId,
-            variationId: variationId
+            variationId: forceVariationId
           })
         );
       } else {
@@ -534,58 +553,58 @@ export class DataManager implements DataManagerInterface {
         variationId = this._bucketingManager.getBucketForVisitor(
           buckets,
           visitorId,
-          this._config?.bucketing?.includeExperienceKeyHash
-            ? {experienceKey: experience?.key}
-            : null
+          this._config?.bucketing?.excludeExperienceIdHash
+            ? null
+            : {experienceId: experience.id.toString()}
         );
-        if (variationId) {
-          this._loggerManager?.info?.(
-            'DataManager._retrieveBucketing()',
-            MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
-          );
-          // Store the data in local variable
-          if (updateVisitorProperties) {
-            this.putData(visitorId, {
-              bucketing: {
-                [experience.id.toString()]: variationId
-              },
-              ...(visitorProperties ? {segments: visitorProperties} : {})
-            });
-          } else {
-            this.putData(visitorId, {
-              bucketing: {[experience.id.toString()]: variationId}
-            });
-          }
-          if (enableTracking) {
-            // Enqueue bucketing event to api
-            const bucketingEvent: BucketingEvent = {
-              experienceId: experience.id.toString(),
-              variationId: variationId.toString()
-            };
-            const visitorEvent: VisitorTrackingEvents = {
-              eventType: VisitorTrackingEvents.eventType.BUCKETING,
-              data: bucketingEvent
-            };
-            this._apiManager.enqueue(visitorId, visitorEvent, segments);
-            this._loggerManager?.trace?.(
-              'DataManager._retrieveBucketing()',
-              this._mapper({
-                visitorEvent
-              })
-            );
-          }
-          // Retrieve and return variation
-          variation = this.retrieveVariation(experience.id, variationId);
+      }
+      if (variationId) {
+        this._loggerManager?.info?.(
+          'DataManager._retrieveBucketing()',
+          MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
+        );
+        // Store the data
+        if (updateVisitorProperties) {
+          this.putData(visitorId, {
+            bucketing: {
+              [experience.id.toString()]: variationId
+            },
+            ...(visitorProperties ? {segments: visitorProperties} : {})
+          });
         } else {
-          this._loggerManager?.error?.(
+          this.putData(visitorId, {
+            bucketing: {[experience.id.toString()]: variationId}
+          });
+        }
+        if (enableTracking) {
+          // Enqueue bucketing event to api
+          const bucketingEvent: BucketingEvent = {
+            experienceId: experience.id.toString(),
+            variationId: variationId.toString()
+          };
+          const visitorEvent: VisitorTrackingEvents = {
+            eventType: VisitorTrackingEvents.eventType.BUCKETING,
+            data: bucketingEvent
+          };
+          this._apiManager.enqueue(visitorId, visitorEvent, segments);
+          this._loggerManager?.trace?.(
             'DataManager._retrieveBucketing()',
-            ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
             this._mapper({
-              visitorId: visitorId,
-              experience: experience
+              visitorEvent
             })
           );
         }
+        // Retrieve and return variation
+        variation = this.retrieveVariation(experience.id, String(variationId));
+      } else {
+        this._loggerManager?.error?.(
+          'DataManager._retrieveBucketing()',
+          ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
+          this._mapper({
+            visitorId: visitorId,
+            experience: experience
+          })
+        );
       }
     }
 
@@ -647,21 +666,39 @@ export class DataManager implements DataManagerInterface {
           break;
         }
       }
-      if (this.dataStoreManager && newData?.segments) {
+      if (this.dataStoreManager) {
         const {segments: storedSegments = {}, ...data} = storeData;
         const {segments: reportSegments = {}} =
           this.filterReportSegments(storedSegments);
         const {segments: newSegments} = this.filterReportSegments(
-          newData.segments
+          newData?.segments || {}
         );
         if (newSegments) {
-          // Enqueue to store in dataStore
-          this.dataStoreManager.enqueue(
-            storeKey,
-            objectDeepMerge(data, {
-              segments: {...reportSegments, ...newSegments}
-            })
-          );
+          if (this._asyncStorage) {
+            // Enqueue to store in dataStore
+            this.dataStoreManager.enqueue(
+              storeKey,
+              objectDeepMerge(data, {
+                segments: {...reportSegments, ...newSegments}
+              })
+            );
+          } else {
+            // Save now to store in dataStore
+            this.dataStoreManager.set(
+              storeKey,
+              objectDeepMerge(data, {
+                segments: {...reportSegments, ...newSegments}
+              })
+            );
+          }
+        } else {
+          if (this._asyncStorage) {
+            // Enqueue to store in dataStore
+            this.dataStoreManager.enqueue(storeKey, updatedData);
+          } else {
+            // Save now to store in dataStore
+            this.dataStoreManager.set(storeKey, updatedData);
+          }
         }
       }
     }
@@ -674,7 +711,14 @@ export class DataManager implements DataManagerInterface {
    */
   getData(visitorId: string): StoreData {
     const storeKey = this.getStoreKey(visitorId);
-    return this._bucketedVisitors.get(storeKey) || null;
+    const memoryData = this._bucketedVisitors.get(storeKey) || null;
+    if (this.dataStoreManager) {
+      return objectDeepMerge(
+        memoryData || {},
+        this.dataStoreManager.get(storeKey) || {}
+      );
+    }
+    return memoryData;
   }
 
   /**
@@ -773,7 +817,7 @@ export class DataManager implements DataManagerInterface {
         }
       }
     }
-    // Store the data in local variable
+    // Store the data
     this.putData(visitorId, {
       locations
     });
@@ -906,7 +950,7 @@ export class DataManager implements DataManagerInterface {
         return;
       }
     }
-    // Store the data in local variable
+    // Store the data
     this.putData(visitorId, {
       goals: {[goalId.toString()]: true}
     });
@@ -1237,9 +1281,9 @@ export class DataManager implements DataManagerInterface {
       entityType,
       identityField
     );
-    for (const k in entity[subEntityType]) {
-      if (entity[subEntityType][k]?.[subIdentityField] === subEntityIdentity) {
-        return entity[subEntityType][k];
+    for (const subEntity of entity[subEntityType]) {
+      if (subEntity[subIdentityField] === subEntityIdentity) {
+        return subEntity;
       }
     }
     return null;

@@ -53,6 +53,7 @@ export const MESSAGES = {
   LOCATION_ACTIVATED: 'Location # activated',
   LOCATION_DEACTIVATED: 'Location # deactivated',
   BUCKETED_VISITOR_FOUND: 'Visitor is already bucketed for variation #',
+  BUCKETED_VISITOR_FORCED: 'Forcing variation #',
   BUCKETED_VISITOR: 'Visitor is bucketed for variation #',
   GOAL_NOT_FOUND: 'Goal not found',
   GOAL_RULE_NOT_MATCH: 'Goal rule do not match',

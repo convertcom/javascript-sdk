@@ -8,5 +8,5 @@
 export type BucketingHash = {
   redistribute?: number;
   seed?: number;
-  experienceKey?: string;
+  experienceId?: string;
 };
