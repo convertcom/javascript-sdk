@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.0.0...js-sdk-v4.0.1) (2024-04-03)
+
+
+### Bug Fixes
+
+* include all visitor data in persistence dataStore if provided ([54c38d4](https://github.com/convertcom/javascript-sdk/commit/54c38d4c5546bb9369c591f66cac577a693f5099))
+
 ## [4.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v3.0.0...js-sdk-v4.0.0) (2024-03-23)
 
 
