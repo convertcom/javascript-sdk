@@ -102,6 +102,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
    * @param {boolean=} attributes.updateVisitorProperties
+   * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking
    * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
@@ -122,6 +123,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
    * @param {boolean=} attributes.updateVisitorProperties
+   * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking
    * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError}
@@ -145,6 +147,7 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
    * @param {boolean=} attributes.updateVisitorProperties
+   * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking
    * @param {string=} attributes.environment
    * @return {Array<BucketedVariation | RuleError>}

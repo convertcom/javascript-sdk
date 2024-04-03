@@ -418,10 +418,7 @@ export class Context implements ContextInterface {
    * @param {VisitorSegments} segments A segment key
    */
   setDefaultSegments(segments: VisitorSegments): void {
-    const {segments: storedSegments} =
-      this._dataManager.filterReportSegments(segments);
-    if (storedSegments)
-      this._segmentsManager.putSegments(this._visitorId, storedSegments);
+    this._segmentsManager.putSegments(this._visitorId, segments);
   }
 
   /**
@@ -465,7 +462,8 @@ export class Context implements ContextInterface {
 
   /**
    * Update visitor properties in memory
-   * @param visitorProperties
+   * @param {string} visitorId
+   * @param {Record<string, any>} visitorProperties
    */
   updateVisitorProperties(
     visitorId: string,

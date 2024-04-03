@@ -21,7 +21,7 @@ type ConfigBase = {
   bucketing?: {
     hash_seed?: number;
     max_traffic?: number;
-    includeExperienceKeyHash?: boolean;
+    excludeExperienceIdHash?: boolean;
   };
   dataStore?: object | null;
   dataRefreshInterval?: number;

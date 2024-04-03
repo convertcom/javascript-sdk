@@ -85,18 +85,18 @@ export class BucketingManager implements BucketingManagerInterface {
    * @param {string} visitorId
    * @param {BucketingHash=} options
    * @param {number=} [options.seed=]
-   * @param {string=} [options.experienceKey=]
+   * @param {string=} [options.experienceId=]
    * @return {number}
    */
   getValueVisitorBased(visitorId: string, options?: BucketingHash): number {
-    const {seed = this._hash_seed, experienceKey = ''} = options || {};
-    const hash = generateHash(experienceKey + String(visitorId), seed);
+    const {seed = this._hash_seed, experienceId = ''} = options || {};
+    const hash = generateHash(experienceId + String(visitorId), seed);
     const val = (hash / DEFAULT_MAX_HASH) * this._max_traffic;
     const result = parseInt(String(val), 10);
     this._loggerManager?.debug?.('BucketingManager.getValueVisitorBased()', {
       visitorId: visitorId,
       seed: seed,
-      experienceKey: experienceKey,
+      experienceId: experienceId,
       val: val,
       result: result
     });
@@ -110,7 +110,7 @@ export class BucketingManager implements BucketingManagerInterface {
    * @param {BucketingHash=} options
    * @param {number=} [options.redistribute=0]
    * @param {number=} [options.seed=]
-   * @param {string=} [options.experienceKey=]
+   * @param {string=} [options.experienceId=]
    * @return {string | null}
    */
   getBucketForVisitor(
