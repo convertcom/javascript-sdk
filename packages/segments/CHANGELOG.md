@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-segments-v2.0.0...js-sdk-segments-v2.0.1) (2024-04-03)
+
+
+### Bug Fixes
+
+* include all visitor data in persistence dataStore if provided ([54c38d4](https://github.com/convertcom/javascript-sdk/commit/54c38d4c5546bb9369c591f66cac577a693f5099))
+
 ## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-segments-v1.1.0...js-sdk-segments-v2.0.0) (2024-03-23)
 
 

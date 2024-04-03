@@ -37,7 +37,8 @@ import {
   ConfigGoal,
   VisitorSegments,
   ConfigSegment,
-  BucketingAttributes
+  BucketingAttributes,
+  ConfigAudienceTypes
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -189,7 +190,6 @@ export class DataManager implements DataManagerInterface {
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
-   * @param {boolean=} attributes.updateVisitorProperties
    * @param {string=} attributes.environment
    * @return {ConfigExperience | RuleError}
    */
@@ -237,6 +237,16 @@ export class DataManager implements DataManagerInterface {
 
     let matchedErrors = [];
     if (experience && !isArchivedExperience && isEnvironmentMatch) {
+      // Check that visitor id already bucketed and stored and skip bucketing logic
+      const {bucketing} = this.getData(visitorId) || {};
+      const {[experience.id.toString()]: variationId} = bucketing || {};
+      let isBucketed = false;
+      if (
+        variationId &&
+        this.retrieveVariation(experience.id, String(variationId))
+      ) {
+        isBucketed = true;
+      }
       let locationMatched: boolean | RuleError = false,
         matchedLocations = [];
       if (locationProperties) {
@@ -299,7 +309,13 @@ export class DataManager implements DataManagerInterface {
             if (audiences.length) {
               // Validate visitorProperties against audiences rules
               matchedAudiences = this.filterMatchedRecordsWithRule(
-                audiences,
+                audiences.filter(
+                  (audience) =>
+                    !(
+                      isBucketed &&
+                      audience.type === ConfigAudienceTypes.PERMANENT
+                    )
+                ),
                 visitorProperties,
                 'audience',
                 identityField
@@ -446,7 +462,7 @@ export class DataManager implements DataManagerInterface {
         identityField: identityField,
         visitorProperties: visitorProperties,
         locationProperties: locationProperties,
-        forceVariationId: enableTracking,
+        forceVariationId: forceVariationId,
         enableTracking: enableTracking,
         environment: environment
       })

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v2.0.0...js-sdk-enums-v2.1.0) (2024-04-03)
+
+
+### Features
+
+* introduce optional "foceVariationId" when selecting variation(s) using DataManager ([2d32194](https://github.com/convertcom/javascript-sdk/commit/2d3219425bbb54c6ef5e30d9ba2f697cc9de2591))
+
 ## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v1.1.0...js-sdk-enums-v2.0.0) (2024-03-23)
 
 
