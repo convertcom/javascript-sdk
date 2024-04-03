@@ -309,10 +309,12 @@ export class DataManager implements DataManagerInterface {
             if (audiences.length) {
               // Validate visitorProperties against audiences rules
               matchedAudiences = this.filterMatchedRecordsWithRule(
-                audiences.filter((audience) =>
-                  isBucketed && audience.type === ConfigAudienceTypes.PERMANENT
-                    ? false
-                    : true
+                audiences.filter(
+                  (audience) =>
+                    !(
+                      isBucketed &&
+                      audience.type === ConfigAudienceTypes.PERMANENT
+                    )
                 ),
                 visitorProperties,
                 'audience',
