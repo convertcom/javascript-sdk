@@ -298,7 +298,7 @@ const config = {
   bucketing: {
     hash_seed: 9999, // murmurhash seed
     max_traffic: 10000, // max hash (representing 100% traffic allocation)
-    includeExperienceKeyHash: false // whether to prefix teh generated hash with the experience key
+    excludeExperienceIdHash: false // whether to ignore prefixing the generated hash with the experience id
   },
   dataStore: null, // Allows 3rd party data store to be passed (optional)
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
