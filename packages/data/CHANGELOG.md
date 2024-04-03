@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.0.0...js-sdk-data-v3.1.0) (2024-04-03)
+
+
+### Features
+
+* introduce DataManager.setDataStore() for using custom persistence dataStore interface at run-rim ([46ccd21](https://github.com/convertcom/javascript-sdk/commit/46ccd2113098100e5775f42e607707fc7cf2c6a5))
+* introduce optional "foceVariationId" when selecting variation(s) using DataManager ([2d32194](https://github.com/convertcom/javascript-sdk/commit/2d3219425bbb54c6ef5e30d9ba2f697cc9de2591))
+
+
+### Bug Fixes
+
+* include all visitor data in persistence dataStore if provided ([54c38d4](https://github.com/convertcom/javascript-sdk/commit/54c38d4c5546bb9369c591f66cac577a693f5099))
+
 ## [3.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v2.0.0...js-sdk-data-v3.0.0) (2024-03-23)
 
 
