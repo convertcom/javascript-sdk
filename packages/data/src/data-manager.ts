@@ -293,9 +293,11 @@ export class DataManager implements DataManagerInterface {
       // Validate locationProperties against site area rules
       if (!locationProperties || locationMatched) {
         let audiences = [],
-          segmentations = [],
+          segments = [],
           matchedAudiences = [],
-          matchedSegmentations = [];
+          matchedSegments = [],
+          audiencesToCheck: Array<ConfigAudience> = [];
+
         if (visitorProperties) {
           if (
             Array.isArray(experience?.audiences) &&
@@ -306,16 +308,16 @@ export class DataManager implements DataManagerInterface {
               experience.audiences,
               'audiences'
             ) as Array<ConfigAudience>;
-            if (audiences.length) {
+
+            //if visitor already bucketed into this experience, check only audiences of type transient
+            audiencesToCheck = audiences.filter(
+              (audience) =>
+                !(isBucketed && audience.type === ConfigAudienceTypes.PERMANENT)
+            );
+            if (audiencesToCheck.length) {
               // Validate visitorProperties against audiences rules
               matchedAudiences = this.filterMatchedRecordsWithRule(
-                audiences.filter(
-                  (audience) =>
-                    !(
-                      isBucketed &&
-                      audience.type === ConfigAudienceTypes.PERMANENT
-                    )
-                ),
+                audiencesToCheck,
                 visitorProperties,
                 'audience',
                 identityField
@@ -334,29 +336,6 @@ export class DataManager implements DataManagerInterface {
                 }
               }
             }
-            // Get attached segmentation audiences
-            segmentations = this.getItemsByIds(
-              experience.audiences,
-              'segments'
-            ) as Array<ConfigSegment>;
-            if (segmentations.length) {
-              // Validate custom segments against segmentations
-              matchedSegmentations = this.filterMatchedCustomSegments(
-                segmentations,
-                visitorId
-              );
-              if (matchedSegmentations.length) {
-                for (const item of matchedSegmentations) {
-                  this._loggerManager?.info?.(
-                    'DataManager.matchRulesByField()',
-                    MESSAGES.SEGMENTATION_MATCH.replace(
-                      '#',
-                      item?.[identityField]
-                    )
-                  );
-                }
-              }
-            }
           } else {
             this._loggerManager?.info?.(
               'DataManager.matchRulesByField()',
@@ -364,12 +343,32 @@ export class DataManager implements DataManagerInterface {
             );
           }
         }
+        // Get attached segmentation audiences
+        segments = this.getItemsByIds(
+          experience.audiences,
+          'segments'
+        ) as Array<ConfigSegment>;
+        if (segments.length) {
+          // Validate custom segments against segmentations
+          matchedSegments = this.filterMatchedCustomSegments(
+            segments,
+            visitorId
+          );
+          if (matchedSegments.length) {
+            for (const item of matchedSegments) {
+              this._loggerManager?.info?.(
+                'DataManager.matchRulesByField()',
+                MESSAGES.SEGMENTATION_MATCH.replace('#', item?.[identityField])
+              );
+            }
+          }
+        }
         // If there are some matched audiences
         if (
           !visitorProperties ||
-          matchedAudiences.length ||
-          matchedSegmentations.length ||
-          !audiences.length // Empty audiences list means there's no restriction for the audience
+          !audiences.length || // Empty audiences list means there's no restriction for the audience
+          (audiencesToCheck.length && matchedAudiences.length) ||
+          (segments.length && matchedSegments.length)
         ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
