@@ -296,7 +296,9 @@ export class DataManager implements DataManagerInterface {
           segments = [],
           matchedAudiences = [],
           matchedSegments = [],
-          audiencesToCheck: Array<ConfigAudience> = [];
+          audiencesToCheck: Array<ConfigAudience> = [],
+          audiencesMatched = true, // No audiences to check means there's no restriction for the audience
+          segmentsMatched = false;
 
         if (visitorProperties) {
           if (
@@ -335,6 +337,7 @@ export class DataManager implements DataManagerInterface {
                   );
                 }
               }
+              audiencesMatched = Boolean(matchedAudiences.length);
             }
           } else {
             this._loggerManager?.info?.(
@@ -362,14 +365,10 @@ export class DataManager implements DataManagerInterface {
               );
             }
           }
+          segmentsMatched = Boolean(matchedSegments.length);
         }
         // If there are some matched audiences
-        if (
-          !visitorProperties ||
-          !audiencesToCheck.length || // Empty audiences list means there's no restriction for the audience
-          (audiencesToCheck.length && matchedAudiences.length) ||
-          (segments.length && matchedSegments.length)
-        ) {
+        if (!visitorProperties || audiencesMatched || segmentsMatched) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
             this._loggerManager?.info?.(
