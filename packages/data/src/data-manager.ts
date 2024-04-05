@@ -336,29 +336,6 @@ export class DataManager implements DataManagerInterface {
                 }
               }
             }
-            // Get attached segmentation audiences
-            segments = this.getItemsByIds(
-              experience.audiences,
-              'segments'
-            ) as Array<ConfigSegment>;
-            if (segments.length) {
-              // Validate custom segments against segmentations
-              matchedSegments = this.filterMatchedCustomSegments(
-                segments,
-                visitorId
-              );
-              if (matchedSegments.length) {
-                for (const item of matchedSegments) {
-                  this._loggerManager?.info?.(
-                    'DataManager.matchRulesByField()',
-                    MESSAGES.SEGMENTATION_MATCH.replace(
-                      '#',
-                      item?.[identityField]
-                    )
-                  );
-                }
-              }
-            }
           } else {
             this._loggerManager?.info?.(
               'DataManager.matchRulesByField()',
@@ -366,10 +343,30 @@ export class DataManager implements DataManagerInterface {
             );
           }
         }
+        // Get attached segmentation audiences
+        segments = this.getItemsByIds(
+          experience.audiences,
+          'segments'
+        ) as Array<ConfigSegment>;
+        if (segments.length) {
+          // Validate custom segments against segmentations
+          matchedSegments = this.filterMatchedCustomSegments(
+            segments,
+            visitorId
+          );
+          if (matchedSegments.length) {
+            for (const item of matchedSegments) {
+              this._loggerManager?.info?.(
+                'DataManager.matchRulesByField()',
+                MESSAGES.SEGMENTATION_MATCH.replace('#', item?.[identityField])
+              );
+            }
+          }
+        }
         // If there are some matched audiences
         if (
           !visitorProperties ||
-          !audiencesToCheck.length || // Empty audiences list means there's no restriction for the audience
+          !audiences.length || // Empty audiences list means there's no restriction for the audience
           (audiencesToCheck.length && matchedAudiences.length) ||
           (segments.length && matchedSegments.length)
         ) {
