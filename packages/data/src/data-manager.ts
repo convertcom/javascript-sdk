@@ -369,8 +369,9 @@ export class DataManager implements DataManagerInterface {
         // If there are some matched audiences
         if (
           !visitorProperties ||
-          (audiencesToCheck.length && matchedAudiences.length) || // Empty audiences list means there's no restriction for the audience
-          (segments.length && matchedSegments.length) // Empty segments list means there's no restriction for the segments
+          !audiencesToCheck.length || // Empty audiences list means there's no restriction for the audience
+          (audiencesToCheck.length && matchedAudiences.length) ||
+          (segments.length && matchedSegments.length)
         ) {
           // And experience has variations
           if (experience?.variations && experience?.variations?.length) {
