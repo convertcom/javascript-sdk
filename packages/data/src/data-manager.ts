@@ -247,7 +247,9 @@ export class DataManager implements DataManagerInterface {
       ) {
         isBucketed = true;
       }
-      let locationMatched: boolean | RuleError = true, // Empty experience locations list or unset Site Area means there's no restriction for the location
+
+      // Check location rules against locationProperties
+      let locationMatched: boolean | RuleError = false,
         matchedLocations = [];
       if (locationProperties) {
         if (
@@ -286,6 +288,12 @@ export class DataManager implements DataManagerInterface {
           // Return rule errors if present
           if (Object.values(RuleError).includes(locationMatched as RuleError))
             return locationMatched as RuleError;
+        } else {
+          locationMatched = true; // Empty experience locations list means no restrictions
+          this._loggerManager?.info?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.LOCATION_NOT_RESTRICTED
+          );
         }
       }
       if (!locationMatched) {
@@ -303,14 +311,14 @@ export class DataManager implements DataManagerInterface {
         return null;
       }
 
+      // Check audience rules against visitorProperties
       let audiences = [],
         segments = [],
         matchedAudiences = [],
         matchedSegments = [],
         audiencesToCheck: Array<ConfigAudience> = [],
-        audiencesMatched = true, // No audiences to check means there's no restriction for the audience
+        audiencesMatched = false,
         segmentsMatched = false;
-
       if (visitorProperties) {
         if (
           Array.isArray(experience?.audiences) &&
@@ -349,8 +357,15 @@ export class DataManager implements DataManagerInterface {
               }
             }
             audiencesMatched = Boolean(matchedAudiences.length);
+          } else {
+            audiencesMatched = true; // Empty non-permanent experience audiences list means no restrictions
+            this._loggerManager?.info?.(
+              'DataManager.matchRulesByField()',
+              MESSAGES.NON_PERMANENT_AUDIENCE_NOT_RESTRICTED
+            );
           }
         } else {
+          audiencesMatched = true; // Empty experience audiences list means no restrictions
           this._loggerManager?.info?.(
             'DataManager.matchRulesByField()',
             MESSAGES.AUDIENCE_NOT_RESTRICTED
@@ -375,8 +390,8 @@ export class DataManager implements DataManagerInterface {
         }
         segmentsMatched = Boolean(matchedSegments.length);
       }
-      // If there are some matched audiences
-      if (audiencesMatched || segmentsMatched) {
+      // If there are some matched locations and/or audiences
+      if (locationMatched || audiencesMatched || segmentsMatched) {
         // And experience has variations
         if (experience?.variations && experience?.variations?.length) {
           this._loggerManager?.info?.(

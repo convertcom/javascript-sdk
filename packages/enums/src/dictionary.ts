@@ -42,8 +42,11 @@ export const MESSAGES = {
   PROCESSING_ENTITY: 'Processing #',
   LOCATION_MATCH: 'Location # rule matched',
   LOCATION_NOT_MATCH: 'Location does not match',
+  LOCATION_NOT_RESTRICTED: 'Location not restricted',
   AUDIENCE_MATCH: 'Audience # rule matched',
   AUDIENCE_NOT_MATCH: 'Audience does not match',
+  NON_PERMANENT_AUDIENCE_NOT_RESTRICTED:
+    'Non-Permanent Audience not restricted',
   AUDIENCE_NOT_RESTRICTED: 'Audience not restricted',
   SEGMENTATION_MATCH: 'Segmentation # rule matched',
   RULE_NOT_MATCH: 'Rule does not match',
