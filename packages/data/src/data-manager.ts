@@ -389,9 +389,15 @@ export class DataManager implements DataManagerInterface {
           }
         }
         segmentsMatched = Boolean(matchedSegments.length);
+      } else {
+        segmentsMatched = true; // Empty experience segmentation list means no restrictions
+        this._loggerManager?.info?.(
+          'DataManager.matchRulesByField()',
+          MESSAGES.SEGMENTATION_NOT_RESTRICTED
+        );
       }
-      // If there are some matched locations and/or audiences
-      if (locationMatched || audiencesMatched || segmentsMatched) {
+      // If there are some matched audiences
+      if (audiencesMatched && segmentsMatched) {
         // And experience has variations
         if (experience?.variations && experience?.variations?.length) {
           this._loggerManager?.info?.(

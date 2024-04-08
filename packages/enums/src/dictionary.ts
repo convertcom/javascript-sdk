@@ -49,6 +49,7 @@ export const MESSAGES = {
     'Non-Permanent Audience not restricted',
   AUDIENCE_NOT_RESTRICTED: 'Audience not restricted',
   SEGMENTATION_MATCH: 'Segmentation # rule matched',
+  SEGMENTATION_NOT_RESTRICTED: 'Segmentation not restricted',
   RULE_NOT_MATCH: 'Rule does not match',
   RULE_MATCH: 'Found matched rule at OR block #',
   RULE_MATCH_AND: 'AND block rule macthed',
