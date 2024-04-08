@@ -247,6 +247,8 @@ export class DataManager implements DataManagerInterface {
       ) {
         isBucketed = true;
       }
+
+      // Check location rules against locationProperties
       let locationMatched: boolean | RuleError = false,
         matchedLocations = [];
       if (locationProperties) {
@@ -277,6 +279,7 @@ export class DataManager implements DataManagerInterface {
           // If there are some matched locations
           locationMatched = Boolean(matchedLocations.length);
         } else if (experience?.site_area) {
+          // Validate locationProperties against site area rules
           locationMatched = this._ruleManager.isRuleMatched(
             locationProperties,
             experience.site_area,
@@ -286,118 +289,14 @@ export class DataManager implements DataManagerInterface {
           if (Object.values(RuleError).includes(locationMatched as RuleError))
             return locationMatched as RuleError;
         } else {
-          // Empty experience locations list or unset Site Area means there's no restriction for the location
-          locationMatched = true;
+          locationMatched = true; // Empty experience locations list means no restrictions
+          this._loggerManager?.info?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.LOCATION_NOT_RESTRICTED
+          );
         }
       }
-      // Validate locationProperties against site area rules
-      if (!locationProperties || locationMatched) {
-        let audiences = [],
-          segments = [],
-          matchedAudiences = [],
-          matchedSegments = [],
-          audiencesToCheck: Array<ConfigAudience> = [];
-
-        if (visitorProperties) {
-          if (
-            Array.isArray(experience?.audiences) &&
-            experience.audiences.length
-          ) {
-            // Get attached transient and/or permnent audiences
-            audiences = this.getItemsByIds(
-              experience.audiences,
-              'audiences'
-            ) as Array<ConfigAudience>;
-
-            //if visitor already bucketed into this experience, check only audiences of type transient
-            audiencesToCheck = audiences.filter(
-              (audience) =>
-                !(isBucketed && audience.type === ConfigAudienceTypes.PERMANENT)
-            );
-            if (audiencesToCheck.length) {
-              // Validate visitorProperties against audiences rules
-              matchedAudiences = this.filterMatchedRecordsWithRule(
-                audiencesToCheck,
-                visitorProperties,
-                'audience',
-                identityField
-              );
-              // Return rule errors if present
-              matchedErrors = matchedAudiences.filter((match) =>
-                Object.values(RuleError).includes(match as RuleError)
-              );
-              if (matchedErrors.length) return matchedErrors[0] as RuleError;
-              if (matchedAudiences.length) {
-                for (const item of matchedAudiences) {
-                  this._loggerManager?.info?.(
-                    'DataManager.matchRulesByField()',
-                    MESSAGES.AUDIENCE_MATCH.replace('#', item?.[identityField])
-                  );
-                }
-              }
-            }
-          } else {
-            this._loggerManager?.info?.(
-              'DataManager.matchRulesByField()',
-              MESSAGES.AUDIENCE_NOT_RESTRICTED
-            );
-          }
-        }
-        // Get attached segmentation audiences
-        segments = this.getItemsByIds(
-          experience.audiences,
-          'segments'
-        ) as Array<ConfigSegment>;
-        if (segments.length) {
-          // Validate custom segments against segmentations
-          matchedSegments = this.filterMatchedCustomSegments(
-            segments,
-            visitorId
-          );
-          if (matchedSegments.length) {
-            for (const item of matchedSegments) {
-              this._loggerManager?.info?.(
-                'DataManager.matchRulesByField()',
-                MESSAGES.SEGMENTATION_MATCH.replace('#', item?.[identityField])
-              );
-            }
-          }
-        }
-        // If there are some matched audiences
-        if (
-          !visitorProperties ||
-          !audiencesToCheck.length || // Empty audiences list means there's no restriction for the audience
-          (audiencesToCheck.length && matchedAudiences.length) ||
-          (segments.length && matchedSegments.length)
-        ) {
-          // And experience has variations
-          if (experience?.variations && experience?.variations?.length) {
-            this._loggerManager?.info?.(
-              'DataManager.matchRulesByField()',
-              MESSAGES.EXPERIENCE_RULES_MATCHED
-            );
-            return experience;
-          } else {
-            this._loggerManager?.debug?.(
-              'DataManager.matchRulesByField()',
-              MESSAGES.VARIATIONS_NOT_FOUND,
-              this._mapper({
-                visitorProperties: visitorProperties,
-                audiences: audiences
-              })
-            );
-          }
-        } else {
-          this._loggerManager?.debug?.(
-            'DataManager.matchRulesByField()',
-            MESSAGES.AUDIENCE_NOT_MATCH,
-            this._mapper({
-              visitorProperties: visitorProperties,
-              audiences: audiences
-            })
-          );
-        }
-      } else {
+      if (!locationMatched) {
         this._loggerManager?.debug?.(
           'DataManager.matchRulesByField()',
           MESSAGES.LOCATION_NOT_MATCH,
@@ -407,6 +306,122 @@ export class DataManager implements DataManagerInterface {
               ? 'experiences[].variations[].locations'
               : 'experiences[].variations[].site_area']:
               experience?.locations || experience?.site_area || ''
+          })
+        );
+        return null;
+      }
+
+      // Check audience rules against visitorProperties
+      let audiences = [],
+        segments = [],
+        matchedAudiences = [],
+        matchedSegments = [],
+        audiencesToCheck: Array<ConfigAudience> = [],
+        audiencesMatched = false,
+        segmentsMatched = false;
+      if (visitorProperties) {
+        if (
+          Array.isArray(experience?.audiences) &&
+          experience.audiences.length
+        ) {
+          // Get attached transient and/or permnent audiences
+          audiences = this.getItemsByIds(
+            experience.audiences,
+            'audiences'
+          ) as Array<ConfigAudience>;
+
+          // If visitor already bucketed into this experience, check only audiences of type transient
+          audiencesToCheck = audiences.filter(
+            (audience) =>
+              !(isBucketed && audience.type === ConfigAudienceTypes.PERMANENT)
+          );
+          if (audiencesToCheck.length) {
+            // Validate visitorProperties against audiences rules
+            matchedAudiences = this.filterMatchedRecordsWithRule(
+              audiencesToCheck,
+              visitorProperties,
+              'audience',
+              identityField
+            );
+            // Return rule errors if present
+            matchedErrors = matchedAudiences.filter((match) =>
+              Object.values(RuleError).includes(match as RuleError)
+            );
+            if (matchedErrors.length) return matchedErrors[0] as RuleError;
+            if (matchedAudiences.length) {
+              for (const item of matchedAudiences) {
+                this._loggerManager?.info?.(
+                  'DataManager.matchRulesByField()',
+                  MESSAGES.AUDIENCE_MATCH.replace('#', item?.[identityField])
+                );
+              }
+            }
+            audiencesMatched = Boolean(matchedAudiences.length);
+          } else {
+            audiencesMatched = true; // Empty non-permanent experience audiences list means no restrictions
+            this._loggerManager?.info?.(
+              'DataManager.matchRulesByField()',
+              MESSAGES.NON_PERMANENT_AUDIENCE_NOT_RESTRICTED
+            );
+          }
+        } else {
+          audiencesMatched = true; // Empty experience audiences list means no restrictions
+          this._loggerManager?.info?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.AUDIENCE_NOT_RESTRICTED
+          );
+        }
+      }
+      // Get attached segmentation audiences
+      segments = this.getItemsByIds(
+        experience.audiences,
+        'segments'
+      ) as Array<ConfigSegment>;
+      if (segments.length) {
+        // Validate custom segments against segmentations
+        matchedSegments = this.filterMatchedCustomSegments(segments, visitorId);
+        if (matchedSegments.length) {
+          for (const item of matchedSegments) {
+            this._loggerManager?.info?.(
+              'DataManager.matchRulesByField()',
+              MESSAGES.SEGMENTATION_MATCH.replace('#', item?.[identityField])
+            );
+          }
+        }
+        segmentsMatched = Boolean(matchedSegments.length);
+      } else {
+        segmentsMatched = true; // Empty experience segmentation list means no restrictions
+        this._loggerManager?.info?.(
+          'DataManager.matchRulesByField()',
+          MESSAGES.SEGMENTATION_NOT_RESTRICTED
+        );
+      }
+      // If there are some matched audiences
+      if (audiencesMatched && segmentsMatched) {
+        // And experience has variations
+        if (experience?.variations && experience?.variations?.length) {
+          this._loggerManager?.info?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.EXPERIENCE_RULES_MATCHED
+          );
+          return experience;
+        } else {
+          this._loggerManager?.debug?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.VARIATIONS_NOT_FOUND,
+            this._mapper({
+              visitorProperties: visitorProperties,
+              audiences: audiences
+            })
+          );
+        }
+      } else {
+        this._loggerManager?.debug?.(
+          'DataManager.matchRulesByField()',
+          MESSAGES.AUDIENCE_NOT_MATCH,
+          this._mapper({
+            visitorProperties: visitorProperties,
+            audiences: audiences
           })
         );
       }
