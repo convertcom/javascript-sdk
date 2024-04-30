@@ -517,6 +517,19 @@ describe('Context tests', function () {
       );
       expect(variationEntity).to.deep.equal(variation);
     });
+    it('Should successfully get visitor data', function () {
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      const variation = context.runExperience(experienceKey, {
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {
+          varName3: 'something'
+        }
+      });
+      const data = context.getVisitorData();
+      expect(data).to.deep.equal({
+        bucketing: {[variation.experienceId]: variation.id}
+      });
+    });
   });
   describe('Test invalid visitor', function () {
     let dataManager,

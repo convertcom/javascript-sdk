@@ -21,7 +21,8 @@ import {
   SegmentsAttributes,
   Entity,
   ConfigExperience,
-  ExperienceVariationConfig
+  ExperienceVariationConfig,
+  StoreData
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -526,6 +527,14 @@ export class Context implements ContextInterface {
       }
     }
     return this._dataManager.getEntityById(id, entityType);
+  }
+
+  /**
+   * Get visitor data
+   * @returns {StoreData}
+   */
+  getVisitorData(): StoreData {
+    return this._dataManager.getData(this._visitorId) || {};
   }
 
   /**
