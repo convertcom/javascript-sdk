@@ -46,7 +46,7 @@ class ConvertSDK extends Core {
   /**
    * @param {ConfigType} config
    */
-  constructor(config: ConfigType) {
+  constructor(config: ConfigType = <ConfigType>{}) {
     // Validate config before assigning defaults
     const isValidSDKKey = Boolean(
       Object.prototype.hasOwnProperty.call(config, 'sdkKey') &&
