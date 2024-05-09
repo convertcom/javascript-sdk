@@ -55,6 +55,7 @@ export class ApiManager implements ApiManagerInterface {
   private _defaultHeaders: Record<string, string> = DEFAULT_HEADERS;
   private _data: ConfigResponseData;
   private _enrichData: boolean;
+  private _environment: string;
   private _loggerManager: LogManagerInterface | null;
   private _eventManager: EventManagerInterface | null;
   private _sdkKey: string;
@@ -94,6 +95,7 @@ export class ApiManager implements ApiManagerInterface {
       config?.api?.endpoint?.track || DEFAULT_TRACK_ENDPOINT;
     this._data = objectDeepValue(config, 'data');
     this._enrichData = !objectDeepValue(config, 'dataStore');
+    this._environment = config?.environment;
     this._mapper = config?.mapper || ((value: any) => value);
 
     this.batchSize = Number(config?.events?.batch_size) || DEFAULT_BATCH_SIZE;
@@ -297,7 +299,9 @@ export class ApiManager implements ApiManagerInterface {
    */
   getConfig(): Promise<ConfigResponseData> {
     this._loggerManager?.trace?.('ApiManager.getConfig()');
-    const query = this._cacheLevel === 'low' ? '?_conv_low_cache=1' : '';
+    let query = this._cacheLevel === 'low' || this._environment ? '?' : '';
+    if (this._environment) query += `environment=${this._environment}`;
+    if (this._cacheLevel === 'low') query += '_conv_low_cache=1';
     return new Promise((resolve, reject) => {
       this.request('get', {
         base: this._configEndpoint,
