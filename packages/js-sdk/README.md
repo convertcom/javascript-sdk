@@ -142,7 +142,7 @@ The SDK instance can be initialized by either providing an SDK key or a full pro
 
 #### Initialize using the SDK Key
 
-Include `sdkKey` as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every `dataRefreshInterval` seconds.
+Include `sdkKey` as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every `dataRefreshInterval` milliseconds.
 
 ```typescript
 import ConvertSDK, {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
