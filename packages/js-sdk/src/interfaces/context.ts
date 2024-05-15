@@ -12,6 +12,7 @@ import {
   ConversionAttributes,
   Entity,
   SegmentsAttributes,
+  StoreData,
   VisitorSegments
 } from '@convertcom/js-sdk-types';
 import {EntityType, RuleError} from '@convertcom/js-sdk-enums';
@@ -54,6 +55,7 @@ export interface ContextInterface {
 
   getConfigEntity(key: string, entityType: EntityType): Entity;
   getConfigEntityById(id: string, entityType: EntityType): Entity;
+  getVisitorData(): StoreData;
 
   releaseQueues(reason?: string): void;
 }

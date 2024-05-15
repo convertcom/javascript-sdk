@@ -21,7 +21,8 @@ import {
   SegmentsAttributes,
   Entity,
   ConfigExperience,
-  ExperienceVariationConfig
+  ExperienceVariationConfig,
+  StoreData
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -361,7 +362,7 @@ export class Context implements ContextInterface {
    * @param {string} goalKey A goal key
    * @param {ConversionAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<string, any>=} attributes.ruleData An object of key-value pairs that are used for goal matching
-   * @param {Array<Record<GoalDataKey, number>>=} attributes.conversionData An object of key-value pairs that are used for audience targeting
+   * @param {Array<Record<GoalDataKey, number>>=} attributes.conversionData An array of key-value pairs that are used for transaction data
    * @return {RuleError}
    */
   trackConversion(
@@ -526,6 +527,14 @@ export class Context implements ContextInterface {
       }
     }
     return this._dataManager.getEntityById(id, entityType);
+  }
+
+  /**
+   * Get visitor data
+   * @returns {StoreData}
+   */
+  getVisitorData(): StoreData {
+    return this._dataManager.getData(this._visitorId) || {};
   }
 
   /**
