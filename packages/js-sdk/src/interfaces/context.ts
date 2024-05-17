@@ -15,17 +15,17 @@ import {
   StoreData,
   VisitorSegments
 } from '@convertcom/js-sdk-types';
-import {EntityType, RuleError} from '@convertcom/js-sdk-enums';
+import {BucketingError, EntityType, RuleError} from '@convertcom/js-sdk-enums';
 
 export interface ContextInterface {
   runExperience(
     experienceKey: string,
     attributes?: BucketingAttributes
-  ): BucketedVariation | RuleError;
+  ): BucketedVariation | RuleError | BucketingError;
 
   runExperiences(
     attributes?: BucketingAttributes
-  ): Array<BucketedVariation | RuleError>;
+  ): Array<BucketedVariation | RuleError | BucketingError>;
 
   runFeature(
     key: string,

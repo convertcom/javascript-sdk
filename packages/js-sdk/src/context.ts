@@ -26,6 +26,7 @@ import {
 } from '@convertcom/js-sdk-types';
 
 import {
+  BucketingError,
   ERROR_MESSAGES,
   EntityType,
   RuleError,
@@ -115,12 +116,12 @@ export class Context implements ContextInterface {
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
    * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
-   * @return {BucketedVariation}
+   * @return {BucketedVariation | RuleError | BucketingError}
    */
   runExperience(
     experienceKey: string,
     attributes?: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     if (!this._visitorId) {
       this._loggerManager?.error?.(
         'Context.runExperience()',
@@ -143,6 +144,12 @@ export class Context implements ContextInterface {
     );
     if (Object.values(RuleError).includes(bucketedVariation as RuleError))
       return bucketedVariation as RuleError;
+    if (
+      Object.values(BucketingError).includes(
+        bucketedVariation as BucketingError
+      )
+    )
+      return bucketedVariation as BucketingError;
     if (bucketedVariation) {
       this._eventManager.fire(
         SystemEvents.BUCKETING,
@@ -165,11 +172,11 @@ export class Context implements ContextInterface {
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
    * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
-   * @return {Array<BucketedVariatio | RuleError>}
+   * @return {Array<BucketedVariatio | RuleError | BucketingError>}
    */
   runExperiences(
     attributes?: BucketingAttributes
-  ): Array<BucketedVariation | RuleError> {
+  ): Array<BucketedVariation | RuleError | BucketingError> {
     if (!this._visitorId) {
       this._loggerManager?.error?.(
         'Context.runExperiences()',
@@ -190,10 +197,16 @@ export class Context implements ContextInterface {
       }
     );
     // Return rule errors if present
-    const matchedErrors = bucketedVariations.filter((match) =>
+    const matchedRuleErrors = bucketedVariations.filter((match) =>
       Object.values(RuleError).includes(match as RuleError)
     );
-    if (matchedErrors.length) return matchedErrors as Array<RuleError>;
+    if (matchedRuleErrors.length) return matchedRuleErrors as Array<RuleError>;
+    // Return bucketing errors if present
+    const matchedBucketingErrors = bucketedVariations.filter((match) =>
+      Object.values(BucketingError).includes(match as BucketingError)
+    );
+    if (matchedBucketingErrors.length)
+      return matchedBucketingErrors as Array<BucketingError>;
 
     (bucketedVariations as Array<BucketedVariation>).forEach(
       ({experienceKey, key}) => {

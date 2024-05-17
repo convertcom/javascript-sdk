@@ -15,7 +15,7 @@ import {
   BucketingAttributes
 } from '@convertcom/js-sdk-types';
 import {DataStoreManagerInterface} from './data-store-manager';
-import {RuleError} from '@convertcom/js-sdk-enums';
+import {BucketingError, RuleError} from '@convertcom/js-sdk-enums';
 
 export interface DataManagerInterface {
   data: ConfigResponseData;
@@ -41,12 +41,12 @@ export interface DataManagerInterface {
     visitorId: string,
     experienceKey: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError;
+  ): BucketedVariation | RuleError | BucketingError;
   getBucketingById(
     visitorId: string,
     experienceId: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError;
+  ): BucketedVariation | RuleError | BucketingError;
   convert(
     visitorId: string,
     goalId: string,

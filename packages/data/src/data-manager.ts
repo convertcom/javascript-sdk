@@ -42,6 +42,7 @@ import {
 } from '@convertcom/js-sdk-types';
 
 import {
+  BucketingError,
   DATA_ENTITIES,
   DATA_ENTITIES_MAP,
   ERROR_MESSAGES,
@@ -451,7 +452,7 @@ export class DataManager implements DataManagerInterface {
    * @param {boolean=} attributes.enableTracking Defaults to `true`
    * @param {boolean=} attributes.asyncStorage Defaults to `true`
    * @param {string=} attributes.environment
-   * @return {BucketedVariation | RuleError}
+   * @return {BucketedVariation | RuleError | BucketingError}
    * @private
    */
   private _getBucketingByField(
@@ -459,7 +460,7 @@ export class DataManager implements DataManagerInterface {
     identity: string,
     identityField: IdentityField = 'key',
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     const {
       visitorProperties,
       locationProperties,
@@ -513,7 +514,7 @@ export class DataManager implements DataManagerInterface {
    * @param {ConfigExperience} experience
    * @param {string=} forceVariationId
    * @param {boolean=} enableTracking Defaults to `true`
-   * @return {BucketedVariation}
+   * @return {BucketedVariation | BucketingError}
    * @private
    */
   private _retrieveBucketing(
@@ -523,7 +524,7 @@ export class DataManager implements DataManagerInterface {
     experience: ConfigExperience,
     forceVariationId?: string,
     enableTracking: boolean = true
-  ): BucketedVariation {
+  ): BucketedVariation | BucketingError {
     if (!visitorId || !experience) return null;
     if (!experience?.id) return null;
     let variation = null;
@@ -588,45 +589,8 @@ export class DataManager implements DataManagerInterface {
             : {experienceId: experience.id.toString()}
         );
       }
-      if (variationId) {
-        this._loggerManager?.info?.(
-          'DataManager._retrieveBucketing()',
-          MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
-        );
-        // Store the data
-        if (updateVisitorProperties) {
-          this.putData(visitorId, {
-            bucketing: {
-              [experience.id.toString()]: variationId
-            },
-            ...(visitorProperties ? {segments: visitorProperties} : {})
-          });
-        } else {
-          this.putData(visitorId, {
-            bucketing: {[experience.id.toString()]: variationId}
-          });
-        }
-        if (enableTracking) {
-          // Enqueue bucketing event to api
-          const bucketingEvent: BucketingEvent = {
-            experienceId: experience.id.toString(),
-            variationId: variationId.toString()
-          };
-          const visitorEvent: VisitorTrackingEvents = {
-            eventType: VisitorTrackingEvents.eventType.BUCKETING,
-            data: bucketingEvent
-          };
-          this._apiManager.enqueue(visitorId, visitorEvent, segments);
-          this._loggerManager?.trace?.(
-            'DataManager._retrieveBucketing()',
-            this._mapper({
-              visitorEvent
-            })
-          );
-        }
-        // Retrieve and return variation
-        variation = this.retrieveVariation(experience.id, String(variationId));
-      } else {
+      // Return bucketing errors if present
+      if (!variationId) {
         this._loggerManager?.error?.(
           'DataManager._retrieveBucketing()',
           ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
@@ -635,7 +599,45 @@ export class DataManager implements DataManagerInterface {
             experience: experience
           })
         );
+        return BucketingError.VARIAION_NOT_DECIDED;
       }
+      this._loggerManager?.info?.(
+        'DataManager._retrieveBucketing()',
+        MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
+      );
+      // Store the data
+      if (updateVisitorProperties) {
+        this.putData(visitorId, {
+          bucketing: {
+            [experience.id.toString()]: variationId
+          },
+          ...(visitorProperties ? {segments: visitorProperties} : {})
+        });
+      } else {
+        this.putData(visitorId, {
+          bucketing: {[experience.id.toString()]: variationId}
+        });
+      }
+      if (enableTracking) {
+        // Enqueue bucketing event to api
+        const bucketingEvent: BucketingEvent = {
+          experienceId: experience.id.toString(),
+          variationId: variationId.toString()
+        };
+        const visitorEvent: VisitorTrackingEvents = {
+          eventType: VisitorTrackingEvents.eventType.BUCKETING,
+          data: bucketingEvent
+        };
+        this._apiManager.enqueue(visitorId, visitorEvent, segments);
+        this._loggerManager?.trace?.(
+          'DataManager._retrieveBucketing()',
+          this._mapper({
+            visitorEvent
+          })
+        );
+      }
+      // Retrieve and return variation
+      variation = this.retrieveVariation(experience.id, String(variationId));
     }
 
     // Build the response as bucketed variation object
@@ -876,7 +878,7 @@ export class DataManager implements DataManagerInterface {
     visitorId: string,
     key: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     return this._getBucketingByField(visitorId, key, 'key', attributes);
   }
 
@@ -896,7 +898,7 @@ export class DataManager implements DataManagerInterface {
     visitorId: string,
     id: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     return this._getBucketingByField(visitorId, id, 'id', attributes);
   }
 

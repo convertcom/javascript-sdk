@@ -5,6 +5,7 @@
  * License Apache-2.0
  */
 
+export * from './src/bucketing-error';
 export * from './src/data-enitites';
 export * from './src/dictionary';
 export * from './src/do-not-track';
