@@ -8,6 +8,7 @@
 export * from './src/BucketedFeature';
 export * from './src/BucketedVariation';
 export * from './src/BucketingAttributes';
+export * from './src/BucketingAllocation';
 export * from './src/BucketingHash';
 export * from './src/Config';
 export * from './src/ConversionAttributes';
