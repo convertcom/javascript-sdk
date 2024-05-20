@@ -533,6 +533,7 @@ export class DataManager implements DataManagerInterface {
     // Check that visitor id already bucketed and stored and skip bucketing logic
     const {bucketing, segments} = this.getData(visitorId) || {};
     const {[experience.id.toString()]: variationId} = bucketing || {};
+    let bucketingAllocation;
     if (
       variationId &&
       (variation = this.retrieveVariation(experience.id, String(variationId)))
@@ -581,13 +582,15 @@ export class DataManager implements DataManagerInterface {
           return bucket;
         }, {}) as Record<string, number>;
         // Select bucket based for provided visitor id
-        variationId = this._bucketingManager.getBucketForVisitor(
+        const bucketing = this._bucketingManager.getBucketForVisitor(
           buckets,
           visitorId,
           this._config?.bucketing?.excludeExperienceIdHash
             ? null
             : {experienceId: experience.id.toString()}
         );
+        variationId = bucketing?.variationId;
+        bucketingAllocation = bucketing?.bucketingAllocation;
       }
       // Return bucketing errors if present
       if (!variationId) {
@@ -648,6 +651,7 @@ export class DataManager implements DataManagerInterface {
           experienceName: experience?.name,
           experienceKey: experience?.key
         },
+        bucketingAllocation,
         ...variation
       };
     }
