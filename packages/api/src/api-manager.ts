@@ -234,7 +234,8 @@ export class ApiManager implements ApiManagerInterface {
         this._requestsQueue.reset();
         this._eventManager?.fire?.(SystemEvents.API_QUEUE_RELEASED, {
           reason: reason,
-          result: result
+          result: result,
+          visitors: payload.visitors
         });
       })
       .catch((error) => {
