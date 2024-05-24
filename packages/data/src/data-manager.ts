@@ -50,7 +50,8 @@ import {
   RuleError,
   GoalDataKey,
   SegmentsKeys,
-  SystemEvents
+  SystemEvents,
+  ConversionSettingKey
 } from '@convertcom/js-sdk-enums';
 
 import {DataStoreManager} from './data-store-manager';
@@ -913,13 +914,15 @@ export class DataManager implements DataManagerInterface {
    * @param {Record<string, any>=} goalRule An object of key-value pairs that are used for goal matching
    * @param {Array<Record<GoalDataKey, number>>} goalData An array of object of key-value pairs
    * @param {VisitorSegments} segments
+   * @param {Record<ConversionSettingKey, number | string | boolean>} conversionSetting An object of key-value pairs that are used for tracking settings
    */
   convert(
     visitorId: string,
     goalId: string,
     goalRule?: Record<string, any>,
     goalData?: Array<Record<GoalDataKey, number>>,
-    segments?: VisitorSegments
+    segments?: VisitorSegments,
+    conversionSetting?: Record<ConversionSettingKey, number | string | boolean>
   ): RuleError | boolean {
     const goal =
       typeof goalId === 'string'
@@ -952,6 +955,9 @@ export class DataManager implements DataManagerInterface {
       }
     }
 
+    const forceMultipleTransactions =
+      conversionSetting?.[ConversionSettingKey.FORCE_MULTIPLE_TRANSACTIONS];
+
     // Check that goal id already triggred and stored and skip tracking conversion event
     const {
       bucketing: bucketingData,
@@ -966,24 +972,40 @@ export class DataManager implements DataManagerInterface {
           goalId: goalId
         })
       );
-      return;
+      if (!forceMultipleTransactions) return;
     }
     // Store the data
     this.putData(visitorId, {
       goals: {[goalId.toString()]: true}
     });
 
-    const data: ConversionEvent = {
-      goalId: goal.id
-    };
-    if (bucketingData) data.bucketingData = bucketingData;
-    const event: VisitorTrackingEvents = {
-      eventType: VisitorTrackingEvents.eventType.CONVERSION,
-      data
-    };
-    this._apiManager.enqueue(visitorId, event, segments);
-    // Split transaction events
-    if (goalData) {
+    // Send conversion event
+    if (!goalTriggered) sendConversion.call(this);
+
+    // Send transaction event
+    if (goalData && (!goalTriggered || forceMultipleTransactions))
+      sendTransaction.call(this);
+
+    this._loggerManager?.trace?.(
+      'DataManager.convert()',
+      this._mapper({
+        event
+      })
+    );
+
+    function sendConversion() {
+      const data: ConversionEvent = {
+        goalId: goal.id
+      };
+      if (bucketingData) data.bucketingData = bucketingData;
+      const event: VisitorTrackingEvents = {
+        eventType: VisitorTrackingEvents.eventType.CONVERSION,
+        data
+      };
+      this._apiManager.enqueue(visitorId, event, segments);
+    }
+
+    function sendTransaction() {
       const data: ConversionEvent = {
         goalId: goal.id,
         goalData: goalData as Array<Record<string, number>>
@@ -995,12 +1017,6 @@ export class DataManager implements DataManagerInterface {
       };
       this._apiManager.enqueue(visitorId, event, segments);
     }
-    this._loggerManager?.trace?.(
-      'DataManager.convert()',
-      this._mapper({
-        event
-      })
-    );
 
     return true;
   }

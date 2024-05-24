@@ -432,6 +432,8 @@ Decides whether to send a conversion event, which is mapped to a goal-unique key
 |            |        |          | 1. `amount` a number represents the order value.                                                                 |
 |            |        |          | 2. `productsCount` a number represents the order quantity.                                                       |
 |            |        |          | 3. `transactionId` a unique number or string represents the paid transaction.                                    |
+|            |        |          | `conversionSetting` an object of key-value pairs that are used for tracking settings:                            |
+|            |        |          | 1. `forceMultipleTransactions` a boolean decides whether to accumulate revenue for the same visitor.             |
 
 #### Returns
 
@@ -463,7 +465,10 @@ convertSDK.onReady().then(() => {
         productsCount: 2,
         transactionId: 'transaction-unique-id'
       }
-    ]
+    ],
+    conversionSetting: {
+      forceMultipleTransactions: false
+    }
   });
 });
 ```
