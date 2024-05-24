@@ -986,13 +986,6 @@ export class DataManager implements DataManagerInterface {
     if (goalData && (!goalTriggered || forceMultipleTransactions))
       sendTransaction.call(this);
 
-    this._loggerManager?.trace?.(
-      'DataManager.convert()',
-      this._mapper({
-        event
-      })
-    );
-
     function sendConversion() {
       const data: ConversionEvent = {
         goalId: goal.id
@@ -1003,6 +996,12 @@ export class DataManager implements DataManagerInterface {
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);
+      this._loggerManager?.trace?.(
+        'DataManager.convert()',
+        this._mapper({
+          event
+        })
+      );
     }
 
     function sendTransaction() {
@@ -1016,6 +1015,12 @@ export class DataManager implements DataManagerInterface {
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);
+      this._loggerManager?.trace?.(
+        'DataManager.convert()',
+        this._mapper({
+          event
+        })
+      );
     }
 
     return true;
