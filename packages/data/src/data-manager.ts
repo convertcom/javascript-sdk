@@ -953,7 +953,6 @@ export class DataManager implements DataManagerInterface {
     }
 
     // Check that goal id already triggred and stored and skip tracking conversion event
-    const storeKey = this.getStoreKey(visitorId);
     const {
       bucketing: bucketingData,
       goals: {[goalId.toString()]: goalTriggered} = {}
@@ -963,28 +962,11 @@ export class DataManager implements DataManagerInterface {
         'DataManager.convert()',
         MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
         this._mapper({
-          storeKey: storeKey,
           visitorId: visitorId,
           goalId: goalId
         })
       );
       return;
-    } else {
-      // Try to find a triggered goal in dataStore
-      const {goals: {[goalId.toString()]: goalTriggered} = {}} =
-        this.dataStoreManager?.get?.(storeKey) || {};
-      if (goalTriggered) {
-        this._loggerManager?.debug?.(
-          'DataManager.convert()',
-          MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
-          this._mapper({
-            storeKey: storeKey,
-            visitorId: visitorId,
-            goalId: goalId
-          })
-        );
-        return;
-      }
     }
     // Store the data
     this.putData(visitorId, {
