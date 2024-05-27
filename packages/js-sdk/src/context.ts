@@ -376,6 +376,7 @@ export class Context implements ContextInterface {
    * @param {ConversionAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<string, any>=} attributes.ruleData An object of key-value pairs that are used for goal matching
    * @param {Array<Record<GoalDataKey, number>>=} attributes.conversionData An array of key-value pairs that are used for transaction data
+   * @param {Record<ConversionSettingKey, number | string | boolean>} attributes.conversionSetting An object of key-value pairs that are used for tracking settings
    * @return {RuleError}
    */
   trackConversion(
@@ -408,7 +409,8 @@ export class Context implements ContextInterface {
       goalKey,
       goalRule,
       goalData,
-      segments
+      segments,
+      attributes?.conversionSetting
     );
     if (Object.values(RuleError).includes(triggred as RuleError))
       return triggred as RuleError;
