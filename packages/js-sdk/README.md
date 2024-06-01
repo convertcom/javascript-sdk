@@ -142,7 +142,7 @@ The SDK instance can be initialized by either providing an SDK key or a full pro
 
 #### Initialize using the SDK Key
 
-Include `sdkKey` as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every `dataRefreshInterval` seconds.
+Include `sdkKey` as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every `dataRefreshInterval` milliseconds.
 
 ```typescript
 import ConvertSDK, {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
@@ -423,12 +423,17 @@ Decides whether to send a conversion event, which is mapped to a goal-unique key
 
 #### Parameters
 
-| Parameter  | Type   | Required | Description                                                                         |
-| ---------- | ------ | -------- | ----------------------------------------------------------------------------------- |
-| goalKey    | string | Yes      | A goal key                                                                          |
-| attributes | object | No       | An object that specifies attributes for the user. Accepts 2 properties:             |
-|            |        |          | `ruleData` an object of key-value pairs that are used for location matching.        |
-|            |        |          | `conversionData` an object of key-value pairs that are used for audience targeting. |
+| Parameter  | Type   | Required | Description                                                                                                      |
+| ---------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| goalKey    | string | Yes      | A goal key                                                                                                       |
+| attributes | object | No       | An object that specifies attributes for the user. Accepts 2 properties:                                          |
+|            |        |          | `ruleData` an object of key-value pairs that are used for goal matching.                                         |
+|            |        |          | `conversionData` an array of key-value pairs that are used for transaction data. Each pair accepts 3 properties: |
+|            |        |          | 1. `amount` a number represents the order value.                                                                 |
+|            |        |          | 2. `productsCount` a number represents the order quantity.                                                       |
+|            |        |          | 3. `transactionId` a unique number or string represents the paid transaction.                                    |
+|            |        |          | `conversionSetting` an object of key-value pairs that are used for tracking settings:                            |
+|            |        |          | 1. `forceMultipleTransactions` a boolean decides whether to accumulate revenue for the same visitor.             |
 
 #### Returns
 
@@ -457,9 +462,13 @@ convertSDK.onReady().then(() => {
     conversionData: [
       {
         amount: 10.3,
-        productsCount: 2
+        productsCount: 2,
+        transactionId: 'transaction-unique-id'
       }
-    ]
+    ],
+    conversionSetting: {
+      forceMultipleTransactions: false
+    }
   });
 });
 ```
