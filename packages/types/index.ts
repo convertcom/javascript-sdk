@@ -15,6 +15,7 @@ export * from './src/ConversionAttributes';
 export * from './src/Entity';
 export * from './src/IndentityField';
 export * from './src/Integration';
+export * from './src/LocationAttributes';
 export * from './src/Path';
 export * from './src/RequireAtLeastOne';
 export * from './src/Rule';

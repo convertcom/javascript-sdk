@@ -38,6 +38,7 @@ import {
   VisitorSegments,
   ConfigSegment,
   BucketingAttributes,
+  LocationAttributes,
   ConfigAudienceTypes
 } from '@convertcom/js-sdk-types';
 
@@ -266,12 +267,10 @@ export class DataManager implements DataManagerInterface {
           if (locations.length) {
             // Validate locationProperties against locations rules
             // and trigger activated/deactivated events
-            matchedLocations = this.selectLocations(
-              visitorId,
-              locations,
+            matchedLocations = this.selectLocations(visitorId, locations, {
               locationProperties,
               identityField
-            );
+            });
             // Return rule errors if present
             matchedErrors = matchedLocations.filter((match) =>
               Object.values(RuleError).includes(match as RuleError)
@@ -771,15 +770,17 @@ export class DataManager implements DataManagerInterface {
    *
    * @param {string} visitorId
    * @param {Array<Record<string, any>>} items
-   * @param {Record<string, any>} locationProperties
+   * @param {Record<string, any>} attributes.locationProperties
+   * @param {IdentityField=} attributes.identityField
+   * @param {boolean=} attributes.forceEvent
    * @returns {Array<Record<string, any> | RuleError>}
    */
   selectLocations(
     visitorId: string,
     items: Array<Record<string, any>>,
-    locationProperties: Record<string, any>,
-    identityField: IdentityField = 'key'
+    attributes: LocationAttributes
   ): Array<Record<string, any> | RuleError> {
+    const {locationProperties, identityField = 'key', forceEvent} = attributes;
     this._loggerManager?.trace?.(
       'DataManager.selectLocations()',
       this._mapper({
@@ -805,8 +806,7 @@ export class DataManager implements DataManagerInterface {
             'DataManager.selectLocations()',
             MESSAGES.LOCATION_MATCH.replace('#', `#${identity}`)
           );
-          if (!locations.includes(identity)) {
-            locations.push(identity);
+          if (!locations.includes(identity) || forceEvent) {
             this._eventManager.fire(
               SystemEvents.LOCATION_ACTIVATED,
               {
@@ -825,6 +825,7 @@ export class DataManager implements DataManagerInterface {
               MESSAGES.LOCATION_ACTIVATED.replace('#', `#${identity}`)
             );
           }
+          if (!locations.includes(identity)) locations.push(identity);
           matchedRecords.push(items[i]);
         } else if (match !== false) {
           // catch rule errors

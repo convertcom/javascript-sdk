@@ -12,7 +12,8 @@ import {
   StoreData,
   VisitorSegments,
   ConfigExperience,
-  BucketingAttributes
+  BucketingAttributes,
+  LocationAttributes
 } from '@convertcom/js-sdk-types';
 import {DataStoreManagerInterface} from './data-store-manager';
 import {
@@ -33,8 +34,7 @@ export interface DataManagerInterface {
   selectLocations(
     visitorId: string,
     items: Array<Record<string, any>>,
-    locationProperties: Record<string, any>,
-    identityField: IdentityField
+    attributes: LocationAttributes
   ): Array<Record<string, any> | RuleError>;
   matchRulesByField(
     visitorId: string,
