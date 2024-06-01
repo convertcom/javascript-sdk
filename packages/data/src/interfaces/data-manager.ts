@@ -12,10 +12,16 @@ import {
   StoreData,
   VisitorSegments,
   ConfigExperience,
-  BucketingAttributes
+  BucketingAttributes,
+  LocationAttributes
 } from '@convertcom/js-sdk-types';
 import {DataStoreManagerInterface} from './data-store-manager';
-import {RuleError} from '@convertcom/js-sdk-enums';
+import {
+  BucketingError,
+  ConversionSettingKey,
+  GoalDataKey,
+  RuleError
+} from '@convertcom/js-sdk-enums';
 
 export interface DataManagerInterface {
   data: ConfigResponseData;
@@ -28,8 +34,7 @@ export interface DataManagerInterface {
   selectLocations(
     visitorId: string,
     items: Array<Record<string, any>>,
-    locationProperties: Record<string, any>,
-    identityField: IdentityField
+    attributes: LocationAttributes
   ): Array<Record<string, any> | RuleError>;
   matchRulesByField(
     visitorId: string,
@@ -41,18 +46,19 @@ export interface DataManagerInterface {
     visitorId: string,
     experienceKey: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError;
+  ): BucketedVariation | RuleError | BucketingError;
   getBucketingById(
     visitorId: string,
     experienceId: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError;
+  ): BucketedVariation | RuleError | BucketingError;
   convert(
     visitorId: string,
     goalId: string,
     goalRule?: Record<string, any>,
-    goalData?: Array<Record<string, number>>,
-    segments?: VisitorSegments
+    goalData?: Array<Record<GoalDataKey, number>>,
+    segments?: VisitorSegments,
+    conversionSetting?: Record<ConversionSettingKey, number | string | boolean>
   ): RuleError | boolean;
   getEntitiesList(entityType: string): Array<Entity | string>;
   getEntitiesListObject(
