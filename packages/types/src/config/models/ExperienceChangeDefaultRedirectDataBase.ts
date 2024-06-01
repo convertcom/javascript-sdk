@@ -13,6 +13,10 @@ export type ExperienceChangeDefaultRedirectDataBase = (ExperienceChangeBase & {
      */
     data?: {
         /**
+         * Defines whether the URL matching is case sensitive or not
+         */
+        case_sensitive?: boolean;
+        /**
          * Pattern for matching the Original URL in order to construct the redirect URL
          */
         original_pattern?: string;
