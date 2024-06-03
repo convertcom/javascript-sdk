@@ -240,8 +240,12 @@ describe('Context tests', function () {
                   goalId: '100215960',
                   goalData: [
                     {
-                      amount: 10.3,
-                      productsCount: 2
+                      key: 'amount',
+                      value: 10.3
+                    },
+                    {
+                      key: 'productsCount',
+                      value: 2
                     }
                   ]
                 }

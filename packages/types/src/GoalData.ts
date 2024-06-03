@@ -8,6 +8,6 @@
 import {GoalDataKey} from '@convertcom/js-sdk-enums';
 
 export type GoalData = {
-  key: GoalDataKey;
-  value: number | string;
+  key?: `${GoalDataKey}`;
+  value?: number | string;
 };

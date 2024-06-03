@@ -1008,7 +1008,7 @@ export class DataManager implements DataManagerInterface {
     function sendTransaction() {
       const data: ConversionEvent = {
         goalId: goal.id,
-        goalData: goalData as Array<Record<string, number>>
+        goalData: goalData as Array<GoalData>
       };
       if (bucketingData) data.bucketingData = bucketingData;
       const event: VisitorTrackingEvents = {
