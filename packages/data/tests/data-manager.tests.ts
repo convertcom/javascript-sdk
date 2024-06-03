@@ -219,11 +219,11 @@ describe('DataManager tests', function () {
                   goalData: [
                     {
                       key: 'amount',
-                      value: 10.3
+                      value: 10.4
                     },
                     {
                       key: 'productsCount',
-                      value: 2
+                      value: 3
                     }
                   ]
                 }
