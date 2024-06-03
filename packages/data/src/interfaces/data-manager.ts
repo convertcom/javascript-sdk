@@ -13,13 +13,13 @@ import {
   VisitorSegments,
   ConfigExperience,
   BucketingAttributes,
-  LocationAttributes
+  LocationAttributes,
+  GoalData
 } from '@convertcom/js-sdk-types';
 import {DataStoreManagerInterface} from './data-store-manager';
 import {
   BucketingError,
   ConversionSettingKey,
-  GoalDataKey,
   RuleError
 } from '@convertcom/js-sdk-enums';
 
@@ -56,7 +56,7 @@ export interface DataManagerInterface {
     visitorId: string,
     goalId: string,
     goalRule?: Record<string, any>,
-    goalData?: Array<Record<GoalDataKey, number>>,
+    goalData?: Array<GoalData>,
     segments?: VisitorSegments,
     conversionSetting?: Record<ConversionSettingKey, number | string | boolean>
   ): RuleError | boolean;

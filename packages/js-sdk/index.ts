@@ -149,6 +149,7 @@ export {
   BucketedVariation,
   BucketingAttributes,
   ConversionAttributes,
+  LocationAttributes,
   Entity,
   IdentityField,
   SegmentsAttributes,
@@ -161,6 +162,7 @@ export {
   ConfigGoal,
   ConfigAudience,
   ConfigLocation,
+  GoalData,
   RequireAtLeastOne,
   VisitorTrackingEvents,
   Path
