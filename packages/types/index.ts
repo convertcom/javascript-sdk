@@ -13,6 +13,7 @@ export * from './src/BucketingHash';
 export * from './src/Config';
 export * from './src/ConversionAttributes';
 export * from './src/Entity';
+export * from './src/GoalData';
 export * from './src/IndentityField';
 export * from './src/Integration';
 export * from './src/LocationAttributes';
