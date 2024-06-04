@@ -240,8 +240,12 @@ describe('Context tests', function () {
                   goalId: '100215960',
                   goalData: [
                     {
-                      amount: 10.3,
-                      productsCount: 2
+                      key: 'amount',
+                      value: 10.3
+                    },
+                    {
+                      key: 'productsCount',
+                      value: 2
                     }
                   ]
                 }
@@ -272,8 +276,12 @@ describe('Context tests', function () {
         },
         conversionData: [
           {
-            amount: 10.3,
-            productsCount: 2
+            key: 'amount',
+            value: 10.3
+          },
+          {
+            key: 'productsCount',
+            value: 2
           }
         ]
       });
@@ -285,10 +293,16 @@ describe('Context tests', function () {
         ruleData: {
           action: 'buy'
         },
-        conversionData: {
-          amount: 10.3,
-          productsCount: 2
-        }
+        conversionData: [
+          {
+            key: 'amount',
+            value: 10.3
+          },
+          {
+            key: 'productsCount',
+            value: 2
+          }
+        ]
       });
       expect(response).to.be.undefined;
     });

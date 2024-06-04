@@ -461,9 +461,16 @@ convertSDK.onReady().then(() => {
     },
     conversionData: [
       {
-        amount: 10.3,
-        productsCount: 2,
-        transactionId: 'transaction-unique-id'
+        key: 'amount',
+        value: 10.3
+      },
+      {
+        key: 'productsCount',
+        value: 2
+      },
+      {
+        key: 'transactionId',
+        value: 'transaction-unique-id'
       }
     ],
     conversionSetting: {

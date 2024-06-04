@@ -35,6 +35,7 @@ import {
   VisitorTrackingEvents,
   ConversionEvent,
   ConfigGoal,
+  GoalData,
   VisitorSegments,
   ConfigSegment,
   BucketingAttributes,
@@ -49,7 +50,6 @@ import {
   ERROR_MESSAGES,
   MESSAGES,
   RuleError,
-  GoalDataKey,
   SegmentsKeys,
   SystemEvents,
   ConversionSettingKey
@@ -913,7 +913,7 @@ export class DataManager implements DataManagerInterface {
    * @param {string} visitorId
    * @param {string} goalId
    * @param {Record<string, any>=} goalRule An object of key-value pairs that are used for goal matching
-   * @param {Array<Record<GoalDataKey, number>>} goalData An array of object of key-value pairs
+   * @param {Array<GoalData>} goalData An array of object of key-value pairs
    * @param {VisitorSegments} segments
    * @param {Record<ConversionSettingKey, number | string | boolean>} conversionSetting An object of key-value pairs that are used for tracking settings
    */
@@ -921,7 +921,7 @@ export class DataManager implements DataManagerInterface {
     visitorId: string,
     goalId: string,
     goalRule?: Record<string, any>,
-    goalData?: Array<Record<GoalDataKey, number>>,
+    goalData?: Array<GoalData>,
     segments?: VisitorSegments,
     conversionSetting?: Record<ConversionSettingKey, number | string | boolean>
   ): RuleError | boolean {
@@ -1008,7 +1008,7 @@ export class DataManager implements DataManagerInterface {
     function sendTransaction() {
       const data: ConversionEvent = {
         goalId: goal.id,
-        goalData: goalData as Array<Record<string, number>>
+        goalData
       };
       if (bucketingData) data.bucketingData = bucketingData;
       const event: VisitorTrackingEvents = {

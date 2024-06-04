@@ -163,8 +163,12 @@ export default function runTests(bundle) {
         },
         conversionData: [
           {
-            amount: 10.3,
-            productsCount: 2
+            key: 'amount',
+            value: 10.3
+          },
+          {
+            key: 'productsCount',
+            value: 2
           }
         ]
       });
