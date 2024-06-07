@@ -296,20 +296,20 @@ export class DataManager implements DataManagerInterface {
             MESSAGES.LOCATION_NOT_RESTRICTED
           );
         }
-      }
-      if (!locationMatched) {
-        this._loggerManager?.debug?.(
-          'DataManager.matchRulesByField()',
-          MESSAGES.LOCATION_NOT_MATCH,
-          this._mapper({
-            locationProperties: locationProperties,
-            [experience?.locations
-              ? 'experiences[].variations[].locations'
-              : 'experiences[].variations[].site_area']:
-              experience?.locations || experience?.site_area || ''
-          })
-        );
-        return null;
+        if (!locationMatched) {
+          this._loggerManager?.debug?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.LOCATION_NOT_MATCH,
+            this._mapper({
+              locationProperties: locationProperties,
+              [experience?.locations
+                ? 'experiences[].variations[].locations'
+                : 'experiences[].variations[].site_area']:
+                experience?.locations || experience?.site_area || ''
+            })
+          );
+          return null;
+        }
       }
 
       // Check audience rules against visitorProperties
