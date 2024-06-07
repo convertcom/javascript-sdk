@@ -43,5 +43,6 @@ export const defaultConfig = {
     tracking: true,
     cacheLevel: 'default' // can be set to 'low' for short-lived cache (for development purposes only)
   },
-  sdkKey: ''
+  sdkKey: '',
+  sdkKeySecret: ''
 };
