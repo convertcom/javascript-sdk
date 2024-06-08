@@ -146,6 +146,7 @@ export { JsConditionMatchRulesTypes } from './models/JsConditionMatchRulesTypes'
 export type { KeyValueMatchRulesTypes } from './models/KeyValueMatchRulesTypes';
 export type { LanguageMatchRule } from './models/LanguageMatchRule';
 export { LanguageMatchRulesTypes } from './models/LanguageMatchRulesTypes';
+export { LocationTriggerTypes } from './models/LocationTriggerTypes';
 export type { MinuteOfHourMatchRule } from './models/MinuteOfHourMatchRule';
 export { MinuteOfHourMatchRulesTypes } from './models/MinuteOfHourMatchRulesTypes';
 export { NoSettingsGoal } from './models/NoSettingsGoal';
