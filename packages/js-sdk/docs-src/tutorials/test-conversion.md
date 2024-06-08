@@ -79,15 +79,23 @@ const ProductsComponent = () => {
 
   useEffect(() => sdkContext && decide(), [sdkContext]);
 
-  const track = (price, quantity = 1) => {
+  const track = (price, quantity, id) => {
     sdkContext.trackConversion('buying-goal', {
       ruleData: {
         action: 'buy'
       },
       conversionData: [
         {
-          amount: price,
-          productsCount: quantity
+          key: 'amount',
+          value: price
+        },
+        {
+          key: 'productsCount',
+          value: quantity
+        },
+        {
+          key: 'transactionId',
+          value: id
         }
       ]
     });
@@ -98,11 +106,12 @@ const ProductsComponent = () => {
       className="product-buy"
       onClick={(e) => {
         e.preventDefault();
-        const price = 10;
+        const price = 10,
+          id = 'transaction-unique-id';
         if (discount) {
-          track((price * discount) / 100, 1);
+          track((price * discount) / 100, 1, id);
         } else {
-          track(price, 1);
+          track(price, 1, id);
         }
       }}
     >
