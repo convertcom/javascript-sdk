@@ -185,7 +185,7 @@ export class Core implements CoreInterface {
    * @return {Promise<void>}
    */
   private async fetchConfig(): Promise<void> {
-    this._promise = this._apiManager.getConfigByKey(this._config.sdkKey);
+    this._promise = this._apiManager.getConfig();
     try {
       const data: ConfigResponseData = await this._promise;
       if (data['error']) {

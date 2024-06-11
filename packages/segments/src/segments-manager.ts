@@ -89,25 +89,11 @@ export class SegmentsManager implements SegmentsManagerInterface {
     segments: Array<ConfigSegment>,
     segmentRule?: Record<string, any>
   ): VisitorSegments | RuleError {
-    const storeKey = this._dataManager.getStoreKey(visitorId);
-    let storeData: StoreData = this._dataManager.getData(visitorId) || {};
+    const storeData: StoreData = this._dataManager.getData(visitorId) || {};
     // Get custom segments ID from DataStore
-    let customSegments = [];
     const {
-      segments: {[SegmentsKeys.CUSTOM_SEGMENTS]: localCustomSegments} = {}
+      segments: {[SegmentsKeys.CUSTOM_SEGMENTS]: customSegments = []} = {}
     } = storeData;
-    if (Array.isArray(localCustomSegments)) {
-      customSegments = localCustomSegments.slice();
-    } else {
-      // Try to find a custom segments in dataStore
-      storeData = this._dataManager?.dataStoreManager?.get?.(storeKey) || {};
-      const {
-        segments: {[SegmentsKeys.CUSTOM_SEGMENTS]: storedCustomSegments} = {}
-      } = storeData;
-      if (Array.isArray(storedCustomSegments)) {
-        customSegments = storedCustomSegments.slice();
-      }
-    }
 
     const segmentIds = [];
 

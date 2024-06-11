@@ -46,7 +46,7 @@ class ConvertSDK extends Core {
   /**
    * @param {ConfigType} config
    */
-  constructor(config: ConfigType) {
+  constructor(config: ConfigType = <ConfigType>{}) {
     // Validate config before assigning defaults
     const isValidSDKKey = Boolean(
       Object.prototype.hasOwnProperty.call(config, 'sdkKey') &&
@@ -149,6 +149,7 @@ export {
   BucketedVariation,
   BucketingAttributes,
   ConversionAttributes,
+  LocationAttributes,
   Entity,
   IdentityField,
   SegmentsAttributes,
@@ -161,6 +162,7 @@ export {
   ConfigGoal,
   ConfigAudience,
   ConfigLocation,
+  GoalData,
   RequireAtLeastOne,
   VisitorTrackingEvents,
   Path

@@ -41,5 +41,5 @@ export interface ApiManagerInterface {
 
   setData(data: ConfigResponseData): void;
 
-  getConfigByKey(sdkKey: string): Promise<ConfigResponseData>;
+  getConfig(): Promise<ConfigResponseData>;
 }
