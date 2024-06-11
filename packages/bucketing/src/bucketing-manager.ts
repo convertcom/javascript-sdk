@@ -7,7 +7,11 @@
 
 import {BucketingManagerInterface} from './interfaces/bucketing-manager';
 
-import {BucketingHash, Config} from '@convertcom/js-sdk-types';
+import {
+  BucketingAllocation,
+  BucketingHash,
+  Config
+} from '@convertcom/js-sdk-types';
 import {generateHash} from '@convertcom/js-sdk-utils';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {MESSAGES} from '@convertcom/js-sdk-enums';
@@ -111,14 +115,23 @@ export class BucketingManager implements BucketingManagerInterface {
    * @param {number=} [options.redistribute=0]
    * @param {number=} [options.seed=]
    * @param {string=} [options.experienceId=]
-   * @return {string | null}
+   * @return {BucketingAllocation | null}
    */
   getBucketForVisitor(
     buckets: Record<string, number>,
     visitorId: string,
     options?: BucketingHash
-  ): string | null {
+  ): BucketingAllocation | null {
     const value = this.getValueVisitorBased(visitorId, options);
-    return this.selectBucket(buckets, value, options?.redistribute);
+    const selectedBucket = this.selectBucket(
+      buckets,
+      value,
+      options?.redistribute
+    );
+    if (!selectedBucket) return null;
+    return {
+      variationId: selectedBucket,
+      bucketingAllocation: value
+    } as BucketingAllocation;
   }
 }
