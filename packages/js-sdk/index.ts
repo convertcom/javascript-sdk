@@ -170,6 +170,7 @@ export {
 export {
   EntityType,
   RuleError,
+  BucketingError,
   GoalDataKey,
   LogLevel,
   SystemEvents,
