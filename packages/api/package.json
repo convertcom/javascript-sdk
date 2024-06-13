@@ -23,7 +23,7 @@
     "prebuild:version": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "prebuild": "yarn clean",
     "build": "rollup -c build.mjs",
-    "lint": "ESLINT_USE_FLAT_CONFIG=true eslint src",
+    "lint": "eslint src",
     "lint:fix": "yarn lint -- --fix",
     "coverage": "nyc report -r cobertura --reporter=text-summary",
     "postcoverage": "istanbul-cobertura-badger -e 85 -g 70 -r coverage/cobertura-coverage.xml -d ./coverage -b coverage"
@@ -34,6 +34,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.7",
     "@babel/preset-env": "^7.24.7",
+    "@eslint/eslintrc": "^3.1.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-terser": "^0.4.4",
