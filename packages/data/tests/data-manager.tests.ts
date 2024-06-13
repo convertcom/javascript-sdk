@@ -256,8 +256,12 @@ describe('DataManager tests', function () {
         },
         [
           {
-            amount: 10.3,
-            productsCount: 2
+            key: 'amount',
+            value: 10.4
+          },
+          {
+            key: 'productsCount',
+            value: 3
           }
         ]
       );
