@@ -7,7 +7,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 import modify from 'rollup-plugin-modify';
-import dts from 'rollup-plugin-dts';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -64,7 +63,13 @@ const exclude = [
 ];
 
 const external = [
+  '@convertcom/js-sdk-api',
+  '@convertcom/js-sdk-bucketing',
   '@convertcom/js-sdk-enums',
+  '@convertcom/js-sdk-event',
+  '@convertcom/js-sdk-logger',
+  '@convertcom/js-sdk-rules',
+  '@convertcom/js-sdk-types',
   '@convertcom/js-sdk-utils',
   'murmurhash'
 ];
@@ -130,8 +135,12 @@ const commonJSBundle = {
         },
         license: 'Apache-2.0',
         dependencies: {
+          '@convertcom/js-sdk-api': '>=1.0.0',
+          '@convertcom/js-sdk-bucketing': '>=1.0.0',
           '@convertcom/js-sdk-enums': '>=1.0.0',
+          '@convertcom/js-sdk-event': '>=1.0.0',
           '@convertcom/js-sdk-logger': '>=1.0.0',
+          '@convertcom/js-sdk-rules': '>=1.0.0',
           '@convertcom/js-sdk-types': '>=1.0.0',
           '@convertcom/js-sdk-utils': '>=1.0.0'
         },
@@ -199,25 +208,13 @@ const esmBundle = {
   plugins: withLogging.concat([
     typescript({
       tsconfigOverride: {
-        compilerOptions: {declaration: false},
+        compilerOptions: {declaration: true},
         include: include,
         exclude: exclude
       }
     }),
     commonjs()
   ])
-};
-
-const typeDeclarations = {
-  cache: BUILD_CACHE,
-  input: './index.ts',
-  output: [
-    {
-      format: 'es',
-      file: 'lib/index.d.ts'
-    }
-  ],
-  plugins: [dts()]
 };
 
 const BUNDLES = process.env.BUNDLES
@@ -232,7 +229,7 @@ export default () => {
       case 'cjs-legacy':
         return [commonJSLegacyBundle];
       case 'esm':
-        return [esmBundle, typeDeclarations];
+        return [esmBundle];
     }
     return [];
   }).flat();

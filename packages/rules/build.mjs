@@ -7,7 +7,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 import modify from 'rollup-plugin-modify';
-import dts from 'rollup-plugin-dts';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -199,25 +198,13 @@ const esmBundle = {
   plugins: withLogging.concat([
     typescript({
       tsconfigOverride: {
-        compilerOptions: {declaration: false},
+        compilerOptions: {declaration: true},
         include: include,
         exclude: exclude
       }
     }),
     commonjs()
   ])
-};
-
-const typeDeclarations = {
-  cache: BUILD_CACHE,
-  input: './index.ts',
-  output: [
-    {
-      format: 'es',
-      file: 'lib/index.d.ts'
-    }
-  ],
-  plugins: [dts()]
 };
 
 const BUNDLES = process.env.BUNDLES
@@ -232,7 +219,7 @@ export default () => {
       case 'cjs-legacy':
         return [commonJSLegacyBundle];
       case 'esm':
-        return [esmBundle, typeDeclarations];
+        return [esmBundle];
     }
     return [];
   }).flat();

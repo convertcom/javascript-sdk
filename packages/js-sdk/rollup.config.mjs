@@ -11,7 +11,6 @@ import json from '@rollup/plugin-json';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 import copy from 'rollup-plugin-copy';
 import modify from 'rollup-plugin-modify';
-import dts from 'rollup-plugin-dts';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -230,7 +229,7 @@ const esmBundle = {
     modify(SDK_VERSION),
     typescript({
       tsconfigOverride: {
-        compilerOptions: {declaration: false},
+        compilerOptions: {declaration: true},
         exclude: exclude
       }
     }),
@@ -282,18 +281,6 @@ const umdBundle = {
   ])
 };
 
-const typeDeclarations = {
-  cache: BUILD_CACHE,
-  input: './index.ts',
-  output: [
-    {
-      format: 'es',
-      file: 'lib/index.d.ts'
-    }
-  ],
-  plugins: [dts()]
-};
-
 const BUNDLES = process.env.BUNDLES
   ? process.env.BUNDLES.split(',')
   : ['cjs', 'cjs-legacy', 'esm', 'umd'];
@@ -306,7 +293,7 @@ export default () => {
       case 'cjs-legacy':
         return [commonJSLegacyBundle];
       case 'esm':
-        return [esmBundle, typeDeclarations];
+        return [esmBundle];
       case 'umd':
         return [umdBundle];
     }

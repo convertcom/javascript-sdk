@@ -1,17 +1,15 @@
 /* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
 // import * as chai from 'chai';
-import {expect} from 'chai';
-import {assert} from 'chai';
 import chai from 'chai';
 import spies from 'chai-spies';
 
 import {EventManager as em} from '../src/event-manager';
-
 import {Config} from '@convertcom/js-sdk-types';
-
 import configuration from './test-config.json';
 
+const {expect, assert: ChaiAssert} = chai;
+const assert: Chai.Assert = ChaiAssert; // to avoid error: Assertions require every name in the call target to be declared with an explicit type annotation.
 chai.use(spies);
 
 describe('EventManager tests', function () {
