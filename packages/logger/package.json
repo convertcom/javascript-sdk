@@ -22,7 +22,7 @@
     "clean": "rm -rf lib",
     "prebuild:version": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "prebuild": "yarn clean",
-    "build": "rollup -c build.mjs",
+    "build": "rollup -c ../../rollup.config.mjs",
     "lint": "eslint src",
     "lint:fix": "yarn lint -- --fix",
     "coverage": "nyc report -r cobertura --reporter=text-summary",
@@ -68,5 +68,8 @@
     "typings": "^2.1.1",
     "webpack": "^5.92.0"
   },
-  "version": "2.0.0"
+  "version": "2.0.0",
+  "peerDependencies": {
+    "@convertcom/js-sdk-enums": ">=2.1.0"
+  }
 }

@@ -20,12 +20,6 @@ module.exports = [
     'plugin:prettier/recommended',
     'plugin:mocha/recommended'
   ),
-  ...compat.env({
-    browser: true,
-    node: true,
-    commonjs: true,
-    mocha: true
-  }),
   ...compat.plugins('eslint-plugin-local-rules'),
   ...compat.config({
     root: true,
@@ -42,6 +36,12 @@ module.exports = [
       'linebreak-style': ['error', 'unix'],
       '@typescript-eslint/no-explicit-any': 'off',
       'local-rules/log-manager': 'error'
+    },
+    env: {
+      browser: true,
+      node: true,
+      commonjs: true,
+      mocha: true
     },
     settings: {
       react: {

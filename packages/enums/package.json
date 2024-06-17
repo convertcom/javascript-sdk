@@ -18,7 +18,7 @@
     "clean": "rm -rf lib",
     "prebuild:version": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "prebuild": "yarn clean",
-    "build": "rollup -c build.mjs",
+    "build": "rollup -c ../../rollup.config.mjs",
     "lint": "eslint src",
     "lint:fix": "yarn lint -- --fix"
   },
