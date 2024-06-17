@@ -10,7 +10,7 @@ const compat = new FlatCompat({
 module.exports = [
   {
     files: ['**/*.ts', '**/*.tsx'],
-    ignores: ['.next', 'node_modules']
+    ignores: ['.yarn', '.vscode', '.github', 'node_modules']
   },
   ...compat.extends(
     'eslint:recommended',
