@@ -15,7 +15,7 @@ module.exports = function (config) {
     },
     webpack: {
       output: {
-        filename: 'index.browser.cjs.tests.js',
+        filename: '[name].js',
         path:
           path.join(os.tmpdir(), '_karma_webpack_') +
           Math.floor(Math.random() * 1000000)
