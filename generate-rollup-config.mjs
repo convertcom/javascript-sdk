@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {readFileSync, writeFileSync} from 'fs';
 import path from 'path';
 import {babel} from '@rollup/plugin-babel';
@@ -106,18 +107,7 @@ const depsMap = {
   ]
 };
 
-const removeDuplicates = (arr) =>
-  arr.filter((item, index) => arr.findIndex((i) => i === item) === index);
-
-const external = removeDuplicates([
-  ...Object.values(depsMap)
-    .flat()
-    .map((pkg) => `@convertcom/js-sdk-${pkg}`),
-  'murmurhash',
-  'querystring',
-  'http',
-  'https'
-]);
+const external = ['murmurhash', 'querystring', 'http', 'https'];
 
 const minimizedFilesHeader =
   '/*!\n' +
@@ -136,9 +126,24 @@ const terserConfig = {
 
 const withLogging = logLevel > 0 ? [modify(LOGGER_OPTIONS)] : [];
 
-const tsconfigOverride = (basePath) => ({
+const tsconfigOverride = (basePath, packageName) => ({
   compilerOptions: {
-    declaration: false
+    declaration: false,
+    baseUrl: path.resolve(basePath),
+    paths: depsMap[packageName]
+      ? Object.fromEntries(
+          [
+            depsMap[packageName].map((dep) => [
+              `@convertcom/js-sdk-${dep}`,
+              [path.resolve(basePath, '..', dep)]
+            ]),
+            depsMap[packageName].map((dep) => [
+              `@convertcom/js-sdk-${dep}/*`,
+              [path.resolve(basePath, '..', dep, 'src/*')]
+            ])
+          ].flat()
+        )
+      : {}
   },
   include: [path.resolve(basePath, '**/*')], // jail input files in package root
   exclude
@@ -169,7 +174,6 @@ const commonJSBundle = ({
       plugins: [terser(terserConfig)]
     }
   ],
-  external,
   plugins: withLogging.concat([
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
@@ -178,8 +182,10 @@ const commonJSBundle = ({
       replace: `'js${info.version || 'js-sdk'}'`
     }),
     typescript({
-      tsconfigOverride: tsconfigOverride(basePath)
+      tsconfig: path.resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
+      tsconfigOverride: tsconfigOverride(basePath, packageName)
     }),
+    resolve(),
     commonjs(),
     generatePackageJson({
       baseContents: (pkg) => ({
@@ -222,7 +228,7 @@ const commonJSBundle = ({
   ])
 });
 
-const commonJSLegacyBundle = ({basePath, input, info}) => ({
+const commonJSLegacyBundle = ({basePath, input, info, packageName}) => ({
   cache: BUILD_CACHE,
   input,
   output: [
@@ -240,7 +246,6 @@ const commonJSLegacyBundle = ({basePath, input, info}) => ({
       plugins: [terser(terserConfig)]
     }
   ],
-  external,
   plugins: withLogging.concat([
     modify(CONFIG_ENV),
     modify(TRACK_ENV),
@@ -249,8 +254,10 @@ const commonJSLegacyBundle = ({basePath, input, info}) => ({
       replace: `'js${info.version || 'js-sdk'}'`
     }),
     typescript({
-      tsconfigOverride: tsconfigOverride(basePath)
+      tsconfig: path.resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
+      tsconfigOverride: tsconfigOverride(basePath, packageName)
     }),
+    resolve(),
     commonjs(),
     babel({
       babelHelpers: 'bundled',
@@ -260,7 +267,7 @@ const commonJSLegacyBundle = ({basePath, input, info}) => ({
   ])
 });
 
-const esmBundle = ({basePath, input, info}) => ({
+const esmBundle = ({basePath, input, info, packageName}) => ({
   cache: BUILD_CACHE,
   input,
   output: [
@@ -287,8 +294,10 @@ const esmBundle = ({basePath, input, info}) => ({
       replace: `'js${info.version || 'js-sdk'}'`
     }),
     typescript({
-      tsconfigOverride: tsconfigOverride(basePath)
+      tsconfig: path.resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
+      tsconfigOverride: tsconfigOverride(basePath, packageName)
     }),
+    resolve(),
     commonjs()
   ])
 });
@@ -321,10 +330,11 @@ const umdBundle = ({basePath, input, info}) => ({
       replace: `'js${info.version || 'js-sdk'}'`
     }),
     typescript({
+      tsconfig: path.resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
       tsconfigOverride: tsconfigOverride(basePath)
     }),
     resolve({
-      browser: true,
+      mainFields: ['browser'],
       preferBuiltins: false
     }),
     commonjs(),
@@ -332,7 +342,7 @@ const umdBundle = ({basePath, input, info}) => ({
   ])
 });
 
-const typeDeclarations = ({basePath, input}) => ({
+const typeDeclarations = ({basePath, input, packageName}) => ({
   cache: BUILD_CACHE,
   input,
   output: [
@@ -396,11 +406,11 @@ export default async ({basePath, input, info, packageName}) => {
           })
         ];
       case 'cjs-legacy':
-        return [commonJSLegacyBundle({basePath, input, info})];
+        return [commonJSLegacyBundle({basePath, input, info, packageName})];
       case 'esm':
         return [
-          esmBundle({basePath, input, info}),
-          typeDeclarations({basePath, input})
+          esmBundle({basePath, input, info, packageName}),
+          typeDeclarations({basePath, input, packageName})
         ];
       case 'umd':
         return isMainPackage ? [umdBundle({basePath, input, info})] : [];
