@@ -1,9 +1,10 @@
 /* eslint-disable */
 import {readFileSync, writeFileSync} from 'fs';
-import path from 'path';
+import {dirname, resolve} from 'path';
+import {globSync} from 'glob';
 import {babel} from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
-import resolve from '@rollup/plugin-node-resolve';
+import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import jsdoc from 'rollup-plugin-jsdoc';
@@ -107,7 +108,7 @@ const depsMap = {
   ]
 };
 
-const external = ['murmurhash', 'querystring', 'http', 'https'];
+const external = ['querystring', 'http', 'https'];
 
 const minimizedFilesHeader =
   '/*!\n' +
@@ -126,26 +127,26 @@ const terserConfig = {
 
 const withLogging = logLevel > 0 ? [modify(LOGGER_OPTIONS)] : [];
 
-const tsconfigOverride = (basePath, packageName) => ({
+const tsconfigOverride = (basePath, packageName, declaration = false) => ({
   compilerOptions: {
-    declaration: false,
-    baseUrl: path.resolve(basePath),
+    declaration,
+    baseUrl: resolve(basePath),
     paths: depsMap[packageName]
       ? Object.fromEntries(
           [
             depsMap[packageName].map((dep) => [
               `@convertcom/js-sdk-${dep}`,
-              [path.resolve(basePath, '..', dep)]
+              [resolve(basePath, '..', dep)]
             ]),
             depsMap[packageName].map((dep) => [
               `@convertcom/js-sdk-${dep}/*`,
-              [path.resolve(basePath, '..', dep, 'src/*')]
+              [resolve(basePath, '..', dep, 'src/*')]
             ])
           ].flat()
         )
       : {}
   },
-  include: [path.resolve(basePath, '**/*')], // jail input files in package root
+  include: [resolve(basePath, '**/*')], // jail input files in package root
   exclude
 });
 
@@ -162,13 +163,13 @@ const commonJSBundle = ({
   output: [
     {
       exports: 'named',
-      file: path.resolve(basePath, 'lib', 'index.js'),
+      file: resolve(basePath, 'lib', 'index.js'),
       format: 'cjs',
       sourcemap: true
     },
     {
       exports: 'named',
-      file: path.resolve(basePath, 'lib', 'index.min.js'),
+      file: resolve(basePath, 'lib', 'index.min.js'),
       format: 'cjs',
       sourcemap: true,
       plugins: [terser(terserConfig)]
@@ -182,10 +183,10 @@ const commonJSBundle = ({
       replace: `'js${info.version || 'js-sdk'}'`
     }),
     typescript({
-      tsconfig: path.resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
+      tsconfig: resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
       tsconfigOverride: tsconfigOverride(basePath, packageName)
     }),
-    resolve(),
+    nodeResolve(),
     commonjs(),
     generatePackageJson({
       baseContents: (pkg) => ({
@@ -202,6 +203,9 @@ const commonJSBundle = ({
           directory: `packages/${packageName}`
         },
         license: 'Apache-2.0',
+        ...(Object.keys(info.dependencies || {}).length
+          ? {dependencies: info.dependencies}
+          : {}),
         ...(peerDependencies ? {peerDependencies} : {}),
         version: pkg.version
       })
@@ -234,13 +238,13 @@ const commonJSLegacyBundle = ({basePath, input, info, packageName}) => ({
   output: [
     {
       exports: 'named',
-      file: path.resolve(basePath, 'lib', 'legacy', 'index.js'),
+      file: resolve(basePath, 'lib', 'legacy', 'index.js'),
       format: 'cjs',
       sourcemap: true
     },
     {
       exports: 'named',
-      file: path.resolve(basePath, 'lib', 'legacy', 'index.min.js'),
+      file: resolve(basePath, 'lib', 'legacy', 'index.min.js'),
       format: 'cjs',
       sourcemap: true,
       plugins: [terser(terserConfig)]
@@ -254,10 +258,10 @@ const commonJSLegacyBundle = ({basePath, input, info, packageName}) => ({
       replace: `'js${info.version || 'js-sdk'}'`
     }),
     typescript({
-      tsconfig: path.resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
+      tsconfig: resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
       tsconfigOverride: tsconfigOverride(basePath, packageName)
     }),
-    resolve(),
+    nodeResolve(),
     commonjs(),
     babel({
       babelHelpers: 'bundled',
@@ -274,13 +278,13 @@ const esmBundle = ({basePath, input, info, packageName}) => ({
     {
       exports: 'auto',
       format: 'es',
-      file: path.resolve(basePath, 'lib', 'index.mjs'),
+      file: resolve(basePath, 'lib', 'index.mjs'),
       sourcemap: true
     },
     {
       exports: 'auto',
       format: 'es',
-      file: path.resolve(basePath, 'lib', 'index.min.mjs'),
+      file: resolve(basePath, 'lib', 'index.min.mjs'),
       plugins: [terser(terserConfig)],
       sourcemap: true
     }
@@ -294,10 +298,10 @@ const esmBundle = ({basePath, input, info, packageName}) => ({
       replace: `'js${info.version || 'js-sdk'}'`
     }),
     typescript({
-      tsconfig: path.resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
-      tsconfigOverride: tsconfigOverride(basePath, packageName)
+      tsconfig: resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
+      tsconfigOverride: tsconfigOverride(basePath, packageName, true)
     }),
-    resolve(),
+    nodeResolve(),
     commonjs()
   ])
 });
@@ -310,14 +314,14 @@ const umdBundle = ({basePath, input, info}) => ({
       name: 'ConvertSDK',
       exports: 'named',
       format: 'umd',
-      file: path.resolve(basePath, 'lib', 'index.umd.js'),
+      file: resolve(basePath, 'lib', 'index.umd.js'),
       sourcemap: true
     },
     {
       name: 'ConvertSDK',
       exports: 'named',
       format: 'umd',
-      file: path.resolve(basePath, 'lib', 'index.umd.min.js'),
+      file: resolve(basePath, 'lib', 'index.umd.min.js'),
       plugins: [terser(terserConfig)],
       sourcemap: true
     }
@@ -330,10 +334,10 @@ const umdBundle = ({basePath, input, info}) => ({
       replace: `'js${info.version || 'js-sdk'}'`
     }),
     typescript({
-      tsconfig: path.resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
+      tsconfig: resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
       tsconfigOverride: tsconfigOverride(basePath)
     }),
-    resolve({
+    nodeResolve({
       mainFields: ['browser'],
       preferBuiltins: false
     }),
@@ -342,17 +346,70 @@ const umdBundle = ({basePath, input, info}) => ({
   ])
 });
 
-const typeDeclarations = ({basePath, input, packageName}) => ({
+const replacePackages = (dir, file, packageName, contents) => {
+  depsMap[packageName].forEach((dep) => {
+    const relativePath = file.replace(`${dir}/`, '').split('/');
+    const parents = new Array(relativePath.length).fill('').join('../');
+    contents = contents.replaceAll(
+      `@convertcom/js-sdk-${dep}`,
+      `${parents || './'}${dep}`
+    );
+  });
+  return contents;
+};
+
+const typeDeclarations = ({basePath, input, packageName, isMainPackage}) => ({
   cache: BUILD_CACHE,
   input,
   output: [
     {
       format: 'es',
-      file: path.resolve(basePath, 'lib', 'index.d.ts')
+      file: resolve(basePath, 'lib', 'index.d.ts')
     }
   ],
   external,
-  plugins: [dts()]
+  plugins: [
+    dts(),
+    ...[
+      depsMap[packageName]
+        ? depsMap[packageName]
+            .map((dep) =>
+              copy({
+                targets: [
+                  {
+                    src: [
+                      `${process.env.PROJECT_CWD}/packages/${dep}/lib/src`,
+                      `${process.env.PROJECT_CWD}/packages/${dep}/lib/index.d.ts`
+                    ],
+                    dest: `${basePath}/lib/${dep}`
+                  }
+                ]
+              })
+            )
+            .concat([
+              (() => ({
+                name: 'js-sdk-types',
+                writeBundle: {
+                  sequential: true,
+                  order: 'post',
+                  async handler({file}) {
+                    const dir = dirname(file);
+                    const files = globSync(`${dir}/**/*.d.ts`);
+                    files.push(file);
+                    for (const i of files) {
+                      const contents = readFileSync(i, 'utf-8');
+                      writeFileSync(
+                        i,
+                        replacePackages(dir, i, packageName, contents)
+                      );
+                    }
+                  }
+                }
+              }))()
+            ])
+        : []
+    ]
+  ]
 });
 
 const BUNDLES = process.env.BUNDLES
@@ -363,7 +420,7 @@ export default async ({basePath, input, info, packageName}) => {
   const getVersion = (pkg) =>
     JSON.parse(
       readFileSync(
-        path.resolve(
+        resolve(
           `${basePath}/../${pkg.replace('@convertcom/js-sdk-', '')}/package.json`
         ),
         'utf-8'
@@ -381,7 +438,7 @@ export default async ({basePath, input, info, packageName}) => {
   if (peerDependencies) {
     console.log('peerDependencies:', peerDependencies);
     writeFileSync(
-      path.resolve(`${basePath}/package.json`),
+      resolve(`${basePath}/package.json`),
       JSON.stringify(
         {
           ...info,
@@ -410,7 +467,9 @@ export default async ({basePath, input, info, packageName}) => {
       case 'esm':
         return [
           esmBundle({basePath, input, info, packageName}),
-          typeDeclarations({basePath, input, packageName})
+          ...(!['enums', 'types', 'utils'].includes(packageName)
+            ? [typeDeclarations({basePath, input, packageName, isMainPackage})]
+            : [])
         ];
       case 'umd':
         return isMainPackage ? [umdBundle({basePath, input, info})] : [];
