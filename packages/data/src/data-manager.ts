@@ -299,7 +299,7 @@ export class DataManager implements DataManagerInterface {
           );
         }
       }
-      if (!locationMatched) {
+      if (!locationMatched && !ignoreLocationProperties) {
         this._loggerManager?.debug?.(
           'DataManager.matchRulesByField()',
           MESSAGES.LOCATION_NOT_MATCH,
@@ -311,7 +311,7 @@ export class DataManager implements DataManagerInterface {
               experience?.locations || experience?.site_area || ''
           })
         );
-        if (!ignoreLocationProperties) return null;
+        return null;
       }
 
       // Check audience rules against visitorProperties
