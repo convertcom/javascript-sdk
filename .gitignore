@@ -1,5 +1,15 @@
-node_modules/
 *.log
+.DS_Store
+.env
 .vscode
-.yarn/
+.yarn
 .pnp*
+.nyc_output/
+browserstack.err
+node_modules/
+webpack-build/
+lib/
+dist/
+docs/
+coverage/
+!packages/demo-nestjs/lib/

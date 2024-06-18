@@ -11,8 +11,8 @@
 import {ApiManager} from '@convertcom/js-sdk-api';
 import {BucketingManager} from '@convertcom/js-sdk-bucketing';
 import {Core} from './src/core';
-import {CoreInterface} from 'src/interfaces/core';
-import {ContextInterface} from 'src/interfaces/context';
+import {CoreInterface} from './src/interfaces/core';
+import {ContextInterface} from './src/interfaces/context';
 import {
   DataManager,
   DataManagerInterface,
@@ -24,7 +24,7 @@ import {
   ExperienceManagerInterface
 } from '@convertcom/js-sdk-experience';
 import {FeatureManager} from './src/feature-manager';
-import {FeatureManagerInterface} from 'src/interfaces/feature-manager';
+import {FeatureManagerInterface} from './src/interfaces/feature-manager';
 import {RuleManager, RuleManagerInterface} from '@convertcom/js-sdk-rules';
 import {
   SegmentsManager,
@@ -170,6 +170,7 @@ export {
 export {
   EntityType,
   RuleError,
+  BucketingError,
   GoalDataKey,
   LogLevel,
   SystemEvents,
