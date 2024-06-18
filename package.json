@@ -45,5 +45,10 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "@types/eslint-plugin-mocha": "^10",
+    "eslint-plugin-mocha": "^10.4.3",
+    "eslint-plugin-prettier": "^5.1.3"
+  }
 }
