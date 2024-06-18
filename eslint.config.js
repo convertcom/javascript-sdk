@@ -35,6 +35,7 @@ module.exports = [
       'no-console': 'off',
       'linebreak-style': ['error', 'unix'],
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
       'local-rules/log-manager': 'error'
     },
     env: {

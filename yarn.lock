@@ -4226,6 +4226,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/eslint-plugin-mocha@npm:^10":
+  version: 10.4.0
+  resolution: "@types/eslint-plugin-mocha@npm:10.4.0"
+  dependencies:
+    "@types/eslint": "npm:*"
+  checksum: 10c0/e55ebebfdc7da6179029cee8fa1855d2294ec4214ea62c011ed21d601450f15966da4fcf662ac4e37b563b1eafb31e2ce7c7cee0e08dc23039fa44960a1af105
+  languageName: node
+  linkType: hard
+
 "@types/eslint-scope@npm:^3.7.3":
   version: 3.7.7
   resolution: "@types/eslint-scope@npm:3.7.7"
@@ -20396,6 +20405,10 @@ __metadata:
 "root-workspace-0b6124@workspace:.":
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
+  dependencies:
+    "@types/eslint-plugin-mocha": "npm:^10"
+    eslint-plugin-mocha: "npm:^10.4.3"
+    eslint-plugin-prettier: "npm:^5.1.3"
   languageName: unknown
   linkType: soft
 
