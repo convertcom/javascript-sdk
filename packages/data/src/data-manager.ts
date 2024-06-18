@@ -523,7 +523,7 @@ export class DataManager implements DataManagerInterface {
     updateVisitorProperties: boolean,
     experience: ConfigExperience,
     forceVariationId?: string,
-    enableTracking: boolean = true
+    enableTracking = true
   ): BucketedVariation | BucketingError {
     if (!visitorId || !experience) return null;
     if (!experience?.id) return null;
