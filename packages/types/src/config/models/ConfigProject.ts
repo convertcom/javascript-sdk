@@ -22,6 +22,10 @@ export type ConfigProject = {
     type?: ConfigProject.type;
     utc_offset?: UTC_Offset;
     /**
+     * Custom domain to be used instead of standard Convert's one
+     */
+    custom_domain?: string | null;
+    /**
      * List of domains allowed to be tracked under this project
      */
     domains?: Array<{
