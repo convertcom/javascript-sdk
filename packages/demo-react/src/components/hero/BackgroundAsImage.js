@@ -1,16 +1,15 @@
-import React from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { css } from "styled-components/macro"; //eslint-disable-line
+import React from 'react';
+import tw from 'twin.macro';
+import styled from 'styled-components';
 
 import Header, {
   NavLink,
   NavLinks,
   LogoLink,
   NavToggle,
-  DesktopNavLinks,
-} from "../headers/light.js";
-import ResponsiveVideoEmbed from "../../helpers/ResponsiveVideoEmbed.js";
+  DesktopNavLinks
+} from '../headers/light.js';
+import ResponsiveVideoEmbed from '../../helpers/ResponsiveVideoEmbed.js';
 
 const StyledHeader = styled(Header)`
   ${tw`pt-8 max-w-none`}
@@ -43,7 +42,7 @@ const Heading = styled.h1`
 const SlantedBackground = styled.span`
   ${tw`relative text-primary-500 px-4 -mx-4 py-2`}
   &::before {
-    content: "";
+    content: '';
     ${tw`absolute inset-0 bg-gray-100 transform -skew-x-12 -z-10`}
   }
 `;
@@ -67,7 +66,7 @@ export default () => {
       <NavLink href="/events">Events</NavLink>
       <NavLink href="/statistics">Statistics</NavLink>
       <NavLink href="/pricing">Pricing</NavLink>
-    </NavLinks>,
+    </NavLinks>
   ];
 
   return (
