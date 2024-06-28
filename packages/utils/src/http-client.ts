@@ -139,13 +139,9 @@ const determineRuntime = (): RuntimeResult => {
   // if node.js builtins are available, we're on nodejs
   try {
     // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const url = require('url') as typeof import('url');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const http = require('http') as typeof import('http');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const https = require('https') as typeof import('https');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const queryString = require('querystring') as typeof import('querystring');
     return {runtime: 'old-nodejs', url, http, https, queryString};
   } catch (err) {
