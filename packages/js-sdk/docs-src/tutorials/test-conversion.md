@@ -1,52 +1,58 @@
+# Testing Conversion Events
+
 ## Assumptions
 
 You want to track 2 features shown to 50% of your visitors on the `products` view of your e-commerce app.
-Open your Fullstack project at the web interface and create a location for matching the target view, given the following rule:
 
-1. Rule Type: `generic_text_key_value`
-2. Match type: `matches`
-3. Key: `location`
-4. Value: `products`
+## Steps to Set Up
 
-Next, create a goal, given the following:
+### Step 1: Create a Location
 
-1. Name: `Buying Goal`
-2. Type: `revenue`
-3. Key: `buying-goal`
-4. Triggering Rule:
-   1. Rule Type: `generic_text_key_value`
-   2. Match type: `matches`
-   3. Key: `action`
-   4. Value: `buy`
-5. Settings:
-   1. Triggering Type: `manual`
+1. Open your Fullstack project at the web interface.
+2. Create a location with the following details:
+   - **Rule Type:** `generic_text_key_value`
+   - **Match Type:** `matches`
+   - **Key:** `location`
+   - **Value:** `products`
 
-Next, create 2 features, given the following:
+### Step 2: Create a Goal
 
-Feature 1:
+1. Create a goal with the following details:
+   - **Name:** `Buying Goal`
+   - **Type:** `revenue`
+   - **Key:** `buying-goal`
+   - **Triggering Rule:**
+     - **Rule Type:** `generic_text_key_value`
+     - **Match Type:** `matches`
+     - **Key:** `action`
+     - **Value:** `buy`
+   - **Settings:**
+     - **Triggering Type:** `manual`
 
-1. Name: `Buying Options`
-2. Key: `buying-options`
-3. Variables:
-   1. Key: `options`
-   2. Type: `json`
+### Step 3: Create Features
 
-Feature 2:
+1. Create Feature 1:
+   - **Name:** `Buying Options`
+   - **Key:** `buying-options`
+   - **Variables:**
+     - **Key:** `options`
+     - **Type:** `json`
 
-1. Name: `Buy with Discount`
-2. Key: `buy-discount`
-3. Variables:
-   1. Key: `discount`
-   2. Type: `integer`
+2. Create Feature 2:
+   - **Name:** `Buy with Discount`
+   - **Key:** `buy-discount`
+   - **Variables:**
+     - **Key:** `discount`
+     - **Type:** `integer`
 
-Then create one experience with one variation (_beside the original_) linked to the above location, goal, and features, given the following unique identifiers:
+### Step 4: Create an Experience
 
-Variation 1:
+1. Create an experience with one variation (beside the original) linked to the above location, goal, and features:
+   - **Variation 1:**
+     - **Traffic:** `50%`
+     - **Key:** `with-buying-options`
 
-1. Traffic: `50%`
-2. Key: `with-buying-options`
-
-## ReactJS Example
+## ReactJS Implementation Example
 
 ```javascript
 import {useState, useEffect, useContext, createContext} from 'react';
@@ -54,7 +60,7 @@ import ConvertSDK from '@convertcom/js-sdk';
 
 const UserContext = createContext();
 
-const convertSDK = new ConvertSDK({sdkKey: 'xxx'});
+const convertSDK = new ConvertSDK({sdkKey: 'your_sdk_key_here'});
 
 const ProductsComponent = () => {
   const {sdkContext} = useContext(UserContext);
@@ -66,18 +72,22 @@ const ProductsComponent = () => {
     const bucketedFeatures = sdkContext.runFeatures({
       locationProperties: {location: 'products'}
     });
-    bucketedFeatures.forEach((e) => {
-      if (e.key === 'buying-options' && e?.variables?.options) {
+    bucketedFeatures.forEach((feature) => {
+      if (feature.key === 'buying-options' && feature.variables?.options) {
         setWithBuyingOptions(true);
-        setBuyingOptions(Object.values(e?.variables?.options));
+        setBuyingOptions(Object.values(feature.variables.options));
       }
-      if (e.key === 'buy-discount' && e?.variables?.discount) {
-        setWithDiscount(e?.variables?.discount);
+      if (feature.key === 'buy-discount' && feature.variables?.discount) {
+        setWithDiscount(feature.variables.discount);
       }
     });
   };
 
-  useEffect(() => sdkContext && decide(), [sdkContext]);
+  useEffect(() => {
+    if (sdkContext) {
+      decide();
+    }
+  }, [sdkContext]);
 
   const track = (price, quantity = 1) => {
     sdkContext.trackConversion('buying-goal', {
@@ -93,17 +103,13 @@ const ProductsComponent = () => {
     });
   };
 
-  const BuyOption = (option, price, discount = 0) => (
+  const BuyOption = ({option, price, discount = 0}) => (
     <button
       className="product-buy"
       onClick={(e) => {
         e.preventDefault();
-        const price = 10;
-        if (discount) {
-          track((price * discount) / 100, 1);
-        } else {
-          track(price, 1);
-        }
+        const finalPrice = discount ? (price * discount) / 100 : price;
+        track(finalPrice, 1);
       }}
     >
       Buy via {option}
@@ -120,7 +126,7 @@ const ProductsComponent = () => {
           <div className="buying-options">
             <h1>Buying Options</h1>
             {buyingOptions.map((option) => (
-              <BuyOption option={option} price={10} discount={withDiscount} />
+              <BuyOption key={option} option={option} price={10} discount={withDiscount} />
             ))}
           </div>
         )}
@@ -134,7 +140,7 @@ const ProductsComponent = () => {
           <div className="buying-options">
             <h1>Buying Options</h1>
             {buyingOptions.map((option) => (
-              <BuyOption option={option} price={50} discount={withDiscount} />
+              <BuyOption key={option} option={option} price={50} discount={withDiscount} />
             ))}
           </div>
         )}
@@ -143,13 +149,12 @@ const ProductsComponent = () => {
   );
 };
 
-export default function App() {
-  const userId = Date.now().toString(); // in reality, this should be the visitor ID. Fur example: email, username, GUID, .. etc.
-
+const App = () => {
+  const userId = Date.now().toString(); // In reality, this should be the visitor ID, e.g., email, username, GUID, etc.
   const [sdkContext, setSdkContext] = useState();
 
   useEffect(() => {
-    async function initSdk() {
+    const initSdk = async () => {
       try {
         await convertSDK.onReady();
         const context = convertSDK.createContext(userId); // Convert SDK context needs to be created only once, hence the use of React Context below.
@@ -157,7 +162,7 @@ export default function App() {
       } catch (error) {
         console.error('SDK Error:', error);
       }
-    }
+    };
     initSdk();
   }, []);
 
@@ -166,5 +171,7 @@ export default function App() {
       <ProductsComponent />
     </UserContext.Provider>
   );
-}
+};
+
+export default App;
 ```
