@@ -14,4 +14,5 @@ export type BucketingAttributes = {
   updateVisitorProperties?: boolean;
   forceVariationId?: string;
   enableTracking?: boolean;
+  ignoreLocationProperties?: boolean;
 };
