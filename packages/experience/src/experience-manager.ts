@@ -15,7 +15,7 @@ import {
   BucketedVariation,
   BucketingAttributes
 } from '@convertcom/js-sdk-types';
-import {MESSAGES, RuleError} from '@convertcom/js-sdk-enums';
+import {BucketingError, MESSAGES, RuleError} from '@convertcom/js-sdk-enums';
 
 /**
  * Provides experiences specific logic
@@ -105,13 +105,13 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking
    * @param {string=} attributes.environment
-   * @return {BucketedVariation | RuleError}
+   * @return {BucketedVariation | RuleError | BucketingError}
    */
   selectVariation(
     visitorId: string,
     experienceKey: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     return this._dataManager.getBucketing(visitorId, experienceKey, attributes);
   }
 
@@ -126,13 +126,13 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking
    * @param {string=} attributes.environment
-   * @return {BucketedVariation | RuleError}
+   * @return {BucketedVariation | RuleError | BucketingError}
    */
   selectVariationById(
     visitorId: string,
     experienceId: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     return this._dataManager.getBucketingById(
       visitorId,
       experienceId,
@@ -150,17 +150,22 @@ export class ExperienceManager implements ExperienceManagerInterface {
    * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking
    * @param {string=} attributes.environment
-   * @return {Array<BucketedVariation | RuleError>}
+   * @return {Array<BucketedVariation | RuleError | BucketingError>}
    */
   selectVariations(
     visitorId: string,
     attributes: BucketingAttributes
-  ): Array<BucketedVariation | RuleError> {
+  ): Array<BucketedVariation | RuleError | BucketingError> {
     return this.getList()
       .map((experience) => {
         return this.selectVariation(visitorId, experience?.key, attributes);
       })
-      .filter(Boolean);
+      .filter(
+        (variation) =>
+          variation &&
+          !Object.values(RuleError).includes(variation as RuleError) &&
+          !Object.values(BucketingError).includes(variation as BucketingError)
+      );
   }
 
   /**
