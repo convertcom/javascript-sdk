@@ -79,8 +79,13 @@ export type ConfigExperience = {
      * List of environments that this experience is supposed to run on. The full list of available environments is defined at
      * project level. If this list is empty, the experience will run on all environments.
      *
+     * @deprecated
      */
     environments?: Array<string>;
+    /**
+     * The environment where this experience will run. It has to be one of the environments defined at the project level
+     */
+    environment?: string;
     /**
      * Various experience's settings
      */
