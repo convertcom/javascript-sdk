@@ -76,6 +76,12 @@ export type ConfigProject = {
          */
         do_not_track_referral?: boolean;
         /**
+         * Flag indicating whether the website respects Global Privacy Control (GPC) signals,
+         * which enable users to opt-out of having their personal data sold.
+         *
+         */
+        global_privacy_control?: boolean;
+        /**
          * This holds project wide settings used by integrations
          */
         integrations?: {
