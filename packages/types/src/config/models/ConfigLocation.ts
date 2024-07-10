@@ -20,6 +20,9 @@ export type ConfigLocation = {
      * Location Name
      */
     name?: string;
+    /**
+     * This one describes a logical triggering rule that is being used inside the app
+     */
     trigger?: LocationTrigger | null;
     rules?: RuleObject | null;
 };
