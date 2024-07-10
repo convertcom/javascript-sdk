@@ -1,15 +1,14 @@
-import React from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { css } from "styled-components/macro"; //eslint-disable-line
+import React from 'react';
+import tw from 'twin.macro';
+import styled, {css} from 'styled-components';
 import {
   SectionHeading,
-  Subheading as SubheadingBase,
-} from "components/misc/Headings.js";
-import { SectionDescription } from "components/misc/Typography.js";
-import { PrimaryButton as PrimaryButtonBase } from "components/misc/Buttons.js";
-import { Container, ContentWithPaddingXl } from "components/misc/Layouts.js";
-import { ReactComponent as SvgDecoratorBlob } from "images/svg-decorator-blob-6.svg";
+  Subheading as SubheadingBase
+} from 'components/misc/Headings.js';
+import {SectionDescription} from 'components/misc/Typography.js';
+import {PrimaryButton as PrimaryButtonBase} from 'components/misc/Buttons.js';
+import {Container, ContentWithPaddingXl} from 'components/misc/Layouts.js';
+import {ReactComponent as SvgDecoratorBlob} from 'images/svg-decorator-blob-6.svg';
 
 const HeaderContainer = tw.div`mt-10 w-full flex flex-col items-center`;
 const Subheading = tw(SubheadingBase)`mb-4`;
@@ -85,51 +84,51 @@ const DecoratorBlob = styled(SvgDecoratorBlob)`
 `;
 
 export default ({
-  subheading = "Pricing",
-  heading = "Flexible Plans.",
-  description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  subheading = 'Pricing',
+  heading = 'Flexible Plans.',
+  description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
   plans = null,
-  primaryButtonText = "Buy Now",
-  primaryButtonAction = () => {},
+  primaryButtonText = 'Buy Now',
+  primaryButtonAction = () => {}
 }) => {
   const defaultPlans = [
     {
-      name: "Personal",
-      price: "$17.99",
-      duration: "Monthly",
-      mainFeature: "Suited for Personal Blogs",
+      name: 'Personal',
+      price: '$17.99',
+      duration: 'Monthly',
+      mainFeature: 'Suited for Personal Blogs',
       features: [
-        "30 Templates",
-        "7 Landing Pages",
-        "12 Internal Pages",
-        "Basic Assistance",
-      ],
+        '30 Templates',
+        '7 Landing Pages',
+        '12 Internal Pages',
+        'Basic Assistance'
+      ]
     },
     {
-      name: "Business",
-      price: "$37.99",
-      duration: "Monthly",
-      mainFeature: "Suited for Production Websites",
+      name: 'Business',
+      price: '$37.99',
+      duration: 'Monthly',
+      mainFeature: 'Suited for Production Websites',
       features: [
-        "60 Templates",
-        "8 Landing Pages",
-        "22 Internal Pages",
-        "Priority Assistance",
+        '60 Templates',
+        '8 Landing Pages',
+        '22 Internal Pages',
+        'Priority Assistance'
       ],
-      featured: true,
+      featured: true
     },
     {
-      name: "Enterprise",
-      price: "$57.99",
-      duration: "Monthly",
-      mainFeature: "Suited for Big Companies",
+      name: 'Enterprise',
+      price: '$57.99',
+      duration: 'Monthly',
+      mainFeature: 'Suited for Big Companies',
       features: [
-        "90 Templates",
-        "9 Landing Pages",
-        "37 Internal Pages",
-        "Personal Assistance",
-      ],
-    },
+        '90 Templates',
+        '9 Landing Pages',
+        '37 Internal Pages',
+        'Personal Assistance'
+      ]
+    }
   ];
 
   if (!plans) plans = defaultPlans;
@@ -161,7 +160,7 @@ export default ({
         rgba(245, 101, 101, 1) 0%,
         rgba(254, 178, 178, 1) 100%
       );
-    `,
+    `
   ];
 
   return (

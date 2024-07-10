@@ -101,9 +101,13 @@ export default () => {
             },
             conversionData: [
               {
-                amount: 10.3,
-                productsCount: 2,
+                key: 'amount',
+                value: 10.3
               },
+              {
+                key: 'productsCount',
+                value: 2
+              }
             ],
           }); // [ConvertSDK]
         }}

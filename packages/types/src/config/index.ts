@@ -187,6 +187,7 @@ export { TextMatchingOptions } from './models/TextMatchingOptions';
 export { TextMatchRulesTypes } from './models/TextMatchRulesTypes';
 export type { UpdateExperienceChangeRequestData } from './models/UpdateExperienceChangeRequestData';
 export type { UTC_Offset } from './models/UTC_Offset';
+export { VariationStatuses } from './models/VariationStatuses';
 export { VisitorSegments } from './models/VisitorSegments';
 export { VisitorTrackingEvents } from './models/VisitorTrackingEvents';
 export type { VisitorTypeMatchRule } from './models/VisitorTypeMatchRule';
