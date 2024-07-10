@@ -17,7 +17,6 @@
 export function objectDeepValue(
   object: Record<string, any>,
   path: string,
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   defaultValue?: any,
   truthy = false
 ): any {
