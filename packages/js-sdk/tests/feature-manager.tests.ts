@@ -175,14 +175,12 @@ describe('FeatureManager tests', function () {
     it('Shoud successfully check is feature enabled', function (done) {
       this.timeout(test_timeout);
       const featureKey = 'feature-1';
-      const enabled = featureManager.isFeatureEnabled(
-        visitorId,
-        featureKey,
-        {
+      const enabled = featureManager.isFeatureEnabled(visitorId, featureKey, {
+        visitorProperties: {
           varName3: 'something'
         },
-        {url: 'https://convert.com/'}
-      );
+        locationProperties: {url: 'https://convert.com/'}
+      });
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
           request.on('end', () => {
