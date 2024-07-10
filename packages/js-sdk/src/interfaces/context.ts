@@ -12,19 +12,20 @@ import {
   ConversionAttributes,
   Entity,
   SegmentsAttributes,
+  StoreData,
   VisitorSegments
 } from '@convertcom/js-sdk-types';
-import {EntityType, RuleError} from '@convertcom/js-sdk-enums';
+import {BucketingError, EntityType, RuleError} from '@convertcom/js-sdk-enums';
 
 export interface ContextInterface {
   runExperience(
     experienceKey: string,
     attributes?: BucketingAttributes
-  ): BucketedVariation | RuleError;
+  ): BucketedVariation | RuleError | BucketingError;
 
   runExperiences(
     attributes?: BucketingAttributes
-  ): Array<BucketedVariation | RuleError>;
+  ): Array<BucketedVariation | RuleError | BucketingError>;
 
   runFeature(
     key: string,
@@ -54,6 +55,7 @@ export interface ContextInterface {
 
   getConfigEntity(key: string, entityType: EntityType): Entity;
   getConfigEntityById(id: string, entityType: EntityType): Entity;
+  getVisitorData(): StoreData;
 
   releaseQueues(reason?: string): void;
 }

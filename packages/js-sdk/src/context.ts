@@ -21,10 +21,12 @@ import {
   SegmentsAttributes,
   Entity,
   ConfigExperience,
-  ExperienceVariationConfig
+  ExperienceVariationConfig,
+  StoreData
 } from '@convertcom/js-sdk-types';
 
 import {
+  BucketingError,
   ERROR_MESSAGES,
   EntityType,
   RuleError,
@@ -114,12 +116,12 @@ export class Context implements ContextInterface {
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
    * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
-   * @return {BucketedVariation}
+   * @return {BucketedVariation | RuleError | BucketingError}
    */
   runExperience(
     experienceKey: string,
     attributes?: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     if (!this._visitorId) {
       this._loggerManager?.error?.(
         'Context.runExperience()',
@@ -142,6 +144,12 @@ export class Context implements ContextInterface {
     );
     if (Object.values(RuleError).includes(bucketedVariation as RuleError))
       return bucketedVariation as RuleError;
+    if (
+      Object.values(BucketingError).includes(
+        bucketedVariation as BucketingError
+      )
+    )
+      return bucketedVariation as BucketingError;
     if (bucketedVariation) {
       this._eventManager.fire(
         SystemEvents.BUCKETING,
@@ -164,11 +172,11 @@ export class Context implements ContextInterface {
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
    * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
-   * @return {Array<BucketedVariatio | RuleError>}
+   * @return {Array<BucketedVariatio | RuleError | BucketingError>}
    */
   runExperiences(
     attributes?: BucketingAttributes
-  ): Array<BucketedVariation | RuleError> {
+  ): Array<BucketedVariation | RuleError | BucketingError> {
     if (!this._visitorId) {
       this._loggerManager?.error?.(
         'Context.runExperiences()',
@@ -189,10 +197,16 @@ export class Context implements ContextInterface {
       }
     );
     // Return rule errors if present
-    const matchedErrors = bucketedVariations.filter((match) =>
+    const matchedRuleErrors = bucketedVariations.filter((match) =>
       Object.values(RuleError).includes(match as RuleError)
     );
-    if (matchedErrors.length) return matchedErrors as Array<RuleError>;
+    if (matchedRuleErrors.length) return matchedRuleErrors as Array<RuleError>;
+    // Return bucketing errors if present
+    const matchedBucketingErrors = bucketedVariations.filter((match) =>
+      Object.values(BucketingError).includes(match as BucketingError)
+    );
+    if (matchedBucketingErrors.length)
+      return matchedBucketingErrors as Array<BucketingError>;
 
     (bucketedVariations as Array<BucketedVariation>).forEach(
       ({experienceKey, key}) => {
@@ -361,7 +375,8 @@ export class Context implements ContextInterface {
    * @param {string} goalKey A goal key
    * @param {ConversionAttributes=} attributes An object that specifies attributes for the visitor
    * @param {Record<string, any>=} attributes.ruleData An object of key-value pairs that are used for goal matching
-   * @param {Array<Record<GoalDataKey, number>>=} attributes.conversionData An object of key-value pairs that are used for audience targeting
+   * @param {Array<GoalData>=} attributes.conversionData An array of key-value pairs that are used for transaction data
+   * @param {Record<ConversionSettingKey, number | string | boolean>} attributes.conversionSetting An object of key-value pairs that are used for tracking settings
    * @return {RuleError}
    */
   trackConversion(
@@ -394,7 +409,8 @@ export class Context implements ContextInterface {
       goalKey,
       goalRule,
       goalData,
-      segments
+      segments,
+      attributes?.conversionSetting
     );
     if (Object.values(RuleError).includes(triggred as RuleError))
       return triggred as RuleError;
@@ -526,6 +542,14 @@ export class Context implements ContextInterface {
       }
     }
     return this._dataManager.getEntityById(id, entityType);
+  }
+
+  /**
+   * Get visitor data
+   * @returns {StoreData}
+   */
+  getVisitorData(): StoreData {
+    return this._dataManager.getData(this._visitorId) || {};
   }
 
   /**
