@@ -6,5 +6,4 @@ import type { LocationTriggerCallback } from './LocationTriggerCallback';
 import type { LocationTriggerDomChange } from './LocationTriggerDomChange';
 import type { LocationTriggerManual } from './LocationTriggerManual';
 import type { LocationTriggerUrlChange } from './LocationTriggerUrlChange';
-export type LocationTrigger = (LocationTriggerDomChange | LocationTriggerCallback | LocationTriggerUrlChange | LocationTriggerManual);
-
+export type LocationTrigger = (LocationTriggerDomChange | LocationTriggerCallback | LocationTriggerManual | LocationTriggerUrlChange);
