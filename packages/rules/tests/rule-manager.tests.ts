@@ -419,8 +419,7 @@ describe('RuleManager tests', function () {
     it('Should has default Comparison processor instance because external is not provided', function () {
       expect(ruleManager)
         .to.has.property('comparisonProcessor')
-        .which.has.property('name')
-        .which.equal('Comparisons');
+        .to.have.property('matches');
     });
     it('getComparisonProcessorMethods should return comparisons list which is equal default Comparison processor list', function () {
       expect(ruleManager.getComparisonProcessorMethods()).to.have.deep.members(

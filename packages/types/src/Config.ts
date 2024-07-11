@@ -53,12 +53,14 @@ type ConfigBase = {
 
 type ConfigWithSdkKey = ConfigBase & {
   sdkKey: string;
+  sdkKeySecret?: string;
   data?: never;
 };
 
 type ConfigWithData = ConfigBase & {
   data: ConfigResponseData;
   sdkKey?: never;
+  sdkKeySecret?: never;
 };
 
 export type Config = ConfigWithSdkKey | ConfigWithData;

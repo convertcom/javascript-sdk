@@ -1,15 +1,14 @@
-import React from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { css } from "styled-components/macro"; //eslint-disable-line
+import React from 'react';
+import tw from 'twin.macro';
+import styled from 'styled-components';
 
 import Header, {
   NavLink,
   NavLinks,
   LogoLink,
   NavToggle,
-  DesktopNavLinks,
-} from "../headers/light.js";
+  DesktopNavLinks
+} from '../headers/light.js';
 
 const StyledHeader = styled(Header)`
   ${tw`pt-8 max-w-none w-full`}
@@ -40,13 +39,13 @@ const Heading = styled.h1`
 
 const PrimaryAction = tw.button`rounded-full px-8 py-3 mt-10 text-sm sm:text-base sm:mt-16 sm:px-8 sm:py-4 bg-gray-100 font-bold shadow transition duration-300 bg-primary-500 text-gray-100 hocus:bg-primary-700 hocus:text-gray-200 focus:outline-none focus:shadow-outline`;
 
-export default ({ useVariation = false }) => {
+export default ({useVariation = false}) => {
   const navLinks = [
     <NavLinks key={1}>
       <NavLink href="/events">Events</NavLink>
       <NavLink href="/statistics">Statistics</NavLink>
       <NavLink href="/pricing">Pricing</NavLink>
-    </NavLinks>,
+    </NavLinks>
   ];
 
   return (
@@ -61,7 +60,7 @@ export default ({ useVariation = false }) => {
             anywhere in New York
           </Heading>
           <PrimaryAction>
-            {useVariation ? "This is a variation!" : "Search Events Near Me"}
+            {useVariation ? 'This is a variation!' : 'Search Events Near Me'}
           </PrimaryAction>
         </Content>
       </HeroContainer>
