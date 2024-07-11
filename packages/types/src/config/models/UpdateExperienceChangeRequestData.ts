@@ -1,7 +1,7 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ExperienceChangeAdd } from './ExperienceChangeAdd';
-export type UpdateExperienceChangeRequestData = ExperienceChangeAdd;
 
+import type { ExperienceChangeAdd } from './ExperienceChangeAdd';
+
+export type UpdateExperienceChangeRequestData = ExperienceChangeAdd;

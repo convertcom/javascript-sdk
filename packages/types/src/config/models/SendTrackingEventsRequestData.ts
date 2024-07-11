@@ -1,9 +1,10 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { VisitorSegments } from './VisitorSegments';
 import type { VisitorTrackingEvents } from './VisitorTrackingEvents';
+
 /**
  * Tracking Request's data
  */
@@ -40,5 +41,4 @@ export type SendTrackingEventsRequestData = {
          */
         events?: Array<VisitorTrackingEvents>;
     }>;
-};
-
+}

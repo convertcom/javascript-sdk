@@ -1,8 +1,9 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { ExperienceChange } from './ExperienceChange';
+
 /**
  * Variation Object
  */
@@ -29,5 +30,4 @@ export type ExperienceVariationConfig = {
      * List of changes that this variation is exposing.
      */
     changes?: Array<ExperienceChange>;
-};
-
+}

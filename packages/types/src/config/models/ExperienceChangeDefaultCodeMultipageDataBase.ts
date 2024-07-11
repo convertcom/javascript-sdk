@@ -1,13 +1,14 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { ExperienceChangeBase } from './ExperienceChangeBase';
+
 /**
  * Describes structure for "defaultCodeMultipage" type of experience change
  */
 export type ExperienceChangeDefaultCodeMultipageDataBase = (ExperienceChangeBase & {
-    type?: ExperienceChangeDefaultCodeMultipageDataBase.type;
+    type?: 'defaultCodeMultipage';
     /**
      * Describes structure for "defaultCodeMultipage" type of experience change
      */
@@ -30,9 +31,3 @@ export type ExperienceChangeDefaultCodeMultipageDataBase = (ExperienceChangeBase
         page_id?: string;
     };
 });
-export namespace ExperienceChangeDefaultCodeMultipageDataBase {
-    export enum type {
-        DEFAULT_CODE_MULTIPAGE = 'defaultCodeMultipage',
-    }
-}
-

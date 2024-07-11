@@ -1,7 +1,7 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { BoolMatchRulesTypes } from './BoolMatchRulesTypes';
 import type { BrowserNameMatchRulesTypes } from './BrowserNameMatchRulesTypes';
 import type { CookieMatchRulesTypes } from './CookieMatchRulesTypes';
@@ -18,5 +18,5 @@ import type { SegmentBucketedMatchRulesTypes } from './SegmentBucketedMatchRules
 import type { TextMatchRulesTypes } from './TextMatchRulesTypes';
 import type { VisitorTypeMatchRulesTypes } from './VisitorTypeMatchRulesTypes';
 import type { WeatherConditionMatchRulesTypes } from './WeatherConditionMatchRulesTypes';
-export type RulesTypes = (TextMatchRulesTypes & NumericMatchRulesTypes & BoolMatchRulesTypes & KeyValueMatchRulesTypes & CookieMatchRulesTypes & CountryMatchRulesTypes & VisitorTypeMatchRulesTypes & LanguageMatchRulesTypes & GoalTriggeredMatchRulesTypes & SegmentBucketedMatchRulesTypes & DayOfWeekMatchRulesTypes & HourOfDayMatchRulesTypes & MinuteOfHourMatchRulesTypes & BrowserNameMatchRulesTypes & OsMatchRulesTypes & WeatherConditionMatchRulesTypes);
 
+export type RulesTypes = (TextMatchRulesTypes & NumericMatchRulesTypes & BoolMatchRulesTypes & KeyValueMatchRulesTypes & CookieMatchRulesTypes & CountryMatchRulesTypes & VisitorTypeMatchRulesTypes & LanguageMatchRulesTypes & GoalTriggeredMatchRulesTypes & SegmentBucketedMatchRulesTypes & DayOfWeekMatchRulesTypes & HourOfDayMatchRulesTypes & MinuteOfHourMatchRulesTypes & BrowserNameMatchRulesTypes & OsMatchRulesTypes & WeatherConditionMatchRulesTypes);

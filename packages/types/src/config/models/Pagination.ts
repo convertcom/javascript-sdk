@@ -1,7 +1,7 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 export type Pagination = {
     /**
      * Current page number
@@ -19,5 +19,4 @@ export type Pagination = {
      * Limitation number of records per page
      */
     pages_count?: number;
-};
-
+}

@@ -1,8 +1,9 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { FeatureVariableItemData } from './FeatureVariableItemData';
+
 /**
  * Base Feature Object
  */
@@ -23,5 +24,4 @@ export type ConfigFeature = {
      * An array of user-defined variables of a feature.
      */
     variables?: Array<FeatureVariableItemData>;
-};
-
+}

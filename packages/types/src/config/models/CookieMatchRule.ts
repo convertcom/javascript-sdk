@@ -1,11 +1,12 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { BaseMatch } from './BaseMatch';
 import type { BaseRuleWithStringValue } from './BaseRuleWithStringValue';
 import type { CookieMatchRulesTypes } from './CookieMatchRulesTypes';
 import type { TextMatchingOptions } from './TextMatchingOptions';
+
 export type CookieMatchRule = (BaseRuleWithStringValue & {
     rule_type: CookieMatchRulesTypes;
     matching?: (BaseMatch & {
@@ -16,4 +17,3 @@ export type CookieMatchRule = (BaseRuleWithStringValue & {
      */
     key?: string;
 });
-

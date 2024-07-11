@@ -1,8 +1,9 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { BaseRule } from './BaseRule';
+
 export type BaseRuleWithWeatherConditionValue = (BaseRule & {
     /**
      * Weather Condition name used for matching. Full or partial condition.
@@ -36,4 +37,3 @@ export type BaseRuleWithWeatherConditionValue = (BaseRule & {
      */
     value?: string;
 });
-

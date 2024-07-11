@@ -1,7 +1,7 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 export enum TextMatchRulesTypes {
     URL = 'url',
     URL_WITH_QUERY = 'url_with_query',

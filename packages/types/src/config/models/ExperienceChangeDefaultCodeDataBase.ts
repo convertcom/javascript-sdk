@@ -1,13 +1,14 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { ExperienceChangeBase } from './ExperienceChangeBase';
+
 /**
  * Describes structure for "defaultCode" type of experience change
  */
 export type ExperienceChangeDefaultCodeDataBase = (ExperienceChangeBase & {
-    type?: ExperienceChangeDefaultCodeDataBase.type;
+    type?: 'defaultCode';
     /**
      * Describes structure for "defaultCode" type of experience change
      */
@@ -26,9 +27,3 @@ export type ExperienceChangeDefaultCodeDataBase = (ExperienceChangeBase & {
         custom_js?: string | null;
     };
 });
-export namespace ExperienceChangeDefaultCodeDataBase {
-    export enum type {
-        DEFAULT_CODE = 'defaultCode',
-    }
-}
-

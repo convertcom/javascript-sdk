@@ -1,7 +1,7 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 /**
  * Bucketing event data
  */
@@ -16,5 +16,4 @@ export type BucketingEvent = {
      * Variation ID corresponding to the experience identified by experienceID, that is assigned to the visitor.
      */
     variationId: string;
-};
-
+}

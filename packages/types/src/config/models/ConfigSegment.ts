@@ -1,8 +1,9 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { RuleObject } from './RuleObject';
+
 /**
  * Base Segment object
  */
@@ -20,5 +21,4 @@ export type ConfigSegment = {
      */
     name?: string;
     rules?: RuleObject | null;
-};
-
+}

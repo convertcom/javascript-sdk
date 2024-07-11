@@ -1,8 +1,9 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { ExperienceIntegrationBase } from './ExperienceIntegrationBase';
+
 /**
  * Crazyegg integration requires API key and secret which are set at the project level and can be
  * updated using updateProject operation
@@ -11,4 +12,3 @@ import type { ExperienceIntegrationBase } from './ExperienceIntegrationBase';
  *
  */
 export type ExperienceIntegrationCrazyegg = ExperienceIntegrationBase;
-

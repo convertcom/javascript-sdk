@@ -1,13 +1,14 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { ExperienceChangeBase } from './ExperienceChangeBase';
+
 /**
  * Describes structure for "defaultRedirect" type of experience change
  */
 export type ExperienceChangeDefaultRedirectDataBase = (ExperienceChangeBase & {
-    type?: ExperienceChangeDefaultRedirectDataBase.type;
+    type?: 'defaultRedirect';
     /**
      * Describes structure for "defaultRedirect" type of experience change
      */
@@ -26,9 +27,3 @@ export type ExperienceChangeDefaultRedirectDataBase = (ExperienceChangeBase & {
         variation_pattern?: string;
     };
 });
-export namespace ExperienceChangeDefaultRedirectDataBase {
-    export enum type {
-        DEFAULT_REDIRECT = 'defaultRedirect',
-    }
-}
-

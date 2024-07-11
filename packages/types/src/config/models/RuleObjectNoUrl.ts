@@ -1,8 +1,9 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { RuleElementNoUrl } from './RuleElementNoUrl';
+
 /**
  * This one describes a logical rule that is being used inside the app for triggering goals, matching audiences etc
  */
@@ -21,5 +22,4 @@ export type RuleObjectNoUrl = {
             OR_WHEN?: Array<RuleElementNoUrl>;
         }>;
     }>;
-};
-
+}

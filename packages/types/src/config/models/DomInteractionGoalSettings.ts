@@ -1,7 +1,7 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 export type DomInteractionGoalSettings = {
     /**
      * Array of Events to be tracked by this goal
@@ -16,5 +16,4 @@ export type DomInteractionGoalSettings = {
          */
         event?: string;
     }>;
-};
-
+}

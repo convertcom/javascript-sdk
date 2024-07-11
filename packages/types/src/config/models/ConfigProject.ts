@@ -1,9 +1,10 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { GA_Settings } from './GA_Settings';
 import type { UTC_Offset } from './UTC_Offset';
+
 /**
  * Project Object under which experiences would get created
  */
@@ -19,8 +20,19 @@ export type ConfigProject = {
     /**
      * Value which describes project product type
      */
-    type?: ConfigProject.type;
+    type?: 'fullstack' | 'web';
     utc_offset?: UTC_Offset;
+    /**
+     * Object representing the custom domain that is used for loading the tracking scripts and
+     * sending tracking requests to Convert servers instead of the standard Convert domain
+     *
+     */
+    custom_domain?: {
+        /**
+         * Custom domain to be used instead of standard Convert's one
+         */
+        domain?: string;
+    } | null;
     /**
      * List of domains allowed to be tracked under this project
      */
@@ -58,7 +70,16 @@ export type ConfigProject = {
         /**
          * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
          */
-        do_not_track?: ConfigProject.do_not_track;
+        do_not_track?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
+        /**
+         * Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
+         * - OFF: Do not follow GPC signals.
+         * - EU ONLY: Follow GPC signals for users in the European Union only.
+         * - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
+         * - Worldwide: Follow GPC signals for users worldwide.
+         *
+         */
+        global_privacy_control?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
         /**
          * Whether to include jQuery library or not into the javascript tracking file served by Convert and loaded via the tracking snippet. If jQuery is not included, it has to be loaded on page, before Convert's tracking code
          */
@@ -99,24 +120,5 @@ export type ConfigProject = {
     /**
      * A user-defined key-value object which describes environments available for the project.
      */
-    environments?: Record<string, any>;
-};
-export namespace ConfigProject {
-    /**
-     * Value which describes project product type
-     */
-    export enum type {
-        FULLSTACK = 'fullstack',
-        WEB = 'web',
-    }
-    /**
-     * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
-     */
-    export enum do_not_track {
-        OFF = 'OFF',
-        EU_ONLY = 'EU ONLY',
-        EEA_ONLY = 'EEA ONLY',
-        WORLDWIDE = 'Worldwide',
-    }
+    environments?: any;
 }
-

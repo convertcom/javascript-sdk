@@ -1,9 +1,10 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { GoalTypes } from './GoalTypes';
 import type { RuleObject } from './RuleObject';
+
 /**
  * Goal item to be tracked  inside a project
  */
@@ -25,5 +26,4 @@ export type ConfigGoalBase = {
      */
     type?: Array<GoalTypes>;
     rules?: RuleObject | null;
-};
-
+}

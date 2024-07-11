@@ -1,7 +1,7 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { ConfigAudience } from './ConfigAudience';
 import type { ConfigExperience } from './ConfigExperience';
 import type { ConfigFeature } from './ConfigFeature';
@@ -9,6 +9,7 @@ import type { ConfigGoal } from './ConfigGoal';
 import type { ConfigLocation } from './ConfigLocation';
 import type { ConfigProject } from './ConfigProject';
 import type { ConfigSegment } from './ConfigSegment';
+
 /**
  * Response containing project's config data needed in order to serve experiences
  */
@@ -46,5 +47,4 @@ export type ConfigResponseData = {
      * List of features inside this project. Presented only for fullstack projects
      */
     features?: Array<ConfigFeature>;
-};
-
+}

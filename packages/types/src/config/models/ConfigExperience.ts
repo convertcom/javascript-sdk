@@ -1,7 +1,7 @@
-/* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { ExperienceIntegrationBaidu } from './ExperienceIntegrationBaidu';
 import type { ExperienceIntegrationClicktale } from './ExperienceIntegrationClicktale';
 import type { ExperienceIntegrationClicky } from './ExperienceIntegrationClicky';
@@ -23,6 +23,7 @@ import type { ExperienceIntegrationYsance } from './ExperienceIntegrationYsance'
 import type { ExperienceTypes } from './ExperienceTypes';
 import type { ExperienceVariationConfig } from './ExperienceVariationConfig';
 import type { RuleObject } from './RuleObject';
+
 export type ConfigExperience = {
     /**
      * Experience ID
@@ -82,6 +83,10 @@ export type ConfigExperience = {
      */
     environments?: Array<string>;
     /**
+     * The environment where this experience will run. It has to be one of the environments defined at the project level
+     */
+    environment?: string;
+    /**
      * Various experience's settings
      */
     settings?: {
@@ -94,5 +99,4 @@ export type ConfigExperience = {
          */
         max_order_value?: number;
     };
-};
-
+}
