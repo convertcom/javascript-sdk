@@ -40,7 +40,8 @@ import {
   ConfigSegment,
   BucketingAttributes,
   LocationAttributes,
-  ConfigAudienceTypes
+  ConfigAudienceTypes,
+  VariationStatuses
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -576,11 +577,15 @@ export class DataManager implements DataManagerInterface {
         );
       } else {
         // Build buckets where key is variation id and value is traffic distribution
-        const buckets = experience.variations.reduce((bucket, variation) => {
-          if (variation?.id)
-            bucket[variation.id] = variation?.traffic_allocation || 100.0;
-          return bucket;
-        }, {}) as Record<string, number>;
+        const buckets = experience.variations
+          .filter(
+            (variation) => variation?.status === VariationStatuses.RUNNING
+          )
+          .reduce((bucket, variation) => {
+            if (variation?.id)
+              bucket[variation.id] = variation?.traffic_allocation || 100.0;
+            return bucket;
+          }, {}) as Record<string, number>;
         // Select bucket based for provided visitor id
         const bucketing = this._bucketingManager.getBucketForVisitor(
           buckets,
