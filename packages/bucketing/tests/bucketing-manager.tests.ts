@@ -17,7 +17,7 @@ const getTestResultsForVisitor = function (
 ) {
   const results = {};
   for (let i = 0; i < amount; i++) {
-    const variationId = bucketingManager.getBucketForVisitor(
+    const {variationId} = bucketingManager.getBucketForVisitor(
       testVariations,
       visitorId
     );

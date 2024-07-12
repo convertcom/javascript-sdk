@@ -1,16 +1,15 @@
-import React, { useContext } from "react";
-import { motion } from "framer-motion";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { css } from "styled-components/macro"; //eslint-disable-line
+import React, {useContext} from 'react';
+import {motion} from 'framer-motion';
+import tw from 'twin.macro';
+import styled from 'styled-components';
 
-import useAnimatedNavToggler from "../../helpers/useAnimatedNavToggler.js";
+import useAnimatedNavToggler from '../../helpers/useAnimatedNavToggler.js';
 
-import { ReactComponent as MenuIcon } from "feather-icons/dist/icons/menu.svg";
-import { ReactComponent as CloseIcon } from "feather-icons/dist/icons/x.svg";
+import {ReactComponent as MenuIcon} from 'feather-icons/dist/icons/menu.svg';
+import {ReactComponent as CloseIcon} from 'feather-icons/dist/icons/x.svg';
 
-import { UserContext } from "../../Context";
-import DropDown from "../../DropDown";
+import {UserContext} from '../../Context';
+import DropDown from '../../DropDown';
 
 const Header = tw.header`
   flex justify-between items-center
@@ -66,7 +65,7 @@ export default ({
   logoLink,
   links,
   className,
-  collapseBreakpointClass = "lg",
+  collapseBreakpointClass = 'lg'
 }) => {
   /*
    * This header component accepts an optionals "links" prop that specifies the links to render in the navbar.
@@ -86,25 +85,25 @@ export default ({
       <NavLink href="/events">Events</NavLink>
       <NavLink href="/statistics">Statistics</NavLink>
       <NavLink href="/pricing">Pricing</NavLink>
-    </NavLinks>,
+    </NavLinks>
   ];
 
   const defaultUsers = [
     {
-      name: "Charlotte Hale",
-      email: "charlotte@example.com",
+      name: 'Charlotte Hale',
+      email: 'charlotte@example.com',
       photo:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3.25&w=512&h=512&q=80",
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3.25&w=512&h=512&q=80'
     },
     {
-      name: "Adam Cuppy",
-      email: "adam@example.com",
+      name: 'Adam Cuppy',
+      email: 'adam@example.com',
       photo:
-        "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=512&h=512&q=80",
-    },
+        'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=512&h=512&q=80'
+    }
   ];
 
-  const { showNavLinks, animation, toggleNavbar } = useAnimatedNavToggler();
+  const {showNavLinks, animation, toggleNavbar} = useAnimatedNavToggler();
   const collapseBreakpointCss =
     collapseBreakPointCssMap[collapseBreakpointClass];
 
@@ -113,10 +112,10 @@ export default ({
   logoLink = logoLink || defaultLogoLink;
   links = links || defaultLinks;
 
-  const { users = defaultUsers, userId, setUserId } = useContext(UserContext);
+  const {users = defaultUsers, userId, setUserId} = useContext(UserContext);
 
   return (
-    <Header className={className || "header-light"}>
+    <Header className={className || 'header-light'}>
       <DesktopNavLinks css={collapseBreakpointCss.desktopNavLinks}>
         {logoLink}
         {links}
@@ -128,7 +127,7 @@ export default ({
       >
         {logoLink}
         <MobileNavLinks
-          initial={{ x: "150%", display: "none" }}
+          initial={{x: '150%', display: 'none'}}
           animate={animation}
           css={collapseBreakpointCss.mobileNavLinks}
         >
@@ -137,7 +136,7 @@ export default ({
         </MobileNavLinks>
         <NavToggle
           onClick={toggleNavbar}
-          className={showNavLinks ? "open" : "closed"}
+          className={showNavLinks ? 'open' : 'closed'}
         >
           {showNavLinks ? (
             <CloseIcon tw="w-6 h-6" />
@@ -160,21 +159,21 @@ const collapseBreakPointCssMap = {
   sm: {
     mobileNavLinks: tw`sm:hidden`,
     desktopNavLinks: tw`sm:flex`,
-    mobileNavLinksContainer: tw`sm:hidden`,
+    mobileNavLinksContainer: tw`sm:hidden`
   },
   md: {
     mobileNavLinks: tw`md:hidden`,
     desktopNavLinks: tw`md:flex`,
-    mobileNavLinksContainer: tw`md:hidden`,
+    mobileNavLinksContainer: tw`md:hidden`
   },
   lg: {
     mobileNavLinks: tw`lg:hidden`,
     desktopNavLinks: tw`lg:flex`,
-    mobileNavLinksContainer: tw`lg:hidden`,
+    mobileNavLinksContainer: tw`lg:hidden`
   },
   xl: {
     mobileNavLinks: tw`lg:hidden`,
     desktopNavLinks: tw`lg:flex`,
-    mobileNavLinksContainer: tw`lg:hidden`,
-  },
+    mobileNavLinksContainer: tw`lg:hidden`
+  }
 };

@@ -6,6 +6,7 @@ import http from 'http';
 
 import {BucketingManager as bm} from '@convertcom/js-sdk-bucketing';
 import {RuleManager as rm} from '@convertcom/js-sdk-rules';
+import {BucketingError} from '@convertcom/js-sdk-enums';
 import {EventManager as em} from '@convertcom/js-sdk-event';
 import {ApiManager as am} from '@convertcom/js-sdk-api';
 import {DataManager as dm} from '../src/data-manager';
@@ -217,8 +218,12 @@ describe('DataManager tests', function () {
                   goalId: '100215960',
                   goalData: [
                     {
-                      amount: 10.3,
-                      productsCount: 2
+                      key: 'amount',
+                      value: 10.4
+                    },
+                    {
+                      key: 'productsCount',
+                      value: 3
                     }
                   ]
                 }
@@ -251,8 +256,12 @@ describe('DataManager tests', function () {
         },
         [
           {
-            amount: 10.3,
-            productsCount: 2
+            key: 'amount',
+            value: 10.4
+          },
+          {
+            key: 'productsCount',
+            value: 3
           }
         ]
       );
@@ -288,7 +297,7 @@ describe('DataManager tests', function () {
         },
         locationProperties: {url: 'https://convert.com/'}
       });
-      expect(variation).to.be.null;
+      expect(variation).to.be.equal(BucketingError.VARIAION_NOT_DECIDED);
     });
     it('Should never fail on reaching size limit when updating local store', function () {
       new Array(10001)
