@@ -2,11 +2,13 @@
 import 'mocha';
 import chai from 'chai';
 import chaiString from 'chai-string';
-chai.use(chaiString);
-const {expect, assert} = chai;
 
 import {LogManager as lm} from '../src/log-manager';
 import {LogLevel as lv} from '@convertcom/js-sdk-enums';
+
+const {expect, assert: ChaiAssert} = chai;
+const assert: Chai.Assert = ChaiAssert; // to avoid error: Assertions require every name in the call target to be declared with an explicit type annotation.
+chai.use(chaiString);
 
 const DEBUG_MODE = process.env.DEBUG;
 

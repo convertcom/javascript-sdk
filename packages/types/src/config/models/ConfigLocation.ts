@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { LocationTrigger } from './LocationTrigger';
 import type { RuleObject } from './RuleObject';
 /**
  * Base Location object
@@ -19,6 +20,7 @@ export type ConfigLocation = {
      * Location Name
      */
     name?: string;
+    trigger?: (Record<string, any> & LocationTrigger) | null;
     rules?: RuleObject | null;
 };
 
