@@ -22,9 +22,16 @@ export type ConfigProject = {
     type?: ConfigProject.type;
     utc_offset?: UTC_Offset;
     /**
-     * Custom domain to be used instead of standard Convert's one
+     * Object representing the custom domain that is used for loading the tracking scripts and
+     * sending tracking requests to Convert servers instead of the standard Convert domain
+     *
      */
-    custom_domain?: string | null;
+    custom_domain?: {
+        /**
+         * Custom domain to be used instead of standard Convert's one
+         */
+        domain?: string;
+    } | null;
     /**
      * List of domains allowed to be tracked under this project
      */
@@ -63,6 +70,15 @@ export type ConfigProject = {
          * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
          */
         do_not_track?: ConfigProject.do_not_track;
+        /**
+         * Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
+         * - OFF: Do not follow GPC signals.
+         * - EU ONLY: Follow GPC signals for users in the European Union only.
+         * - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
+         * - Worldwide: Follow GPC signals for users worldwide.
+         *
+         */
+        global_privacy_control?: ConfigProject.global_privacy_control;
         /**
          * Whether to include jQuery library or not into the javascript tracking file served by Convert and loaded via the tracking snippet. If jQuery is not included, it has to be loaded on page, before Convert's tracking code
          */
@@ -117,6 +133,20 @@ export namespace ConfigProject {
      * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
      */
     export enum do_not_track {
+        OFF = 'OFF',
+        EU_ONLY = 'EU ONLY',
+        EEA_ONLY = 'EEA ONLY',
+        WORLDWIDE = 'Worldwide',
+    }
+    /**
+     * Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
+     * - OFF: Do not follow GPC signals.
+     * - EU ONLY: Follow GPC signals for users in the European Union only.
+     * - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
+     * - Worldwide: Follow GPC signals for users worldwide.
+     *
+     */
+    export enum global_privacy_control {
         OFF = 'OFF',
         EU_ONLY = 'EU ONLY',
         EEA_ONLY = 'EEA ONLY',
