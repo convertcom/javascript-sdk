@@ -2,8 +2,6 @@
 import 'mocha';
 import chai from 'chai';
 import chaiString from 'chai-string';
-chai.use(chaiString);
-const {assert} = chai;
 import fs from 'fs';
 import util from 'util';
 
@@ -11,6 +9,10 @@ import {FileLogger} from '../src/file-logger';
 const readFile = util.promisify(fs.readFile);
 const testFile = '/tmp/test.log';
 const DEBUG_MODE = process.env.DEBUG;
+
+const {assert: ChaiAssert} = chai;
+const assert: Chai.Assert = ChaiAssert; // to avoid error: Assertions require every name in the call target to be declared with an explicit type annotation.
+chai.use(chaiString);
 
 function captureConsole() {
   const defaultConsoleLog = console.log;
@@ -61,10 +63,17 @@ describe('File Logger utils tests', function () {
     logger = new FileLogger('', fs);
     const log = async function () {
       await logger.log('testing invalid file');
-      assert.equal(
-        hookError.captured(),
-        'Error: ENOENT: no such file or directory, open\n'
-      );
+      if (parseFloat(process.versions.node) > 20) {
+        assert.equal(
+          hookError.captured(),
+          `Error: ENOENT: no such file or directory, open ''\n`
+        );
+      } else {
+        assert.equal(
+          hookError.captured(),
+          'Error: ENOENT: no such file or directory, open\n'
+        );
+      }
     };
     await log();
   });

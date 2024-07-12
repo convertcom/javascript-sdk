@@ -34,7 +34,7 @@ import {
 } from './config/default';
 
 const DEFAULT_HEADERS = {
-  'Content-type': 'application/json'
+  'Content-Type': 'application/json'
 };
 const DEFAULT_BATCH_SIZE = 10;
 const DEFAULT_RELEASE_INTERVAL = 10000;
@@ -51,12 +51,14 @@ export class ApiManager implements ApiManagerInterface {
 
   private readonly _configEndpoint: string = DEFAULT_CONFIG_ENDPOINT;
   private readonly _trackEndpoint: string = DEFAULT_TRACK_ENDPOINT;
-  private readonly _defaultHeaders: Record<string, string> = DEFAULT_HEADERS;
 
+  private _defaultHeaders: Record<string, string> = DEFAULT_HEADERS;
   private _data: ConfigResponseData;
   private _enrichData: boolean;
+  private _environment: string;
   private _loggerManager: LogManagerInterface | null;
   private _eventManager: EventManagerInterface | null;
+  private _sdkKey: string;
   private _accountId: string;
   private _projectId: string;
   private _trackingEvent: TrackingEvent;
@@ -93,6 +95,7 @@ export class ApiManager implements ApiManagerInterface {
       config?.api?.endpoint?.track || DEFAULT_TRACK_ENDPOINT;
     this._data = objectDeepValue(config, 'data');
     this._enrichData = !objectDeepValue(config, 'dataStore');
+    this._environment = config?.environment;
     this._mapper = config?.mapper || ((value: any) => value);
 
     this.batchSize = Number(config?.events?.batch_size) || DEFAULT_BATCH_SIZE;
@@ -102,6 +105,9 @@ export class ApiManager implements ApiManagerInterface {
 
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
+    this._sdkKey = config?.sdkKey || `${this._accountId}/${this._projectId}`;
+    if (config?.sdkKeySecret)
+      this._defaultHeaders['Authorization'] = `Bearer ${config?.sdkKeySecret}`;
     this._trackingEvent = {
       enrichData: this._enrichData,
       accountId: this._accountId,
@@ -220,7 +226,7 @@ export class ApiManager implements ApiManagerInterface {
           '[project_id]',
           this._projectId.toString()
         ),
-        route: `/track/${this._accountId}/${this._projectId}`
+        route: `/track/${this._sdkKey}`
       },
       this._mapper(payload)
     )
@@ -228,7 +234,8 @@ export class ApiManager implements ApiManagerInterface {
         this._requestsQueue.reset();
         this._eventManager?.fire?.(SystemEvents.API_QUEUE_RELEASED, {
           reason: reason,
-          result: result
+          result: result,
+          visitors: payload.visitors
         });
       })
       .catch((error) => {
@@ -288,19 +295,18 @@ export class ApiManager implements ApiManagerInterface {
   }
 
   /**
-   * Get config data by SDK key
-   * @param {string} sdkKey
+   * Get config data
    * @return {Promise<ConfigResponseData>}
    */
-  getConfigByKey(sdkKey: string): Promise<ConfigResponseData> {
-    this._loggerManager?.trace?.('ApiManager.getConfigByKey()', {
-      sdkKey
-    });
-    const query = this._cacheLevel === 'low' ? '?_conv_low_cache=1' : '';
+  getConfig(): Promise<ConfigResponseData> {
+    this._loggerManager?.trace?.('ApiManager.getConfig()');
+    let query = this._cacheLevel === 'low' || this._environment ? '?' : '';
+    if (this._environment) query += `environment=${this._environment}`;
+    if (this._cacheLevel === 'low') query += '_conv_low_cache=1';
     return new Promise((resolve, reject) => {
       this.request('get', {
         base: this._configEndpoint,
-        route: `/config/${sdkKey}${query}`
+        route: `/config/${this._sdkKey}${query}`
       })
         .then(({data}) => resolve(data))
         .catch(reject);

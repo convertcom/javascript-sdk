@@ -26,9 +26,9 @@ export class Comparisons {
         value.indexOf(testAgainst) !== -1,
         negation
       );
-    if (objectNotEmpty(value) && typeof testAgainst === 'string')
+    if (objectNotEmpty(value))
       return this._returnNegationCheck(
-        Object.keys(value).indexOf(testAgainst) !== -1,
+        Object.keys(value).indexOf(String(testAgainst)) !== -1,
         negation
       );
     value = String(value);

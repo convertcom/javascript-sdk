@@ -29,3 +29,9 @@
 1. Start demo server: `yarn demo:nodejs:start`
 2. Build packages: `yarn build`
 3. Test demo app: http://localhost:3003
+
+### NestJS
+
+1. Start demo server: `yarn demo:nestjs:start`
+2. Build packages: `yarn build`
+3. Test demo app: http://localhost:3004
