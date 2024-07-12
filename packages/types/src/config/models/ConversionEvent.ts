@@ -17,11 +17,11 @@ export type ConversionEvent = {
         /**
          * Key of the metric
          */
-        key?: 'amount' | 'productsCount';
+        key?: 'amount' | 'productsCount' | 'transactionId';
         /**
          * Value of the metric
          */
-        value?: number;
+        value?: (number | string);
     }>;
     /**
      * Bucketing data (experiences that this visitor is currently part of) for the visitor. In case that **enrichData=true** flag is being sent and

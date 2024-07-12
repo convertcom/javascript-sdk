@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ExperienceChange } from './ExperienceChange';
+import type { VariationStatuses } from './VariationStatuses';
 /**
  * Variation Object
  */
@@ -25,6 +26,7 @@ export type ExperienceVariationConfig = {
      *
      */
     traffic_allocation?: number;
+    status?: VariationStatuses;
     /**
      * List of changes that this variation is exposing.
      */
