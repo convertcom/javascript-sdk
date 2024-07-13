@@ -562,102 +562,100 @@ export class DataManager implements DataManagerInterface {
           variationId: forceVariationId
         })
       );
+    }
+    // Check that visitor id already bucketed and stored and skip bucketing logic
+    const {bucketing, segments} = this.getData(visitorId) || {};
+    const {[experience.id.toString()]: storedVariationId} = bucketing || {};
+    if (
+      storedVariationId &&
+      (!variationId || String(variationId) === String(storedVariationId)) && // variation might be forced but already bucketed before
+      (variation = this.retrieveVariation(
+        experience.id,
+        String(storedVariationId)
+      ))
+    ) {
+      variationId = storedVariationId;
+      // If it's found log debug info. The return value will be formed next step
+      this._loggerManager?.info?.(
+        'DataManager._retrieveBucketing()',
+        MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
+      );
+      this._loggerManager?.debug?.(
+        'DataManager._retrieveBucketing()',
+        this._mapper({
+          storeKey: storeKey,
+          visitorId: visitorId,
+          variationId: variationId
+        })
+      );
     } else {
-      // Check that visitor id already bucketed and stored and skip bucketing logic
-      const {bucketing, segments} = this.getData(visitorId) || {};
-      const {[experience.id.toString()]: storedVariationId} = bucketing || {};
-      if (
-        storedVariationId &&
-        (variation = this.retrieveVariation(
-          experience.id,
-          String(storedVariationId)
-        ))
-      ) {
-        variationId = storedVariationId;
-        // If it's found log debug info. The return value will be formed next step
-        this._loggerManager?.info?.(
+      // Build buckets where key is variation id and value is traffic distribution
+      const buckets = experience.variations
+        .filter((variation) => variation?.status === VariationStatuses.RUNNING)
+        .reduce((bucket, variation) => {
+          if (variation?.id)
+            bucket[variation.id] = variation?.traffic_allocation || 100.0;
+          return bucket;
+        }, {}) as Record<string, number>;
+      // Select bucket based for provided visitor id
+      const bucketing = this._bucketingManager.getBucketForVisitor(
+        buckets,
+        visitorId,
+        this._config?.bucketing?.excludeExperienceIdHash
+          ? null
+          : {experienceId: experience.id.toString()}
+      );
+      variationId = variationId || bucketing?.variationId; // variation might be forced
+      bucketingAllocation = bucketing?.bucketingAllocation;
+      // Return bucketing errors if present
+      if (!variationId) {
+        this._loggerManager?.error?.(
           'DataManager._retrieveBucketing()',
-          MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
-        );
-        this._loggerManager?.debug?.(
-          'DataManager._retrieveBucketing()',
+          ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
           this._mapper({
-            storeKey: storeKey,
             visitorId: visitorId,
-            variationId: variationId
+            experience: experience
           })
         );
-      } else {
-        // Build buckets where key is variation id and value is traffic distribution
-        const buckets = experience.variations
-          .filter(
-            (variation) => variation?.status === VariationStatuses.RUNNING
-          )
-          .reduce((bucket, variation) => {
-            if (variation?.id)
-              bucket[variation.id] = variation?.traffic_allocation || 100.0;
-            return bucket;
-          }, {}) as Record<string, number>;
-        // Select bucket based for provided visitor id
-        const bucketing = this._bucketingManager.getBucketForVisitor(
-          buckets,
-          visitorId,
-          this._config?.bucketing?.excludeExperienceIdHash
-            ? null
-            : {experienceId: experience.id.toString()}
-        );
-        variationId = bucketing?.variationId;
-        bucketingAllocation = bucketing?.bucketingAllocation;
-        // Return bucketing errors if present
-        if (!variationId) {
-          this._loggerManager?.error?.(
-            'DataManager._retrieveBucketing()',
-            ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
-            this._mapper({
-              visitorId: visitorId,
-              experience: experience
-            })
-          );
-          return BucketingError.VARIAION_NOT_DECIDED;
-        }
-        this._loggerManager?.info?.(
-          'DataManager._retrieveBucketing()',
-          MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
-        );
-        // Store the data
-        if (updateVisitorProperties) {
-          this.putData(visitorId, {
-            bucketing: {
-              [experience.id.toString()]: variationId
-            },
-            ...(visitorProperties ? {segments: visitorProperties} : {})
-          });
-        } else {
-          this.putData(visitorId, {
-            bucketing: {[experience.id.toString()]: variationId}
-          });
-        }
-        if (enableTracking) {
-          // Enqueue bucketing event to api
-          const bucketingEvent: BucketingEvent = {
-            experienceId: experience.id.toString(),
-            variationId: variationId.toString()
-          };
-          const visitorEvent: VisitorTrackingEvents = {
-            eventType: VisitorTrackingEvents.eventType.BUCKETING,
-            data: bucketingEvent
-          };
-          this._apiManager.enqueue(visitorId, visitorEvent, segments);
-          this._loggerManager?.trace?.(
-            'DataManager._retrieveBucketing()',
-            this._mapper({
-              visitorEvent
-            })
-          );
-        }
-        // Retrieve and return variation
-        variation = this.retrieveVariation(experience.id, String(variationId));
+        return BucketingError.VARIAION_NOT_DECIDED;
       }
+      this._loggerManager?.info?.(
+        'DataManager._retrieveBucketing()',
+        MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
+      );
+      // Store the data
+      if (updateVisitorProperties) {
+        this.putData(visitorId, {
+          bucketing: {
+            [experience.id.toString()]: variationId
+          },
+          ...(visitorProperties ? {segments: visitorProperties} : {})
+        });
+      } else {
+        this.putData(visitorId, {
+          bucketing: {[experience.id.toString()]: variationId}
+        });
+      }
+      if (enableTracking) {
+        // Enqueue bucketing event to api
+        const bucketingEvent: BucketingEvent = {
+          experienceId: experience.id.toString(),
+          variationId: variationId.toString()
+        };
+        const visitorEvent: VisitorTrackingEvents = {
+          eventType: VisitorTrackingEvents.eventType.BUCKETING,
+          data: bucketingEvent
+        };
+        this._apiManager.enqueue(visitorId, visitorEvent, segments);
+        this._loggerManager?.trace?.(
+          'DataManager._retrieveBucketing()',
+          this._mapper({
+            visitorEvent
+          })
+        );
+      }
+      // Retrieve and return variation
+      variation = this.retrieveVariation(experience.id, String(variationId));
     }
 
     // Build the response as bucketed variation object
