@@ -206,6 +206,7 @@ export class DataManager implements DataManagerInterface {
     const {
       visitorProperties,
       locationProperties,
+      ignoreLocationProperties,
       environment = this._environment
     } = attributes;
     this._loggerManager?.trace?.(
@@ -216,6 +217,7 @@ export class DataManager implements DataManagerInterface {
         identityField: identityField,
         visitorProperties: visitorProperties,
         locationProperties: locationProperties,
+        ignoreLocationProperties: ignoreLocationProperties,
         environment: environment
       })
     );
@@ -297,7 +299,7 @@ export class DataManager implements DataManagerInterface {
           );
         }
       }
-      if (!locationMatched) {
+      if (!locationMatched && !ignoreLocationProperties) {
         this._loggerManager?.debug?.(
           'DataManager.matchRulesByField()',
           MESSAGES.LOCATION_NOT_MATCH,
@@ -467,6 +469,7 @@ export class DataManager implements DataManagerInterface {
       updateVisitorProperties,
       forceVariationId,
       enableTracking = true,
+      ignoreLocationProperties,
       environment = this._environment
     } = attributes;
     this._loggerManager?.trace?.(
@@ -479,6 +482,7 @@ export class DataManager implements DataManagerInterface {
         locationProperties: locationProperties,
         forceVariationId: forceVariationId,
         enableTracking: enableTracking,
+        ignoreLocationProperties: ignoreLocationProperties,
         environment: environment
       })
     );
@@ -488,7 +492,12 @@ export class DataManager implements DataManagerInterface {
       visitorId,
       identity,
       identityField,
-      {visitorProperties, locationProperties, environment}
+      {
+        visitorProperties,
+        locationProperties,
+        ignoreLocationProperties,
+        environment
+      }
     );
     if (experience) {
       if (Object.values(RuleError).includes(experience as RuleError)) {
