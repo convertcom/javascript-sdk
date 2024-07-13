@@ -233,10 +233,9 @@ export class DataManager implements DataManagerInterface {
       (id) => String(experience?.id) === String(id)
     );
     // Check environment
-    const isEnvironmentMatch = Array.isArray(experience?.environments)
-      ? !experience.environments.length || // skip if empty
-        experience.environments.includes(environment)
-      : true; // skip if no environments
+    const isEnvironmentMatch = experience?.environment
+      ? experience.environment === environment
+      : true; // skip if no environment
 
     let matchedErrors = [];
     if (experience && !isArchivedExperience && isEnvironmentMatch) {
