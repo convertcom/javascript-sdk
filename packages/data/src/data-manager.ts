@@ -591,7 +591,11 @@ export class DataManager implements DataManagerInterface {
     } else {
       // Build buckets where key is variation id and value is traffic distribution
       const buckets = experience.variations
-        .filter((variation) => variation?.status === VariationStatuses.RUNNING)
+        .filter((variation) =>
+          variation?.status
+            ? variation.status === VariationStatuses.RUNNING
+            : true
+        )
         .reduce((bucket, variation) => {
           if (variation?.id)
             bucket[variation.id] = variation?.traffic_allocation || 100.0;
