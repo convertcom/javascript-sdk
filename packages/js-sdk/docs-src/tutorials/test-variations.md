@@ -1,55 +1,68 @@
+# Testing Variations
+
 ## Assumptions
 
 You want to show 2 variations only to 50% of your visitors on the `products` view of your e-commerce app.
-Open your Fullstack project at the web interface and create a location for matching the target view, given the following rule:
 
-1. Rule Type: `generic_text_key_value`
-2. Match type: `matches`
-3. Key: `location`
-4. Value: `products`
+## Steps to Set Up
 
-Then create 2 experiences each with one variation (_beside the original_) linked to the above location, given the following unique identifiers:
+### Step 1: Create a Location
 
-Variation 1:
+1. Open your Fullstack project at the web interface.
+2. Create a location with the following details:
+   - **Rule Type:** `generic_text_key_value`
+   - **Match Type:** `matches`
+   - **Key:** `location`
+   - **Value:** `products`
 
-1. Traffic: `50%`
-2. Key: `with-stock-amount`
+### Step 2: Create Experiences
 
-Variation 2:
+Create two experiences, each with one variation (beside the original) linked to the above location:
 
-1. Traffic: `50%`
-2. Key: `with-headline`
+#### Variation 1
 
-## ReactJS Example
+1. **Traffic:** `50%`
+2. **Key:** `with-stock-amount`
+
+#### Variation 2
+
+1. **Traffic:** `50%`
+2. **Key:** `with-headline`
+
+## ReactJS Implementation Example
 
 ```javascript
-import {useState, useEffect, useContext, createContext} from 'react';
+import { useState, useEffect, useContext, createContext } from 'react';
 import ConvertSDK from '@convertcom/js-sdk';
 
 const UserContext = createContext();
 
-const convertSDK = new ConvertSDK({sdkKey: 'xxx'});
+const convertSDK = new ConvertSDK({ sdkKey: 'your_sdk_key_here' });
 
 const ProductsComponent = () => {
-  const {sdkContext} = useContext(UserContext);
+  const { sdkContext } = useContext(UserContext);
   const [withStock, setWithStock] = useState(false);
   const [withHeadline, setWithHeadline] = useState(false);
 
   const decide = () => {
     const bucketedVariations = sdkContext.runExperiences({
-      locationProperties: {location: 'products'}
+      locationProperties: { location: 'products' }
     });
-    bucketedVariations.forEach((e) => {
-      if (e.experienceKey === 'with-stock-amount') {
+    bucketedVariations.forEach((variation) => {
+      if (variation.experienceKey === 'with-stock-amount') {
         setWithStock(true);
       }
-      if (e.experienceKey === 'with-headline') {
+      if (variation.experienceKey === 'with-headline') {
         setWithHeadline(true);
       }
     });
   };
 
-  useEffect(() => sdkContext && decide(), [sdkContext]);
+  useEffect(() => {
+    if (sdkContext) {
+      decide();
+    }
+  }, [sdkContext]);
 
   return (
     <div className="products">
@@ -62,9 +75,7 @@ const ProductsComponent = () => {
 
       <div className="product">
         <div className="product-title">Shoe</div>
-        {withHeadline && (
-          <div className="product-headline">Natural leather</div>
-        )}
+        {withHeadline && <div className="product-headline">Natural leather</div>}
         <div className="product-price">$50</div>
         {withStock && <div className="product-stock">out of stock</div>}
       </div>
@@ -72,13 +83,12 @@ const ProductsComponent = () => {
   );
 };
 
-export default function App() {
-  const userId = Date.now().toString(); // in reality, this should be the visitor ID. Fur example: email, username, GUID, .. etc.
-
+const App = () => {
+  const userId = Date.now().toString(); // In reality, this should be the visitor ID, e.g., email, username, GUID, etc.
   const [sdkContext, setSdkContext] = useState();
 
   useEffect(() => {
-    async function initSdk() {
+    const initSdk = async () => {
       try {
         await convertSDK.onReady();
         const context = convertSDK.createContext(userId); // Convert SDK context needs to be created only once, hence the use of React Context below.
@@ -86,14 +96,16 @@ export default function App() {
       } catch (error) {
         console.error('SDK Error:', error);
       }
-    }
+    };
     initSdk();
   }, []);
 
   return (
-    <UserContext.Provider value={{sdkContext}}>
+    <UserContext.Provider value={{ sdkContext }}>
       <ProductsComponent />
     </UserContext.Provider>
   );
-}
+};
+
+export default App;
 ```

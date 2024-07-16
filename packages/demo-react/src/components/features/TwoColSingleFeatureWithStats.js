@@ -1,8 +1,7 @@
-import React from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { css } from "styled-components/macro"; //eslint-disable-line
-import { SectionHeading } from "components/misc/Headings.js";
+import React from 'react';
+import tw from 'twin.macro';
+import styled from 'styled-components';
+import {SectionHeading} from 'components/misc/Headings.js';
 
 const Container = tw.div`relative`;
 const TwoColumn = tw.div`flex flex-col md:flex-row justify-between max-w-screen-xl mx-auto py-20 md:py-24`;
@@ -14,12 +13,12 @@ const TextColumn = styled(Column)((props) => [
   tw`md:w-6/12 mt-8 md:mt-0`,
   props.textOnLeft
     ? tw`md:mr-8 lg:mr-16 md:order-first`
-    : tw`md:ml-8 lg:ml-16 md:order-last`,
+    : tw`md:ml-8 lg:ml-16 md:order-last`
 ]);
 
 const Image = styled.div((props) => [
   `background-image: url("${props.imageSrc}");`,
-  tw`rounded bg-cover bg-center h-full`,
+  tw`rounded bg-cover bg-center h-full`
 ]);
 const TextContent = tw.div`lg:py-8`;
 
@@ -40,8 +39,8 @@ export default ({
     rooms: 1000,
     workers: 2000,
     countries: 20,
-    hotels: 100,
-  },
+    hotels: 100
+  }
 }) => {
   // The textOnLeft boolean prop can be used to display either the text on left or right side of the image.
   //Change the statistics variable as you like, add or delete objects
@@ -56,8 +55,8 @@ export default ({
           <TextContent>
             <Heading>
               {useFeature
-                ? "Statistics arrives from config!"
-                : "We have the best service."}
+                ? 'Statistics arrives from config!'
+                : 'We have the best service.'}
             </Heading>
             <Description>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do

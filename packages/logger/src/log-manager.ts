@@ -152,7 +152,6 @@ export class LogManager implements LogManagerInterface {
    */
   setClientLevel(level: LogLevel, client?: any): void {
     if (!this._isValidLevel(level)) {
-      // throw new Error('Invalid Log Level');
       console.error('Invalid Log Level');
       return;
     }
