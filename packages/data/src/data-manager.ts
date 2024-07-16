@@ -35,20 +35,25 @@ import {
   VisitorTrackingEvents,
   ConversionEvent,
   ConfigGoal,
+  GoalData,
   VisitorSegments,
   ConfigSegment,
-  BucketingAttributes
+  BucketingAttributes,
+  LocationAttributes,
+  ConfigAudienceTypes,
+  VariationStatuses
 } from '@convertcom/js-sdk-types';
 
 import {
+  BucketingError,
   DATA_ENTITIES,
   DATA_ENTITIES_MAP,
   ERROR_MESSAGES,
   MESSAGES,
   RuleError,
-  GoalDataKey,
   SegmentsKeys,
-  SystemEvents
+  SystemEvents,
+  ConversionSettingKey
 } from '@convertcom/js-sdk-enums';
 
 import {DataStoreManager} from './data-store-manager';
@@ -189,7 +194,6 @@ export class DataManager implements DataManagerInterface {
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
-   * @param {boolean=} attributes.updateVisitorProperties
    * @param {string=} attributes.environment
    * @return {ConfigExperience | RuleError}
    */
@@ -202,6 +206,7 @@ export class DataManager implements DataManagerInterface {
     const {
       visitorProperties,
       locationProperties,
+      ignoreLocationProperties,
       environment = this._environment
     } = attributes;
     this._loggerManager?.trace?.(
@@ -212,6 +217,7 @@ export class DataManager implements DataManagerInterface {
         identityField: identityField,
         visitorProperties: visitorProperties,
         locationProperties: locationProperties,
+        ignoreLocationProperties: ignoreLocationProperties,
         environment: environment
       })
     );
@@ -230,13 +236,24 @@ export class DataManager implements DataManagerInterface {
       (id) => String(experience?.id) === String(id)
     );
     // Check environment
-    const isEnvironmentMatch = Array.isArray(experience?.environments)
-      ? !experience.environments.length || // skip if empty
-        experience.environments.includes(environment)
-      : true; // skip if no environments
+    const isEnvironmentMatch = experience?.environment
+      ? experience.environment === environment
+      : true; // skip if no environment
 
     let matchedErrors = [];
     if (experience && !isArchivedExperience && isEnvironmentMatch) {
+      // Check that visitor id already bucketed and stored and skip bucketing logic
+      const {bucketing} = this.getData(visitorId) || {};
+      const {[experience.id.toString()]: variationId} = bucketing || {};
+      let isBucketed = false;
+      if (
+        variationId &&
+        this.retrieveVariation(experience.id, String(variationId))
+      ) {
+        isBucketed = true;
+      }
+
+      // Check location rules against locationProperties
       let locationMatched: boolean | RuleError = false,
         matchedLocations = [];
       if (locationProperties) {
@@ -252,12 +269,10 @@ export class DataManager implements DataManagerInterface {
           if (locations.length) {
             // Validate locationProperties against locations rules
             // and trigger activated/deactivated events
-            matchedLocations = this.selectLocations(
-              visitorId,
-              locations,
+            matchedLocations = this.selectLocations(visitorId, locations, {
               locationProperties,
               identityField
-            );
+            });
             // Return rule errors if present
             matchedErrors = matchedLocations.filter((match) =>
               Object.values(RuleError).includes(match as RuleError)
@@ -267,6 +282,7 @@ export class DataManager implements DataManagerInterface {
           // If there are some matched locations
           locationMatched = Boolean(matchedLocations.length);
         } else if (experience?.site_area) {
+          // Validate locationProperties against site area rules
           locationMatched = this._ruleManager.isRuleMatched(
             locationProperties,
             experience.site_area,
@@ -276,113 +292,14 @@ export class DataManager implements DataManagerInterface {
           if (Object.values(RuleError).includes(locationMatched as RuleError))
             return locationMatched as RuleError;
         } else {
-          // Empty experience locations list or unset Site Area means there's no restriction for the location
-          locationMatched = true;
-        }
-      }
-      // Validate locationProperties against site area rules
-      if (!locationProperties || locationMatched) {
-        let audiences = [],
-          segmentations = [],
-          matchedAudiences = [],
-          matchedSegmentations = [];
-        if (visitorProperties) {
-          if (
-            Array.isArray(experience?.audiences) &&
-            experience.audiences.length
-          ) {
-            // Get attached transient and/or permnent audiences
-            audiences = this.getItemsByIds(
-              experience.audiences,
-              'audiences'
-            ) as Array<ConfigAudience>;
-            if (audiences.length) {
-              // Validate visitorProperties against audiences rules
-              matchedAudiences = this.filterMatchedRecordsWithRule(
-                audiences,
-                visitorProperties,
-                'audience',
-                identityField
-              );
-              // Return rule errors if present
-              matchedErrors = matchedAudiences.filter((match) =>
-                Object.values(RuleError).includes(match as RuleError)
-              );
-              if (matchedErrors.length) return matchedErrors[0] as RuleError;
-              if (matchedAudiences.length) {
-                for (const item of matchedAudiences) {
-                  this._loggerManager?.info?.(
-                    'DataManager.matchRulesByField()',
-                    MESSAGES.AUDIENCE_MATCH.replace('#', item?.[identityField])
-                  );
-                }
-              }
-            }
-            // Get attached segmentation audiences
-            segmentations = this.getItemsByIds(
-              experience.audiences,
-              'segments'
-            ) as Array<ConfigSegment>;
-            if (segmentations.length) {
-              // Validate custom segments against segmentations
-              matchedSegmentations = this.filterMatchedCustomSegments(
-                segmentations,
-                visitorId
-              );
-              if (matchedSegmentations.length) {
-                for (const item of matchedSegmentations) {
-                  this._loggerManager?.info?.(
-                    'DataManager.matchRulesByField()',
-                    MESSAGES.SEGMENTATION_MATCH.replace(
-                      '#',
-                      item?.[identityField]
-                    )
-                  );
-                }
-              }
-            }
-          } else {
-            this._loggerManager?.info?.(
-              'DataManager.matchRulesByField()',
-              MESSAGES.AUDIENCE_NOT_RESTRICTED
-            );
-          }
-        }
-        // If there are some matched audiences
-        if (
-          !visitorProperties ||
-          matchedAudiences.length ||
-          matchedSegmentations.length ||
-          !audiences.length // Empty audiences list means there's no restriction for the audience
-        ) {
-          // And experience has variations
-          if (experience?.variations && experience?.variations?.length) {
-            this._loggerManager?.info?.(
-              'DataManager.matchRulesByField()',
-              MESSAGES.EXPERIENCE_RULES_MATCHED
-            );
-            return experience;
-          } else {
-            this._loggerManager?.debug?.(
-              'DataManager.matchRulesByField()',
-              MESSAGES.VARIATIONS_NOT_FOUND,
-              this._mapper({
-                visitorProperties: visitorProperties,
-                audiences: audiences
-              })
-            );
-          }
-        } else {
-          this._loggerManager?.debug?.(
+          locationMatched = true; // Empty experience locations list means no restrictions
+          this._loggerManager?.info?.(
             'DataManager.matchRulesByField()',
-            MESSAGES.AUDIENCE_NOT_MATCH,
-            this._mapper({
-              visitorProperties: visitorProperties,
-              audiences: audiences
-            })
+            MESSAGES.LOCATION_NOT_RESTRICTED
           );
         }
-      } else {
+      }
+      if (!locationMatched && !ignoreLocationProperties) {
         this._loggerManager?.debug?.(
           'DataManager.matchRulesByField()',
           MESSAGES.LOCATION_NOT_MATCH,
@@ -392,6 +309,122 @@ export class DataManager implements DataManagerInterface {
               ? 'experiences[].variations[].locations'
               : 'experiences[].variations[].site_area']:
               experience?.locations || experience?.site_area || ''
+          })
+        );
+        return null;
+      }
+
+      // Check audience rules against visitorProperties
+      let audiences = [],
+        segments = [],
+        matchedAudiences = [],
+        matchedSegments = [],
+        audiencesToCheck: Array<ConfigAudience> = [],
+        audiencesMatched = false,
+        segmentsMatched = false;
+      if (visitorProperties) {
+        if (
+          Array.isArray(experience?.audiences) &&
+          experience.audiences.length
+        ) {
+          // Get attached transient and/or permnent audiences
+          audiences = this.getItemsByIds(
+            experience.audiences,
+            'audiences'
+          ) as Array<ConfigAudience>;
+
+          // If visitor already bucketed into this experience, check only audiences of type transient
+          audiencesToCheck = audiences.filter(
+            (audience) =>
+              !(isBucketed && audience.type === ConfigAudienceTypes.PERMANENT)
+          );
+          if (audiencesToCheck.length) {
+            // Validate visitorProperties against audiences rules
+            matchedAudiences = this.filterMatchedRecordsWithRule(
+              audiencesToCheck,
+              visitorProperties,
+              'audience',
+              identityField
+            );
+            // Return rule errors if present
+            matchedErrors = matchedAudiences.filter((match) =>
+              Object.values(RuleError).includes(match as RuleError)
+            );
+            if (matchedErrors.length) return matchedErrors[0] as RuleError;
+            if (matchedAudiences.length) {
+              for (const item of matchedAudiences) {
+                this._loggerManager?.info?.(
+                  'DataManager.matchRulesByField()',
+                  MESSAGES.AUDIENCE_MATCH.replace('#', item?.[identityField])
+                );
+              }
+            }
+            audiencesMatched = Boolean(matchedAudiences.length);
+          } else {
+            audiencesMatched = true; // Empty non-permanent experience audiences list means no restrictions
+            this._loggerManager?.info?.(
+              'DataManager.matchRulesByField()',
+              MESSAGES.NON_PERMANENT_AUDIENCE_NOT_RESTRICTED
+            );
+          }
+        } else {
+          audiencesMatched = true; // Empty experience audiences list means no restrictions
+          this._loggerManager?.info?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.AUDIENCE_NOT_RESTRICTED
+          );
+        }
+      }
+      // Get attached segmentation audiences
+      segments = this.getItemsByIds(
+        experience.audiences,
+        'segments'
+      ) as Array<ConfigSegment>;
+      if (segments.length) {
+        // Validate custom segments against segmentations
+        matchedSegments = this.filterMatchedCustomSegments(segments, visitorId);
+        if (matchedSegments.length) {
+          for (const item of matchedSegments) {
+            this._loggerManager?.info?.(
+              'DataManager.matchRulesByField()',
+              MESSAGES.SEGMENTATION_MATCH.replace('#', item?.[identityField])
+            );
+          }
+        }
+        segmentsMatched = Boolean(matchedSegments.length);
+      } else {
+        segmentsMatched = true; // Empty experience segmentation list means no restrictions
+        this._loggerManager?.info?.(
+          'DataManager.matchRulesByField()',
+          MESSAGES.SEGMENTATION_NOT_RESTRICTED
+        );
+      }
+      // If there are some matched audiences
+      if (audiencesMatched && segmentsMatched) {
+        // And experience has variations
+        if (experience?.variations && experience?.variations?.length) {
+          this._loggerManager?.info?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.EXPERIENCE_RULES_MATCHED
+          );
+          return experience;
+        } else {
+          this._loggerManager?.debug?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.VARIATIONS_NOT_FOUND,
+            this._mapper({
+              visitorProperties: visitorProperties,
+              audiences: audiences
+            })
+          );
+        }
+      } else {
+        this._loggerManager?.debug?.(
+          'DataManager.matchRulesByField()',
+          MESSAGES.AUDIENCE_NOT_MATCH,
+          this._mapper({
+            visitorProperties: visitorProperties,
+            audiences: audiences
           })
         );
       }
@@ -421,7 +454,7 @@ export class DataManager implements DataManagerInterface {
    * @param {boolean=} attributes.enableTracking Defaults to `true`
    * @param {boolean=} attributes.asyncStorage Defaults to `true`
    * @param {string=} attributes.environment
-   * @return {BucketedVariation | RuleError}
+   * @return {BucketedVariation | RuleError | BucketingError}
    * @private
    */
   private _getBucketingByField(
@@ -429,13 +462,14 @@ export class DataManager implements DataManagerInterface {
     identity: string,
     identityField: IdentityField = 'key',
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     const {
       visitorProperties,
       locationProperties,
       updateVisitorProperties,
       forceVariationId,
       enableTracking = true,
+      ignoreLocationProperties,
       environment = this._environment
     } = attributes;
     this._loggerManager?.trace?.(
@@ -446,8 +480,9 @@ export class DataManager implements DataManagerInterface {
         identityField: identityField,
         visitorProperties: visitorProperties,
         locationProperties: locationProperties,
-        forceVariationId: enableTracking,
+        forceVariationId: forceVariationId,
         enableTracking: enableTracking,
+        ignoreLocationProperties: ignoreLocationProperties,
         environment: environment
       })
     );
@@ -457,7 +492,12 @@ export class DataManager implements DataManagerInterface {
       visitorId,
       identity,
       identityField,
-      {visitorProperties, locationProperties, environment}
+      {
+        visitorProperties,
+        locationProperties,
+        ignoreLocationProperties,
+        environment
+      }
     );
     if (experience) {
       if (Object.values(RuleError).includes(experience as RuleError)) {
@@ -483,7 +523,7 @@ export class DataManager implements DataManagerInterface {
    * @param {ConfigExperience} experience
    * @param {string=} forceVariationId
    * @param {boolean=} enableTracking Defaults to `true`
-   * @return {BucketedVariation}
+   * @return {BucketedVariation | BucketingError}
    * @private
    */
   private _retrieveBucketing(
@@ -492,20 +532,49 @@ export class DataManager implements DataManagerInterface {
     updateVisitorProperties: boolean,
     experience: ConfigExperience,
     forceVariationId?: string,
-    enableTracking: boolean = true
-  ): BucketedVariation {
+    enableTracking = true
+  ): BucketedVariation | BucketingError {
     if (!visitorId || !experience) return null;
     if (!experience?.id) return null;
-    let variation = null;
-    let bucketedVariation = null;
+    let variation = null,
+      variationId,
+      bucketedVariation = null,
+      bucketingAllocation;
     const storeKey = this.getStoreKey(visitorId);
+    if (
+      forceVariationId &&
+      (variation = this.retrieveVariation(
+        experience.id,
+        String(forceVariationId)
+      ))
+    ) {
+      variationId = forceVariationId;
+      // If it's found log debug info. The return value will be formed next step
+      this._loggerManager?.info?.(
+        'DataManager._retrieveBucketing()',
+        MESSAGES.BUCKETED_VISITOR_FORCED.replace('#', `#${forceVariationId}`)
+      );
+      this._loggerManager?.debug?.(
+        'DataManager._retrieveBucketing()',
+        this._mapper({
+          storeKey: storeKey,
+          visitorId: visitorId,
+          variationId: forceVariationId
+        })
+      );
+    }
     // Check that visitor id already bucketed and stored and skip bucketing logic
     const {bucketing, segments} = this.getData(visitorId) || {};
-    const {[experience.id.toString()]: variationId} = bucketing || {};
+    const {[experience.id.toString()]: storedVariationId} = bucketing || {};
     if (
-      variationId &&
-      (variation = this.retrieveVariation(experience.id, String(variationId)))
+      storedVariationId &&
+      (!variationId || String(variationId) === String(storedVariationId)) && // variation might be forced but already bucketed before
+      (variation = this.retrieveVariation(
+        experience.id,
+        String(storedVariationId)
+      ))
     ) {
+      variationId = storedVariationId;
       // If it's found log debug info. The return value will be formed next step
       this._loggerManager?.info?.(
         'DataManager._retrieveBucketing()',
@@ -520,83 +589,30 @@ export class DataManager implements DataManagerInterface {
         })
       );
     } else {
-      let variationId;
-      if (
-        forceVariationId &&
-        (variation = this.retrieveVariation(
-          experience.id,
-          String(forceVariationId)
-        ))
-      ) {
-        variationId = forceVariationId;
-        // If it's found log debug info. The return value will be formed next step
-        this._loggerManager?.info?.(
-          'DataManager._retrieveBucketing()',
-          MESSAGES.BUCKETED_VISITOR_FORCED.replace('#', `#${forceVariationId}`)
-        );
-        this._loggerManager?.debug?.(
-          'DataManager._retrieveBucketing()',
-          this._mapper({
-            storeKey: storeKey,
-            visitorId: visitorId,
-            variationId: forceVariationId
-          })
-        );
-      } else {
-        // Build buckets where key is variation id and value is traffic distribution
-        const buckets = experience.variations.reduce((bucket, variation) => {
+      // Build buckets where key is variation id and value is traffic distribution
+      const buckets = experience.variations
+        .filter((variation) =>
+          variation?.status
+            ? variation.status === VariationStatuses.RUNNING
+            : true
+        )
+        .reduce((bucket, variation) => {
           if (variation?.id)
             bucket[variation.id] = variation?.traffic_allocation || 100.0;
           return bucket;
         }, {}) as Record<string, number>;
-        // Select bucket based for provided visitor id
-        variationId = this._bucketingManager.getBucketForVisitor(
-          buckets,
-          visitorId,
-          this._config?.bucketing?.excludeExperienceIdHash
-            ? null
-            : {experienceId: experience.id.toString()}
-        );
-      }
-      if (variationId) {
-        this._loggerManager?.info?.(
-          'DataManager._retrieveBucketing()',
-          MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
-        );
-        // Store the data
-        if (updateVisitorProperties) {
-          this.putData(visitorId, {
-            bucketing: {
-              [experience.id.toString()]: variationId
-            },
-            ...(visitorProperties ? {segments: visitorProperties} : {})
-          });
-        } else {
-          this.putData(visitorId, {
-            bucketing: {[experience.id.toString()]: variationId}
-          });
-        }
-        if (enableTracking) {
-          // Enqueue bucketing event to api
-          const bucketingEvent: BucketingEvent = {
-            experienceId: experience.id.toString(),
-            variationId: variationId.toString()
-          };
-          const visitorEvent: VisitorTrackingEvents = {
-            eventType: VisitorTrackingEvents.eventType.BUCKETING,
-            data: bucketingEvent
-          };
-          this._apiManager.enqueue(visitorId, visitorEvent, segments);
-          this._loggerManager?.trace?.(
-            'DataManager._retrieveBucketing()',
-            this._mapper({
-              visitorEvent
-            })
-          );
-        }
-        // Retrieve and return variation
-        variation = this.retrieveVariation(experience.id, String(variationId));
-      } else {
+      // Select bucket based for provided visitor id
+      const bucketing = this._bucketingManager.getBucketForVisitor(
+        buckets,
+        visitorId,
+        this._config?.bucketing?.excludeExperienceIdHash
+          ? null
+          : {experienceId: experience.id.toString()}
+      );
+      variationId = variationId || bucketing?.variationId; // variation might be forced
+      bucketingAllocation = bucketing?.bucketingAllocation;
+      // Return bucketing errors if present
+      if (!variationId) {
         this._loggerManager?.error?.(
           'DataManager._retrieveBucketing()',
           ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
@@ -605,7 +621,45 @@ export class DataManager implements DataManagerInterface {
             experience: experience
           })
         );
+        return BucketingError.VARIAION_NOT_DECIDED;
       }
+      this._loggerManager?.info?.(
+        'DataManager._retrieveBucketing()',
+        MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
+      );
+      // Store the data
+      if (updateVisitorProperties) {
+        this.putData(visitorId, {
+          bucketing: {
+            [experience.id.toString()]: variationId
+          },
+          ...(visitorProperties ? {segments: visitorProperties} : {})
+        });
+      } else {
+        this.putData(visitorId, {
+          bucketing: {[experience.id.toString()]: variationId}
+        });
+      }
+      if (enableTracking) {
+        // Enqueue bucketing event to api
+        const bucketingEvent: BucketingEvent = {
+          experienceId: experience.id.toString(),
+          variationId: variationId.toString()
+        };
+        const visitorEvent: VisitorTrackingEvents = {
+          eventType: VisitorTrackingEvents.eventType.BUCKETING,
+          data: bucketingEvent
+        };
+        this._apiManager.enqueue(visitorId, visitorEvent, segments);
+        this._loggerManager?.trace?.(
+          'DataManager._retrieveBucketing()',
+          this._mapper({
+            visitorEvent
+          })
+        );
+      }
+      // Retrieve and return variation
+      variation = this.retrieveVariation(experience.id, String(variationId));
     }
 
     // Build the response as bucketed variation object
@@ -616,6 +670,7 @@ export class DataManager implements DataManagerInterface {
           experienceName: experience?.name,
           experienceKey: experience?.key
         },
+        bucketingAllocation,
         ...variation
       };
     }
@@ -734,15 +789,17 @@ export class DataManager implements DataManagerInterface {
    *
    * @param {string} visitorId
    * @param {Array<Record<string, any>>} items
-   * @param {Record<string, any>} locationProperties
+   * @param {Record<string, any>} attributes.locationProperties
+   * @param {IdentityField=} attributes.identityField
+   * @param {boolean=} attributes.forceEvent
    * @returns {Array<Record<string, any> | RuleError>}
    */
   selectLocations(
     visitorId: string,
     items: Array<Record<string, any>>,
-    locationProperties: Record<string, any>,
-    identityField: IdentityField = 'key'
+    attributes: LocationAttributes
   ): Array<Record<string, any> | RuleError> {
+    const {locationProperties, identityField = 'key', forceEvent} = attributes;
     this._loggerManager?.trace?.(
       'DataManager.selectLocations()',
       this._mapper({
@@ -768,8 +825,7 @@ export class DataManager implements DataManagerInterface {
             'DataManager.selectLocations()',
             MESSAGES.LOCATION_MATCH.replace('#', `#${identity}`)
           );
-          if (!locations.includes(identity)) {
-            locations.push(identity);
+          if (!locations.includes(identity) || forceEvent) {
             this._eventManager.fire(
               SystemEvents.LOCATION_ACTIVATED,
               {
@@ -788,6 +844,7 @@ export class DataManager implements DataManagerInterface {
               MESSAGES.LOCATION_ACTIVATED.replace('#', `#${identity}`)
             );
           }
+          if (!locations.includes(identity)) locations.push(identity);
           matchedRecords.push(items[i]);
         } else if (match !== false) {
           // catch rule errors
@@ -846,7 +903,7 @@ export class DataManager implements DataManagerInterface {
     visitorId: string,
     key: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     return this._getBucketingByField(visitorId, key, 'key', attributes);
   }
 
@@ -866,7 +923,7 @@ export class DataManager implements DataManagerInterface {
     visitorId: string,
     id: string,
     attributes: BucketingAttributes
-  ): BucketedVariation | RuleError {
+  ): BucketedVariation | RuleError | BucketingError {
     return this._getBucketingByField(visitorId, id, 'id', attributes);
   }
 
@@ -875,15 +932,17 @@ export class DataManager implements DataManagerInterface {
    * @param {string} visitorId
    * @param {string} goalId
    * @param {Record<string, any>=} goalRule An object of key-value pairs that are used for goal matching
-   * @param {Array<Record<GoalDataKey, number>>} goalData An array of object of key-value pairs
+   * @param {Array<GoalData>} goalData An array of object of key-value pairs
    * @param {VisitorSegments} segments
+   * @param {Record<ConversionSettingKey, number | string | boolean>} conversionSetting An object of key-value pairs that are used for tracking settings
    */
   convert(
     visitorId: string,
     goalId: string,
     goalRule?: Record<string, any>,
-    goalData?: Array<Record<GoalDataKey, number>>,
-    segments?: VisitorSegments
+    goalData?: Array<GoalData>,
+    segments?: VisitorSegments,
+    conversionSetting?: Record<ConversionSettingKey, number | string | boolean>
   ): RuleError | boolean {
     const goal =
       typeof goalId === 'string'
@@ -916,8 +975,10 @@ export class DataManager implements DataManagerInterface {
       }
     }
 
+    const forceMultipleTransactions =
+      conversionSetting?.[ConversionSettingKey.FORCE_MULTIPLE_TRANSACTIONS];
+
     // Check that goal id already triggred and stored and skip tracking conversion event
-    const storeKey = this.getStoreKey(visitorId);
     const {
       bucketing: bucketingData,
       goals: {[goalId.toString()]: goalTriggered} = {}
@@ -927,48 +988,27 @@ export class DataManager implements DataManagerInterface {
         'DataManager.convert()',
         MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
         this._mapper({
-          storeKey: storeKey,
           visitorId: visitorId,
           goalId: goalId
         })
       );
-      return;
-    } else {
-      // Try to find a triggered goal in dataStore
-      const {goals: {[goalId.toString()]: goalTriggered} = {}} =
-        this.dataStoreManager?.get?.(storeKey) || {};
-      if (goalTriggered) {
-        this._loggerManager?.debug?.(
-          'DataManager.convert()',
-          MESSAGES.GOAL_FOUND.replace('#', goalId.toString()),
-          this._mapper({
-            storeKey: storeKey,
-            visitorId: visitorId,
-            goalId: goalId
-          })
-        );
-        return;
-      }
+      if (!forceMultipleTransactions) return;
     }
     // Store the data
     this.putData(visitorId, {
       goals: {[goalId.toString()]: true}
     });
 
-    const data: ConversionEvent = {
-      goalId: goal.id
-    };
-    if (bucketingData) data.bucketingData = bucketingData;
-    const event: VisitorTrackingEvents = {
-      eventType: VisitorTrackingEvents.eventType.CONVERSION,
-      data
-    };
-    this._apiManager.enqueue(visitorId, event, segments);
-    // Split transaction events
-    if (goalData) {
+    // Send conversion event
+    if (!goalTriggered) sendConversion.call(this);
+
+    // Send transaction event
+    if (goalData && (!goalTriggered || forceMultipleTransactions))
+      sendTransaction.call(this);
+
+    function sendConversion() {
       const data: ConversionEvent = {
-        goalId: goal.id,
-        goalData: goalData as Array<Record<string, number>>
+        goalId: goal.id
       };
       if (bucketingData) data.bucketingData = bucketingData;
       const event: VisitorTrackingEvents = {
@@ -976,13 +1016,32 @@ export class DataManager implements DataManagerInterface {
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);
+      this._loggerManager?.trace?.(
+        'DataManager.convert()',
+        this._mapper({
+          event
+        })
+      );
     }
-    this._loggerManager?.trace?.(
-      'DataManager.convert()',
-      this._mapper({
-        event
-      })
-    );
+
+    function sendTransaction() {
+      const data: ConversionEvent = {
+        goalId: goal.id,
+        goalData
+      };
+      if (bucketingData) data.bucketingData = bucketingData;
+      const event: VisitorTrackingEvents = {
+        eventType: VisitorTrackingEvents.eventType.CONVERSION,
+        data
+      };
+      this._apiManager.enqueue(visitorId, event, segments);
+      this._loggerManager?.trace?.(
+        'DataManager.convert()',
+        this._mapper({
+          event
+        })
+      );
+    }
 
     return true;
   }
