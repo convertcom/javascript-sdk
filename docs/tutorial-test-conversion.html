@@ -135,70 +135,94 @@
                 <section>
 
 <article>
-    <h2>Assumptions</h2>
-<p>You want to track 2 features shown to 50% of your visitors on the <code>products</code> view of your e-commerce app.
-Open your Fullstack project at the web interface and create a location for matching the target view, given the following rule:</p>
+    <h1>Testing Conversion Events</h1>
+<h2>Assumptions</h2>
+<p>You want to track 2 features shown to 50% of your visitors on the <code>products</code> view of your e-commerce app.</p>
+<h2>Steps to Set Up</h2>
+<h3>Step 1: Create a Location</h3>
 <ol>
-<li>Rule Type: <code>generic_text_key_value</code></li>
-<li>Match type: <code>matches</code></li>
-<li>Key: <code>location</code></li>
-<li>Value: <code>products</code></li>
-</ol>
-<p>Next, create a goal, given the following:</p>
-<ol>
-<li>Name: <code>Buying Goal</code></li>
-<li>Type: <code>revenue</code></li>
-<li>Key: <code>buying-goal</code></li>
-<li>Triggering Rule:
-<ol>
-<li>Rule Type: <code>generic_text_key_value</code></li>
-<li>Match type: <code>matches</code></li>
-<li>Key: <code>action</code></li>
-<li>Value: <code>buy</code></li>
-</ol>
-</li>
-<li>Settings:
-<ol>
-<li>Triggering Type: <code>manual</code></li>
-</ol>
+<li>Open your Fullstack project at the web interface.</li>
+<li>Create a location with the following details:
+<ul>
+<li><strong>Rule Type:</strong> <code>generic_text_key_value</code></li>
+<li><strong>Match Type:</strong> <code>matches</code></li>
+<li><strong>Key:</strong> <code>location</code></li>
+<li><strong>Value:</strong> <code>products</code></li>
+</ul>
 </li>
 </ol>
-<p>Next, create 2 features, given the following:</p>
-<p>Feature 1:</p>
+<h3>Step 2: Create a Goal</h3>
 <ol>
-<li>Name: <code>Buying Options</code></li>
-<li>Key: <code>buying-options</code></li>
-<li>Variables:
-<ol>
-<li>Key: <code>options</code></li>
-<li>Type: <code>json</code></li>
-</ol>
+<li>Create a goal with the following details:
+<ul>
+<li><strong>Name:</strong> <code>Buying Goal</code></li>
+<li><strong>Type:</strong> <code>revenue</code></li>
+<li><strong>Key:</strong> <code>buying-goal</code></li>
+<li><strong>Triggering Rule:</strong>
+<ul>
+<li><strong>Rule Type:</strong> <code>generic_text_key_value</code></li>
+<li><strong>Match Type:</strong> <code>matches</code></li>
+<li><strong>Key:</strong> <code>action</code></li>
+<li><strong>Value:</strong> <code>buy</code></li>
+</ul>
+</li>
+<li><strong>Settings:</strong>
+<ul>
+<li><strong>Triggering Type:</strong> <code>manual</code></li>
+</ul>
+</li>
+</ul>
 </li>
 </ol>
-<p>Feature 2:</p>
+<h3>Step 3: Create Features</h3>
 <ol>
-<li>Name: <code>Buy with Discount</code></li>
-<li>Key: <code>buy-discount</code></li>
-<li>Variables:
-<ol>
-<li>Key: <code>discount</code></li>
-<li>Type: <code>integer</code></li>
-</ol>
+<li>
+<p>Create Feature 1:</p>
+<ul>
+<li><strong>Name:</strong> <code>Buying Options</code></li>
+<li><strong>Key:</strong> <code>buying-options</code></li>
+<li><strong>Variables:</strong>
+<ul>
+<li><strong>Key:</strong> <code>options</code></li>
+<li><strong>Type:</strong> <code>json</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Create Feature 2:</p>
+<ul>
+<li><strong>Name:</strong> <code>Buy with Discount</code></li>
+<li><strong>Key:</strong> <code>buy-discount</code></li>
+<li><strong>Variables:</strong>
+<ul>
+<li><strong>Key:</strong> <code>discount</code></li>
+<li><strong>Type:</strong> <code>integer</code></li>
+</ul>
+</li>
+</ul>
 </li>
 </ol>
-<p>Then create one experience with one variation (<em>beside the original</em>) linked to the above location, goal, and features, given the following unique identifiers:</p>
-<p>Variation 1:</p>
+<h3>Step 4: Create an Experience</h3>
 <ol>
-<li>Traffic: <code>50%</code></li>
-<li>Key: <code>with-buying-options</code></li>
+<li>Create an experience with one variation (beside the original) linked to the above location, goal, and features:
+<ul>
+<li><strong>Variation 1:</strong>
+<ul>
+<li><strong>Traffic:</strong> <code>50%</code></li>
+<li><strong>Key:</strong> <code>with-buying-options</code></li>
+</ul>
+</li>
+</ul>
+</li>
 </ol>
-<h2>ReactJS Example</h2>
+<h2>ReactJS Implementation Example</h2>
 <pre class="prettyprint source lang-javascript"><code>import {useState, useEffect, useContext, createContext} from 'react';
 import ConvertSDK from '@convertcom/js-sdk';
 
 const UserContext = createContext();
 
-const convertSDK = new ConvertSDK({sdkKey: 'xxx'});
+const convertSDK = new ConvertSDK({sdkKey: 'your_sdk_key_here'});
 
 const ProductsComponent = () => {
   const {sdkContext} = useContext(UserContext);
@@ -210,43 +234,56 @@ const ProductsComponent = () => {
     const bucketedFeatures = sdkContext.runFeatures({
       locationProperties: {location: 'products'}
     });
-    bucketedFeatures.forEach((e) => {
-      if (e.key === 'buying-options' && e?.variables?.options) {
+    bucketedFeatures.forEach((feature) => {
+      if (feature.key === 'buying-options' && feature.variables?.options) {
         setWithBuyingOptions(true);
-        setBuyingOptions(Object.values(e?.variables?.options));
+        setBuyingOptions(Object.values(feature.variables.options));
       }
-      if (e.key === 'buy-discount' && e?.variables?.discount) {
-        setWithDiscount(e?.variables?.discount);
+      if (feature.key === 'buy-discount' && feature.variables?.discount) {
+        setWithDiscount(feature.variables.discount);
       }
     });
   };
 
-  useEffect(() => sdkContext && decide(), [sdkContext]);
+  useEffect(() => {
+    if (sdkContext) {
+      decide();
+    }
+  }, [sdkContext]);
 
-  const track = (price, quantity = 1) => {
+  const track = (price, quantity, id) => {
     sdkContext.trackConversion('buying-goal', {
       ruleData: {
         action: 'buy'
       },
       conversionData: [
         {
-          amount: price,
-          productsCount: quantity
+          key: 'amount',
+          value: price
+        },
+        {
+          key: 'productsCount',
+          value: quantity
+        },
+        {
+          key: 'transactionId',
+          value: id
         }
       ]
     });
   };
 
-  const BuyOption = (option, price, discount = 0) => (
+  const BuyOption = ({option, price, discount = 0}) => (
     &lt;button
       className=&quot;product-buy&quot;
       onClick={(e) => {
         e.preventDefault();
-        const price = 10;
+        const price = 10,
+          id = 'transaction-unique-id';
         if (discount) {
-          track((price * discount) / 100, 1);
+          track((price * discount) / 100, 1, id);
         } else {
-          track(price, 1);
+          track(price, 1, id);
         }
       }}
     >
@@ -264,7 +301,7 @@ const ProductsComponent = () => {
           &lt;div className=&quot;buying-options&quot;>
             &lt;h1>Buying Options&lt;/h1>
             {buyingOptions.map((option) => (
-              &lt;BuyOption option={option} price={10} discount={withDiscount} />
+              &lt;BuyOption key={option} option={option} price={10} discount={withDiscount} />
             ))}
           &lt;/div>
         )}
@@ -278,7 +315,7 @@ const ProductsComponent = () => {
           &lt;div className=&quot;buying-options&quot;>
             &lt;h1>Buying Options&lt;/h1>
             {buyingOptions.map((option) => (
-              &lt;BuyOption option={option} price={50} discount={withDiscount} />
+              &lt;BuyOption key={option} option={option} price={50} discount={withDiscount} />
             ))}
           &lt;/div>
         )}
@@ -287,13 +324,12 @@ const ProductsComponent = () => {
   );
 };
 
-export default function App() {
-  const userId = Date.now().toString(); // in reality, this should be the visitor ID. Fur example: email, username, GUID, .. etc.
-
+const App = () => {
+  const userId = Date.now().toString(); // In reality, this should be the visitor ID, e.g., email, username, GUID, etc.
   const [sdkContext, setSdkContext] = useState();
 
   useEffect(() => {
-    async function initSdk() {
+    const initSdk = async () => {
       try {
         await convertSDK.onReady();
         const context = convertSDK.createContext(userId); // Convert SDK context needs to be created only once, hence the use of React Context below.
@@ -301,7 +337,7 @@ export default function App() {
       } catch (error) {
         console.error('SDK Error:', error);
       }
-    }
+    };
     initSdk();
   }, []);
 
@@ -310,7 +346,9 @@ export default function App() {
       &lt;ProductsComponent />
     &lt;/UserContext.Provider>
   );
-}
+};
+
+export default App;
 </code></pre>
 </article>
 

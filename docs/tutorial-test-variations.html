@@ -135,54 +135,66 @@
                 <section>
 
 <article>
-    <h2>Assumptions</h2>
-<p>You want to show 2 variations only to 50% of your visitors on the <code>products</code> view of your e-commerce app.
-Open your Fullstack project at the web interface and create a location for matching the target view, given the following rule:</p>
+    <h1>Testing Variations</h1>
+<h2>Assumptions</h2>
+<p>You want to show 2 variations only to 50% of your visitors on the <code>products</code> view of your e-commerce app.</p>
+<h2>Steps to Set Up</h2>
+<h3>Step 1: Create a Location</h3>
 <ol>
-<li>Rule Type: <code>generic_text_key_value</code></li>
-<li>Match type: <code>matches</code></li>
-<li>Key: <code>location</code></li>
-<li>Value: <code>products</code></li>
+<li>Open your Fullstack project at the web interface.</li>
+<li>Create a location with the following details:
+<ul>
+<li><strong>Rule Type:</strong> <code>generic_text_key_value</code></li>
+<li><strong>Match Type:</strong> <code>matches</code></li>
+<li><strong>Key:</strong> <code>location</code></li>
+<li><strong>Value:</strong> <code>products</code></li>
+</ul>
+</li>
 </ol>
-<p>Then create 2 experiences each with one variation (<em>beside the original</em>) linked to the above location, given the following unique identifiers:</p>
-<p>Variation 1:</p>
+<h3>Step 2: Create Experiences</h3>
+<p>Create two experiences, each with one variation (beside the original) linked to the above location:</p>
+<h4>Variation 1</h4>
 <ol>
-<li>Traffic: <code>50%</code></li>
-<li>Key: <code>with-stock-amount</code></li>
+<li><strong>Traffic:</strong> <code>50%</code></li>
+<li><strong>Key:</strong> <code>with-stock-amount</code></li>
 </ol>
-<p>Variation 2:</p>
+<h4>Variation 2</h4>
 <ol>
-<li>Traffic: <code>50%</code></li>
-<li>Key: <code>with-headline</code></li>
+<li><strong>Traffic:</strong> <code>50%</code></li>
+<li><strong>Key:</strong> <code>with-headline</code></li>
 </ol>
-<h2>ReactJS Example</h2>
-<pre class="prettyprint source lang-javascript"><code>import {useState, useEffect, useContext, createContext} from 'react';
+<h2>ReactJS Implementation Example</h2>
+<pre class="prettyprint source lang-javascript"><code>import { useState, useEffect, useContext, createContext } from 'react';
 import ConvertSDK from '@convertcom/js-sdk';
 
 const UserContext = createContext();
 
-const convertSDK = new ConvertSDK({sdkKey: 'xxx'});
+const convertSDK = new ConvertSDK({ sdkKey: 'your_sdk_key_here' });
 
 const ProductsComponent = () => {
-  const {sdkContext} = useContext(UserContext);
+  const { sdkContext } = useContext(UserContext);
   const [withStock, setWithStock] = useState(false);
   const [withHeadline, setWithHeadline] = useState(false);
 
   const decide = () => {
     const bucketedVariations = sdkContext.runExperiences({
-      locationProperties: {location: 'products'}
+      locationProperties: { location: 'products' }
     });
-    bucketedVariations.forEach((e) => {
-      if (e.experienceKey === 'with-stock-amount') {
+    bucketedVariations.forEach((variation) => {
+      if (variation.experienceKey === 'with-stock-amount') {
         setWithStock(true);
       }
-      if (e.experienceKey === 'with-headline') {
+      if (variation.experienceKey === 'with-headline') {
         setWithHeadline(true);
       }
     });
   };
 
-  useEffect(() => sdkContext && decide(), [sdkContext]);
+  useEffect(() => {
+    if (sdkContext) {
+      decide();
+    }
+  }, [sdkContext]);
 
   return (
     &lt;div className=&quot;products&quot;>
@@ -195,9 +207,7 @@ const ProductsComponent = () => {
 
       &lt;div className=&quot;product&quot;>
         &lt;div className=&quot;product-title&quot;>Shoe&lt;/div>
-        {withHeadline && (
-          &lt;div className=&quot;product-headline&quot;>Natural leather&lt;/div>
-        )}
+        {withHeadline && &lt;div className=&quot;product-headline&quot;>Natural leather&lt;/div>}
         &lt;div className=&quot;product-price&quot;>$50&lt;/div>
         {withStock && &lt;div className=&quot;product-stock&quot;>out of stock&lt;/div>}
       &lt;/div>
@@ -205,13 +215,12 @@ const ProductsComponent = () => {
   );
 };
 
-export default function App() {
-  const userId = Date.now().toString(); // in reality, this should be the visitor ID. Fur example: email, username, GUID, .. etc.
-
+const App = () => {
+  const userId = Date.now().toString(); // In reality, this should be the visitor ID, e.g., email, username, GUID, etc.
   const [sdkContext, setSdkContext] = useState();
 
   useEffect(() => {
-    async function initSdk() {
+    const initSdk = async () => {
       try {
         await convertSDK.onReady();
         const context = convertSDK.createContext(userId); // Convert SDK context needs to be created only once, hence the use of React Context below.
@@ -219,16 +228,18 @@ export default function App() {
       } catch (error) {
         console.error('SDK Error:', error);
       }
-    }
+    };
     initSdk();
   }, []);
 
   return (
-    &lt;UserContext.Provider value={{sdkContext}}>
+    &lt;UserContext.Provider value={{ sdkContext }}>
       &lt;ProductsComponent />
     &lt;/UserContext.Provider>
   );
-}
+};
+
+export default App;
 </code></pre>
 </article>
 

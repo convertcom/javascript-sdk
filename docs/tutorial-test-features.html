@@ -135,40 +135,56 @@
                 <section>
 
 <article>
-    <h2>Assumptions</h2>
-<p>You want to show one feature to 20% of your visitors on the <code>homepage</code> view of your e-commerce app.
-Open your Fullstack project at the web interface and create a location for matching the target view, given the following rule:</p>
+    <h1>Testing Feature Flags</h1>
+<h2>Assumptions</h2>
+<p>You want to show one feature to 20% of your visitors on the <code>homepage</code> view of your e-commerce app.</p>
+<h2>Steps to Set Up</h2>
+<h3>Step 1: Create a Location</h3>
 <ol>
-<li>Rule Type: <code>generic_text_key_value</code></li>
-<li>Match type: <code>matches</code></li>
-<li>Key: <code>location</code></li>
-<li>Value: <code>homepage</code></li>
-</ol>
-<p>Next, create a feature, given the following:</p>
-<ol>
-<li>Name: <code>Special Deals</code></li>
-<li>Key: <code>special-deals</code></li>
-<li>Variables:
-<ol>
-<li>Key: <code>products</code></li>
-<li>Type: <code>json</code></li>
-</ol>
+<li>Open your Fullstack project at the web interface.</li>
+<li>Create a location with the following details:
+<ul>
+<li><strong>Rule Type:</strong> <code>generic_text_key_value</code></li>
+<li><strong>Match Type:</strong> <code>matches</code></li>
+<li><strong>Key:</strong> <code>location</code></li>
+<li><strong>Value:</strong> <code>homepage</code></li>
+</ul>
 </li>
 </ol>
-<p>Then create one experience with one variation (<em>beside the original</em>) linked to the above location and feature, given the following:</p>
-<p>Variation 1:</p>
+<h3>Step 2: Create a Feature</h3>
 <ol>
-<li>Traffic: <code>20%</code></li>
-<li>Key: <code>with-special-deals</code></li>
-<li>Changes:
-<ol>
-<li>Type: <code>fullStackFeature</code></li>
-<li>Feature: <code>Special Deals</code></li>
-<li>Variables Data:
-<ol>
-<li>Key: <code>products</code></li>
-<li>Value:</li>
+<li>Create a feature with the following details:
+<ul>
+<li><strong>Name:</strong> <code>Special Deals</code></li>
+<li><strong>Key:</strong> <code>special-deals</code></li>
+<li><strong>Variables:</strong>
+<ul>
+<li><strong>Key:</strong> <code>products</code></li>
+<li><strong>Type:</strong> <code>json</code></li>
+</ul>
+</li>
+</ul>
+</li>
 </ol>
+<h3>Step 3: Create an Experience</h3>
+<ol>
+<li>Create an experience with one variation (beside the original) linked to the above location and feature:
+<ul>
+<li><strong>Variation 1:</strong>
+<ul>
+<li><strong>Traffic:</strong> <code>20%</code></li>
+<li><strong>Key:</strong> <code>with-special-deals</code></li>
+<li><strong>Changes:</strong>
+<ul>
+<li><strong>Type:</strong> <code>fullStackFeature</code></li>
+<li><strong>Feature:</strong> <code>Special Deals</code></li>
+<li><strong>Variables Data:</strong>
+<ul>
+<li>
+<p><strong>Key:</strong> <code>products</code></p>
+</li>
+<li>
+<p><strong>Value:</strong></p>
 <pre class="prettyprint source lang-json"><code>{
   &quot;jacket&quot;: {
     &quot;title&quot;: &quot;Jacket&quot;,
@@ -183,44 +199,53 @@ Open your Fullstack project at the web interface and create a location for match
 }
 </code></pre>
 </li>
-</ol>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </li>
 </ol>
-<h2>ReactJS Example</h2>
-<pre class="prettyprint source lang-javascript"><code>import {useState, useEffect, useContext, createContext} from 'react';
+<h2>ReactJS Implementation Example</h2>
+<pre class="prettyprint source lang-javascript"><code>import { useState, useEffect, useContext, createContext } from 'react';
 import ConvertSDK from '@convertcom/js-sdk';
 
 const UserContext = createContext();
 
-const convertSDK = new ConvertSDK({sdkKey: 'xxx'});
+const convertSDK = new ConvertSDK({ sdkKey: 'your_sdk_key_here' });
 
 const ProductsComponent = () => {
-  const {sdkContext} = useContext(UserContext);
+  const { sdkContext } = useContext(UserContext);
   const [withSpecialDeals, setWithSpecialDeals] = useState(false);
   const [specialDeals, setSpecialDeals] = useState([]);
 
   const decide = () => {
     const bucketedFeature = sdkContext.runFeature('special-deals', {
-      locationProperties: {location: 'homepage'}
+      locationProperties: { location: 'homepage' }
     });
-    if (!!bucketedFeature && bucketedFeature?.status === 'enabled') {
+    if (bucketedFeature?.status === 'enabled') {
       setWithSpecialDeals(true);
-
-      if (bucketedFeature?.variables?.products) {
-        setSpecialDeals(Object.values(bucketedFeature?.variables?.products));
+      if (bucketedFeature.variables?.products) {
+        setSpecialDeals(Object.values(bucketedFeature.variables.products));
       }
     }
   };
 
-  useEffect(() => sdkContext && decide(), [sdkContext]);
+  useEffect(() => {
+    if (sdkContext) {
+      decide();
+    }
+  }, [sdkContext]);
 
   return (
-    &lt;div className=&quot;homapage&quot;>
+    &lt;div className=&quot;homepage&quot;>
       {withSpecialDeals && (
         &lt;div className=&quot;special-deals&quot;>
           &lt;h1>Special Deals&lt;/h1>
           {specialDeals.map((product) => (
-            &lt;div className=&quot;product&quot;>
+            &lt;div className=&quot;product&quot; key={product.title}>
               &lt;div className=&quot;product-title&quot;>{product.title}&lt;/div>
               &lt;div className=&quot;product-price&quot;>
                 &lt;strike>{product.original_price}&lt;/strike> {product.price}
@@ -245,13 +270,12 @@ const ProductsComponent = () => {
   );
 };
 
-export default function App() {
-  const userId = Date.now().toString(); // in reality, this should be the visitor ID. Fur example: email, username, GUID, .. etc.
-
+const App = () => {
+  const userId = Date.now().toString(); // In reality, this should be the visitor ID, e.g., email, username, GUID, etc.
   const [sdkContext, setSdkContext] = useState();
 
   useEffect(() => {
-    async function initSdk() {
+    const initSdk = async () => {
       try {
         await convertSDK.onReady();
         const context = convertSDK.createContext(userId); // Convert SDK context needs to be created only once, hence the use of React Context below.
@@ -259,16 +283,18 @@ export default function App() {
       } catch (error) {
         console.error('SDK Error:', error);
       }
-    }
+    };
     initSdk();
   }, []);
 
   return (
-    &lt;UserContext.Provider value={{sdkContext}}>
+    &lt;UserContext.Provider value={{ sdkContext }}>
       &lt;ProductsComponent />
     &lt;/UserContext.Provider>
   );
-}
+};
+
+export default App;
 </code></pre>
 </article>
 

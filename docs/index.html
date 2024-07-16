@@ -157,43 +157,98 @@
 
     <section>
         <article><h1>Convert Insights, Inc. JavaScript SDK</h1>
+<hr>
 <p><img src="https://convertcom.github.io/javascript-sdk/coverage.svg" alt="coverage">
 <a href="https://choosealicense.com/licenses/apache-2.0/"><img src="https://img.shields.io/badge/license-Apache--2.0-green" alt="license"></a></p>
-<h2>About</h2>
-<p>This repository contains the <strong>JavaScript SDK (nodeJs and browser)</strong> needed to integrate Convert.com's <strong>Fullstack Product (feature tests, feature flags, feature rollouts)</strong> inside third-party apps. This is maintained by the Convert.com team.</p>
-<h2>Contributing</h2>
-<p>See <a href="./CONTRIBUTING.md">CONTRIBUTING</a> for details on how to submit your contribution.</p>
-<h2>Documentation</h2>
-<p>See <a href="https://convertcom.github.io/javascript-sdk/">JavaScript SDK Documentation</a> for details on the SDK modules, in addition to practical tutorials.</p>
-<h2>Requirements</h2>
-<p>Fullstack projects are slightly different compared to web-based projects, so that</p>
-<h3>1. General</h3>
-<p>All entities must have a unique identifier <code>key</code> that is a <code>string</code> when defined at the web interface.</p>
-<h3>2. Audiences</h3>
-<p>There is no persistence managed by the SDK directly, instead, as a developer you can provide your own DataStore that is used to make user bucketing persistent. That said, all created Audiences in a Fullstack project shall be of type <code>transient</code> by definition, where conditions will be checked each time they encounter the experience.</p>
-<h3>3. Segments</h3>
-<p>Represent Audiences of type <code>segmentation</code>, conditions will be checked on every page-view until they are met. The only difference in a Fullstack project is that if met, the segment does not stay persistent unless you use your own DataStore.</p>
-<h3>4. Rules</h3>
-<p>Limited to the following types:</p>
+<hr>
+<h2>Table of Contents</h2>
 <ol>
-<li><code>generic_bool_key_value</code>: matching type choices are limited to <code>equals</code></li>
-<li><code>generic_numeric_key_value</code>: matching type choices are limited to <code>equalsNumber</code>, <code>less</code>, and <code>lessEqual</code></li>
-<li><code>generic_text_key_value</code>: matching type choices are limited to <code>matches</code>, <code>regexMatches</code>, <code>contains</code>, <code>endsWith</code>, and <code>startsWith</code></li>
+<li><a href="#about">About</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#documentation">Documentation</a></li>
+<li><a href="#requirements">Requirements</a>
+<ul>
+<li><a href="#1-general">General</a></li>
+<li><a href="#2-audiences">Audiences</a></li>
+<li><a href="#3-segments">Segments</a></li>
+<li><a href="#4-rules">Rules</a></li>
+<li><a href="#5-experiences">Experiences</a></li>
+<li><a href="#6-features">Features</a></li>
+<li><a href="#7-environments">Environments</a></li>
+</ul>
+</li>
+<li><a href="#getting-started-with-installation">Getting Started with Installation</a></li>
+<li><a href="#using-the-sdk">Using the SDK</a>
+<ul>
+<li><a href="#comprehensive-examples">Comprehensive Examples</a></li>
+<li><a href="#import-the-sdk-into-your-project">Import the SDK into Your Project</a></li>
+<li><a href="#initialize-using-the-sdk-key">Initialize Using the SDK Key</a></li>
+<li><a href="#initialize-using-static-configuration">Initialize Using Static Configuration</a></li>
+<li><a href="#sdk-configuration-options">SDK Configuration Options</a></li>
+<li><a href="#create-user-context">Create User Context</a></li>
+</ul>
+</li>
+<li><a href="#sdk-methods-for-running-experiences">SDK Methods for Running Experiences</a>
+<ul>
+<li><a href="#run-all-active-experiences">Run All Active Experiences</a></li>
+<li><a href="#run-a-single-experience">Run a Single Experience</a></li>
+<li><a href="#run-multiple-features">Run Multiple Features</a></li>
+<li><a href="#run-a-single-feature">Run a Single Feature</a></li>
+<li><a href="#track-conversion-events">Track Conversion Events</a></li>
+<li><a href="#run-custom-segments">Run Custom Segments</a></li>
+<li><a href="#set-default-segments">Set Default Segments</a></li>
+<li><a href="#update-visitor-properties">Update Visitor Properties</a></li>
+<li><a href="#get-config-entity">Get Config Entity</a></li>
+<li><a href="#get-config-entity-by-id">Get Config Entity by Id</a></li>
+<li><a href="#release-pending-queues">Release Pending Queues</a></li>
+</ul>
+</li>
+<li><a href="#events">Events</a></li>
+<li><a href="#provide-persistent-datastore">Provide Persistent DataStore</a></li>
+<li><a href="#build-environment-variables">Build Environment Variables</a></li>
+<li><a href="#custom-build">Custom Build</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#credits">Credits</a></li>
+</ol>
+<hr>
+<h2>About</h2>
+<p>This repository contains the <strong>JavaScript SDK (Node.js and browser)</strong> needed to integrate Convert.com's <strong>Fullstack Product (feature tests, feature flags, feature rollouts)</strong> into third-party apps. It is maintained by the Convert.com team.</p>
+<hr>
+<h2>Contributing</h2>
+<p>See <a href="./CONTRIBUTING.md">CONTRIBUTING</a> for details on how to submit your contributions.</p>
+<hr>
+<h2>Documentation</h2>
+<p>Refer to the <a href="https://convertcom.github.io/javascript-sdk/">JavaScript SDK Documentation</a> for details on the SDK modules and practical tutorials.</p>
+<hr>
+<h2>Requirements</h2>
+<p>Fullstack projects differ slightly from web-based projects. Here are some key points:</p>
+<h3>1. General</h3>
+<p>All entities must have a unique identifier <code>key</code> that is a <code>string</code> when defined in the web interface.</p>
+<h3>2. Audiences</h3>
+<p>The SDK does not manage persistence directly. Instead, you can provide your own DataStore to make user bucketing persistent. All created audiences in a Fullstack project should be of type <code>transient</code>, where conditions are checked each time they encounter the experience.</p>
+<h3>3. Segments</h3>
+<p>Segments represent audiences of type <code>segmentation</code>. Conditions are checked on every page view until they are met. In a Fullstack project, segments do not stay persistent unless you use your own DataStore.</p>
+<h3>4. Rules</h3>
+<p>Rules are limited to the following types:</p>
+<ol>
+<li><code>generic_bool_key_value</code>: Matching type choices are limited to <code>equals</code>.</li>
+<li><code>generic_numeric_key_value</code>: Matching type choices are limited to <code>equalsNumber</code>, <code>less</code>, and <code>lessEqual</code>.</li>
+<li><code>generic_text_key_value</code>: Matching type choices are limited to <code>matches</code>, <code>regexMatches</code>, <code>contains</code>, <code>endsWith</code>, and <code>startsWith</code>.</li>
 </ol>
 <blockquote>
-<p><strong>Note:</strong> Each rule must have a unique identifier <code>key</code> that is a <code>string</code></p>
+<p><strong>Note:</strong> Each rule must have a unique identifier <code>key</code> that is a <code>string</code>.</p>
 </blockquote>
 <h3>5. Experiences</h3>
-<p>Limited to the following types:</p>
+<p>Experiences are limited to the following types:</p>
 <ol>
-<li><code>a/b_fullstack</code>: an <code>a/b</code> experience</li>
-<li><code>feature_rollout</code>: an experience with only one variation that is not the original</li>
+<li><code>a/b_fullstack</code>: An <code>a/b</code> experience.</li>
+<li><code>feature_rollout</code>: An experience with only one variation that is not the original.</li>
 </ol>
 <h3>6. Features</h3>
 <blockquote>
-<p>Available only to Fullstack projects.</p>
+<p>Available only for Fullstack projects.</p>
 </blockquote>
-<p>Variables that can be defined at the web interface and used by the SDK, supporting the following types:</p>
+<p>Features are variables that can be defined in the web interface and used by the SDK, supporting the following types:</p>
 <ol>
 <li><code>boolean</code></li>
 <li><code>integer</code></li>
@@ -202,40 +257,53 @@
 </ol>
 <h3>7. Environments</h3>
 <blockquote>
-<p>Available only to Fullstack projects.</p>
+<p>Available only for Fullstack projects.</p>
 </blockquote>
-<p>All matching rules apply only to entities having the same <code>environment</code>. You can create as many environments as you wish, the defaults are:</p>
+<p>All matching rules apply only to entities within the same <code>environment</code>. You can create as many environments as you need. The default environments are:</p>
 <ol>
 <li><code>staging</code></li>
 <li><code>production</code></li>
 </ol>
-<h2>Getting Started</h2>
-<p>Install module using <code>npm</code> or <code>yarn</code>:</p>
+<hr>
+<h2>Getting Started with Installation</h2>
+<p>Install the module using <code>npm</code> or <code>yarn</code>:</p>
 <pre class="prettyprint source lang-bash"><code>npm install --save @convertcom/js-sdk
 </code></pre>
-<p>Package's build contains definitions for generating entry points in different formats:</p>
+<p>The package's build contains definitions for generating entry points in different formats:</p>
 <ul>
-<li>CommonJS <code>CJS</code> - can be found under <code>lib/index.js</code>or<code>lib/index.min.js</code> for the minified version;</li>
-<li>ES Moduls <code>ESM</code> - can be found under <code>lib/index.mjs</code>or<code>lib/index.min.mjs</code> for the minified version;</li>
-<li>Universal Module Definition <code>UMD</code> - can be found under <code>lib/index.umd.js</code> or <code>lib/index.umd.min.js</code> for the minified version;</li>
+<li>CommonJS (<code>CJS</code>) - found under <code>lib/index.js</code> or <code>lib/index.min.js</code> for the minified version.</li>
+<li>ES Modules (<code>ESM</code>) - found under <code>lib/index.mjs</code> or <code>lib/index.min.mjs</code> for the minified version.</li>
+<li>Universal Module Definition (<code>UMD</code>) - found under <code>lib/index.umd.js</code> or <code>lib/index.umd.min.js</code> for the minified version.</li>
 </ul>
-<p>The above entry points can also be loaded through <a href="https://unpkg.com/">unpkg</a> but this method will add a dependency on third-party URLs and therefore is recommended to use it only for evaluation purposes:</p>
+<p>You can also load the above entry points through <a href="https://unpkg.com/">unpkg</a>. This method adds a dependency on third-party URLs and is recommended only for evaluation purposes:</p>
 <pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://unpkg.com/@convertcom/js-sdk/lib/index.js&quot;>&lt;/script>
 
 &lt;!-- or the minified version -->
 &lt;script src=&quot;https://unpkg.com/@convertcom/js-sdk/lib/index.min.js&quot;>&lt;/script>
 </code></pre>
-<h2>SDK Usage</h2>
-<h3>Import the SDK Inside Your Project</h3>
+<hr>
+<h2>Using the SDK</h2>
+<h3>Comprehensive Examples</h3>
+<h4>Simple NodeJS Demo Video</h4>
+<iframe loading="lazy" title="Convert Fullstack Demo" src="https://player.vimeo.com/video/969106633?dnt=1&amp;app_id=122963" width="1200" height="675" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" data-rocket-lazyload="fitvidscompatible" data-lazy-src="https://player.vimeo.com/video/969106633?dnt=1&amp;app_id=122963" data-ll-status="loaded" class="entered lazyloaded"></iframe>
+<h4>Detailed ReactJS based Tutorials</h4>
+<p>For more detailed tutorials and guides, please visit the following links:</p>
+<ul>
+<li><a href="https://convertcom.github.io/javascript-sdk/tutorial-test-conversion.html">Testing Conversion Events</a></li>
+<li><a href="https://convertcom.github.io/javascript-sdk/tutorial-test-features.html">Testing Feature Flags</a></li>
+<li><a href="https://convertcom.github.io/javascript-sdk/tutorial-test-segments.html">Testing User Segments</a></li>
+<li><a href="https://convertcom.github.io/javascript-sdk/tutorial-test-variations.html">Testing Variations</a></li>
+</ul>
+<h3>Import the SDK into Your Project</h3>
 <p><strong>ES6:</strong></p>
-<p>Supports <code>import</code> and <code>export</code> statements in modern frontend frameworks (<em>i.e. React, Vue, Angular, .. etc</em>).</p>
+<p>Supports <code>import</code> and <code>export</code> statements in modern frontend frameworks (e.g., React, Vue, Angular, etc.).</p>
 <blockquote>
 <p>Must be transpiled to work in client browsers.</p>
 </blockquote>
 <pre class="prettyprint source lang-typescript"><code>import ConvertSDK from '@convertcom/js-sdk';
 </code></pre>
 <p><strong>ESM:</strong></p>
-<p>Supports <code>import</code> and <code>export</code> statements in ES Module packages (<em>type <code>module</code> in <code>package.json</code></em>).</p>
+<p>Supports <code>import</code> and <code>export</code> statements in ES Module packages (type <code>module</code> in <code>package.json</code>).</p>
 <blockquote>
 <p>Must be transpiled to work in client browsers.</p>
 </blockquote>
@@ -243,7 +311,7 @@
 const ConvertSDK = (ConvertSDKModule as any).default;
 </code></pre>
 <p><strong>CommonJS:</strong></p>
-<p>Supports <code>require</code> and <code>exports</code> in NodeJS environment.</p>
+<p>Supports <code>require</code> and <code>exports</code> in a Node.js environment.</p>
 <blockquote>
 <p>Must be transpiled to work in client browsers.</p>
 </blockquote>
@@ -257,14 +325,15 @@ const ConvertSDK = (ConvertSDKModule as any).default;
 </code></pre>
 <pre class="prettyprint source lang-typescript"><code>const {default: ConvertSDK} = window.ConvertSDK; // ConvertSDK is provided by https://unpkg.com/@convertcom/js-sdk/lib/index.umd.min.js
 </code></pre>
-<p>The SDK instance can be initialized by either providing an SDK key or a full project's data object.</p>
-<h4>Initialize using the SDK Key</h4>
-<p>Include <code>sdkKey</code> as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every <code>dataRefreshInterval</code> seconds.</p>
+<p>The SDK instance can be initialized by either providing an <code>sdkKey</code> or a full project's data object.</p>
+<h4>Initialize Using the SDK Key</h4>
+<p>Include <code>sdkKey</code> as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every <code>dataRefreshInterval</code> milliseconds.</p>
 <pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
 
 const convertSDK: ConvertInterface = new ConvertSDK({
   sdkKey: 'xxx',
-  dataRefreshInterval: 300000 // in milliseconds (5 minutes)
+  dataRefreshInterval: 300000, // in milliseconds (5 minutes)
+  environment: 'staging', // can also be &quot;live&quot;; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
   // create user context
@@ -272,16 +341,24 @@ convertSDK.onReady().then(() => {
   // ...
 });
 </code></pre>
-<p>After this point, the SDK has been successfully instantiated, project config data has been downloaded, and it is ready to be used for starting a UserContext.</p>
-<h4>Initialize using Static Configuration</h4>
-<p>Alternatively, to provide an <strong>SDK</strong> key**, a static project configuration can be given. The project configuration data can be fetched from https://cdn-4.convertexperiments.com/api/v1/config/account_id/project_id</p>
-<pre class="prettyprint source lang-typescript"><code>import {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
+<p>After this, the SDK has been successfully instantiated, the project config data has been downloaded, and it is ready to be used for starting a UserContext.</p>
+<h4>Initialize Using Static Configuration</h4>
+<p>Alternatively, instead of providing an <code>sdkKey</code>, you can provide a static project configuration. The project configuration data can be fetched from <em>https://cdn-4.convertexperiments.com/api/v1/config/account_id/project_id</em>.</p>
+<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
 
-const config: ConvertConfig = {
-  data: projectData // full project's data
+const projectConfig = {
+  // your static project configuration data
 };
 
-const convertSDK: ConvertInterface = new ConvertSDK(config);
+const convertSDK: ConvertInterface = new ConvertSDK({
+  projectConfig,
+  environment: 'staging', // can also be &quot;live&quot;; this is configured in the Convert UI.
+} as ConvertConfig);
+convertSDK.onReady().then(() => {
+  // create user context
+  // run experience(s)
+  // ...
+});
 </code></pre>
 <p>When using static project data, the SDK is instantiated as soon as the instance is created and can be used right away for starting a UserContext.</p>
 <h3>SDK Configuration Options</h3>
@@ -289,36 +366,36 @@ const convertSDK: ConvertInterface = new ConvertSDK(config);
 <pre class="prettyprint source lang-typescript"><code>import {LogLevel} from '@convertcom/js-sdk';
 
 const config = {
-  sdkKey: '' // either this or 'data' has to be provided
+  sdkKey: '', // either this or 'data' has to be provided
   environment: 'staging',
   logger: {
     logLevel: LogLevel.DEBUG,
-    customLoggers: [] // Allows 3rd party loggers to be passed
+    customLoggers: [], // Allows 3rd party loggers to be passed
   },
   bucketing: {
     hash_seed: 9999, // murmurhash seed
     max_traffic: 10000, // max hash (representing 100% traffic allocation)
-    excludeExperienceIdHash: false // whether to ignore prefixing the generated hash with the experience id
+    excludeExperienceIdHash: false, // whether to ignore prefixing the generated hash with the experience id
   },
   dataStore: null, // Allows 3rd party data store to be passed (optional)
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   data: projectData,
   events: {
-    batch_size: 10; // max network requests to be released per call
-    release_interval: 10000; // time in milliseconds between network releasing queue (including the intial release)
+    batch_size: 10, // max network requests to be released per call
+    release_interval: 10000, // time in milliseconds between network releasing queue (including the initial release)
   },
   network: {
     tracking: true, // can be set to false to disable tracking events
     cacheLevel: 'default', // can be set to 'low' for short-lived cache (for development purposes only)
-    source: 'js-sdk' // string identifier indicating the source of network requests
+    source: 'js-sdk', // string identifier indicating the source of network requests
   }
 };
 </code></pre>
-<p><code>projectData</code> structure is as described at <a href="https://api.convert.com/doc/serving/#tag/Project-Config">https://api.convert.com/doc/serving/#tag/Project-Config</a></p>
+<p>The <code>projectData</code> structure is described at <a href="https://api.convert.com/doc/serving/#tag/Project-Config">https://api.convert.com/doc/serving/#tag/Project-Config</a>.</p>
 <h3>Create User Context</h3>
 <p>Once the SDK has been created and instantiated, the next step is to create a unique context for the user in scope.</p>
-<p>When creating the UserContext, a unique <code>userId</code> is required to be provided. This will be used in the process of deciding which variation/feature to be presented. As long as this <code>userId</code> does not change for a user and the experience configuration remains the same(variations not getting added or removed and traffic allocation not changed), the feature/variation bucketing will stay unchanged. Otherwise, see <a href="#provide-persistent-datastore">Persistent Datastore</a>.</p>
-<p>For convenience, a list of <strong>User Properties</strong> that can be later used inside Audience definition evaluation can be provided when creating a UserContext. Any of these can be changed by providing them again when calling any of the functional SDK methods for running experiences, under the <code>attributes.visitorProperties</code> while setting the value for <code>attributes.updateVisitorProperties</code> to <code>true</code></p>
+<p>When creating the UserContext, a unique <code>userId</code> is required. This will be used to decide which variation/feature to present. As long as this <code>userId</code> does not change for a user and the experience configuration remains the same (variations not getting added or removed and traffic allocation not changed), the feature/variation bucketing will stay unchanged. Otherwise, see <a href="#provide-persistent-datastore">Provide Persistent DataStore</a>.</p>
+<p>For convenience, a list of <strong>User Properties</strong> that can be later used inside audience definition evaluation can be provided when creating a UserContext. Any of these can be changed by providing them again when calling any of the functional SDK methods for running experiences, under the <code>attributes.visitorProperties</code> while setting the value for <code>attributes.updateVisitorProperties</code> to <code>true</code>.</p>
 <pre class="prettyprint source lang-typescript"><code>import {ContextInterface} from '@convertcom/js-sdk';
 
 const userContext: ContextInterface = convertSDK.createContext(
@@ -335,16 +412,17 @@ const userContext: ContextInterface = convertSDK.createContext(
 const variation: BucketedVariation =
   userContext.runExperience('experience-key');
 </code></pre>
+<hr>
 <h2>SDK Methods for Running Experiences</h2>
 <h3>General Considerations</h3>
-<p>Every method that <code>userContext</code> exposes to run one or more experiences, can receive as a parameter an object with two keys:</p>
+<p>Every method that <code>userContext</code> exposes to run one or more experiences can receive an object with two keys:</p>
 <ul>
-<li><code>locationProperties</code> - key: value object containing properties that are used when evaluating Experiences' Locations;</li>
-<li><code>visitorProperties</code> - key: value object containing properties that are used when evaluating Experiences' Audiences and which will overwrite the same keys provided when creating the <code>userContext</code>;</li>
+<li><code>locationProperties</code> - key-value object containing properties used for evaluating experiences' locations.</li>
+<li><code>visitorProperties</code> - key-value object containing properties used for evaluating experiences' audiences, which will overwrite the same keys provided when creating the <code>userContext</code>.</li>
 </ul>
-<p>On top of this, the <code>environment</code> can be provided as a third parameter.</p>
+<p>Additionally, the <code>environment</code> can be provided as a third parameter.</p>
 <h3>Run All Active Experiences</h3>
-<p>The method will loop through each of the active experiences, run them and return, for each of the experiences, the selected variation. Decides whether the user should be bucketed into all variations based on the configuration rules (<em><code>locations</code> and <code>audiences</code></em>).</p>
+<p>This method loops through each of the active experiences, runs them, and returns the selected variation for each experience. It decides whether the user should be bucketed into all variations based on the configuration rules (locations and audiences).</p>
 <h4>Parameters</h4>
 <table>
 <thead>
@@ -360,31 +438,31 @@ const variation: BucketedVariation =
 <td>attributes</td>
 <td>object</td>
 <td>No</td>
-<td>An object that specifies attributes for the user. Accepts 3 properties:</td>
+<td>An object specifying attributes for the user.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>locationProperties</code> an object of key-value pairs that are used for location matching.</td>
+<td><code>locationProperties</code>: An object of key-value pairs used for location matching.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>visitorProperties</code> an object of key-value pairs that are used for audience targeting.</td>
+<td><code>visitorProperties</code>: An object of key-value pairs used for audience targeting.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>updateVisitorProperties</code> optional boolean for updating in-memory visitor properties.</td>
+<td><code>updateVisitorProperties</code>: Optional boolean for updating in-memory visitor properties.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>environment</code> optional string.</td>
+<td><code>environment</code>: Optional string.</td>
 </tr>
 </tbody>
 </table>
@@ -410,7 +488,7 @@ convertSDK.onReady().then(() => {
 });
 </code></pre>
 <h3>Run a Single Experience</h3>
-<p>Decides whether the user should be bucketed into a single variation, which is mapped to an experience unique key. The decision is made against the configured experience rules.</p>
+<p>Decides whether the user should be bucketed into a single variation mapped to an experience's unique key. The decision is made based on the configured experience rules.</p>
 <h4>Parameters</h4>
 <table>
 <thead>
@@ -426,37 +504,37 @@ convertSDK.onReady().then(() => {
 <td>experienceKey</td>
 <td>string</td>
 <td>Yes</td>
-<td>An experience's key that should be activated</td>
+<td>An experience's key that should be activated.</td>
 </tr>
 <tr>
 <td>attributes</td>
 <td>object</td>
 <td>No</td>
-<td>An object that specifies attributes for the user. Accepts 3 properties:</td>
+<td>An object specifying attributes for the user.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>locationProperties</code> an object of key-value pairs that are used for location matching.</td>
+<td><code>locationProperties</code>: An object of key-value pairs used for location matching.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>visitorProperties</code> an object of key-value pairs that are used for audience targeting.</td>
+<td><code>visitorProperties</code>: An object of key-value pairs used for audience targeting.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>updateVisitorProperties</code> optional boolean for updating in-memory visitor properties.</td>
+<td><code>updateVisitorProperties</code>: Optional boolean for updating in-memory visitor properties.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>environment</code> optional string.</td>
+<td><code>environment</code>: Optional string.</td>
 </tr>
 </tbody>
 </table>
@@ -482,7 +560,7 @@ convertSDK.onReady().then(() => {
 });
 </code></pre>
 <h3>Run Multiple Features</h3>
-<p>Retrieves a list of features that the user already bucketed.</p>
+<p>Retrieves a list of features that the user is already bucketed into.</p>
 <h4>Parameters</h4>
 <table>
 <thead>
@@ -498,37 +576,37 @@ convertSDK.onReady().then(() => {
 <td>attributes</td>
 <td>object</td>
 <td>No</td>
-<td>An object that specifies attributes for the user. Accepts 4 properties:</td>
+<td>An object specifying attributes for the user.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>locationProperties</code> an object of key-value pairs that are used for location matching.</td>
+<td><code>locationProperties</code>: An object of key-value pairs used for location matching.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>visitorProperties</code> an object of key-value pairs that are used for audience targeting.</td>
+<td><code>visitorProperties</code>: An object of key-value pairs used for audience targeting.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>updateVisitorProperties</code> optional boolean for updating in-memory visitor properties.</td>
+<td><code>updateVisitorProperties</code>: Optional boolean for updating in-memory visitor properties.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>environment</code> optional string.</td>
+<td><code>environment</code>: Optional string.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>typeCasting</code> optional boolean to dontrol automatic type conversion to the variable's defined type. Does not do any JSON validation (<em>defaults to <code>true</code></em>).</td>
+<td><code>typeCasting</code>: Optional boolean to control automatic type conversion to the variable's defined type. Defaults to <code>true</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -554,7 +632,7 @@ convertSDK.onReady().then(() => {
 });
 </code></pre>
 <h3>Run a Single Feature</h3>
-<p>Retrieves a single feature that the user already bucketed, which is mapped to a feature unique key.</p>
+<p>Retrieves a single feature that the user is already bucketed into, mapped to a feature's unique key.</p>
 <h4>Parameters</h4>
 <table>
 <thead>
@@ -570,49 +648,49 @@ convertSDK.onReady().then(() => {
 <td>featureKey</td>
 <td>string</td>
 <td>Yes</td>
-<td>A feature key</td>
+<td>A feature key.</td>
 </tr>
 <tr>
 <td>attributes</td>
 <td>object</td>
 <td>No</td>
-<td>An object that specifies attributes for the user. Accepts 5 properties:</td>
+<td>An object specifying attributes for the user.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>locationProperties</code> an object of key-value pairs that are used for location matching.</td>
+<td><code>locationProperties</code>: An object of key-value pairs used for location matching.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>visitorProperties</code> an object of key-value pairs that are used for audience targeting.</td>
+<td><code>visitorProperties</code>: An object of key-value pairs used for audience targeting.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>updateVisitorProperties</code> optional boolean for updating in-memory visitor properties.</td>
+<td><code>updateVisitorProperties</code>: Optional boolean for updating in-memory visitor properties.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>environment</code> optional string.</td>
+<td><code>environment</code>: Optional string.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>typeCasting</code> optional boolean to dontrol automatic type conversion to the variable's defined type. Does not do any JSON validation (<em>defaults to <code>true</code></em>).</td>
+<td><code>typeCasting</code>: Optional boolean to control automatic type conversion to the variable's defined type. Defaults to <code>true</code>.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>experienceKeys</code> optional array of strings to use only specified experiences.</td>
+<td><code>experienceKeys</code>: Optional array of strings to use only specified experiences.</td>
 </tr>
 </tbody>
 </table>
@@ -637,8 +715,8 @@ convertSDK.onReady().then(() => {
   console.log(feature);
 });
 </code></pre>
-<h3>Track Conversion Event</h3>
-<p>Decides whether to send a conversion event, which is mapped to a goal-unique key. The decision is made against the configured goal-triggering rules.</p>
+<h3>Track Conversion Events</h3>
+<p>Decides whether to send a conversion event, mapped to a goal's unique key. The decision is made against the configured goal-triggering rules.</p>
 <h4>Parameters</h4>
 <table>
 <thead>
@@ -666,13 +744,43 @@ convertSDK.onReady().then(() => {
 <td></td>
 <td></td>
 <td></td>
-<td><code>ruleData</code> an object of key-value pairs that are used for location matching.</td>
+<td><code>ruleData</code> an object of key-value pairs that are used for goal matching.</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
 <td></td>
-<td><code>conversionData</code> an object of key-value pairs that are used for audience targeting.</td>
+<td><code>conversionData</code> an array of key-value pairs that are used for transaction data. Each pair accepts 3 properties:</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>1. <code>amount</code> a number represents the order value.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>2. <code>productsCount</code> a number represents the order quantity.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>3. <code>transactionId</code> a unique number or string represents the paid transaction.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td><code>conversionSetting</code> an object of key-value pairs that are used for tracking settings:</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>1. <code>forceMultipleTransactions</code> a boolean decides whether to accumulate revenue for the same visitor.</td>
 </tr>
 </tbody>
 </table>
@@ -698,15 +806,26 @@ convertSDK.onReady().then(() => {
     },
     conversionData: [
       {
-        amount: 10.3,
-        productsCount: 2
+        key: 'amount',
+        value: 10.3
+      },
+      {
+        key: 'productsCount',
+        value: 2
+      },
+      {
+        key: 'transactionId',
+        value: 'transaction-unique-id'
       }
-    ]
+    ],
+    conversionSetting: {
+      forceMultipleTransactions: false
+    }
   });
 });
 </code></pre>
 <h3>Run Custom Segments</h3>
-<p>Decides whether to update custom segments in user context, which is mapped to segments' unique keys. The decision is made against the configured segment rules.</p>
+<p>Decides whether to update custom segments in the user context, mapped to segments' unique keys. The decision is made against the configured segment rules.</p>
 <h4>Parameters</h4>
 <table>
 <thead>
@@ -722,13 +841,13 @@ convertSDK.onReady().then(() => {
 <td>segmentsKeys</td>
 <td>array</td>
 <td>Yes</td>
-<td>A list of segments keys</td>
+<td>A list of segment keys.</td>
 </tr>
 <tr>
 <td>visitorProperties</td>
 <td>object</td>
 <td>No</td>
-<td>An object of key-value pairs that are used for segments matching.</td>
+<td>An object of key-value pairs used for segments matching.</td>
 </tr>
 </tbody>
 </table>
@@ -748,8 +867,8 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  context.runCustomSegments(['segments-key'], {
-    enabled: true
+  context.runCustomSegments(['segment-key'], {
+    enabled: true,
   });
 });
 </code></pre>
@@ -770,7 +889,7 @@ convertSDK.onReady().then(() => {
 <td>segments</td>
 <td>object</td>
 <td>Yes</td>
-<td>An object of key-value pairs to be merged with the initial <strong>User Properties</strong> created with <a href="#create-user-context">context</a></td>
+<td>An object of key-value pairs to be merged with the initial <strong>User Properties</strong> created with <a href="#create-user-context">context</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -790,11 +909,11 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  context.setDefaultSegments({country: 'US'});
+  context.setDefaultSegments({ country: 'US' });
 });
 </code></pre>
 <h3>Update Visitor Properties</h3>
-<p>Permanently update all of the visitor properties used inside Audience definition evaluation.</p>
+<p>Permanently update all of the visitor properties used inside audience definition evaluation.</p>
 <h4>Parameters</h4>
 <table>
 <thead>
@@ -810,13 +929,13 @@ convertSDK.onReady().then(() => {
 <td>visitorId</td>
 <td>string</td>
 <td>Yes</td>
-<td>User unique ID</td>
+<td>User unique ID.</td>
 </tr>
 <tr>
 <td>visitorProperties</td>
 <td>object</td>
 <td>Yes</td>
-<td>An object of key-value pairs to be merged with the initial <strong>User Properties</strong> created with <a href="#create-user-context">context</a></td>
+<td>An object of key-value pairs to be merged with the initial <strong>User Properties</strong> created with <a href="#create-user-context">context</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -836,11 +955,11 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  context.updateVisitorProperties({weather: 'rainy'});
+  context.updateVisitorProperties({ weather: 'rainy' });
 });
 </code></pre>
 <h3>Get Config Entity</h3>
-<p>Find a single entity in configutation by <code>key</code></p>
+<p>Find a single entity in configuration by <code>key</code>.</p>
 <h4>Parameters</h4>
 <table>
 <thead>
@@ -856,13 +975,13 @@ convertSDK.onReady().then(() => {
 <td>key</td>
 <td>string</td>
 <td>Yes</td>
-<td>Entity key as found in configuration</td>
+<td>Entity key as found in configuration.</td>
 </tr>
 <tr>
 <td>entityType</td>
 <td>EntityType</td>
 <td>Yes</td>
-<td>One of the configuration entities: <code>EntityType.AUDIENCE</code>, <code>EntityType.LOCATION</code>, <code>EntityType.SEGMENT</code>, <code>EntityType.FEATURE</code>, <code>EntityType.GOAL</code>, <code>EntityType.EXPERIENCE</code>, and <code>EntityType.VARIATION</code></td>
+<td>One of the configuration entities: <code>EntityType.AUDIENCE</code>, <code>EntityType.LOCATION</code>, <code>EntityType.SEGMENT</code>, <code>EntityType.FEATURE</code>, <code>EntityType.GOAL</code>, <code>EntityType.EXPERIENCE</code>, and <code>EntityType.VARIATION</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -873,7 +992,6 @@ convertSDK.onReady().then(() => {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation,
   EntityType,
   Experience
 } from '@convertcom/js-sdk';
@@ -892,12 +1010,32 @@ convertSDK.onReady().then(() => {
 });
 </code></pre>
 <h3>Get Config Entity by Id</h3>
-<p>Find a single entity in configutation by <code>id</code></p>
+<p>Find a single entity in configuration by <code>id</code>.</p>
 <h4>Parameters</h4>
-<p>| Parameter  | Type       | Required | Description                                                                                                                                                                                         |
-| ---------- | ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| id         | string     | number   | Yes                                                                                                                                                                                                 | Entity id as found in configuration |
-| entityType | EntityType | Yes      | One of the configuration entities: <code>EntityType.AUDIENCE</code>, <code>EntityType.LOCATION</code>, <code>EntityType.SEGMENT</code>, <code>EntityType.FEATURE</code>, <code>EntityType.GOAL</code>, <code>EntityType.EXPERIENCE</code>, and <code>EntityType.VARIATION</code> |</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>number</td>
+<td>Yes</td>
+<td>Entity id as found in configuration.</td>
+</tr>
+<tr>
+<td>entityType</td>
+<td>EntityType</td>
+<td>Yes</td>
+<td>One of the configuration entities: <code>EntityType.AUDIENCE</code>, <code>EntityType.LOCATION</code>, <code>EntityType.SEGMENT</code>, <code>EntityType.FEATURE</code>, <code>EntityType.GOAL</code>, <code>EntityType.EXPERIENCE</code>, and <code>EntityType.VARIATION</code>.</td>
+</tr>
+</tbody>
+</table>
 <h4>Returns</h4>
 <p>Void.</p>
 <h4>Example</h4>
@@ -930,7 +1068,7 @@ convertSDK.onReady().then(() => {
 });
 </code></pre>
 <h3>Release Pending Queues</h3>
-<p>Send all pending API/DataStore queues to server</p>
+<p>Send all pending API/DataStore queues to the server.</p>
 <h4>Parameters</h4>
 <table>
 <thead>
@@ -946,7 +1084,7 @@ convertSDK.onReady().then(() => {
 <td>reason</td>
 <td>string</td>
 <td>No</td>
-<td>Custom message for debugging purposes</td>
+<td>Custom message for debugging purposes.</td>
 </tr>
 </tbody>
 </table>
@@ -991,17 +1129,17 @@ convertSDK.onReady().then(() => {
 </tr>
 <tr>
 <td><code>bucketing</code></td>
-<td>Run experience(s)</td>
+<td>Running experience(s)</td>
 <td>{ visitorId: <code>string</code>, experienceKey: <code>string</code>, variationKey: <code>string</code> }</td>
 </tr>
 <tr>
 <td></td>
-<td>Run feature(s)</td>
+<td>Running feature(s)</td>
 <td>{ visitorId: <code>string</code>, experienceKey: <code>string</code>, featureKey: <code>string</code>, status: <code>string</code> }</td>
 </tr>
 <tr>
 <td><code>conversion</code></td>
-<td>Track conversion</td>
+<td>Tracking conversion</td>
 <td>{ visitorId: <code>string</code>, goalKey: <code>string</code> }</td>
 </tr>
 <tr>
@@ -1011,7 +1149,7 @@ convertSDK.onReady().then(() => {
 </tr>
 <tr>
 <td><code>location.deactivated</code></td>
-<td>Location rules not matched (<em>only if activated earlier</em>)</td>
+<td>Location rules not matched (only if activated earlier)</td>
 <td>{ visitorId: <code>string</code>, location: { id: <code>string</code>, name: <code>string</code>, key: <code>string</code> } }</td>
 </tr>
 <tr>
@@ -1041,27 +1179,27 @@ convertSDK.on(SystemEvents.READY, function (res, err) {
 
 convertSDK.on(
   SystemEvents.BUCKETING,
-  function ({visitorId, experienceKey, variationKey, featureKey, status}, err) {
+  function ({ visitorId, experienceKey, variationKey, featureKey, status }, err) {
     if (err) {
       console.error(err);
     } else {
       console.log(visitorId, experienceKey, variationKey, featureKey, status);
-      // Exmaple GA integrations can be done here
-      // note that you need to create audiences manually at GA side
-      const {name: experienceName} as Experience = context.getConfigEntity(
+      // Example GA integrations can be done here
+      // Note that you need to create audiences manually on the GA side
+      const experienceName: Experience = context.getConfigEntity(
         experienceKey,
         EntityType.EXPERIENCE
-      );
-      const {name: variationName} as Variation = context.getConfigEntity(
+      ).name;
+      const variationName: Variation = context.getConfigEntity(
         variationKey,
         EntityType.VARIATION
-      );
-      gtag('event', 'YOUR_GA_CUSOTM_EVENT', {experienceName, variationName});
+      ).name;
+      gtag('event', 'YOUR_GA_CUSTOM_EVENT', { experienceName, variationName });
     }
   }
 );
 
-convertSDK.on(SystemEvents.CONVERSION, function ({visitorId, goalKey}, err) {
+convertSDK.on(SystemEvents.CONVERSION, function ({ visitorId, goalKey }, err) {
   if (err) {
     console.error(err);
   } else {
@@ -1077,14 +1215,14 @@ convertSDK.on(SystemEvents.CONFIG_UPDATED, function (res, err) {
 </code></pre>
 <h3>Provide Persistent DataStore</h3>
 <blockquote>
-<p><strong>Note</strong>: This feature is optional</p>
+<p><strong>Note:</strong> This feature is optional.</p>
 </blockquote>
-<p>You can provide your own DataStore that is used to make user bucketing persistent, ensuring persistent experience variation selection, regardless of the experience’s configurations changing or not. As long as Experience variations and/or traffic allocation do not change, the initial user bucketing remains persistent (We use the <a href="https://en.wikipedia.org/wiki/MurmurHash">MurmurHash</a> algorithm to decide which variation will be selected. This ensures the same one is going to be selected each time, as long as the experience’s configuration does not change.)</p>
-<p>The provided DataStore interface is expected to provide 2 methods: <code>set</code> and <code>get</code>.</p>
+<p>You can provide your own DataStore to make user bucketing persistent, ensuring consistent experience variation selection regardless of changes in experience configurations. As long as experience variations and traffic allocation do not change, the initial user bucketing remains persistent. The <a href="https://en.wikipedia.org/wiki/MurmurHash">MurmurHash algorithm</a> is used to decide which variation will be selected, ensuring consistency.</p>
+<p>The provided DataStore interface is expected to have two methods: <code>set</code> and <code>get</code>.</p>
 <pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -1093,10 +1231,12 @@ const config: ConvertConfig = {
 
 class CustomDataStore {
   #data = {};
+  
   get(key) {
     if (!key) return this.#data;
     return this.#data[key.toString()];
   }
+
   set(key, value) {
     if (!key) throw new Error('Invalid CustomDataStore key!');
     this.#data[key.toString()] = value;
@@ -1106,9 +1246,31 @@ class CustomDataStore {
 const dataStore = new CustomDataStore();
 const convertSDK: ConvertInterface = new ConvertSDK({
   ...config,
-  dataStore
+  dataStore,
 } as ConvertConfig);
 </code></pre>
+<h3>Common Errors and Troubleshooting</h3>
+<h4>Error: SDK Initialization Failed</h4>
+<ul>
+<li><strong>Cause:</strong> Incorrect <code>sdkKey</code> or network issues.</li>
+<li><strong>Solution:</strong> Verify the <code>sdkKey</code> and ensure network connectivity.</li>
+</ul>
+<h4>Error: User Context Creation Failed</h4>
+<ul>
+<li><strong>Cause:</strong> Missing or invalid <code>userId</code>.</li>
+<li><strong>Solution:</strong> Ensure a valid <code>userId</code> is provided during context creation.</li>
+</ul>
+<h4>Error: Experience Not Found</h4>
+<ul>
+<li><strong>Cause:</strong> Incorrect <code>experienceKey</code> or experience not defined in the project.</li>
+<li><strong>Solution:</strong> Verify the <code>experienceKey</code> and ensure the experience is correctly configured in the project.</li>
+</ul>
+<h4>Error: Feature Not Found</h4>
+<ul>
+<li><strong>Cause:</strong> Incorrect <code>featureKey</code> or feature not defined in the project.</li>
+<li><strong>Solution:</strong> Verify the <code>featureKey</code> and ensure the feature is correctly configured in the project.</li>
+</ul>
+<hr>
 <h2>Build Environment Variables</h2>
 <table>
 <thead>
@@ -1121,53 +1283,60 @@ const convertSDK: ConvertInterface = new ConvertSDK({
 <tbody>
 <tr>
 <td><code>LOG_LEVEL</code></td>
-<td>Number prepresents the level of log statements to keep, while removing the rest from bundle output (<em>defaults to include all logs</em>).</td>
+<td>Specifies the level of log statements to keep, while removing the rest from the bundle output.</td>
 <td><code>0</code> = ALL, <code>1</code> = DEBUG, <code>2</code> = INFO, <code>3</code> = WARN, <code>4</code> = ERROR, <code>5</code> = SILENT</td>
 </tr>
 <tr>
 <td><code>BUNDLES</code></td>
-<td>Comma-separated tokens for specifying which bundles to build (<em>defaults to include all bundles</em>).</td>
+<td>Comma-separated tokens for specifying which bundles to build. Defaults to include all bundles.</td>
 <td><code>cjs</code>, <code>cjs-legacy</code>, <code>esm</code>, <code>umd</code></td>
 </tr>
 </tbody>
 </table>
+<hr>
 <h2>Custom Build</h2>
 <p>You can use a customized build in certain situations. For example:</p>
 <ol>
-<li>Reducing bundle size and remove all log statements: <code>LOG_LEVEL=5 yarn sdk:build</code></li>
-<li>Build CommonJS bundles only: <code>BUNDLES=cjs,cjs-legacy yarn sdk:build</code></li>
+<li>To reduce bundle size and remove all log statements: <code>LOG_LEVEL=5 yarn sdk:build</code></li>
+<li>To build CommonJS bundles only: <code>BUNDLES=cjs,cjs-legacy yarn sdk:build</code></li>
 </ol>
-<p>Additionaly, you can even include this repository as part of your own <code>TypeScript</code> project:</p>
+<p>Additionally, you can even include this repository as part of your own <code>TypeScript</code> project:</p>
 <ol>
-<li>Add Convert JavaScriptSDK repository to your own as a submodule: <code>git submodule add https://github.com/convertcom/javascript-sdk javascript-sdk</code></li>
-<li>Choose one of the following:
-<ol>
-<li>Workspaces: Add the following <code>workspaces</code> to your <code>package.json</code> (<em>assuming that the submodule located under you repository root</em>):<pre class="prettyprint source lang-json"><code>&quot;workspaces&quot;: [
-  &quot;javascript-sdk/packages/*&quot;
-]
+<li>
+<p>Add the Convert JavaScript SDK repository to your own as a submodule:</p>
+<pre class="prettyprint source lang-bash"><code>git submodule add https://github.com/convertcom/javascript-sdk javascript-sdk
 </code></pre>
-If using PnP, the following <code>packages</code> to your <code>pnpm-workspace.yaml</code> instead:<pre class="prettyprint source lang-yaml"><code>packages:
+</li>
+<li>
+<p>Choose one of the following methods:</p>
+<ul>
+<li>
+<p><strong>Workspaces</strong>: Add the following <code>workspaces</code> to your <code>package.json</code> (<em>assuming that the submodule is located under your repository root</em>):</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;workspaces&quot;: [
+    &quot;javascript-sdk/packages/*&quot;
+  ]
+}
+</code></pre>
+<p>If using PnP, add the following <code>packages</code> to your <code>pnpm-workspace.yaml</code> instead:</p>
+<pre class="prettyprint source lang-yaml"><code>packages:
   - 'javascript-sdk/packages/*'
 </code></pre>
 </li>
-<li>Compiler Options: Add the following <code>paths</code> under <code>compilerOptions</code> of your <code>tsconfig.json</code>:<pre class="prettyprint source lang-json"><code>{
+<li>
+<p><strong>Compiler Options</strong>: Add the following <code>paths</code> under <code>compilerOptions</code> of your <code>tsconfig.json</code> (for more information, refer to the <a href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html">TypeScript documentation</a>):</p>
+<pre class="prettyprint source lang-json"><code>{
   &quot;compilerOptions&quot;: {
     &quot;paths&quot;: {
       &quot;@convertcom/js-sdk-api&quot;: [&quot;./javascript-sdk/packages/api&quot;],
-      &quot;@convertcom/js-sdk-bucketing&quot;: [
-        &quot;./javascript-sdk/packages/bucketing&quot;
-      ],
+      &quot;@convertcom/js-sdk-bucketing&quot;: [&quot;./javascript-sdk/packages/bucketing&quot;],
       &quot;@convertcom/js-sdk-data&quot;: [&quot;./javascript-sdk/packages/data&quot;],
       &quot;@convertcom/js-sdk-enums&quot;: [&quot;./javascript-sdk/packages/enums&quot;],
       &quot;@convertcom/js-sdk-event&quot;: [&quot;./javascript-sdk/packages/event&quot;],
-      &quot;@convertcom/js-sdk-experience&quot;: [
-        &quot;./javascript-sdk/packages/experience&quot;
-      ],
+      &quot;@convertcom/js-sdk-experience&quot;: [&quot;./javascript-sdk/packages/experience&quot;],
       &quot;@convertcom/js-sdk-logger&quot;: [&quot;./javascript-sdk/packages/logger&quot;],
       &quot;@convertcom/js-sdk-rules&quot;: [&quot;./javascript-sdk/packages/rules&quot;],
-      &quot;@convertcom/js-sdk-segments&quot;: [
-        &quot;./javascript-sdk/packages/segments&quot;
-      ],
+      &quot;@convertcom/js-sdk-segments&quot;: [&quot;./javascript-sdk/packages/segments&quot;],
       &quot;@convertcom/js-sdk-types&quot;: [&quot;./javascript-sdk/packages/types&quot;],
       &quot;@convertcom/js-sdk-utils&quot;: [&quot;./javascript-sdk/packages/utils&quot;],
       &quot;@convertcom/js-sdk&quot;: [&quot;./javascript-sdk/packages/js-sdk&quot;]
@@ -1176,34 +1345,50 @@ If using PnP, the following <code>packages</code> to your <code>pnpm-workspace.y
 }
 </code></pre>
 </li>
-</ol>
+</ul>
 </li>
-<li>Add the following script to your <code>package.json</code>:<pre class="prettyprint source lang-json"><code>&quot;scripts&quot;: {
-  &quot;build:sdk&quot;: &quot;cd javascript-sdk && BUNDLES=cjs,esm LOG_LEVEL=5 yarn sdk:build&quot;
+<li>
+<p>Add the following script to your <code>package.json</code>:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;scripts&quot;: {
+    &quot;build:sdk&quot;: &quot;cd javascript-sdk && BUNDLES=cjs,esm LOG_LEVEL=5 yarn sdk:build&quot;
+  }
 }
 </code></pre>
 <blockquote>
 <p>Note that both <code>BUNDLES</code> and <code>LOG_LEVEL</code> are optional (<em>see <a href="#build-environment-variables">Build Environment Variables</a> above</em>)</p>
 </blockquote>
 </li>
-<li>Now you can build Convert JavaScriptSDK alongside your project (<em>assuming that you use <code>rollup</code> for bundling</em>):<pre class="prettyprint source lang-json"><code>&quot;scripts&quot;: {
-  &quot;build&quot;: &quot;yarn build:sdk && rollup -c&quot;
+<li>
+<p>Now you can build the Convert JavaScript SDK alongside your project (<em>assuming that you use <code>rollup</code> for bundling</em>):</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;scripts&quot;: {
+    &quot;build&quot;: &quot;yarn build:sdk && rollup -c&quot;
+  }
 }
 </code></pre>
 </li>
-<li>You need to run <code>yarn</code> inside the submodule <code>javascript-sdk</code> as well:<pre class="prettyprint source lang-bash"><code># update ConvertSDK submodule
+<li>
+<p>You need to run <code>yarn</code> inside the submodule <code>javascript-sdk</code> as well:</p>
+<pre class="prettyprint source lang-bash"><code># Update ConvertSDK submodule
 git submodule update --init --remote
-# install your project dependencies at your `package.json`
+# Install your project dependencies as per your `package.json`
 yarn
-# install ConvertSDK dependencies
+# Install ConvertSDK dependencies
 cd javascript-sdk && yarn
-# build your project
+# Build your project
 yarn build
 </code></pre>
 </li>
 </ol>
+<hr>
+<h2>Conclusion</h2>
+<p>This document provides a comprehensive guide on how to integrate and use the Convert Insights, Inc. JavaScript SDK in your projects. It covers all necessary steps from installation and configuration to advanced usage and troubleshooting.</p>
+<p>If you encounter any issues or have questions, feel free to reach out to the Convert.com support team or open an issue on the <a href="https://github.com/convertcom/javascript-sdk">GitHub repository</a>.</p>
+<p>Happy converting!</p>
+<hr>
 <h2>Credits</h2>
-<p>Copyright(c) 2024 Convert Insights, Inc.</p></article>
+<p>Copyright © 2024 Convert Insights, Inc.</p></article>
     </section>
 
 

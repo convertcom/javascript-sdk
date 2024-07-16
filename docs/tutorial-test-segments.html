@@ -135,54 +135,74 @@
                 <section>
 
 <article>
-    <h2>Assumptions</h2>
-<p>You want to show one feature rollout to a sprcific segment of your visitors on the <code>homepage</code> view of your e-commerce app.
-Open your Fullstack project at the web interface and create a location for matching the target view, given the following rule:</p>
+    <h1>Testing User Segments</h1>
+<h2>Assumptions</h2>
+<p>You want to show a feature rollout to a specific segment of your visitors on the <code>homepage</code> view of your e-commerce app.</p>
+<h2>Steps to Set Up</h2>
+<h3>Step 1: Create a Location</h3>
 <ol>
-<li>Rule Type: <code>generic_text_key_value</code></li>
-<li>Match type: <code>matches</code></li>
-<li>Key: <code>location</code></li>
-<li>Value: <code>homepage</code></li>
-</ol>
-<p>Next, create an audience (<em>represents your segmentation in this case</em>), given the following:</p>
-<ol>
-<li>Name: <code>Halloween Segment</code></li>
-<li>Type: <code>segmentation</code></li>
-<li>Key: <code>halloween-segment</code></li>
-<li>Rules:
-<ol>
-<li>Rule Type: <code>generic_bool_key_value</code></li>
-<li>Match type: <code>equals</code></li>
-<li>Key: <code>halloween</code></li>
-<li>Value: <code>true</code></li>
-</ol>
+<li>Open your Fullstack project at the web interface.</li>
+<li>Create a location with the following details:
+<ul>
+<li><strong>Rule Type:</strong> <code>generic_text_key_value</code></li>
+<li><strong>Match Type:</strong> <code>matches</code></li>
+<li><strong>Key:</strong> <code>location</code></li>
+<li><strong>Value:</strong> <code>homepage</code></li>
+</ul>
 </li>
 </ol>
-<p>Next, create a feature, given the following:</p>
+<h3>Step 2: Create an Audience (Segmentation)</h3>
 <ol>
-<li>Name: <code>Halloween Bundles</code></li>
-<li>Key: <code>halloween-bundles</code></li>
-<li>Variables:
-<ol>
-<li>Key: <code>bundles</code></li>
-<li>Type: <code>json</code></li>
-</ol>
+<li>Create an audience with the following details:
+<ul>
+<li><strong>Name:</strong> <code>Halloween Segment</code></li>
+<li><strong>Type:</strong> <code>segmentation</code></li>
+<li><strong>Key:</strong> <code>halloween-segment</code></li>
+<li><strong>Rules:</strong>
+<ul>
+<li><strong>Rule Type:</strong> <code>generic_bool_key_value</code></li>
+<li><strong>Match Type:</strong> <code>equals</code></li>
+<li><strong>Key:</strong> <code>halloween</code></li>
+<li><strong>Value:</strong> <code>true</code></li>
+</ul>
+</li>
+</ul>
 </li>
 </ol>
-<p>Then create one experience with one variation (<em><strong>without</strong> the original</em>) linked to the above location, segmentation, and feature, given the following:</p>
-<p>Variation 1:</p>
+<h3>Step 3: Create a Feature</h3>
 <ol>
-<li>Traffic: <code>100%</code></li>
-<li>Key: <code>with-halloween-bundles</code></li>
-<li>Changes:
-<ol>
-<li>Type: <code>fullStackFeature</code></li>
-<li>Feature: <code>Halloween Bundles</code></li>
-<li>Variables Data:
-<ol>
-<li>Key: <code>bundles</code></li>
-<li>Value:</li>
+<li>Create a feature with the following details:
+<ul>
+<li><strong>Name:</strong> <code>Halloween Bundles</code></li>
+<li><strong>Key:</strong> <code>halloween-bundles</code></li>
+<li><strong>Variables:</strong>
+<ul>
+<li><strong>Key:</strong> <code>bundles</code></li>
+<li><strong>Type:</strong> <code>json</code></li>
+</ul>
+</li>
+</ul>
+</li>
 </ol>
+<h3>Step 4: Create an Experience</h3>
+<ol>
+<li>Create an experience with one variation (without the original) linked to the above location, segmentation, and feature:
+<ul>
+<li><strong>Variation 1:</strong>
+<ul>
+<li><strong>Traffic:</strong> <code>100%</code></li>
+<li><strong>Key:</strong> <code>with-halloween-bundles</code></li>
+<li><strong>Changes:</strong>
+<ul>
+<li><strong>Type:</strong> <code>fullStackFeature</code></li>
+<li><strong>Feature:</strong> <code>Halloween Bundles</code></li>
+<li><strong>Variables Data:</strong>
+<ul>
+<li>
+<p><strong>Key:</strong> <code>bundles</code></p>
+</li>
+<li>
+<p><strong>Value:</strong></p>
 <pre class="prettyprint source lang-json"><code>{
   &quot;bundle-1&quot;: {
     &quot;title&quot;: &quot;Bundle A&quot;,
@@ -197,58 +217,57 @@ Open your Fullstack project at the web interface and create a location for match
 }
 </code></pre>
 </li>
-</ol>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </li>
 </ol>
-<h2>ReactJS Example</h2>
-<pre class="prettyprint source lang-javascript"><code>import {useState, useEffect, useContext, createContext} from 'react';
+<h2>ReactJS Implementation Example</h2>
+<pre class="prettyprint source lang-javascript"><code>import { useState, useEffect, useContext, createContext } from 'react';
 import ConvertSDK from '@convertcom/js-sdk';
 
 const UserContext = createContext();
 
-const convertSDK = new ConvertSDK({sdkKey: 'xxx'});
+const convertSDK = new ConvertSDK({ sdkKey: 'your_sdk_key_here' });
 
 const ProductsComponent = () => {
-  const {sdkContext} = useContext(UserContext);
+  const { sdkContext } = useContext(UserContext);
   const [withHalloweenBundles, setWithHalloweenBundles] = useState(false);
   const [halloweenBundles, setHalloweenBundles] = useState([]);
 
   const decide = () => {
-    const bucketedFeatureRollout = sdkContext.runExperience(
-      'halloween-bundles',
-      {
-        locationProperties: {location: 'homepage'}
-      }
-    );
-    if (
-      !!bucketedFeatureRollout &&
-      bucketedFeatureRollout?.status === 'enabled'
-    ) {
+    const bucketedFeatureRollout = sdkContext.runExperience('halloween-bundles', {
+      locationProperties: { location: 'homepage' }
+    });
+    if (bucketedFeatureRollout?.status === 'enabled') {
       setWithHalloweenBundles(true);
-
       if (bucketedFeatureRollout?.changes[0]?.data?.variables_data?.bundles) {
-        setHalloweenBundles(
-          Object.values(
-            bucketedFeatureRollout?.changes[0]?.data?.variables_data?.bundles
-          )
-        );
+        setHalloweenBundles(Object.values(bucketedFeatureRollout.changes[0].data.variables_data.bundles));
       }
     }
   };
 
-  useEffect(() => sdkContext && decide(), [sdkContext]);
+  useEffect(() => {
+    if (sdkContext) {
+      decide();
+    }
+  }, [sdkContext]);
 
   return (
-    &lt;div className=&quot;homapage&quot;>
+    &lt;div className=&quot;homepage&quot;>
       {withHalloweenBundles && (
         &lt;div className=&quot;halloween-bundles&quot;>
           &lt;h1>Halloween Bundles&lt;/h1>
           {halloweenBundles.map((bundle) => (
-            &lt;div className=&quot;bundle&quot;>
+            &lt;div className=&quot;bundle&quot; key={bundle.title}>
               &lt;div className=&quot;bundle-title&quot;>{bundle.title}&lt;/div>
               &lt;div className=&quot;bundle-products&quot;>
                 {bundle.products.map((product) => (
-                  &lt;div className=&quot;bundle-product&quot;>{product}&lt;/div>
+                  &lt;div className=&quot;bundle-product&quot; key={product}>{product}&lt;/div>
                 ))}
               &lt;/div>
               &lt;div className=&quot;bundle-price&quot;>{bundle.price}&lt;/div>
@@ -272,19 +291,17 @@ const ProductsComponent = () => {
   );
 };
 
-export default function App() {
-  const userId = Date.now().toString(); // in reality, this should be the visitor ID. Fur example: email, username, GUID, .. etc.
-
+const App = () => {
+  const userId = Date.now().toString(); // In reality, this should be the visitor ID, e.g., email, username, GUID, etc.
   const [sdkContext, setSdkContext] = useState();
 
   useEffect(() => {
-    async function initSdk() {
+    const initSdk = async () => {
       try {
         await convertSDK.onReady();
         const context = convertSDK.createContext(userId); // Convert SDK context needs to be created only once, hence the use of React Context below.
 
-        // shared across all visitors you wish to fall under the same segment
-        // in reality, you need to perform this only on specific users
+        // Set custom segments for the specific user
         context.setCustomSegments('halloween-segment', {
           ruleData: {
             halloween: true
@@ -295,16 +312,18 @@ export default function App() {
       } catch (error) {
         console.error('SDK Error:', error);
       }
-    }
+    };
     initSdk();
   }, []);
 
   return (
-    &lt;UserContext.Provider value={{sdkContext}}>
+    &lt;UserContext.Provider value={{ sdkContext }}>
       &lt;ProductsComponent />
     &lt;/UserContext.Provider>
   );
-}
+};
+
+export default App;
 </code></pre>
 </article>
 
