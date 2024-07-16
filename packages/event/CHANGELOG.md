@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-event-v2.0.0...js-sdk-event-v2.1.0) (2024-07-16)
+
+
+### Features
+
+* generate rollup config per package ([1f00878](https://github.com/convertcom/javascript-sdk/commit/1f008780cc716a697e1a80bb407159b783f88a9f))
+
+
+### Bug Fixes
+
+* resolve missing dependencies for type declarations ([4fa0feb](https://github.com/convertcom/javascript-sdk/commit/4fa0feb2926acfc7ec82ec0b41c46b8f3753b7f1))
+
 ## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-event-v1.0.2...js-sdk-event-v2.0.0) (2024-03-23)
 
 

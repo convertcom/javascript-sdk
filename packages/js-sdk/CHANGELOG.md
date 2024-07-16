@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.0.1...js-sdk-v4.1.0) (2024-07-16)
+
+
+### Features
+
+* allow multiple transactions on tracking revenue goal ([4b33924](https://github.com/convertcom/javascript-sdk/commit/4b339245c83a02897629292bb3e98ab7cdac4b61))
+* generate rollup config per package ([1f00878](https://github.com/convertcom/javascript-sdk/commit/1f008780cc716a697e1a80bb407159b783f88a9f))
+* implement SDK Key/Secret with Authorization Bearer header ([19de29d](https://github.com/convertcom/javascript-sdk/commit/19de29d8961152ab26acdd51346b60248f664bf3))
+* introduce BucketingError when deciding variations ([10caaae](https://github.com/convertcom/javascript-sdk/commit/10caaae7ba586a88b6e9d02acff43b3d6481c815))
+* introduce Context.getVisitorData() ([5890e19](https://github.com/convertcom/javascript-sdk/commit/5890e19f76f83b209554fe792201d0f935e54659))
+* return bucketing allocation upon deciding variation ([06fb25f](https://github.com/convertcom/javascript-sdk/commit/06fb25fb56477dfbd55e46af5d38dd53316cfdc9))
+
+
+### Bug Fixes
+
+* resolve missing dependencies for type declarations ([4fa0feb](https://github.com/convertcom/javascript-sdk/commit/4fa0feb2926acfc7ec82ec0b41c46b8f3753b7f1))
+* update the shape of goalData for tracking revenue ([f54356f](https://github.com/convertcom/javascript-sdk/commit/f54356f2b76e2def36bf75d0f95c31134a2de74d))
+
 ## [4.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.0.0...js-sdk-v4.0.1) (2024-04-03)
 
 

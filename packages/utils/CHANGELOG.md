@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.0.0...js-sdk-utils-v2.1.0) (2024-07-16)
+
+
+### Features
+
+* generate rollup config per package ([1f00878](https://github.com/convertcom/javascript-sdk/commit/1f008780cc716a697e1a80bb407159b783f88a9f))
+
+
+### Bug Fixes
+
+* properly process "equals" comparison against object keys ([db2231d](https://github.com/convertcom/javascript-sdk/commit/db2231dc6dd1f6f82181c1e060ca4245242f7c0e))
+* resolve missing dependencies for type declarations ([4fa0feb](https://github.com/convertcom/javascript-sdk/commit/4fa0feb2926acfc7ec82ec0b41c46b8f3753b7f1))
+
 ## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v1.1.3...js-sdk-utils-v2.0.0) (2024-03-23)
 
 

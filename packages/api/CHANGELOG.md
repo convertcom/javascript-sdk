@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.0.0...js-sdk-api-v2.1.0) (2024-07-16)
+
+
+### Features
+
+* generate rollup config per package ([1f00878](https://github.com/convertcom/javascript-sdk/commit/1f008780cc716a697e1a80bb407159b783f88a9f))
+* implement SDK Key/Secret with Authorization Bearer header ([19de29d](https://github.com/convertcom/javascript-sdk/commit/19de29d8961152ab26acdd51346b60248f664bf3))
+* include visitors with events when triggering event "api.queue.released" ([7c98f54](https://github.com/convertcom/javascript-sdk/commit/7c98f54082b7fa3282438c52269966f6d2b31288))
+* pass environment to config endpoint ([67f8354](https://github.com/convertcom/javascript-sdk/commit/67f8354d05da00a4393239739195e3e6e090a5ef))
+
+
+### Bug Fixes
+
+* resolve missing dependencies for type declarations ([4fa0feb](https://github.com/convertcom/javascript-sdk/commit/4fa0feb2926acfc7ec82ec0b41c46b8f3753b7f1))
+
 ## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v1.0.1...js-sdk-api-v2.0.0) (2024-03-23)
 
 
