@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-experience-v2.1.0...js-sdk-experience-v2.2.0) (2024-07-16)
+
+
+### Features
+
+* generate rollup config per package ([1f00878](https://github.com/convertcom/javascript-sdk/commit/1f008780cc716a697e1a80bb407159b783f88a9f))
+* introduce BucketingError when deciding variations ([10caaae](https://github.com/convertcom/javascript-sdk/commit/10caaae7ba586a88b6e9d02acff43b3d6481c815))
+
+
+### Bug Fixes
+
+* resolve missing dependencies for type declarations ([4fa0feb](https://github.com/convertcom/javascript-sdk/commit/4fa0feb2926acfc7ec82ec0b41c46b8f3753b7f1))
+
 ## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-experience-v2.0.0...js-sdk-experience-v2.1.0) (2024-04-03)
 
 
