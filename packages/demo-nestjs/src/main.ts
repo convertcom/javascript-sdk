@@ -2,7 +2,8 @@ import * as cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import ConvertContext from './convert/context'; // [ConvertSDK]
-import ConvertSDK, { ConvertConfig, LogLevel } from '@convertcom/js-sdk'; // [ConvertSDK]
+import ConvertSDK, { LogLevel } from '@convertcom/js-sdk'; // [ConvertSDK]
+import type { ConvertConfig, ConvertInterface } from '@convertcom/js-sdk'; // [ConvertSDK]
 import DataStore from './convert/datastore';
 
 const PORT = process.env.PORT || 3004;
@@ -18,7 +19,7 @@ const sdkConfig: ConvertConfig = {
   },
 }; // [ConvertSDK]
 
-const sdkInstance: ConvertSDK = new ConvertSDK(sdkConfig);
+const sdkInstance: ConvertInterface = new ConvertSDK(sdkConfig);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
