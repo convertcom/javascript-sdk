@@ -2,18 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * This one describes a logical triggering rule that is being used inside the app
- */
+import type { LocationTriggerTypes } from './LocationTriggerTypes';
 export type LocationTriggerBase = {
-    type: LocationTriggerBase.type;
+    type: LocationTriggerTypes;
 };
-export namespace LocationTriggerBase {
-    export enum type {
-        URL_CHANGE = 'url_change',
-        MANUAL = 'manual',
-        DOM_CHANGE = 'dom_change',
-        CALLBACK = 'callback',
-    }
-}
 
