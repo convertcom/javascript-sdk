@@ -20,7 +20,7 @@ export type ConfigLocation = {
      * Location Name
      */
     name?: string;
-    trigger?: (Record<string, any> & LocationTrigger) | null;
+    trigger?: LocationTrigger;
     rules?: RuleObject | null;
 };
 

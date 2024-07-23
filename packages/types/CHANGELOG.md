@@ -1,5 +1,35 @@
 # Changelog
 
+## [3.4.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.3.0...js-sdk-types-v3.4.0) (2024-07-16)
+
+
+### Features
+
+* allow multiple transactions on tracking revenue goal ([4b33924](https://github.com/convertcom/javascript-sdk/commit/4b339245c83a02897629292bb3e98ab7cdac4b61))
+* automated TS Serving API update ([55bbf4a](https://github.com/convertcom/javascript-sdk/commit/55bbf4a7a3b9498ecc28e937a2cc3b89fadd3044))
+* automated TS Serving API update ([172c633](https://github.com/convertcom/javascript-sdk/commit/172c63363a7fbb2cf8977ced162187c59a567204))
+* automated TS Serving API update ([004416c](https://github.com/convertcom/javascript-sdk/commit/004416c17e338f028da0a552d82d99891252f345))
+* automated TS Serving API update ([bc76077](https://github.com/convertcom/javascript-sdk/commit/bc7607742ca284cb74bfb3c111d220472ba0048b))
+* automated TS Serving API update ([6de7aca](https://github.com/convertcom/javascript-sdk/commit/6de7aca3e6c04c1cbb00ca695a83f9486b21c620))
+* automated TS Serving API update ([9ff453e](https://github.com/convertcom/javascript-sdk/commit/9ff453ed5c349ff4c6831ca78c78c71286cb4202))
+* automated TS Serving API update ([636c17b](https://github.com/convertcom/javascript-sdk/commit/636c17b755ebca9f6b76bfca9baf8b1e5a7d6f74))
+* automated TS Serving API update ([0428ae8](https://github.com/convertcom/javascript-sdk/commit/0428ae87ff2c8efe34859ed29591349144c9f44a))
+* automated TS Serving API update ([6da4649](https://github.com/convertcom/javascript-sdk/commit/6da46494111d3e1774891c0d682675846fee4b49))
+* automated TS Serving API update ([9fe059c](https://github.com/convertcom/javascript-sdk/commit/9fe059c601e84fd5ef77ec4fd6f5cde2235ed80f))
+* automated TS Serving API update ([c622eef](https://github.com/convertcom/javascript-sdk/commit/c622eefdb278f9c4bc98cddaaa7c1d170b92e23f))
+* automated TS Serving API update ([fd45c64](https://github.com/convertcom/javascript-sdk/commit/fd45c64dd96f5556cc7b73219dc2d593c30b017b))
+* automated TS Serving API update ([8289570](https://github.com/convertcom/javascript-sdk/commit/8289570f5aef3b9b4217ea9ea775ae35ce19abd5))
+* generate rollup config per package ([1f00878](https://github.com/convertcom/javascript-sdk/commit/1f008780cc716a697e1a80bb407159b783f88a9f))
+* implement SDK Key/Secret with Authorization Bearer header ([19de29d](https://github.com/convertcom/javascript-sdk/commit/19de29d8961152ab26acdd51346b60248f664bf3))
+* introduce optional argument to force triggering active locations events ([2b7f63b](https://github.com/convertcom/javascript-sdk/commit/2b7f63b69c29daf8fbbd806270552de044490a7d))
+* return bucketing allocation upon deciding variation ([06fb25f](https://github.com/convertcom/javascript-sdk/commit/06fb25fb56477dfbd55e46af5d38dd53316cfdc9))
+
+
+### Bug Fixes
+
+* resolve missing dependencies for type declarations ([4fa0feb](https://github.com/convertcom/javascript-sdk/commit/4fa0feb2926acfc7ec82ec0b41c46b8f3753b7f1))
+* update the shape of goalData for tracking revenue ([f54356f](https://github.com/convertcom/javascript-sdk/commit/f54356f2b76e2def36bf75d0f95c31134a2de74d))
+
 ## [3.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.2.0...js-sdk-types-v3.3.0) (2024-04-03)
 
 

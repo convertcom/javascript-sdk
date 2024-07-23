@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v2.1.0...js-sdk-enums-v2.2.0) (2024-07-16)
+
+
+### Features
+
+* allow multiple transactions on tracking revenue goal ([4b33924](https://github.com/convertcom/javascript-sdk/commit/4b339245c83a02897629292bb3e98ab7cdac4b61))
+* generate rollup config per package ([1f00878](https://github.com/convertcom/javascript-sdk/commit/1f008780cc716a697e1a80bb407159b783f88a9f))
+* introduce BucketingError when deciding variations ([10caaae](https://github.com/convertcom/javascript-sdk/commit/10caaae7ba586a88b6e9d02acff43b3d6481c815))
+
 ## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v2.0.0...js-sdk-enums-v2.1.0) (2024-04-03)
 
 

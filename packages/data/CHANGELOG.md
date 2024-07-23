@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.1.0...js-sdk-data-v3.2.0) (2024-07-16)
+
+
+### Features
+
+* allow multiple transactions on tracking revenue goal ([4b33924](https://github.com/convertcom/javascript-sdk/commit/4b339245c83a02897629292bb3e98ab7cdac4b61))
+* exclude stopped variations upon deciding a variation ([3758333](https://github.com/convertcom/javascript-sdk/commit/375833350bc3935377282562f47edbe2a24d4d06))
+* generate rollup config per package ([1f00878](https://github.com/convertcom/javascript-sdk/commit/1f008780cc716a697e1a80bb407159b783f88a9f))
+* have the permanent audience rules matched only once at the time of the first bucketing ([b49130f](https://github.com/convertcom/javascript-sdk/commit/b49130f7bf4febe2c2cda8a35156820366497623))
+* introduce BucketingError when deciding variations ([10caaae](https://github.com/convertcom/javascript-sdk/commit/10caaae7ba586a88b6e9d02acff43b3d6481c815))
+* introduce optional argument to force triggering active locations events ([2b7f63b](https://github.com/convertcom/javascript-sdk/commit/2b7f63b69c29daf8fbbd806270552de044490a7d))
+* return bucketing allocation upon deciding variation ([06fb25f](https://github.com/convertcom/javascript-sdk/commit/06fb25fb56477dfbd55e46af5d38dd53316cfdc9))
+
+
+### Bug Fixes
+
+* deprecate plural experience environments ([d2a53a9](https://github.com/convertcom/javascript-sdk/commit/d2a53a9d20e241fb4321ffb879ca336db8ae63e5))
+* improving code readability and fixing audiences matching ([d83c4f5](https://github.com/convertcom/javascript-sdk/commit/d83c4f520f3e363ddc09232614394d3977948ac1))
+* optional location properties on processing experience rules ([1ff5c9b](https://github.com/convertcom/javascript-sdk/commit/1ff5c9ba0fa6da594d4278169125b73d91f8d39a))
+* optionally force variation even on previously bucketed visitor ([1feaec5](https://github.com/convertcom/javascript-sdk/commit/1feaec5b157b37366ac92f3dcfa89852a022d240))
+* resolve missing dependencies for type declarations ([4fa0feb](https://github.com/convertcom/javascript-sdk/commit/4fa0feb2926acfc7ec82ec0b41c46b8f3753b7f1))
+* update the shape of goalData for tracking revenue ([f54356f](https://github.com/convertcom/javascript-sdk/commit/f54356f2b76e2def36bf75d0f95c31134a2de74d))
+
 ## [3.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.0.0...js-sdk-data-v3.1.0) (2024-04-03)
 
 
