@@ -22,6 +22,7 @@ import type { ExperienceIntegrationWoopra } from './ExperienceIntegrationWoopra'
 import type { ExperienceIntegrationYsance } from './ExperienceIntegrationYsance';
 import type { ExperienceTypes } from './ExperienceTypes';
 import type { ExperienceVariationConfig } from './ExperienceVariationConfig';
+import type { GenericListMatchingOptions } from './GenericListMatchingOptions';
 import type { RuleObject } from './RuleObject';
 export type ConfigExperience = {
     /**
@@ -98,6 +99,13 @@ export type ConfigExperience = {
          * Maximum order value for transactions outliers
          */
         max_order_value?: number;
+        /**
+         * Various settings used for matching the list of Audiences and Locations
+         */
+        matching_options?: {
+            audiences?: GenericListMatchingOptions;
+            locations?: GenericListMatchingOptions;
+        };
     };
 };
 

@@ -125,6 +125,7 @@ export type { GenericBoolKeyValueMatchRule } from './models/GenericBoolKeyValueM
 export { GenericBoolKeyValueMatchRulesTypes } from './models/GenericBoolKeyValueMatchRulesTypes';
 export type { GenericBoolMatchRule } from './models/GenericBoolMatchRule';
 export type { GenericKey } from './models/GenericKey';
+export { GenericListMatchingOptions } from './models/GenericListMatchingOptions';
 export type { GenericNumericKeyValueMatchRule } from './models/GenericNumericKeyValueMatchRule';
 export { GenericNumericKeyValueMatchRulesTypes } from './models/GenericNumericKeyValueMatchRulesTypes';
 export type { GenericNumericMatchRule } from './models/GenericNumericMatchRule';
@@ -146,12 +147,6 @@ export { JsConditionMatchRulesTypes } from './models/JsConditionMatchRulesTypes'
 export type { KeyValueMatchRulesTypes } from './models/KeyValueMatchRulesTypes';
 export type { LanguageMatchRule } from './models/LanguageMatchRule';
 export { LanguageMatchRulesTypes } from './models/LanguageMatchRulesTypes';
-export type { LocationTrigger } from './models/LocationTrigger';
-export { LocationTriggerBase } from './models/LocationTriggerBase';
-export { LocationTriggerCallback } from './models/LocationTriggerCallback';
-export { LocationTriggerDomChange } from './models/LocationTriggerDomChange';
-export { LocationTriggerManual } from './models/LocationTriggerManual';
-export { LocationTriggerUrlChange } from './models/LocationTriggerUrlChange';
 export type { MinuteOfHourMatchRule } from './models/MinuteOfHourMatchRule';
 export { MinuteOfHourMatchRulesTypes } from './models/MinuteOfHourMatchRulesTypes';
 export { NoSettingsGoal } from './models/NoSettingsGoal';
