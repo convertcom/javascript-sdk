@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { LocationTriggerBase } from './LocationTriggerBase';
-export type LocationTriggerUrlChange = (LocationTriggerBase & {
-    type?: LocationTriggerUrlChange.type;
+export type LocationTriggerUponRun = (LocationTriggerBase & {
+    type?: LocationTriggerUponRun.type;
 });
-export namespace LocationTriggerUrlChange {
+export namespace LocationTriggerUponRun {
     export enum type {
-        URL_CHANGE = 'url_change',
+        UPON_RUN = 'upon_run',
     }
 }
 
