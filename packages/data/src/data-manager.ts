@@ -41,7 +41,8 @@ import {
   BucketingAttributes,
   LocationAttributes,
   ConfigAudienceTypes,
-  VariationStatuses
+  VariationStatuses,
+  eventType
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -647,7 +648,7 @@ export class DataManager implements DataManagerInterface {
           variationId: variationId.toString()
         };
         const visitorEvent: VisitorTrackingEvents = {
-          eventType: VisitorTrackingEvents.eventType.BUCKETING,
+          eventType: eventType.BUCKETING,
           data: bucketingEvent
         };
         this._apiManager.enqueue(visitorId, visitorEvent, segments);
@@ -1012,7 +1013,7 @@ export class DataManager implements DataManagerInterface {
       };
       if (bucketingData) data.bucketingData = bucketingData;
       const event: VisitorTrackingEvents = {
-        eventType: VisitorTrackingEvents.eventType.CONVERSION,
+        eventType: eventType.CONVERSION,
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);
@@ -1031,7 +1032,7 @@ export class DataManager implements DataManagerInterface {
       };
       if (bucketingData) data.bucketingData = bucketingData;
       const event: VisitorTrackingEvents = {
-        eventType: VisitorTrackingEvents.eventType.CONVERSION,
+        eventType: eventType.CONVERSION,
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);

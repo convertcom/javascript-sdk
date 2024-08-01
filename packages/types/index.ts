@@ -5,6 +5,7 @@
  * License Apache-2.0
  */
 
+export * from './src/config/index';
 export * from './src/BucketedFeature';
 export * from './src/BucketedVariation';
 export * from './src/BucketingAttributes';

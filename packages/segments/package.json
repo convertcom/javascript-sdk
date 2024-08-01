@@ -71,10 +71,10 @@
   },
   "version": "2.1.0",
   "peerDependencies": {
-    "@convertcom/js-sdk-data": ">=3.1.0",
-    "@convertcom/js-sdk-enums": ">=2.1.0",
-    "@convertcom/js-sdk-logger": ">=2.0.0",
-    "@convertcom/js-sdk-rules": ">=2.0.0",
-    "@convertcom/js-sdk-types": ">=3.3.0"
+    "@convertcom/js-sdk-data": ">=3.2.0",
+    "@convertcom/js-sdk-enums": ">=2.2.0",
+    "@convertcom/js-sdk-logger": ">=2.1.0",
+    "@convertcom/js-sdk-rules": ">=2.1.0",
+    "@convertcom/js-sdk-types": ">=3.4.0"
   }
 }
