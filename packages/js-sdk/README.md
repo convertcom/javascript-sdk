@@ -221,7 +221,7 @@ import ConvertSDK, {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
 const convertSDK: ConvertInterface = new ConvertSDK({
   sdkKey: 'xxx',
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
-  environment: 'staging' // can also be "live"; this is configured in the Convert UI.
+  environment: 'staging', // can also be "live"; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
   // create user context
@@ -245,7 +245,7 @@ const projectConfig = {
 
 const convertSDK: ConvertInterface = new ConvertSDK({
   projectConfig,
-  environment: 'staging' // can also be "live"; this is configured in the Convert UI.
+  environment: 'staging', // can also be "live"; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
   // create user context
@@ -268,25 +268,25 @@ const config = {
   environment: 'staging',
   logger: {
     logLevel: LogLevel.DEBUG,
-    customLoggers: [] // Allows 3rd party loggers to be passed
+    customLoggers: [], // Allows 3rd party loggers to be passed
   },
   bucketing: {
     hash_seed: 9999, // murmurhash seed
     max_traffic: 10000, // max hash (representing 100% traffic allocation)
-    excludeExperienceIdHash: false // whether to ignore prefixing the generated hash with the experience id
+    excludeExperienceIdHash: false, // whether to ignore prefixing the generated hash with the experience id
   },
   dataStore: null, // Allows 3rd party data store to be passed (optional)
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   data: projectData,
   events: {
     batch_size: 10, // max network requests to be released per call
-    release_interval: 10000 // time in milliseconds between network releasing queue (including the initial release)
+    release_interval: 10000, // time in milliseconds between network releasing queue (including the initial release)
   },
   network: {
     tracking: true, // can be set to false to disable tracking events
     cacheLevel: 'default', // can be set to 'low' for short-lived cache (for development purposes only)
-    source: 'js-sdk' // string identifier indicating the source of network requests
-  }
+    source: 'js-sdk', // string identifier indicating the source of network requests
+  },
 };
 ```
 
@@ -307,8 +307,8 @@ const userContext: ContextInterface = convertSDK.createContext(
   'user-unique-id',
   {
     country: 'US',
-    language: 'en'
-  }
+    language: 'en',
+  },
 );
 ```
 
@@ -359,7 +359,7 @@ import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -400,7 +400,7 @@ import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -441,7 +441,7 @@ import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature
+  BucketedFeature,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -484,7 +484,7 @@ import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature
+  BucketedFeature,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -527,7 +527,7 @@ Void.
 import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -539,25 +539,25 @@ convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.trackConversion('goal-key', {
     ruleData: {
-      action: 'buy'
+      action: 'buy',
     },
     conversionData: [
       {
         key: 'amount',
-        value: 10.3
+        value: 10.3,
       },
       {
         key: 'productsCount',
-        value: 2
+        value: 2,
       },
       {
         key: 'transactionId',
-        value: 'transaction-unique-id'
-      }
+        value: 'transaction-unique-id',
+      },
     ],
     conversionSetting: {
-      forceMultipleTransactions: false
-    }
+      forceMultipleTransactions: false,
+    },
   });
 });
 ```
@@ -583,7 +583,7 @@ Void.
 import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -594,7 +594,7 @@ const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.runCustomSegments(['segment-key'], {
-    enabled: true
+    enabled: true,
   });
 });
 ```
@@ -619,7 +619,7 @@ Void.
 import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -654,7 +654,7 @@ Void.
 import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -691,7 +691,7 @@ import ConvertSDK, {
   ConvertConfig,
   ContextInterface,
   EntityType,
-  Experience
+  Experience,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -703,7 +703,7 @@ convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   const exprience: Experience = context.getConfigEntity(
     'experience-key',
-    EntityType.EXPERIENCE
+    EntityType.EXPERIENCE,
   );
 });
 ```
@@ -734,7 +734,7 @@ import ConvertSDK, {
   EntityType,
   Feature,
   VariationChange,
-  VariationChangeType
+  VariationChangeType,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -746,11 +746,11 @@ convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   const variation: BucketedVariation = context.runExperience('experience-key');
   const changesData: VariationChange = variation.changes.find(
-    ({type}) => type === VariationChangeType.FULLSTACK_FEATURE
+    ({type}) => type === VariationChangeType.FULLSTACK_FEATURE,
   );
   const feature: Feature = context.getConfigEntityById(
     changesData.data.feature_id,
-    EntityType.FEATURE
+    EntityType.FEATURE,
   );
 });
 ```
@@ -776,7 +776,7 @@ import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -817,11 +817,11 @@ import ConvertSDK, {
   EntityType,
   Experience,
   SystemEvents,
-  Variation
+  Variation,
 } from '@convertcom/js-sdk';
 
 const convertSDK: ConvertInterface = new ConvertSDK({
-  sdkKey: 'xxx'
+  sdkKey: 'xxx',
 } as ConvertConfig);
 
 convertSDK.on(SystemEvents.READY, function (res, err) {
@@ -841,15 +841,15 @@ convertSDK.on(
       // Note that you need to create audiences manually on the GA side
       const experienceName: Experience = context.getConfigEntity(
         experienceKey,
-        EntityType.EXPERIENCE
+        EntityType.EXPERIENCE,
       ).name;
       const variationName: Variation = context.getConfigEntity(
         variationKey,
-        EntityType.VARIATION
+        EntityType.VARIATION,
       ).name;
       gtag('event', 'YOUR_GA_CUSTOM_EVENT', {experienceName, variationName});
     }
-  }
+  },
 );
 
 convertSDK.on(SystemEvents.CONVERSION, function ({visitorId, goalKey}, err) {
@@ -879,7 +879,7 @@ The provided DataStore interface is expected to have two methods: `set` and `get
 import ConvertSDK, {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
@@ -903,7 +903,7 @@ class CustomDataStore {
 const dataStore = new CustomDataStore();
 const convertSDK: ConvertInterface = new ConvertSDK({
   ...config,
-  dataStore
+  dataStore,
 } as ConvertConfig);
 ```
 
