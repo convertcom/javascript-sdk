@@ -8,7 +8,7 @@ module.exports = {
   // semicolon at the end is true
   semi: true,
   // trailing commas where valid in es5 (arrays, objects, etc)
-  trailingComma: 'none',
+  trailingComma: 'all',
   // false - Example: {foo: bar}
   bracketSpacing: false,
   // end of line must be *nix compatible
