@@ -200,7 +200,8 @@ export const HttpClient = {
         runtimeResult.runtime === 'server-with-fetch'
       ) {
         const options: RequestInit = {
-          method
+          method,
+          keepalive: true // to allow the request to complete even if the page unloads
         };
         if (config?.headers) options.headers = config.headers;
         if (config?.data && supportsRequestBody(method)) {
