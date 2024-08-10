@@ -12,5 +12,5 @@ module.exports = {
   // false - Example: {foo: bar}
   bracketSpacing: false,
   // end of line must be *nix compatible
-  endOfLine: 'lf',
+  endOfLine: 'lf'
 };
