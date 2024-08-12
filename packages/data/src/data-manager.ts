@@ -255,13 +255,14 @@ export class DataManager implements DataManagerInterface {
       }
 
       // Check location rules against locationProperties
-      let locationMatched: boolean | RuleError = false,
-        matchedLocations = [];
-      if (locationProperties) {
+      let locationMatched: boolean | RuleError =
+        ignoreLocationProperties === true;
+      if (!locationMatched && locationProperties) {
         if (
           Array.isArray(experience?.locations) &&
           experience.locations.length
         ) {
+          let matchedLocations = [];
           // Get attached locations
           const locations = this.getItemsByIds(
             experience.locations,
@@ -300,7 +301,7 @@ export class DataManager implements DataManagerInterface {
           );
         }
       }
-      if (!locationMatched && !ignoreLocationProperties) {
+      if (!locationMatched) {
         this._loggerManager?.debug?.(
           'DataManager.matchRulesByField()',
           MESSAGES.LOCATION_NOT_MATCH,
