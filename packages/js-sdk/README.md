@@ -361,7 +361,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -403,7 +403,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -432,6 +432,7 @@ Retrieves a list of features that the user is already bucketed into.
 |            |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.       |
 |            |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties.|
 |            |        |          | `environment`: Optional string.                                                      |
+|            |        |          | `typeCasting`: Optional boolean to control automatic type conversion to the variable's defined type. Defaults to `true`. |
 
 #### Returns
 
@@ -444,7 +445,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature
+  BucketedFeature,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -488,7 +489,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature
+  BucketedFeature,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -532,7 +533,7 @@ Void.
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -589,7 +590,7 @@ Void.
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -626,7 +627,7 @@ Void.
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -662,7 +663,7 @@ Void.
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -699,7 +700,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  Experience
+  Experience,
 } from '@convertcom/js-sdk';
 import ConvertSDK, {EntityType} from '@convertcom/js-sdk';
 
@@ -741,7 +742,7 @@ import type {
   ContextInterface,
   BucketedVariation,
   Feature,
-  VariationChange
+  VariationChange,
 } from '@convertcom/js-sdk';
 import ConvertSDK, {EntityType, VariationChangeType} from '@convertcom/js-sdk';
 
@@ -784,7 +785,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -824,7 +825,7 @@ import type {
   ConvertConfig,
   ContextInterface,
   Experience,
-  Variation
+  Variation,
 } from '@convertcom/js-sdk';
 import ConvertSDK, {EntityType, SystemEvents} from '@convertcom/js-sdk';
 
@@ -855,7 +856,7 @@ convertSDK.on(
         variationKey,
         EntityType.VARIATION
       ).name;
-      gtag('event', 'YOUR_GA_CUSTOM_EVENT', {experienceName, variationName});
+      gtag('event', 'YOUR_GA_CUSTOM_EVENT', { experienceName, variationName });
     }
   }
 );
@@ -887,7 +888,7 @@ The provided DataStore interface is expected to have two methods: `set` and `get
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -912,7 +913,7 @@ class CustomDataStore {
 const dataStore = new CustomDataStore();
 const convertSDK: ConvertInterface = new ConvertSDK({
   ...config,
-  dataStore
+  dataStore,
 } as ConvertConfig);
 ```
 
