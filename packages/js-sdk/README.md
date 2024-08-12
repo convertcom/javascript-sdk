@@ -309,7 +309,7 @@ const userContext: ContextInterface = convertSDK.createContext(
   'user-unique-id',
   {
     country: 'US',
-    language: 'en'
+    language: 'en',
   }
 );
 ```
@@ -546,25 +546,25 @@ convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.trackConversion('goal-key', {
     ruleData: {
-      action: 'buy'
+      action: 'buy',
     },
     conversionData: [
       {
         key: 'amount',
-        value: 10.3
+        value: 10.3,
       },
       {
         key: 'productsCount',
-        value: 2
+        value: 2,
       },
       {
         key: 'transactionId',
-        value: 'transaction-unique-id'
+        value: 'transaction-unique-id',
       }
     ],
     conversionSetting: {
-      forceMultipleTransactions: false
-    }
+      forceMultipleTransactions: false,
+    },
   });
 });
 ```
@@ -602,7 +602,7 @@ const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.runCustomSegments(['segment-key'], {
-    enabled: true
+    enabled: true,
   });
 });
 ```
@@ -638,7 +638,9 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  context.setDefaultSegments({country: 'US'});
+  context.setDefaultSegments({
+    country: 'US',
+  });
 });
 ```
 
@@ -674,7 +676,9 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  context.updateVisitorProperties({weather: 'rainy'});
+  context.updateVisitorProperties({
+    weather: 'rainy',
+  });
 });
 ```
 
@@ -830,7 +834,7 @@ import type {
 import ConvertSDK, {EntityType, SystemEvents} from '@convertcom/js-sdk';
 
 const convertSDK: ConvertInterface = new ConvertSDK({
-  sdkKey: 'xxx'
+  sdkKey: 'xxx',
 } as ConvertConfig);
 
 convertSDK.on(SystemEvents.READY, function (res, err) {
@@ -841,7 +845,13 @@ convertSDK.on(SystemEvents.READY, function (res, err) {
 
 convertSDK.on(
   SystemEvents.BUCKETING,
-  function ({visitorId, experienceKey, variationKey, featureKey, status}, err) {
+  function ({
+    visitorId,
+    experienceKey,
+    variationKey,
+    featureKey,
+    status,
+  }, err) {
     if (err) {
       console.error(err);
     } else {
@@ -856,12 +866,18 @@ convertSDK.on(
         variationKey,
         EntityType.VARIATION
       ).name;
-      gtag('event', 'YOUR_GA_CUSTOM_EVENT', { experienceName, variationName });
+      gtag('event', 'YOUR_GA_CUSTOM_EVENT', {
+        experienceName,
+        variationName,
+      });
     }
   }
 );
 
-convertSDK.on(SystemEvents.CONVERSION, function ({visitorId, goalKey}, err) {
+convertSDK.on(SystemEvents.CONVERSION, function ({
+  visitorId,
+  goalKey,
+}, err) {
   if (err) {
     console.error(err);
   } else {
