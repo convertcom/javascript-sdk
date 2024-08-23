@@ -57,5 +57,5 @@ export interface ContextInterface {
   getConfigEntityById(id: string, entityType: EntityType): Entity;
   getVisitorData(): StoreData;
 
-  releaseQueues(reason?: string): void;
+  releaseQueues(reason?: string): Promise<any>;
 }
