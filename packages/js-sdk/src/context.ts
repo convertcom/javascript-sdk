@@ -555,11 +555,12 @@ export class Context implements ContextInterface {
   /**
    * Send pending API/DataStore queues to server
    * @param {string=} reason
+   * @return {Promise<any>}
    */
-  releaseQueues(reason?: string): void {
-    this._apiManager.releaseQueue(reason);
+  releaseQueues(reason?: string): Promise<any> {
     if (this._dataManager.dataStoreManager)
       this._dataManager.dataStoreManager.releaseQueue(reason);
+    return this._apiManager.releaseQueue(reason);
   }
 
   /**
