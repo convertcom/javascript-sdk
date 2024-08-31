@@ -789,7 +789,9 @@ convertSDK.onReady().then(() => {
   const variations: BucketedVariation[] = context.runExperiences();
 
   // manually release all pending queue at some point later, like on click, component unmount
-  context.releaseQueues();
+  context.releaseQueues().then(() => {
+    console.log('all pending queue has been released');
+  });
 });
 ```
 
