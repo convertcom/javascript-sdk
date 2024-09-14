@@ -1792,7 +1792,7 @@ export enum GoalTypes {
  * This one describes a logical triggering rule that is being used inside the app
  */
 export type LocationTrigger =
-  | LocationTriggerDomChange
+  | LocationTriggerDomElement
   | LocationTriggerCallback
   | LocationTriggerManual
   | LocationTriggerUponRun;
@@ -1803,7 +1803,7 @@ export type LocationTrigger =
 export enum LocationTriggerTypes {
   UPON_RUN = 'upon_run',
   MANUAL = 'manual',
-  DOM_CHANGE = 'dom_change',
+  DOM_ELEMENT = 'dom_element',
   CALLBACK = 'callback'
 }
 
@@ -1827,8 +1827,8 @@ export enum type20 {
   MANUAL = 'manual'
 }
 
-export type LocationTriggerDomChange = LocationTriggerBase & {
-  type: 'dom_change';
+export type LocationTriggerDomElement = LocationTriggerBase & {
+  type: 'dom_element';
   /**
    * Describes html selector
    */
@@ -1836,11 +1836,11 @@ export type LocationTriggerDomChange = LocationTriggerBase & {
   /**
    * Describes event
    */
-  event: string;
+  events: Array<'click' | 'hover' | 'in_view' | 'change'>;
 };
 
 export enum type21 {
-  DOM_CHANGE = 'dom_change'
+  DOM_ELEMENT = 'dom_element'
 }
 
 export type LocationTriggerCallback = LocationTriggerBase & {
