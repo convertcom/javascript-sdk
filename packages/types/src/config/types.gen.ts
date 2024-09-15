@@ -17,19 +17,27 @@ export type ConfigAudience = {
    */
   name?: string;
   type?: ConfigAudienceTypes;
-  rules?: RuleObject | null;
+  rules?: ((RuleObject) | null);
 };
 
 /**
- * Type of the Audience. Can be one of the following: `permanent`, `transient`. For full-stack projects, `transient` is the only valid option, the rest will be ignored.
- * * **permanent** - A permanent audience is one that is checked only at the time the user is being bucketed into the experience
- * * **transient** - A transient audience is one that is checked every time the user is being bucketed into the experience
- *
- */
-export enum ConfigAudienceTypes {
-  PERMANENT = 'permanent',
-  TRANSIENT = 'transient'
-}
+* Type of the Audience. Can be one of the following: `permanent`, `transient`. For full-stack projects, `transient` is the only valid option, the rest will be ignored.
+* * **permanent** - A permanent audience is one that is checked only at the time the user is being bucketed into the experience
+* * **transient** - A transient audience is one that is checked every time the user is being bucketed into the experience
+*
+*/
+export type ConfigAudienceTypes = 'permanent' | 'transient';
+
+/**
+* Type of the Audience. Can be one of the following: `permanent`, `transient`. For full-stack projects, `transient` is the only valid option, the rest will be ignored.
+* * **permanent** - A permanent audience is one that is checked only at the time the user is being bucketed into the experience
+* * **transient** - A transient audience is one that is checked every time the user is being bucketed into the experience
+*
+*/
+export const ConfigAudienceTypes = {
+  PERMANENT: 'permanent',
+  TRANSIENT: 'transient'
+} as const;
 
 export type PageNumber = {
   /**
@@ -68,7 +76,7 @@ export type ResultsPerPage = {
    * Defaults to 30 when not sent
    *
    */
-  results_per_page?: number | null;
+  results_per_page?: (number) | null;
 };
 
 export type SortDirection = {
@@ -78,19 +86,27 @@ export type SortDirection = {
    * Defaults to **desc** when not sent in a request
    *
    */
-  sort_direction?: 'asc' | 'desc' | null;
+  sort_direction?: ('asc' | 'desc') | null;
 };
 
 /**
- * Data sorting direction using "sort_by" field. "asc" for ascending direction, "desc" for descending direction
- *
- * Defaults to **desc** when not sent in a request
- *
- */
-export enum sort_direction {
-  ASC = 'asc',
-  DESC = 'desc'
-}
+* Data sorting direction using "sort_by" field. "asc" for ascending direction, "desc" for descending direction
+*
+* Defaults to **desc** when not sent in a request
+*
+*/
+export type sort_direction = 'asc' | 'desc';
+
+/**
+* Data sorting direction using "sort_by" field. "asc" for ascending direction, "desc" for descending direction
+*
+* Defaults to **desc** when not sent in a request
+*
+*/
+export const sort_direction = {
+  ASC: 'asc',
+  DESC: 'desc'
+} as const;
 
 export type OnlyCount = {
   /**
@@ -170,12 +186,17 @@ export type BaseRuleWithVisitorTypeValue = BaseRule & {
 };
 
 /**
- * Type of the visitors
- */
-export enum value {
-  NEW = 'new',
-  RETURNING = 'returning'
-}
+* Type of the visitors
+*/
+export type value = 'new' | 'returning';
+
+/**
+* Type of the visitors
+*/
+export const value = {
+  NEW: 'new',
+  RETURNING: 'returning'
+} as const;
 
 export type BaseRuleWithExperienceBucketedValue = BaseRule & {
   /**
@@ -216,55 +237,51 @@ export type BaseRuleWithBrowserNameValue = BaseRule & {
   /**
    * Browser name used for matching
    */
-  value?:
-    | 'chrome'
-    | 'microsoft_ie'
-    | 'firefox'
-    | 'microsoft_edge'
-    | 'mozilla'
-    | 'opera'
-    | 'safari';
+  value?: 'chrome' | 'microsoft_ie' | 'firefox' | 'microsoft_edge' | 'mozilla' | 'opera' | 'safari';
 };
 
 /**
- * Browser name used for matching
- */
-export enum value2 {
-  CHROME = 'chrome',
-  MICROSOFT_IE = 'microsoft_ie',
-  FIREFOX = 'firefox',
-  MICROSOFT_EDGE = 'microsoft_edge',
-  MOZILLA = 'mozilla',
-  OPERA = 'opera',
-  SAFARI = 'safari'
-}
+* Browser name used for matching
+*/
+export type value2 = 'chrome' | 'microsoft_ie' | 'firefox' | 'microsoft_edge' | 'mozilla' | 'opera' | 'safari';
+
+/**
+* Browser name used for matching
+*/
+export const value2 = {
+  CHROME: 'chrome',
+  MICROSOFT_IE: 'microsoft_ie',
+  FIREFOX: 'firefox',
+  MICROSOFT_EDGE: 'microsoft_edge',
+  MOZILLA: 'mozilla',
+  OPERA: 'opera',
+  SAFARI: 'safari'
+} as const;
 
 export type BaseRuleWithOsValue = BaseRule & {
   /**
    * Operating System name used for matching
    */
-  value?:
-    | 'android'
-    | 'iphone'
-    | 'ipod'
-    | 'ipad'
-    | 'windows'
-    | 'macos'
-    | 'linux';
+  value?: 'android' | 'iphone' | 'ipod' | 'ipad' | 'windows' | 'macos' | 'linux';
 };
 
 /**
- * Operating System name used for matching
- */
-export enum value3 {
-  ANDROID = 'android',
-  IPHONE = 'iphone',
-  IPOD = 'ipod',
-  IPAD = 'ipad',
-  WINDOWS = 'windows',
-  MACOS = 'macos',
-  LINUX = 'linux'
-}
+* Operating System name used for matching
+*/
+export type value3 = 'android' | 'iphone' | 'ipod' | 'ipad' | 'windows' | 'macos' | 'linux';
+
+/**
+* Operating System name used for matching
+*/
+export const value3 = {
+  ANDROID: 'android',
+  IPHONE: 'iphone',
+  IPOD: 'ipod',
+  IPAD: 'ipad',
+  WINDOWS: 'windows',
+  MACOS: 'macos',
+  LINUX: 'linux'
+} as const;
 
 export type BaseRuleWithWeatherConditionValue = BaseRule & {
   /**
@@ -301,35 +318,40 @@ export type BaseRuleWithWeatherConditionValue = BaseRule & {
 };
 
 /**
- * Weather Conditions
- */
-export enum WeatherConditions {
-  BLIZZARD = 'Blizzard',
-  BLOWING_SNOW = 'Blowing snow',
-  CLOUDY = 'Cloudy',
-  FOG = 'Fog',
-  FREEZING_DRIZZLE = 'Freezing drizzle',
-  FREEZING_FOG = 'Freezing fog',
-  HEAVY_FREEZING_DRIZZLE = 'Heavy freezing drizzle',
-  HEAVY_RAIN = 'Heavy rain',
-  HEAVY_RAIN_AT_TIMES = 'Heavy rain at times',
-  LIGHT_DRIZZLE = 'Light drizzle',
-  LIGHT_FREEZING_RAIN = 'Light freezing rain',
-  LIGHT_RAIN = 'Light rain',
-  MIST = 'Mist',
-  MODERATE_RAIN = 'Moderate rain',
-  MODERATE_RAIN_AT_TIMES = 'Moderate rain at times',
-  OVERCAST = 'Overcast',
-  PARTLY_CLOUDY = 'Partly cloudy',
-  PATCHY_FREEZING_DRIZZLE_POSSIBLE = 'Patchy freezing drizzle possible',
-  PATCHY_LIGHT_DRIZZLE = 'Patchy light drizzle',
-  PATCHY_LIGHT_RAIN = 'Patchy light rain',
-  PATCHY_RAIN_POSSIBLE = 'Patchy rain possible',
-  PATCHY_SLEET_POSSIBLE = 'Patchy sleet possible',
-  PATCHY_SNOW_POSSIBLE = 'Patchy snow possible',
-  SUNNY = 'Sunny',
-  THUNDERY_OUTBREAKS_POSSIBLE = 'Thundery outbreaks possible'
-}
+* Weather Conditions
+*/
+export type WeatherConditions = 'Blizzard' | 'Blowing snow' | 'Cloudy' | 'Fog' | 'Freezing drizzle' | 'Freezing fog' | 'Heavy freezing drizzle' | 'Heavy rain' | 'Heavy rain at times' | 'Light drizzle' | 'Light freezing rain' | 'Light rain' | 'Mist' | 'Moderate rain' | 'Moderate rain at times' | 'Overcast' | 'Partly cloudy' | 'Patchy freezing drizzle possible' | 'Patchy light drizzle' | 'Patchy light rain' | 'Patchy rain possible' | 'Patchy sleet possible' | 'Patchy snow possible' | 'Sunny' | 'Thundery outbreaks possible';
+
+/**
+* Weather Conditions
+*/
+export const WeatherConditions = {
+  BLIZZARD: 'Blizzard',
+  BLOWING_SNOW: 'Blowing snow',
+  CLOUDY: 'Cloudy',
+  FOG: 'Fog',
+  FREEZING_DRIZZLE: 'Freezing drizzle',
+  FREEZING_FOG: 'Freezing fog',
+  HEAVY_FREEZING_DRIZZLE: 'Heavy freezing drizzle',
+  HEAVY_RAIN: 'Heavy rain',
+  HEAVY_RAIN_AT_TIMES: 'Heavy rain at times',
+  LIGHT_DRIZZLE: 'Light drizzle',
+  LIGHT_FREEZING_RAIN: 'Light freezing rain',
+  LIGHT_RAIN: 'Light rain',
+  MIST: 'Mist',
+  MODERATE_RAIN: 'Moderate rain',
+  MODERATE_RAIN_AT_TIMES: 'Moderate rain at times',
+  OVERCAST: 'Overcast',
+  PARTLY_CLOUDY: 'Partly cloudy',
+  PATCHY_FREEZING_DRIZZLE_POSSIBLE: 'Patchy freezing drizzle possible',
+  PATCHY_LIGHT_DRIZZLE: 'Patchy light drizzle',
+  PATCHY_LIGHT_RAIN: 'Patchy light rain',
+  PATCHY_RAIN_POSSIBLE: 'Patchy rain possible',
+  PATCHY_SLEET_POSSIBLE: 'Patchy sleet possible',
+  PATCHY_SNOW_POSSIBLE: 'Patchy snow possible',
+  SUNNY: 'Sunny',
+  THUNDERY_OUTBREAKS_POSSIBLE: 'Thundery outbreaks possible'
+} as const;
 
 export type BaseMatch = {
   /**
@@ -340,160 +362,181 @@ export type BaseMatch = {
   negated?: boolean;
 };
 
-export enum TextMatchRulesTypes {
-  URL = 'url',
-  URL_WITH_QUERY = 'url_with_query',
-  QUERY_STRING = 'query_string',
-  CAMPAIGN = 'campaign',
-  KEYWORD = 'keyword',
-  MEDIUM = 'medium',
-  SOURCE_NAME = 'source_name',
-  CITY = 'city',
-  REGION = 'region',
-  BROWSER_VERSION = 'browser_version',
-  USER_AGENT = 'user_agent',
-  PAGE_TAG_PAGE_TYPE = 'page_tag_page_type',
-  PAGE_TAG_CATEGORY_ID = 'page_tag_category_id',
-  PAGE_TAG_CATEGORY_NAME = 'page_tag_category_name',
-  PAGE_TAG_PRODUCT_SKU = 'page_tag_product_sku',
-  PAGE_TAG_PRODUCT_NAME = 'page_tag_product_name',
-  PAGE_TAG_CUSTOMER_ID = 'page_tag_customer_id',
-  PAGE_TAG_CUSTOM_1 = 'page_tag_custom_1',
-  PAGE_TAG_CUSTOM_2 = 'page_tag_custom_2',
-  PAGE_TAG_CUSTOM_3 = 'page_tag_custom_3',
-  PAGE_TAG_CUSTOM_4 = 'page_tag_custom_4'
-}
+export type TextMatchRulesTypes = 'url' | 'url_with_query' | 'query_string' | 'campaign' | 'keyword' | 'medium' | 'source_name' | 'city' | 'region' | 'browser_version' | 'user_agent' | 'page_tag_page_type' | 'page_tag_category_id' | 'page_tag_category_name' | 'page_tag_product_sku' | 'page_tag_product_name' | 'page_tag_customer_id' | 'page_tag_custom_1' | 'page_tag_custom_2' | 'page_tag_custom_3' | 'page_tag_custom_4';
 
-export enum NumericMatchRulesTypes {
-  AVG_TIME_PAGE = 'avg_time_page',
-  DAYS_SINCE_LAST_VISIT = 'days_since_last_visit',
-  PAGES_VISITED_COUNT = 'pages_visited_count',
-  VISIT_DURATION = 'visit_duration',
-  VISITS_COUNT = 'visits_count',
-  PAGE_TAG_PRODUCT_PRICE = 'page_tag_product_price'
-}
+export const TextMatchRulesTypes = {
+  URL: 'url',
+  URL_WITH_QUERY: 'url_with_query',
+  QUERY_STRING: 'query_string',
+  CAMPAIGN: 'campaign',
+  KEYWORD: 'keyword',
+  MEDIUM: 'medium',
+  SOURCE_NAME: 'source_name',
+  CITY: 'city',
+  REGION: 'region',
+  BROWSER_VERSION: 'browser_version',
+  USER_AGENT: 'user_agent',
+  PAGE_TAG_PAGE_TYPE: 'page_tag_page_type',
+  PAGE_TAG_CATEGORY_ID: 'page_tag_category_id',
+  PAGE_TAG_CATEGORY_NAME: 'page_tag_category_name',
+  PAGE_TAG_PRODUCT_SKU: 'page_tag_product_sku',
+  PAGE_TAG_PRODUCT_NAME: 'page_tag_product_name',
+  PAGE_TAG_CUSTOMER_ID: 'page_tag_customer_id',
+  PAGE_TAG_CUSTOM_1: 'page_tag_custom_1',
+  PAGE_TAG_CUSTOM_2: 'page_tag_custom_2',
+  PAGE_TAG_CUSTOM_3: 'page_tag_custom_3',
+  PAGE_TAG_CUSTOM_4: 'page_tag_custom_4'
+} as const;
 
-export enum BoolMatchRulesTypes {
-  BUCKETED_INTO_EXPERIENCE = 'bucketed_into_experience',
-  IS_DESKTOP = 'is_desktop',
-  IS_MOBILE = 'is_mobile',
-  IS_TABLET = 'is_tablet'
-}
+export type NumericMatchRulesTypes = 'avg_time_page' | 'days_since_last_visit' | 'pages_visited_count' | 'visit_duration' | 'visits_count' | 'page_tag_product_price';
 
-export enum GenericTextKeyValueMatchRulesTypes {
-  GENERIC_TEXT_KEY_VALUE = 'generic_text_key_value'
-}
+export const NumericMatchRulesTypes = {
+  AVG_TIME_PAGE: 'avg_time_page',
+  DAYS_SINCE_LAST_VISIT: 'days_since_last_visit',
+  PAGES_VISITED_COUNT: 'pages_visited_count',
+  VISIT_DURATION: 'visit_duration',
+  VISITS_COUNT: 'visits_count',
+  PAGE_TAG_PRODUCT_PRICE: 'page_tag_product_price'
+} as const;
 
-export enum GenericNumericKeyValueMatchRulesTypes {
-  GENERIC_NUMERIC_KEY_VALUE = 'generic_numeric_key_value'
-}
+export type BoolMatchRulesTypes = 'bucketed_into_experience' | 'is_desktop' | 'is_mobile' | 'is_tablet';
 
-export enum GenericBoolKeyValueMatchRulesTypes {
-  GENERIC_BOOL_KEY_VALUE = 'generic_bool_key_value'
-}
+export const BoolMatchRulesTypes = {
+  BUCKETED_INTO_EXPERIENCE: 'bucketed_into_experience',
+  IS_DESKTOP: 'is_desktop',
+  IS_MOBILE: 'is_mobile',
+  IS_TABLET: 'is_tablet'
+} as const;
 
-export enum JsConditionMatchRulesTypes {
-  JS_CONDITION = 'js_condition'
-}
+export type GenericTextKeyValueMatchRulesTypes = 'generic_text_key_value';
 
-export type KeyValueMatchRulesTypes = GenericTextKeyValueMatchRulesTypes &
-  GenericNumericKeyValueMatchRulesTypes &
-  GenericBoolKeyValueMatchRulesTypes;
+export const GenericTextKeyValueMatchRulesTypes = {
+  GENERIC_TEXT_KEY_VALUE: 'generic_text_key_value'
+} as const;
 
-export enum CookieMatchRulesTypes {
-  COOKIE = 'cookie'
-}
+export type GenericNumericKeyValueMatchRulesTypes = 'generic_numeric_key_value';
 
-export enum CountryMatchRulesTypes {
-  COUNTRY = 'country'
-}
+export const GenericNumericKeyValueMatchRulesTypes = {
+  GENERIC_NUMERIC_KEY_VALUE: 'generic_numeric_key_value'
+} as const;
 
-export enum VisitorTypeMatchRulesTypes {
-  VISITOR_TYPE = 'visitor_type'
-}
+export type GenericBoolKeyValueMatchRulesTypes = 'generic_bool_key_value';
 
-export enum LanguageMatchRulesTypes {
-  LANGUAGE = 'language'
-}
+export const GenericBoolKeyValueMatchRulesTypes = {
+  GENERIC_BOOL_KEY_VALUE: 'generic_bool_key_value'
+} as const;
 
-export enum GoalTriggeredMatchRulesTypes {
-  GOAL_TRIGGERED = 'goal_triggered'
-}
+export type JsConditionMatchRulesTypes = 'js_condition';
 
-export enum SegmentBucketedMatchRulesTypes {
-  BUCKETED_INTO_SEGMENT = 'bucketed_into_segment'
-}
+export const JsConditionMatchRulesTypes = {
+  JS_CONDITION: 'js_condition'
+} as const;
 
-export enum DayOfWeekMatchRulesTypes {
-  LOCAL_TIME_DAY_OF_WEEK = 'local_time_day_of_week',
-  PROJECT_TIME_DAY_OF_WEEK = 'project_time_day_of_week'
-}
+export type KeyValueMatchRulesTypes = GenericTextKeyValueMatchRulesTypes & GenericNumericKeyValueMatchRulesTypes & GenericBoolKeyValueMatchRulesTypes;
 
-export enum HourOfDayMatchRulesTypes {
-  LOCAL_TIME_HOUR_OF_DAY = 'local_time_hour_of_day',
-  PROJECT_TIME_HOUR_OF_DAY = 'project_time_hour_of_day'
-}
+export type CookieMatchRulesTypes = 'cookie';
 
-export enum MinuteOfHourMatchRulesTypes {
-  LOCAL_TIME_MINUTE_OF_HOUR = 'local_time_minute_of_hour',
-  PROJECT_TIME_MINUTE_OF_HOUR = 'project_time_minute_of_hour'
-}
+export const CookieMatchRulesTypes = {
+  COOKIE: 'cookie'
+} as const;
 
-export enum BrowserNameMatchRulesTypes {
-  BROWSER_NAME = 'browser_name'
-}
+export type CountryMatchRulesTypes = 'country';
 
-export enum OsMatchRulesTypes {
-  OS = 'os'
-}
+export const CountryMatchRulesTypes = {
+  COUNTRY: 'country'
+} as const;
 
-export enum WeatherConditionMatchRulesTypes {
-  WEATHER_CONDITION = 'weather_condition'
-}
+export type VisitorTypeMatchRulesTypes = 'visitor_type';
 
-export type RulesTypes = TextMatchRulesTypes &
-  NumericMatchRulesTypes &
-  BoolMatchRulesTypes &
-  KeyValueMatchRulesTypes &
-  CookieMatchRulesTypes &
-  CountryMatchRulesTypes &
-  VisitorTypeMatchRulesTypes &
-  LanguageMatchRulesTypes &
-  GoalTriggeredMatchRulesTypes &
-  SegmentBucketedMatchRulesTypes &
-  DayOfWeekMatchRulesTypes &
-  HourOfDayMatchRulesTypes &
-  MinuteOfHourMatchRulesTypes &
-  BrowserNameMatchRulesTypes &
-  OsMatchRulesTypes &
-  WeatherConditionMatchRulesTypes;
+export const VisitorTypeMatchRulesTypes = {
+  VISITOR_TYPE: 'visitor_type'
+} as const;
+
+export type LanguageMatchRulesTypes = 'language';
+
+export const LanguageMatchRulesTypes = {
+  LANGUAGE: 'language'
+} as const;
+
+export type GoalTriggeredMatchRulesTypes = 'goal_triggered';
+
+export const GoalTriggeredMatchRulesTypes = {
+  GOAL_TRIGGERED: 'goal_triggered'
+} as const;
+
+export type SegmentBucketedMatchRulesTypes = 'bucketed_into_segment';
+
+export const SegmentBucketedMatchRulesTypes = {
+  BUCKETED_INTO_SEGMENT: 'bucketed_into_segment'
+} as const;
+
+export type DayOfWeekMatchRulesTypes = 'local_time_day_of_week' | 'project_time_day_of_week';
+
+export const DayOfWeekMatchRulesTypes = {
+  LOCAL_TIME_DAY_OF_WEEK: 'local_time_day_of_week',
+  PROJECT_TIME_DAY_OF_WEEK: 'project_time_day_of_week'
+} as const;
+
+export type HourOfDayMatchRulesTypes = 'local_time_hour_of_day' | 'project_time_hour_of_day';
+
+export const HourOfDayMatchRulesTypes = {
+  LOCAL_TIME_HOUR_OF_DAY: 'local_time_hour_of_day',
+  PROJECT_TIME_HOUR_OF_DAY: 'project_time_hour_of_day'
+} as const;
+
+export type MinuteOfHourMatchRulesTypes = 'local_time_minute_of_hour' | 'project_time_minute_of_hour';
+
+export const MinuteOfHourMatchRulesTypes = {
+  LOCAL_TIME_MINUTE_OF_HOUR: 'local_time_minute_of_hour',
+  PROJECT_TIME_MINUTE_OF_HOUR: 'project_time_minute_of_hour'
+} as const;
+
+export type BrowserNameMatchRulesTypes = 'browser_name';
+
+export const BrowserNameMatchRulesTypes = {
+  BROWSER_NAME: 'browser_name'
+} as const;
+
+export type OsMatchRulesTypes = 'os';
+
+export const OsMatchRulesTypes = {
+  OS: 'os'
+} as const;
+
+export type WeatherConditionMatchRulesTypes = 'weather_condition';
+
+export const WeatherConditionMatchRulesTypes = {
+  WEATHER_CONDITION: 'weather_condition'
+} as const;
+
+export type RulesTypes = TextMatchRulesTypes & NumericMatchRulesTypes & BoolMatchRulesTypes & KeyValueMatchRulesTypes & CookieMatchRulesTypes & CountryMatchRulesTypes & VisitorTypeMatchRulesTypes & LanguageMatchRulesTypes & GoalTriggeredMatchRulesTypes & SegmentBucketedMatchRulesTypes & DayOfWeekMatchRulesTypes & HourOfDayMatchRulesTypes & MinuteOfHourMatchRulesTypes & BrowserNameMatchRulesTypes & OsMatchRulesTypes & WeatherConditionMatchRulesTypes;
 
 export type GenericTextMatchRule = BaseRuleWithStringValue & {
   rule_type: TextMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: TextMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: TextMatchingOptions;
+});
 };
 
 export type GenericNumericMatchRule = BaseRuleWithNumericValue & {
   rule_type: NumericMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: NumericMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: NumericMatchingOptions;
+});
 };
 
 export type GenericBoolMatchRule = BaseRuleWithBooleanValue & {
   rule_type: BoolMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 };
 
 export type GenericSetMatchRule = BaseRuleWithStringValue & {
   rule_type: string;
-  matching?: BaseMatch & {
-    match_type?: SetMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: SetMatchingOptions;
+});
 };
 
 export type GenericKey = {
@@ -505,30 +548,30 @@ export type GenericKey = {
 
 export type GenericTextKeyValueMatchRule = BaseRuleWithStringValue & {
   rule_type: GenericTextKeyValueMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: TextMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: TextMatchingOptions;
+});
 } & GenericKey;
 
 export type GenericNumericKeyValueMatchRule = BaseRuleWithNumericValue & {
   rule_type: GenericNumericKeyValueMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: NumericMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: NumericMatchingOptions;
+});
 } & GenericKey;
 
 export type GenericBoolKeyValueMatchRule = BaseRuleWithBooleanValue & {
   rule_type: GenericBoolKeyValueMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 } & GenericKey;
 
 export type CookieMatchRule = BaseRuleWithStringValue & {
   rule_type: CookieMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: TextMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: TextMatchingOptions;
+});
   /**
    * The name of the cookie which value is compared to the given rule value
    */
@@ -537,201 +580,172 @@ export type CookieMatchRule = BaseRuleWithStringValue & {
 
 export type CountryMatchRule = BaseRuleWithCountryCodeValue & {
   rule_type: CountryMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 };
 
 export type JsConditionMatchRule = BaseRuleWithJsCodeValue & {
   rule_type: JsConditionMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 };
 
 export type VisitorTypeMatchRule = BaseRuleWithVisitorTypeValue & {
   rule_type: VisitorTypeMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 };
 
 export type LanguageMatchRule = BaseRuleWithLanguageCodeValue & {
   rule_type: LanguageMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 };
 
 export type GoalTriggeredMatchRule = BaseRuleWithGoalTriggeredValue & {
   rule_type: GoalTriggeredMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 };
 
 export type SegmentBucketedMatchRule = BaseRuleWithSegmentBucketedValue & {
   rule_type: SegmentBucketedMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 };
 
-export type ExperienceBucketedMatchRule =
-  BaseRuleWithExperienceBucketedValue & {
-    rule_type: string;
-    matching?: BaseMatch & {
-      match_type?: ChoiceMatchingOptions;
-    };
-  };
+export type ExperienceBucketedMatchRule = BaseRuleWithExperienceBucketedValue & {
+  rule_type: string;
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
+};
 
 export type DayOfWeekMatchRule = BaseRuleWithDayOfWeekValue & {
   rule_type: DayOfWeekMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: NumericMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: NumericMatchingOptions;
+});
 };
 
 export type HourOfDayMatchRule = BaseRuleWithHourOfDayValue & {
   rule_type: HourOfDayMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: NumericMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: NumericMatchingOptions;
+});
 };
 
 export type MinuteOfHourMatchRule = BaseRuleWithMinuteOfHourValue & {
   rule_type: MinuteOfHourMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: NumericMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: NumericMatchingOptions;
+});
 };
 
 export type BrowserNameMatchRule = BaseRuleWithBrowserNameValue & {
   rule_type: BrowserNameMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 };
 
 export type OsMatchRule = BaseRuleWithOsValue & {
   rule_type: OsMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: ChoiceMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: ChoiceMatchingOptions;
+});
 };
 
 export type WeatherConditionMatchRule = BaseRuleWithWeatherConditionValue & {
   rule_type: WeatherConditionMatchRulesTypes;
-  matching?: BaseMatch & {
-    match_type?: TextMatchingOptions;
-  };
+  matching?: (BaseMatch & {
+  match_type?: TextMatchingOptions;
+});
 };
 
-export type RuleElementNoUrl =
-  | GenericTextMatchRule
-  | GenericNumericMatchRule
-  | GenericBoolMatchRule
-  | CookieMatchRule
-  | GenericTextKeyValueMatchRule
-  | GenericNumericKeyValueMatchRule
-  | GenericBoolKeyValueMatchRule
-  | CountryMatchRule
-  | LanguageMatchRule
-  | GoalTriggeredMatchRule
-  | SegmentBucketedMatchRule
-  | DayOfWeekMatchRule
-  | HourOfDayMatchRule
-  | MinuteOfHourMatchRule
-  | BrowserNameMatchRule
-  | OsMatchRule
-  | WeatherConditionMatchRule
-  | VisitorTypeMatchRule
-  | JsConditionMatchRule;
+export type RuleElementNoUrl = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | CookieMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule;
 
-export type RuleElement =
-  | GenericTextMatchRule
-  | GenericNumericMatchRule
-  | GenericBoolMatchRule
-  | GenericTextKeyValueMatchRule
-  | GenericNumericKeyValueMatchRule
-  | GenericBoolKeyValueMatchRule
-  | CookieMatchRule
-  | CountryMatchRule
-  | LanguageMatchRule
-  | GoalTriggeredMatchRule
-  | SegmentBucketedMatchRule
-  | DayOfWeekMatchRule
-  | HourOfDayMatchRule
-  | MinuteOfHourMatchRule
-  | BrowserNameMatchRule
-  | OsMatchRule
-  | WeatherConditionMatchRule
-  | VisitorTypeMatchRule
-  | JsConditionMatchRule;
+export type RuleElement = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CookieMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule;
 
-export enum TextMatchingOptions {
-  MATCHES = 'matches',
-  REGEX_MATCHES = 'regexMatches',
-  CONTAINS = 'contains',
-  ENDS_WITH = 'endsWith',
-  STARTS_WITH = 'startsWith'
-}
+export type TextMatchingOptions = 'matches' | 'regexMatches' | 'contains' | 'endsWith' | 'startsWith';
 
-export enum NumericMatchingOptions {
-  EQUALS_NUMBER = 'equalsNumber',
-  LESS = 'less',
-  LESS_EQUAL = 'lessEqual'
-}
+export const TextMatchingOptions = {
+  MATCHES: 'matches',
+  REGEX_MATCHES: 'regexMatches',
+  CONTAINS: 'contains',
+  ENDS_WITH: 'endsWith',
+  STARTS_WITH: 'startsWith'
+} as const;
 
-export enum ChoiceMatchingOptions {
-  EQUALS = 'equals'
-}
+export type NumericMatchingOptions = 'equalsNumber' | 'less' | 'lessEqual';
 
-export enum ChoiceContainsOptions {
-  CONTAINS = 'contains'
-}
+export const NumericMatchingOptions = {
+  EQUALS_NUMBER: 'equalsNumber',
+  LESS: 'less',
+  LESS_EQUAL: 'lessEqual'
+} as const;
 
-export enum SetMatchingOptions {
-  IS_IN = 'isIn'
-}
+export type ChoiceMatchingOptions = 'equals';
+
+export const ChoiceMatchingOptions = {
+  EQUALS: 'equals'
+} as const;
+
+export type ChoiceContainsOptions = 'contains';
+
+export const ChoiceContainsOptions = {
+  CONTAINS: 'contains'
+} as const;
+
+export type SetMatchingOptions = 'isIn';
+
+export const SetMatchingOptions = {
+  IS_IN: 'isIn'
+} as const;
 
 /**
- * This one describes a logical rule that is being used inside the app for triggering goals, matching audiences etc
- */
+* This one describes a logical rule that is being used inside the app for triggering goals, matching audiences etc
+*/
 export type RuleObject = {
   /**
    * This describes an outer set of blocks which are evaluated using OR's between them
    */
   OR?: Array<{
-    /**
-     * This describes a colections of logical blocks which are evaluated using AND's between them
-     */
-    AND?: Array<{
       /**
-       * This describes a colections of logical blocks which are evaluated using OR's between them
+       * This describes a colections of logical blocks which are evaluated using AND's between them
        */
-      OR_WHEN?: Array<RuleElement>;
-    }>;
+      AND?: Array<{
+          /**
+           * This describes a colections of logical blocks which are evaluated using OR's between them
+           */
+          OR_WHEN?: Array<RuleElement>;
+      }>;
   }>;
 } | null;
 
 /**
- * This one describes a logical rule that is being used inside the app for triggering goals, matching audiences etc
- */
+* This one describes a logical rule that is being used inside the app for triggering goals, matching audiences etc
+*/
 export type RuleObjectNoUrl = {
   /**
    * This describes an outer set of blocks which are evaluated using OR's between them
    */
   OR?: Array<{
-    /**
-     * This describes a colections of logical blocks which are evaluated using AND's between them
-     */
-    AND?: Array<{
       /**
-       * This describes a colections of logical blocks which are evaluated using OR's between them
+       * This describes a colections of logical blocks which are evaluated using AND's between them
        */
-      OR_WHEN?: Array<RuleElementNoUrl>;
-    }>;
+      AND?: Array<{
+          /**
+           * This describes a colections of logical blocks which are evaluated using OR's between them
+           */
+          OR_WHEN?: Array<RuleElementNoUrl>;
+      }>;
   }>;
 } | null;
 
@@ -754,8 +768,8 @@ export type SuccessData = {
 };
 
 /**
- * Offset in seconds, from UTC time, for the give timezone
- */
+* Offset in seconds, from UTC time, for the give timezone
+*/
 export type UTC_Offset = number;
 
 export type GA_SettingsBase = {
@@ -770,12 +784,14 @@ export type IntegrationGA3 = {
   /**
    * Universal Analytics property to be used for tracking
    */
-  property_UA?: string | null;
+  property_UA?: (string) | null;
 };
 
-export enum type {
-  GA3 = 'ga3'
-}
+export type type = 'ga3';
+
+export const type = {
+  GA3: 'ga3'
+} as const;
 
 export type IntegrationGA4Base = {
   type?: 'ga4';
@@ -785,9 +801,11 @@ export type IntegrationGA4Base = {
   measurementId?: string;
 };
 
-export enum type2 {
-  GA4 = 'ga4'
-}
+export type type2 = 'ga4';
+
+export const type2 = {
+  GA4: 'ga4'
+} as const;
 
 export type IntegrationGA4 = IntegrationGA4Base & {
   /**
@@ -797,8 +815,25 @@ export type IntegrationGA4 = IntegrationGA4Base & {
 };
 
 /**
- * Response containing project's config data needed in order to serve experiences
- */
+* The way the list is processed. `any` means at least one element in the list is matched.
+* `all` means all elements in the list are matched. Default is any.
+*
+*/
+export type GenericListMatchingOptions = 'any' | 'all';
+
+/**
+* The way the list is processed. `any` means at least one element in the list is matched.
+* `all` means all elements in the list are matched. Default is any.
+*
+*/
+export const GenericListMatchingOptions = {
+  ANY: 'any',
+  ALL: 'all'
+} as const;
+
+/**
+* Response containing project's config data needed in order to serve experiences
+*/
 export type ConfigResponseData = {
   /**
    * Account ID under which the project exists
@@ -828,24 +863,22 @@ export type ConfigResponseData = {
   /**
    * List of archived experiences inside this project, which were archived within the last 8 months
    */
-  archived_experiences?: Array<string>;
+  archived_experiences?: Array<(string)>;
   /**
    * List of features inside this project. Presented only for fullstack projects
    */
   features?: Array<ConfigFeature>;
+  /**
+   * Flag indicating if the returned config is in debug mode
+   */
+  is_debug?: boolean;
 };
 
 /**
- * Object that represents the change done inside an experience
- */
+* Object that represents the change done inside an experience
+*/
 export type ExperienceChangeBase = {
-  type?:
-    | 'richStructure'
-    | 'customCode'
-    | 'defaultCode'
-    | 'defaultCodeMultipage'
-    | 'defaultRedirect'
-    | 'fullStackFeature';
+  type?: 'richStructure' | 'customCode' | 'defaultCode' | 'defaultCodeMultipage' | 'defaultRedirect' | 'fullStackFeature';
   /**
    * This contains all data of this change, any code, settings etc
    *
@@ -857,22 +890,24 @@ export type ExperienceChangeBase = {
    *
    */
   data?: {
-    [key: string]: unknown;
+      [key: string]: unknown;
   };
 };
 
-export enum type3 {
-  RICH_STRUCTURE = 'richStructure',
-  CUSTOM_CODE = 'customCode',
-  DEFAULT_CODE = 'defaultCode',
-  DEFAULT_CODE_MULTIPAGE = 'defaultCodeMultipage',
-  DEFAULT_REDIRECT = 'defaultRedirect',
-  FULL_STACK_FEATURE = 'fullStackFeature'
-}
+export type type3 = 'richStructure' | 'customCode' | 'defaultCode' | 'defaultCodeMultipage' | 'defaultRedirect' | 'fullStackFeature';
+
+export const type3 = {
+  RICH_STRUCTURE: 'richStructure',
+  CUSTOM_CODE: 'customCode',
+  DEFAULT_CODE: 'defaultCode',
+  DEFAULT_CODE_MULTIPAGE: 'defaultCodeMultipage',
+  DEFAULT_REDIRECT: 'defaultRedirect',
+  FULL_STACK_FEATURE: 'fullStackFeature'
+} as const;
 
 /**
- * Object that represents id of the change done inside an experience
- */
+* Object that represents id of the change done inside an experience
+*/
 export type ExperienceChangeId = {
   /**
    * The ID of the experience change
@@ -881,8 +916,8 @@ export type ExperienceChangeId = {
 };
 
 /**
- * Object that represents id of the change done inside an experience
- */
+* Object that represents id of the change done inside an experience
+*/
 export type ExperienceChangeIdReadOnly = {
   /**
    * The ID of the experience change
@@ -891,412 +926,373 @@ export type ExperienceChangeIdReadOnly = {
 };
 
 /**
- * Object that represents one change done inside an experience
- */
-export type ExperienceChange =
-  | ExperienceChangeDefaultCodeData
-  | ExperienceChangeDefaultCodeMultipageData
-  | ExperienceChangeDefaultRedirectData
-  | ExperienceChangeCustomCodeData
-  | ExperienceChangeRichStructureData
-  | ExperienceChangeFullStackFeature;
+* Object that represents one change done inside an experience
+*/
+export type ExperienceChange = ExperienceChangeDefaultCodeData | ExperienceChangeDefaultCodeMultipageData | ExperienceChangeDefaultRedirectData | ExperienceChangeCustomCodeData | ExperienceChangeRichStructureData | ExperienceChangeFullStackFeature;
 
 /**
- * Object that represents one change done inside an experience, used when adding changes
- */
-export type ExperienceChangeAdd =
-  | ExperienceChangeDefaultCodeDataAdd
-  | ExperienceChangeDefaultCodeMultipageDataAdd
-  | ExperienceChangeDefaultRedirectDataAdd
-  | ExperienceChangeCustomCodeDataAdd
-  | ExperienceChangeRichStructureDataAdd
-  | ExperienceChangeFullStackFeatureAdd;
+* Object that represents one change done inside an experience, used when adding changes
+*/
+export type ExperienceChangeAdd = ExperienceChangeDefaultCodeDataAdd | ExperienceChangeDefaultCodeMultipageDataAdd | ExperienceChangeDefaultRedirectDataAdd | ExperienceChangeCustomCodeDataAdd | ExperienceChangeRichStructureDataAdd | ExperienceChangeFullStackFeatureAdd;
 
 /**
- * Object that represents one change done inside an experience
- */
-export type ExperienceChangeUpdate =
-  | ExperienceChangeDefaultCodeDataUpdate
-  | ExperienceChangeDefaultCodeMultipageDataUpdate
-  | ExperienceChangeDefaultRedirectDataUpdate
-  | ExperienceChangeRichStructureDataUpdate
-  | ExperienceChangeCustomCodeDataUpdate
-  | ExperienceChangeFullStackFeatureUpdate;
+* Object that represents one change done inside an experience
+*/
+export type ExperienceChangeUpdate = ExperienceChangeDefaultCodeDataUpdate | ExperienceChangeDefaultCodeMultipageDataUpdate | ExperienceChangeDefaultRedirectDataUpdate | ExperienceChangeRichStructureDataUpdate | ExperienceChangeCustomCodeDataUpdate | ExperienceChangeFullStackFeatureUpdate;
 
 /**
- * Object that represents one change done inside an experience
- */
-export type ExperienceChangeUpdateNoId =
-  | ExperienceChangeDefaultCodeDataUpdateNoId
-  | ExperienceChangeDefaultCodeMultipageDataUpdateNoId
-  | ExperienceChangeDefaultRedirectDataUpdateNoId
-  | ExperienceChangeRichStructureDataUpdateNoId
-  | ExperienceChangeCustomCodeDataUpdateNoId
-  | ExperienceChangeFullStackFeatureUpdateNoId;
+* Object that represents one change done inside an experience
+*/
+export type ExperienceChangeUpdateNoId = ExperienceChangeDefaultCodeDataUpdateNoId | ExperienceChangeDefaultCodeMultipageDataUpdateNoId | ExperienceChangeDefaultRedirectDataUpdateNoId | ExperienceChangeRichStructureDataUpdateNoId | ExperienceChangeCustomCodeDataUpdateNoId | ExperienceChangeFullStackFeatureUpdateNoId;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
+* Describes structure for "defaultCode" type of experience change
+*/
 export type ExperienceChangeDefaultCodeDataBase = ExperienceChangeBase & {
   type?: 'defaultCode';
   /**
    * Describes structure for "defaultCode" type of experience change
    */
   data?: {
-    /**
-     * CSS code to be applied by this change
-     */
-    css?: string | null;
-    /**
-     * Javascript code generated by the visual editor or written in the same structure, to be applied by this experience change
-     */
-    js?: string | null;
-    /**
-     * Custom javascript code to be applied by this change
-     */
-    custom_js?: string | null;
+      /**
+       * CSS code to be applied by this change
+       */
+      css?: (string) | null;
+      /**
+       * Javascript code generated by the visual editor or written in the same structure, to be applied by this experience change
+       */
+      js?: (string) | null;
+      /**
+       * Custom javascript code to be applied by this change
+       */
+      custom_js?: (string) | null;
   };
 };
 
-export enum type4 {
-  DEFAULT_CODE = 'defaultCode'
-}
+export type type4 = 'defaultCode';
+
+export const type4 = {
+  DEFAULT_CODE: 'defaultCode'
+} as const;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
-export type ExperienceChangeDefaultCodeData = ExperienceChangeIdReadOnly &
-  ExperienceChangeDefaultCodeDataBase;
+* Describes structure for "defaultCode" type of experience change
+*/
+export type ExperienceChangeDefaultCodeData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeDataBase;
 
 /**
- * Describes structure for adding a "defaultCode" type of experience change
- */
-export type ExperienceChangeDefaultCodeDataAdd = ExperienceChangeIdReadOnly &
-  ExperienceChangeDefaultCodeDataBase & {
-    data: unknown;
-  };
+* Describes structure for adding a "defaultCode" type of experience change
+*/
+export type ExperienceChangeDefaultCodeDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeDataBase & {
+  data: unknown;
+};
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
-export type ExperienceChangeDefaultCodeDataUpdateNoId =
-  ExperienceChangeDefaultCodeDataBase & unknown;
+* Describes structure for "defaultCode" type of experience change
+*/
+export type ExperienceChangeDefaultCodeDataUpdateNoId = ExperienceChangeDefaultCodeDataBase & unknown;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
-export type ExperienceChangeDefaultCodeDataUpdate = ExperienceChangeId &
-  ExperienceChangeDefaultCodeDataBase &
-  unknown;
+* Describes structure for "defaultCode" type of experience change
+*/
+export type ExperienceChangeDefaultCodeDataUpdate = ExperienceChangeId & ExperienceChangeDefaultCodeDataBase & unknown;
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
- */
+* Describes structure for "defaultRedirect" type of experience change
+*/
 export type ExperienceChangeDefaultRedirectDataBase = ExperienceChangeBase & {
   type?: 'defaultRedirect';
   /**
    * Describes structure for "defaultRedirect" type of experience change
    */
   data?: {
-    /**
-     * Defines whether the URL matching is case sensitive or not
-     */
-    case_sensitive?: boolean;
-    /**
-     * Pattern for matching the Original URL in order to construct the redirect URL
-     */
-    original_pattern?: string;
-    /**
-     * String used to construct the variation redirect URL. This string can contain matches from original_url or it can be a standard URL
-     */
-    variation_pattern?: string;
+      /**
+       * Defines whether the URL matching is case sensitive or not
+       */
+      case_sensitive?: boolean;
+      /**
+       * Pattern for matching the Original URL in order to construct the redirect URL
+       */
+      original_pattern?: string;
+      /**
+       * String used to construct the variation redirect URL. This string can contain matches from original_url or it can be a standard URL
+       */
+      variation_pattern?: string;
   };
 };
 
-export enum type5 {
-  DEFAULT_REDIRECT = 'defaultRedirect'
-}
+export type type5 = 'defaultRedirect';
+
+export const type5 = {
+  DEFAULT_REDIRECT: 'defaultRedirect'
+} as const;
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
- */
-export type ExperienceChangeDefaultRedirectData = ExperienceChangeIdReadOnly &
-  ExperienceChangeDefaultRedirectDataBase;
+* Describes structure for "defaultRedirect" type of experience change
+*/
+export type ExperienceChangeDefaultRedirectData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultRedirectDataBase;
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
- */
-export type ExperienceChangeDefaultRedirectDataAdd =
-  ExperienceChangeIdReadOnly &
-    ExperienceChangeDefaultRedirectDataBase & {
-      data: unknown;
-    };
+* Describes structure for "defaultRedirect" type of experience change
+*/
+export type ExperienceChangeDefaultRedirectDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeDefaultRedirectDataBase & {
+  data: unknown;
+};
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
- */
-export type ExperienceChangeDefaultRedirectDataUpdateNoId =
-  ExperienceChangeDefaultRedirectDataBase & unknown;
+* Describes structure for "defaultRedirect" type of experience change
+*/
+export type ExperienceChangeDefaultRedirectDataUpdateNoId = ExperienceChangeDefaultRedirectDataBase & unknown;
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
- */
-export type ExperienceChangeDefaultRedirectDataUpdate = ExperienceChangeId &
-  ExperienceChangeDefaultRedirectDataBase &
-  unknown;
+* Describes structure for "defaultRedirect" type of experience change
+*/
+export type ExperienceChangeDefaultRedirectDataUpdate = ExperienceChangeId & ExperienceChangeDefaultRedirectDataBase & unknown;
 
 /**
- * Describes structure for "defaultCodeMultipage" type of experience change
- */
-export type ExperienceChangeDefaultCodeMultipageDataBase =
-  ExperienceChangeBase & {
-    type?: 'defaultCodeMultipage';
-    /**
-     * Describes structure for "defaultCodeMultipage" type of experience change
-     */
-    data?: {
+* Describes structure for "defaultCodeMultipage" type of experience change
+*/
+export type ExperienceChangeDefaultCodeMultipageDataBase = ExperienceChangeBase & {
+  type?: 'defaultCodeMultipage';
+  /**
+   * Describes structure for "defaultCodeMultipage" type of experience change
+   */
+  data?: {
       /**
        * CSS code to be applied by this change
        */
-      css?: string | null;
+      css?: (string) | null;
       /**
        * Javascript code generated by the visual editor or written in the same structure, to be applied by this experience change
        */
-      js?: string | null;
+      js?: (string) | null;
       /**
        * Custom javascript code to be applied by this change
        */
-      custom_js?: string | null;
+      custom_js?: (string) | null;
       /**
        * The **id** of the page connected to this change.
        */
       page_id?: string;
-    };
   };
+};
 
-export enum type6 {
-  DEFAULT_CODE_MULTIPAGE = 'defaultCodeMultipage'
-}
+export type type6 = 'defaultCodeMultipage';
 
-/**
- * Describes structure for "defaultCodeMultipage" type of experience change
- */
-export type ExperienceChangeDefaultCodeMultipageData =
-  ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeMultipageDataBase;
+export const type6 = {
+  DEFAULT_CODE_MULTIPAGE: 'defaultCodeMultipage'
+} as const;
 
 /**
- * Describes structure for "defaultCodeMultipage" type of experience change
- */
-export type ExperienceChangeDefaultCodeMultipageDataAdd =
-  ExperienceChangeIdReadOnly &
-    ExperienceChangeDefaultCodeMultipageDataBase & {
-      data: unknown;
-    };
+* Describes structure for "defaultCodeMultipage" type of experience change
+*/
+export type ExperienceChangeDefaultCodeMultipageData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeMultipageDataBase;
 
 /**
- * Describes structure for "defaultCodeMultipage" type of experience change
- */
-export type ExperienceChangeDefaultCodeMultipageDataUpdateNoId =
-  ExperienceChangeDefaultCodeMultipageDataBase & unknown;
+* Describes structure for "defaultCodeMultipage" type of experience change
+*/
+export type ExperienceChangeDefaultCodeMultipageDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeMultipageDataBase & {
+  data: unknown;
+};
 
 /**
- * Describes structure for "defaultCodeMultipage" type of experience change
- */
-export type ExperienceChangeDefaultCodeMultipageDataUpdate =
-  ExperienceChangeId & ExperienceChangeDefaultCodeMultipageDataBase & unknown;
+* Describes structure for "defaultCodeMultipage" type of experience change
+*/
+export type ExperienceChangeDefaultCodeMultipageDataUpdateNoId = ExperienceChangeDefaultCodeMultipageDataBase & unknown;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
+* Describes structure for "defaultCodeMultipage" type of experience change
+*/
+export type ExperienceChangeDefaultCodeMultipageDataUpdate = ExperienceChangeId & ExperienceChangeDefaultCodeMultipageDataBase & unknown;
+
+/**
+* Describes structure for "defaultCode" type of experience change
+*/
 export type ExperienceChangeRichStructureDataBase = ExperienceChangeBase & {
   type?: 'richStructure';
   /**
    * Describes structure for "defaultCode" type of experience change
    */
   data?: {
-    /**
-     * Javascript code generated by the visual editor or written in the same structure, to be applied by this experience change
-     */
-    js?: string | null;
-    /**
-     * CSS selector of the element to which the change refers to, if this is a change concerning one DOM element
-     */
-    selector?: string;
-    /**
-     * The **id** of the page connected to this change, in case this is a **multi-page** experiment
-     */
-    page_id?: string;
-    /**
-     * Various key - value data
-     */
-    [key: string]: string | undefined;
+      /**
+       * Javascript code generated by the visual editor or written in the same structure, to be applied by this experience change
+       */
+      js?: (string) | null;
+      /**
+       * CSS selector of the element to which the change refers to, if this is a change concerning one DOM element
+       */
+      selector?: string;
+      /**
+       * The **id** of the page connected to this change, in case this is a **multi-page** experiment
+       */
+      page_id?: string;
+      /**
+       * Various key - value data
+       */
+      [key: string]: (string) | undefined;
   };
 };
 
-export enum type7 {
-  RICH_STRUCTURE = 'richStructure'
-}
+export type type7 = 'richStructure';
+
+export const type7 = {
+  RICH_STRUCTURE: 'richStructure'
+} as const;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
-export type ExperienceChangeRichStructureData = ExperienceChangeIdReadOnly &
-  ExperienceChangeRichStructureDataBase;
+* Describes structure for "defaultCode" type of experience change
+*/
+export type ExperienceChangeRichStructureData = ExperienceChangeIdReadOnly & ExperienceChangeRichStructureDataBase;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
-export type ExperienceChangeRichStructureDataAdd = ExperienceChangeIdReadOnly &
-  ExperienceChangeRichStructureDataBase & {
-    data: unknown;
-  };
+* Describes structure for "defaultCode" type of experience change
+*/
+export type ExperienceChangeRichStructureDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeRichStructureDataBase & {
+  data: unknown;
+};
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
-export type ExperienceChangeRichStructureDataUpdateNoId =
-  ExperienceChangeRichStructureDataBase & unknown;
+* Describes structure for "defaultCode" type of experience change
+*/
+export type ExperienceChangeRichStructureDataUpdateNoId = ExperienceChangeRichStructureDataBase & unknown;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
-export type ExperienceChangeRichStructureDataUpdate = ExperienceChangeId &
-  ExperienceChangeRichStructureDataBase &
-  unknown;
+* Describes structure for "defaultCode" type of experience change
+*/
+export type ExperienceChangeRichStructureDataUpdate = ExperienceChangeId & ExperienceChangeRichStructureDataBase & unknown;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
+* Describes structure for "defaultCode" type of experience change
+*/
 export type ExperienceChangeCustomCodeDataBase = ExperienceChangeBase & {
   type?: 'customCode';
   /**
    * Describes structure for "defaultCode" type of experience change
    */
   data?: {
-    /**
-     * CSS code to be applied by this change
-     */
-    css?: string | null;
-    /**
-     * Custom javascript code to be applied by this change
-     */
-    js?: string | null;
-    /**
-     * The **id** of the page connected to this change, in case this is a **multi-page** experiment
-     */
-    page_id?: string;
+      /**
+       * CSS code to be applied by this change
+       */
+      css?: (string) | null;
+      /**
+       * Custom javascript code to be applied by this change
+       */
+      js?: (string) | null;
+      /**
+       * The **id** of the page connected to this change, in case this is a **multi-page** experiment
+       */
+      page_id?: string;
   };
 };
 
-export enum type8 {
-  CUSTOM_CODE = 'customCode'
-}
+export type type8 = 'customCode';
+
+export const type8 = {
+  CUSTOM_CODE: 'customCode'
+} as const;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
-export type ExperienceChangeCustomCodeData = ExperienceChangeIdReadOnly &
-  ExperienceChangeCustomCodeDataBase;
+* Describes structure for "defaultCode" type of experience change
+*/
+export type ExperienceChangeCustomCodeData = ExperienceChangeIdReadOnly & ExperienceChangeCustomCodeDataBase;
 
 /**
- * Describes structure for "defaultCode" type of experience change
- */
-export type ExperienceChangeCustomCodeDataAdd = ExperienceChangeIdReadOnly &
-  ExperienceChangeCustomCodeDataBase & {
-    data: unknown;
-  };
+* Describes structure for "defaultCode" type of experience change
+*/
+export type ExperienceChangeCustomCodeDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeCustomCodeDataBase & {
+  data: unknown;
+};
 
 /**
- * Describes structure for "customCode" type of experience change
- */
-export type ExperienceChangeCustomCodeDataUpdateNoId =
-  ExperienceChangeCustomCodeDataBase & unknown;
+* Describes structure for "customCode" type of experience change
+*/
+export type ExperienceChangeCustomCodeDataUpdateNoId = ExperienceChangeCustomCodeDataBase & unknown;
 
 /**
- * Describes structure for "customCode" type of experience change
- */
-export type ExperienceChangeCustomCodeDataUpdate = ExperienceChangeId &
-  ExperienceChangeCustomCodeDataBase &
-  unknown;
+* Describes structure for "customCode" type of experience change
+*/
+export type ExperienceChangeCustomCodeDataUpdate = ExperienceChangeId & ExperienceChangeCustomCodeDataBase & unknown;
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
- */
+* Describes structure for "fullStackFeature" type of experience change
+*/
 export type ExperienceChangeFullStackFeatureBase = ExperienceChangeBase & {
   type?: 'fullStackFeature';
   /**
    * Describes structure for "fullStackFeature" type of experience change
    */
   data?: {
-    /**
-     * The **id** of the feature connected to this change
-     */
-    feature_id?: number;
-    /**
-     * A key-value object defined by user which describes the variables values. Where the key is variable name defined in connected feature and value is a variable's value with corresponding type
-     */
-    variables_data?: {
-      [key: string]: unknown;
-    };
+      /**
+       * The **id** of the feature connected to this change
+       */
+      feature_id?: number;
+      /**
+       * A key-value object defined by user which describes the variables values. Where the key is variable name defined in connected feature and value is a variable's value with corresponding type
+       */
+      variables_data?: {
+          [key: string]: unknown;
+      };
   };
 };
 
-export enum type9 {
-  FULL_STACK_FEATURE = 'fullStackFeature'
-}
+export type type9 = 'fullStackFeature';
+
+export const type9 = {
+  FULL_STACK_FEATURE: 'fullStackFeature'
+} as const;
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
- */
-export type ExperienceChangeFullStackFeature = ExperienceChangeIdReadOnly &
-  ExperienceChangeFullStackFeatureBase;
+* Describes structure for "fullStackFeature" type of experience change
+*/
+export type ExperienceChangeFullStackFeature = ExperienceChangeIdReadOnly & ExperienceChangeFullStackFeatureBase;
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
- */
-export type ExperienceChangeFullStackFeatureAdd = ExperienceChangeIdReadOnly &
-  ExperienceChangeFullStackFeatureBase & {
-    data: unknown;
-  };
+* Describes structure for "fullStackFeature" type of experience change
+*/
+export type ExperienceChangeFullStackFeatureAdd = ExperienceChangeIdReadOnly & ExperienceChangeFullStackFeatureBase & {
+  data: unknown;
+};
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
- */
-export type ExperienceChangeFullStackFeatureUpdate = ExperienceChangeId &
-  ExperienceChangeFullStackFeatureBase &
-  unknown;
+* Describes structure for "fullStackFeature" type of experience change
+*/
+export type ExperienceChangeFullStackFeatureUpdate = ExperienceChangeId & ExperienceChangeFullStackFeatureBase & unknown;
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
- */
-export type ExperienceChangeFullStackFeatureUpdateNoId =
-  ExperienceChangeFullStackFeatureBase & unknown;
+* Describes structure for "fullStackFeature" type of experience change
+*/
+export type ExperienceChangeFullStackFeatureUpdateNoId = ExperienceChangeFullStackFeatureBase & unknown;
 
 export type UpdateExperienceChangeRequestData = ExperienceChangeAdd;
 
 /**
- * Describes the provider with which Convert integrates to send experience data
- */
-export enum IntegrationProvider {
-  BAIDU = 'baidu',
-  CLICKTALE = 'clicktale',
-  CLICKY = 'clicky',
-  CNZZ = 'cnzz',
-  CRAZYEGG = 'crazyegg',
-  ECONDA = 'econda',
-  EULERIAN = 'eulerian',
-  GOOGLE_ANALYTICS = 'google_analytics',
-  GOSQUARED = 'gosquared',
-  HEAPANALYTICS = 'heapanalytics',
-  HOTJAR = 'hotjar',
-  MIXPANEL = 'mixpanel',
-  MOUSEFLOW = 'mouseflow',
-  PIWIK = 'piwik',
-  SEGMENTIO = 'segmentio',
-  SITECATALYST = 'sitecatalyst',
-  WOOPRA = 'woopra',
-  YSANCE = 'ysance'
-}
+* Describes the provider with which Convert integrates to send experience data
+*/
+export type IntegrationProvider = 'baidu' | 'clicktale' | 'clicky' | 'cnzz' | 'crazyegg' | 'econda' | 'eulerian' | 'google_analytics' | 'gosquared' | 'heapanalytics' | 'hotjar' | 'mixpanel' | 'mouseflow' | 'piwik' | 'segmentio' | 'sitecatalyst' | 'woopra' | 'ysance';
+
+/**
+* Describes the provider with which Convert integrates to send experience data
+*/
+export const IntegrationProvider = {
+  BAIDU: 'baidu',
+  CLICKTALE: 'clicktale',
+  CLICKY: 'clicky',
+  CNZZ: 'cnzz',
+  CRAZYEGG: 'crazyegg',
+  ECONDA: 'econda',
+  EULERIAN: 'eulerian',
+  GOOGLE_ANALYTICS: 'google_analytics',
+  GOSQUARED: 'gosquared',
+  HEAPANALYTICS: 'heapanalytics',
+  HOTJAR: 'hotjar',
+  MIXPANEL: 'mixpanel',
+  MOUSEFLOW: 'mouseflow',
+  PIWIK: 'piwik',
+  SEGMENTIO: 'segmentio',
+  SITECATALYST: 'sitecatalyst',
+  WOOPRA: 'woopra',
+  YSANCE: 'ysance'
+} as const;
 
 export type ExperienceIntegrationBase = {
   provider: IntegrationProvider;
@@ -1305,7 +1301,7 @@ export type ExperienceIntegrationBase = {
    * to disable an integration, this flag needs to be passed as **false**. If not passed, integration is assumed to be **enabled=true**
    *
    */
-  enabled?: boolean | null;
+  enabled?: (boolean) | null;
 };
 
 export type ExperienceIntegrationBaidu = ExperienceIntegrationBase & {
@@ -1327,44 +1323,37 @@ export type ExperienceIntegrationCnzz = ExperienceIntegrationBase & {
 };
 
 /**
- * Crazyegg integration requires API key and secret which are set at the project level and can be
- * updated using updateProject operation
- *
- * **Important:** Not having API key and secret set for the project, would cause integration to fail
- *
- */
+* Crazyegg integration requires API key and secret which are set at the project level and can be
+* updated using updateProject operation
+*
+* **Important:** Not having API key and secret set for the project, would cause integration to fail
+*
+*/
 export type ExperienceIntegrationCrazyegg = ExperienceIntegrationBase;
 
 export type ExperienceIntegrationEconda = ExperienceIntegrationBase;
 
 export type ExperienceIntegrationEulerian = ExperienceIntegrationBase;
 
-export type ExperienceIntegrationGA3 = GA_SettingsBase &
-  ExperienceIntegrationBase &
-  IntegrationGA3 & {
-    /**
-     * Custom dimension where experience data should be sent to.
-     */
-    custom_dimension?: string;
+export type ExperienceIntegrationGA3 = GA_SettingsBase & ExperienceIntegrationBase & IntegrationGA3 & {
+  /**
+   * Custom dimension where experience data should be sent to.
+   */
+  custom_dimension?: string;
+};
+
+export type ExperienceIntegrationGA4Base = GA_SettingsBase & ExperienceIntegrationBase & IntegrationGA4Base;
+
+export type ExperienceIntegrationGA4 = ExperienceIntegrationGA4Base & IntegrationGA4 & {
+  /**
+   * List of GA audiences created for each of this experience's variations
+   */
+  audiences?: {
+      [key: string]: (string);
   };
+};
 
-export type ExperienceIntegrationGA4Base = GA_SettingsBase &
-  ExperienceIntegrationBase &
-  IntegrationGA4Base;
-
-export type ExperienceIntegrationGA4 = ExperienceIntegrationGA4Base &
-  IntegrationGA4 & {
-    /**
-     * List of GA audiences created for each of this experience's variations
-     */
-    audiences?: {
-      [key: string]: string;
-    };
-  };
-
-export type ExperienceIntegrationGoogleAnalytics =
-  | ExperienceIntegrationGA3
-  | ExperienceIntegrationGA4;
+export type ExperienceIntegrationGoogleAnalytics = ExperienceIntegrationGA3 | ExperienceIntegrationGA4;
 
 export type ExperienceIntegrationGosquared = ExperienceIntegrationBase;
 
@@ -1417,19 +1406,20 @@ export type ConfigExperience = {
   /**
    * List of locations IDs on which this experience is presented. Either this or **site_area** is given but should not be both.
    */
-  locations?: Array<string> | null;
+  locations?: Array<(string)> | null;
   /**
    * Rules that define where the experience is gonna run. Either this or **locations** is given but should not be both.
    */
-  site_area?: RuleObject | null;
+  site_area?: ((RuleObject) | null);
   /**
    * List of audiences IDs to which this experience is presented to
    */
-  audiences?: Array<string> | null;
+  audiences?: Array<(string)> | null;
   /**
    * List of goals IDs to which will be tracked for this experience
    */
-  goals?: Array<string>;
+  goals?: Array<(string)>;
+  status?: ExperienceStatuses;
   /**
    * Global Experience's JavaScript that will run for this experience before its changes are applied
    *
@@ -1452,33 +1442,14 @@ export type ConfigExperience = {
   /**
    * List of integrations that this experience's data is sent to
    */
-  integrations?: Array<
-    | ExperienceIntegrationBaidu
-    | ExperienceIntegrationClicktale
-    | ExperienceIntegrationClicky
-    | ExperienceIntegrationCnzz
-    | ExperienceIntegrationCrazyegg
-    | ExperienceIntegrationEconda
-    | ExperienceIntegrationEulerian
-    | ExperienceIntegrationGAServing
-    | ExperienceIntegrationGosquared
-    | ExperienceIntegrationHeapanalytics
-    | ExperienceIntegrationHotjar
-    | ExperienceIntegrationMixpanel
-    | ExperienceIntegrationMouseflow
-    | ExperienceIntegrationPiwik
-    | ExperienceIntegrationSegmentio
-    | ExperienceIntegrationSitecatalyst
-    | ExperienceIntegrationWoopra
-    | ExperienceIntegrationYsance
-  >;
+  integrations?: Array<(ExperienceIntegrationBaidu | ExperienceIntegrationClicktale | ExperienceIntegrationClicky | ExperienceIntegrationCnzz | ExperienceIntegrationCrazyegg | ExperienceIntegrationEconda | ExperienceIntegrationEulerian | ExperienceIntegrationGAServing | ExperienceIntegrationGosquared | ExperienceIntegrationHeapanalytics | ExperienceIntegrationHotjar | ExperienceIntegrationMixpanel | ExperienceIntegrationMouseflow | ExperienceIntegrationPiwik | ExperienceIntegrationSegmentio | ExperienceIntegrationSitecatalyst | ExperienceIntegrationWoopra | ExperienceIntegrationYsance)>;
   /**
    * List of environments that this experience is supposed to run on. The full list of available environments is defined at
    * project level. If this list is empty, the experience will run on all environments.
    *
    * @deprecated
    */
-  environments?: Array<string>;
+  environments?: Array<(string)>;
   /**
    * The environment where this experience will run. It has to be one of the environments defined at the project level
    */
@@ -1487,20 +1458,27 @@ export type ConfigExperience = {
    * Various experience's settings
    */
   settings?: {
-    /**
-     * Minimum order value for transactions outliers
-     */
-    min_order_value?: number;
-    /**
-     * Maximum order value for transactions outliers
-     */
-    max_order_value?: number;
+      /**
+       * Minimum order value for transactions outliers
+       */
+      min_order_value?: number;
+      /**
+       * Maximum order value for transactions outliers
+       */
+      max_order_value?: number;
+      /**
+       * Various settings used for matching the list of Audiences and Locations
+       */
+      matching_options?: {
+          audiences?: GenericListMatchingOptions;
+          locations?: GenericListMatchingOptions;
+      };
   };
 };
 
 /**
- * Variation Object
- */
+* Variation Object
+*/
 export type ExperienceVariationConfig = {
   /**
    * Variation ID
@@ -1527,30 +1505,45 @@ export type ExperienceVariationConfig = {
   changes?: Array<ExperienceChange>;
 };
 
-export enum ExperienceTypes {
-  A_B = 'a/b',
-  A_A = 'a/a',
-  MVT = 'mvt',
-  SPLIT_URL = 'split_url',
-  MULTIPAGE = 'multipage',
-  DEPLOY = 'deploy'
-}
+export type ExperienceStatuses = 'draft' | 'active' | 'paused' | 'completed' | 'scheduled';
+
+export const ExperienceStatuses = {
+  DRAFT: 'draft',
+  ACTIVE: 'active',
+  PAUSED: 'paused',
+  COMPLETED: 'completed',
+  SCHEDULED: 'scheduled'
+} as const;
+
+export type ExperienceTypes = 'a/b' | 'a/a' | 'mvt' | 'split_url' | 'multipage' | 'deploy';
+
+export const ExperienceTypes = {
+  A_B: 'a/b',
+  A_A: 'a/a',
+  MVT: 'mvt',
+  SPLIT_URL: 'split_url',
+  MULTIPAGE: 'multipage',
+  DEPLOY: 'deploy'
+} as const;
 
 /**
- * Variation status
- */
-export enum VariationStatuses {
-  STOPPED = 'stopped',
-  RUNNING = 'running'
-}
-
-export type ExperienceIntegrationGAServing =
-  | ExperienceIntegrationGA3
-  | ExperienceIntegrationGA4Base;
+* Variation status
+*/
+export type VariationStatuses = 'stopped' | 'running';
 
 /**
- * Base Feature Object
- */
+* Variation status
+*/
+export const VariationStatuses = {
+  STOPPED: 'stopped',
+  RUNNING: 'running'
+} as const;
+
+export type ExperienceIntegrationGAServing = ExperienceIntegrationGA3 | ExperienceIntegrationGA4Base;
+
+/**
+* Base Feature Object
+*/
 export type ConfigFeature = {
   /**
    * Feature ID
@@ -1571,8 +1564,8 @@ export type ConfigFeature = {
 };
 
 /**
- * An object which describes the variable of a feature. Where key is variable name and value is one of the possible types [boolean, float, json, integer, string]
- */
+* An object which describes the variable of a feature. Where key is variable name and value is one of the possible types [boolean, float, json, integer, string]
+*/
 export type FeatureVariableItemData = {
   /**
    * A user-defined variable name
@@ -1585,19 +1578,24 @@ export type FeatureVariableItemData = {
 };
 
 /**
- * A variable's type
- */
-export enum type10 {
-  BOOLEAN = 'boolean',
-  FLOAT = 'float',
-  JSON = 'json',
-  INTEGER = 'integer',
-  STRING = 'string'
-}
+* A variable's type
+*/
+export type type10 = 'boolean' | 'float' | 'json' | 'integer' | 'string';
 
 /**
- * Goal item to be tracked  inside a project
- */
+* A variable's type
+*/
+export const type10 = {
+  BOOLEAN: 'boolean',
+  FLOAT: 'float',
+  JSON: 'json',
+  INTEGER: 'integer',
+  STRING: 'string'
+} as const;
+
+/**
+* Goal item to be tracked  inside a project
+*/
 export type ConfigGoalBase = {
   /**
    * Goal ID
@@ -1615,105 +1613,113 @@ export type ConfigGoalBase = {
    * List of goal types to be returned
    */
   type?: Array<GoalTypes>;
-  rules?: RuleObject | null;
+  rules?: ((RuleObject) | null);
 };
 
-export type ConfigGoal =
-  | DomInteractionGoal
-  | ScrollPercentageGoal
-  | RevenueGoal
-  | NoSettingsGoal
-  | GaGoal
-  | SubmitsFormGoal
-  | ClicksLinkGoal
-  | ClicksElementGoal;
+export type ConfigGoal = DomInteractionGoal | ScrollPercentageGoal | RevenueGoal | NoSettingsGoal | GaGoal | SubmitsFormGoal | ClicksLinkGoal | ClicksElementGoal;
 
 export type DomInteractionGoal = ConfigGoalBase & {
   type?: 'dom_interaction';
   settings?: DomInteractionGoalSettings;
 };
 
-export enum type11 {
-  DOM_INTERACTION = 'dom_interaction'
-}
+export type type11 = 'dom_interaction';
+
+export const type11 = {
+  DOM_INTERACTION: 'dom_interaction'
+} as const;
 
 export type ScrollPercentageGoal = ConfigGoalBase & {
   type?: 'scroll_percentage';
   settings?: ScrollPercentageGoalSettings;
 };
 
-export enum type12 {
-  SCROLL_PERCENTAGE = 'scroll_percentage'
-}
+export type type12 = 'scroll_percentage';
+
+export const type12 = {
+  SCROLL_PERCENTAGE: 'scroll_percentage'
+} as const;
 
 export type RevenueGoal = ConfigGoalBase & {
   type?: 'revenue';
   settings?: RevenueGoalSettings;
 };
 
-export enum type13 {
-  REVENUE = 'revenue'
-}
+export type type13 = 'revenue';
+
+export const type13 = {
+  REVENUE: 'revenue'
+} as const;
 
 export type NoSettingsGoal = ConfigGoalBase & {
   type?: 'advanced' | 'visits_page' | 'code_trigger';
 };
 
-export enum type14 {
-  ADVANCED = 'advanced',
-  VISITS_PAGE = 'visits_page',
-  CODE_TRIGGER = 'code_trigger'
-}
+export type type14 = 'advanced' | 'visits_page' | 'code_trigger';
+
+export const type14 = {
+  ADVANCED: 'advanced',
+  VISITS_PAGE: 'visits_page',
+  CODE_TRIGGER: 'code_trigger'
+} as const;
 
 export type GaGoal = ConfigGoalBase & {
   type?: 'ga_import';
   settings?: GaGoalSettings;
 };
 
-export enum type15 {
-  GA_IMPORT = 'ga_import'
-}
+export type type15 = 'ga_import';
+
+export const type15 = {
+  GA_IMPORT: 'ga_import'
+} as const;
 
 export type SubmitsFormGoal = ConfigGoalBase & {
   type?: 'submits_form';
   settings?: SubmitsFormGoalSettings;
 };
 
-export enum type16 {
-  SUBMITS_FORM = 'submits_form'
-}
+export type type16 = 'submits_form';
+
+export const type16 = {
+  SUBMITS_FORM: 'submits_form'
+} as const;
 
 export type ClicksLinkGoal = ConfigGoalBase & {
   type?: 'clicks_link';
   settings?: ClicksLinkGoalSettings;
 };
 
-export enum type17 {
-  CLICKS_LINK = 'clicks_link'
-}
+export type type17 = 'clicks_link';
+
+export const type17 = {
+  CLICKS_LINK: 'clicks_link'
+} as const;
 
 export type ClicksElementGoal = ConfigGoalBase & {
   type?: 'clicks_element';
   settings?: ClicksElementGoalSettings;
 };
 
-export enum type18 {
-  CLICKS_ELEMENT = 'clicks_element'
-}
+export type type18 = 'clicks_element';
+
+export const type18 = {
+  CLICKS_ELEMENT: 'clicks_element'
+} as const;
 
 export type DomInteractionGoalSettings = {
   /**
    * Array of Events to be tracked by this goal
    */
   tracked_items: Array<{
-    /**
-     * Css selector that identifies the DOM element(s) on which 'event' is to be monitored in order to fire the goal.
-     */
-    selector?: string;
-    /**
-     * The event to monitor in order to fire the goal.
-     */
-    event?: string;
+      /**
+       * Css selector that identifies the DOM element(s) on which 'event' is to be monitored in order to fire the goal.
+       */
+      selector?: string;
+      /**
+       * The event to monitor in order to fire the goal.
+       */
+      event?: string;
   }>;
 };
 
@@ -1744,17 +1750,27 @@ export type RevenueGoalSettings = {
 };
 
 /**
- * Type of the revenue goal tracking, one of the below.
- * * "manual" - goal will be triggered through the given revenue tracking code;
- * An empty **triggering_rule** has to be provided as that takes priority over manual triggering
- * * "ga" - Convert will attempt to pick revenue from GA revenue tracking code and attach it to this goal,
- * when on page where this goal is triggered via "triggering_rule"
- *
- */
-export enum triggering_type {
-  MANUAL = 'manual',
-  GA = 'ga'
-}
+* Type of the revenue goal tracking, one of the below.
+* * "manual" - goal will be triggered through the given revenue tracking code;
+* An empty **triggering_rule** has to be provided as that takes priority over manual triggering
+* * "ga" - Convert will attempt to pick revenue from GA revenue tracking code and attach it to this goal,
+* when on page where this goal is triggered via "triggering_rule"
+*
+*/
+export type triggering_type = 'manual' | 'ga';
+
+/**
+* Type of the revenue goal tracking, one of the below.
+* * "manual" - goal will be triggered through the given revenue tracking code;
+* An empty **triggering_rule** has to be provided as that takes priority over manual triggering
+* * "ga" - Convert will attempt to pick revenue from GA revenue tracking code and attach it to this goal,
+* when on page where this goal is triggered via "triggering_rule"
+*
+*/
+export const triggering_type = {
+  MANUAL: 'manual',
+  GA: 'ga'
+} as const;
 
 export type SubmitsFormGoalSettings = {
   /**
@@ -1778,86 +1794,102 @@ export type ClicksElementGoalSettings = {
 };
 
 /**
- * Goals type, one of below.
- */
-export enum GoalTypes {
-  ADVANCED = 'advanced',
-  DOM_INTERACTION = 'dom_interaction',
-  SCROLL_PERCENTAGE = 'scroll_percentage',
-  CODE_TRIGGER = 'code_trigger',
-  REVENUE = 'revenue'
-}
+* Goals type, one of below.
+*/
+export type GoalTypes = 'advanced' | 'dom_interaction' | 'scroll_percentage' | 'code_trigger' | 'revenue';
 
 /**
- * This one describes a logical triggering rule that is being used inside the app
- */
-export type LocationTrigger =
-  | LocationTriggerDomElement
-  | LocationTriggerCallback
-  | LocationTriggerManual
-  | LocationTriggerUponRun;
+* Goals type, one of below.
+*/
+export const GoalTypes = {
+  ADVANCED: 'advanced',
+  DOM_INTERACTION: 'dom_interaction',
+  SCROLL_PERCENTAGE: 'scroll_percentage',
+  CODE_TRIGGER: 'code_trigger',
+  REVENUE: 'revenue'
+} as const;
 
 /**
- * Describes possible location trigger types
- */
-export enum LocationTriggerTypes {
-  UPON_RUN = 'upon_run',
-  MANUAL = 'manual',
-  DOM_ELEMENT = 'dom_element',
-  CALLBACK = 'callback'
-}
+* This one describes a logical triggering rule that is being used inside the app
+*/
+export type LocationTrigger = LocationTriggerDomElement | LocationTriggerCallback | LocationTriggerManual | LocationTriggerUponRun;
+
+/**
+* Describes possible location trigger types
+*/
+export type LocationTriggerTypes = 'upon_run' | 'manual' | 'dom_element' | 'callback';
+
+/**
+* Describes possible location trigger types
+*/
+export const LocationTriggerTypes = {
+  UPON_RUN: 'upon_run',
+  MANUAL: 'manual',
+  DOM_ELEMENT: 'dom_element',
+  CALLBACK: 'callback'
+} as const;
 
 export type LocationTriggerBase = {
-  type?: LocationTriggerTypes;
+  type: LocationTriggerTypes;
 };
 
 export type LocationTriggerUponRun = LocationTriggerBase & {
-  type: 'upon_run';
+  type?: 'upon_run';
 };
 
-export enum type19 {
-  UPON_RUN = 'upon_run'
-}
+export type type19 = 'upon_run';
+
+export const type19 = {
+  UPON_RUN: 'upon_run'
+} as const;
 
 export type LocationTriggerManual = LocationTriggerBase & {
-  type: 'manual';
+  type?: 'manual';
 };
 
-export enum type20 {
-  MANUAL = 'manual'
-}
+export type type20 = 'manual';
+
+export const type20 = {
+  MANUAL: 'manual'
+} as const;
+
+/**
+* Describes event
+*/
+export type LocationTriggerDomElementEvents = Array<('click' | 'hover' | 'in_view' | 'change')>;
 
 export type LocationTriggerDomElement = LocationTriggerBase & {
-  type: 'dom_element';
+  type?: 'dom_element';
   /**
    * Describes html selector
    */
   selector: string;
-  /**
-   * Describes event
-   */
-  events: Array<'click' | 'hover' | 'in_view' | 'change'>;
+  events?: LocationTriggerDomElementEvents;
 };
 
-export enum type21 {
-  DOM_ELEMENT = 'dom_element'
-}
+export type type21 = 'dom_element';
+
+export const type21 = {
+  DOM_ELEMENT: 'dom_element'
+} as const;
 
 export type LocationTriggerCallback = LocationTriggerBase & {
-  type: 'callback';
+  type?: 'callback';
   /**
    * Describes js callback to execute
    */
   js: string;
 };
 
-export enum type22 {
-  CALLBACK = 'callback'
-}
+export type type22 = 'callback';
+
+export const type22 = {
+  CALLBACK: 'callback'
+} as const;
 
 /**
- * Base Location object
- */
+* Base Location object
+*/
 export type ConfigLocation = {
   /**
    * Location ID
@@ -1872,12 +1904,12 @@ export type ConfigLocation = {
    */
   name?: string;
   trigger?: LocationTrigger;
-  rules?: RuleObject | null;
+  rules?: ((RuleObject) | null);
 };
 
 /**
- * Project Object under which experiences would get created
- */
+* Project Object under which experiences would get created
+*/
 export type ConfigProject = {
   /**
    * Project ID
@@ -1898,23 +1930,23 @@ export type ConfigProject = {
    *
    */
   custom_domain?: {
-    /**
-     * Custom domain to be used instead of standard Convert's one
-     */
-    domain?: string;
+      /**
+       * Custom domain to be used instead of standard Convert's one
+       */
+      domain?: string;
   } | null;
   /**
    * List of domains allowed to be tracked under this project
    */
   domains?: Array<{
-    /**
-     * Top level domain, used for setting cookies where applicable
-     */
-    tld?: string;
-    /**
-     * List of host names under **tld** which are allowed to be tracked under this project
-     */
-    hosts?: unknown;
+      /**
+       * Top level domain, used for setting cookies where applicable
+       */
+      tld?: string;
+      /**
+       * List of host names under **tld** which are allowed to be tracked under this project
+       */
+      hosts?: unknown;
   }>;
   /**
    * The global javascript code that will be loaded on all pages where
@@ -1922,111 +1954,131 @@ export type ConfigProject = {
    * experiences, goals, audiences etc.
    *
    */
-  global_javascript?: string | null;
+  global_javascript?: (string) | null;
   /**
    * Various project's settings
    */
   settings?: {
-    /**
-     * Flag indicating whether decoration of outgoing links (appending tracking cookies inside the link URL in order to
-     * make cross domain tracking possible) is done automatically on page
-     *
-     */
-    allow_crossdomain_tracking?: boolean;
-    /**
-     * Whether or not data is [anonymized](https://convert.zendesk.com/hc/en-us/articles/204506339-Prevent-Experiment-Details-Data-Leak-with-Data-Anonymization).
-     */
-    data_anonymization?: boolean;
-    /**
-     * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
-     */
-    do_not_track?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
-    /**
-     * Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
-     * - OFF: Do not follow GPC signals.
-     * - EU ONLY: Follow GPC signals for users in the European Union only.
-     * - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
-     * - Worldwide: Follow GPC signals for users worldwide.
-     *
-     */
-    global_privacy_control?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
-    /**
-     * Whether to include jQuery library or not into the javascript tracking file served by Convert and loaded via the tracking snippet. If jQuery is not included, it has to be loaded on page, before Convert's tracking code
-     */
-    include_jquery?: boolean;
-    /**
-     * Whether to include jQuery library or not into the v1 javascript tracking file served by Convert and loaded via the tracking snippet.
-     */
-    include_jquery_v1?: boolean;
-    /**
-     * Whether to disable the SPA (Single Page Application) related functionalities from the tracking scripts V1. Most websites work fine without disabling SPA functionality regardless of the fact they are Single Page Apps or not. In edge situation, this setting might prove handy
-     */
-    disable_spa_functionality?: boolean;
-    /**
-     * When this is turned to true, Convert won't track any referral data like http referral, utm query strings etc. Those will be used on the current page if available but won't be stored in cookies in order to be used on subsequent pages.
-     */
-    do_not_track_referral?: boolean;
-    /**
-     * This holds project wide settings used by integrations
-     */
-    integrations?: {
-      google_analytics?: GA_Settings;
-      kissmetrics?: {
-        /**
-         * Flag indicating whether Kissmetrics integration is enabled or not for this project
-         */
-        enabled?: boolean;
+      /**
+       * Flag indicating whether decoration of outgoing links (appending tracking cookies inside the link URL in order to
+       * make cross domain tracking possible) is done automatically on page
+       *
+       */
+      allow_crossdomain_tracking?: boolean;
+      /**
+       * Whether or not data is [anonymized](https://convert.zendesk.com/hc/en-us/articles/204506339-Prevent-Experiment-Details-Data-Leak-with-Data-Anonymization).
+       */
+      data_anonymization?: boolean;
+      /**
+       * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
+       */
+      do_not_track?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
+      /**
+       * Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
+       * - OFF: Do not follow GPC signals.
+       * - EU ONLY: Follow GPC signals for users in the European Union only.
+       * - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
+       * - Worldwide: Follow GPC signals for users worldwide.
+       *
+       */
+      global_privacy_control?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
+      /**
+       * Whether to include jQuery library or not into the javascript tracking file served by Convert and loaded via the tracking snippet. If jQuery is not included, it has to be loaded on page, before Convert's tracking code
+       */
+      include_jquery?: boolean;
+      /**
+       * Whether to include jQuery library or not into the v1 javascript tracking file served by Convert and loaded via the tracking snippet.
+       */
+      include_jquery_v1?: boolean;
+      /**
+       * Whether to disable the SPA (Single Page Application) related functionalities from the tracking scripts V1. Most websites work fine without disabling SPA functionality regardless of the fact they are Single Page Apps or not. In edge situation, this setting might prove handy
+       */
+      disable_spa_functionality?: boolean;
+      /**
+       * When this is turned to true, Convert won't track any referral data like http referral, utm query strings etc. Those will be used on the current page if available but won't be stored in cookies in order to be used on subsequent pages.
+       */
+      do_not_track_referral?: boolean;
+      /**
+       * This holds project wide settings used by integrations
+       */
+      integrations?: {
+          google_analytics?: GA_Settings;
+          kissmetrics?: {
+              /**
+               * Flag indicating whether Kissmetrics integration is enabled or not for this project
+               */
+              enabled?: boolean;
+          };
       };
-    };
-    /**
-     * Minimum order value for transactions outliers
-     */
-    min_order_value?: number;
-    /**
-     * Maximum order value for transactions outliers
-     */
-    max_order_value?: number;
+      /**
+       * Minimum order value for transactions outliers
+       */
+      min_order_value?: number;
+      /**
+       * Maximum order value for transactions outliers
+       */
+      max_order_value?: number;
   };
   /**
    * A user-defined key-value object which describes environments available for the project.
    */
   environments?: {
-    [key: string]: unknown;
+      [key: string]: unknown;
   };
 };
 
 /**
- * Value which describes project product type
- */
-export enum type23 {
-  FULLSTACK = 'fullstack',
-  WEB = 'web'
-}
+* Value which describes project product type
+*/
+export type type23 = 'fullstack' | 'web';
 
 /**
- * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
- */
-export enum do_not_track {
-  OFF = 'OFF',
-  EU_ONLY = 'EU ONLY',
-  EEA_ONLY = 'EEA ONLY',
-  WORLDWIDE = 'Worldwide'
-}
+* Value which describes project product type
+*/
+export const type23 = {
+  FULLSTACK: 'fullstack',
+  WEB: 'web'
+} as const;
 
 /**
- * Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
- * - OFF: Do not follow GPC signals.
- * - EU ONLY: Follow GPC signals for users in the European Union only.
- * - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
- * - Worldwide: Follow GPC signals for users worldwide.
- *
- */
-export enum global_privacy_control {
-  OFF = 'OFF',
-  EU_ONLY = 'EU ONLY',
-  EEA_ONLY = 'EEA ONLY',
-  WORLDWIDE = 'Worldwide'
-}
+* Follow the 'Do not track' browser settings for users in the mentioned area of the world.
+*/
+export type do_not_track = 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
+
+/**
+* Follow the 'Do not track' browser settings for users in the mentioned area of the world.
+*/
+export const do_not_track = {
+  OFF: 'OFF',
+  EU_ONLY: 'EU ONLY',
+  EEA_ONLY: 'EEA ONLY',
+  WORLDWIDE: 'Worldwide'
+} as const;
+
+/**
+* Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
+* - OFF: Do not follow GPC signals.
+* - EU ONLY: Follow GPC signals for users in the European Union only.
+* - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
+* - Worldwide: Follow GPC signals for users worldwide.
+*
+*/
+export type global_privacy_control = 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
+
+/**
+* Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
+* - OFF: Do not follow GPC signals.
+* - EU ONLY: Follow GPC signals for users in the European Union only.
+* - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
+* - Worldwide: Follow GPC signals for users worldwide.
+*
+*/
+export const global_privacy_control = {
+  OFF: 'OFF',
+  EU_ONLY: 'EU ONLY',
+  EEA_ONLY: 'EEA ONLY',
+  WORLDWIDE: 'Worldwide'
+} as const;
 
 export type ProjectGASettingsBase = GA_SettingsBase & {
   /**
@@ -2037,19 +2089,18 @@ export type ProjectGASettingsBase = GA_SettingsBase & {
 
 export type ProjectIntegrationGA3 = ProjectGASettingsBase & IntegrationGA3;
 
-export type ProjectIntegrationGA4 = ProjectGASettingsBase &
-  IntegrationGA4Base & {
-    /**
-     * Boolean indicating whether to wait for the page view event to complete before sending other events.
-     */
-    no_wait_pageview?: boolean;
-  };
+export type ProjectIntegrationGA4 = ProjectGASettingsBase & IntegrationGA4Base & {
+  /**
+   * Boolean indicating whether to wait for the page view event to complete before sending other events.
+   */
+  no_wait_pageview?: boolean;
+};
 
 export type GA_Settings = ProjectIntegrationGA3 | ProjectIntegrationGA4;
 
 /**
- * Base Segment object
- */
+* Base Segment object
+*/
 export type ConfigSegment = {
   /**
    * Segment ID
@@ -2063,12 +2114,12 @@ export type ConfigSegment = {
    * Segment Name
    */
   name?: string;
-  rules?: RuleObject | null;
+  rules?: ((RuleObject) | null);
 };
 
 /**
- * Tracking Request's data
- */
+* Tracking Request's data
+*/
 export type SendTrackingEventsRequestData = {
   /**
    * ID of the account under which the project is setup
@@ -2092,40 +2143,45 @@ export type SendTrackingEventsRequestData = {
    *
    */
   visitors?: Array<{
-    segments?: VisitorSegments;
-    /**
-     * Id of the visitor tracked
-     */
-    visitorId?: string;
-    /**
-     * List of events fired for the given visitor
-     */
-    events?: Array<VisitorTrackingEvents>;
+      segments?: VisitorSegments;
+      /**
+       * Id of the visitor tracked
+       */
+      visitorId?: string;
+      /**
+       * List of events fired for the given visitor
+       */
+      events?: Array<VisitorTrackingEvents>;
   }>;
 };
 
 /**
- * Tracking events related to the same user ID
- */
+* Tracking events related to the same user ID
+*/
 export type VisitorTrackingEvents = {
   /**
    * Type of the event. It can be a bucketing or a conversion event
    */
   eventType?: 'bucketing' | 'conversion';
-  data?: BucketingEvent | ConversionEvent;
+  data?: (BucketingEvent | ConversionEvent);
 };
 
 /**
- * Type of the event. It can be a bucketing or a conversion event
- */
-export enum eventType {
-  BUCKETING = 'bucketing',
-  CONVERSION = 'conversion'
-}
+* Type of the event. It can be a bucketing or a conversion event
+*/
+export type eventType = 'bucketing' | 'conversion';
 
 /**
- * Bucketing event data
- */
+* Type of the event. It can be a bucketing or a conversion event
+*/
+export const eventType = {
+  BUCKETING: 'bucketing',
+  CONVERSION: 'conversion'
+} as const;
+
+/**
+* Bucketing event data
+*/
 export type BucketingEvent = {
   /**
    * Experience ID to which the visitor is bucketed. In case that **enrichData=true** flag is being sent, only unique events are gonna be recorded. Otherwise, it's
@@ -2140,8 +2196,8 @@ export type BucketingEvent = {
 };
 
 /**
- * Conversion event data
- */
+* Conversion event data
+*/
 export type ConversionEvent = {
   /**
    * Id of the conversion goal to be fired
@@ -2151,14 +2207,14 @@ export type ConversionEvent = {
    * Data connected to this conversion, for non binomial metrics, eg revenue
    */
   goalData?: Array<{
-    /**
-     * Key of the metric
-     */
-    key?: 'amount' | 'productsCount' | 'transactionId';
-    /**
-     * Value of the metric
-     */
-    value?: number | string;
+      /**
+       * Key of the metric
+       */
+      key?: 'amount' | 'productsCount' | 'transactionId';
+      /**
+       * Value of the metric
+       */
+      value?: (number | string);
   }>;
   /**
    * Bucketing data (experiences that this visitor is currently part of) for the visitor. In case that **enrichData=true** flag is being sent and
@@ -2168,15 +2224,15 @@ export type ConversionEvent = {
    *
    */
   bucketingData?: {
-    [key: string]: string;
+      [key: string]: (string);
   };
 };
 
 /**
- * Segments under which this visitor is placed. Some defaults keys are accepted and any other free field **key value** could be used
- * for fullstack projects
- *
- */
+* Segments under which this visitor is placed. Some defaults keys are accepted and any other free field **key value** could be used
+* for fullstack projects
+*
+*/
 export type VisitorSegments = {
   /**
    * Browser used:
@@ -2192,9 +2248,7 @@ export type VisitorSegments = {
   /**
    * List of device classes that the visitor device falls into
    */
-  devices?: Array<
-    'ALLPH' | 'IPH' | 'OTHPH' | 'ALLTAB' | 'IPAD' | 'OTHTAB' | 'DESK' | 'OTHDEV'
-  >;
+  devices?: Array<('ALLPH' | 'IPH' | 'OTHPH' | 'ALLTAB' | 'IPAD' | 'OTHTAB' | 'DESK' | 'OTHDEV')>;
   /**
    * Traffic source
    */
@@ -2214,45 +2268,67 @@ export type VisitorSegments = {
   /**
    * Custom Segments as defined inside Convert app. This will be the list of segments' IDs
    */
-  customSegments?: Array<string>;
+  customSegments?: Array<(string)>;
 };
 
 /**
- * Browser used:
- * IE - Internet Explorer
- * CH - Chrome
- * FF - Firefox
- * OP - Opera
- * SF - Safari
- * OTH - Other
- *
- */
-export enum browser {
-  IE = 'IE',
-  CH = 'CH',
-  FF = 'FF',
-  OP = 'OP',
-  SF = 'SF',
-  OTH = 'OTH'
-}
+* Browser used:
+* IE - Internet Explorer
+* CH - Chrome
+* FF - Firefox
+* OP - Opera
+* SF - Safari
+* OTH - Other
+*
+*/
+export type browser = 'IE' | 'CH' | 'FF' | 'OP' | 'SF' | 'OTH';
 
 /**
- * Traffic source
- */
-export enum source {
-  CAMPAIGN = 'campaign',
-  SEARCH = 'search',
-  REFERRAL = 'referral',
-  DIRECT = 'direct'
-}
+* Browser used:
+* IE - Internet Explorer
+* CH - Chrome
+* FF - Firefox
+* OP - Opera
+* SF - Safari
+* OTH - Other
+*
+*/
+export const browser = {
+  IE: 'IE',
+  CH: 'CH',
+  FF: 'FF',
+  OP: 'OP',
+  SF: 'SF',
+  OTH: 'OTH'
+} as const;
 
 /**
- * Type of the visitor
- */
-export enum visitorType {
-  NEW = 'new',
-  RETURNING = 'returning'
-}
+* Traffic source
+*/
+export type source = 'campaign' | 'search' | 'referral' | 'direct';
+
+/**
+* Traffic source
+*/
+export const source = {
+  CAMPAIGN: 'campaign',
+  SEARCH: 'search',
+  REFERRAL: 'referral',
+  DIRECT: 'direct'
+} as const;
+
+/**
+* Type of the visitor
+*/
+export type visitorType = 'new' | 'returning';
+
+/**
+* Type of the visitor
+*/
+export const visitorType = {
+  NEW: 'new',
+  RETURNING: 'returning'
+} as const;
 
 export type GetProjectConfigData = {
   /**
@@ -2269,7 +2345,7 @@ export type GetProjectConfigData = {
   projectId: number;
 };
 
-export type GetProjectConfigResponse = ConfigResponseData;
+export type GetProjectConfigResponse = (ConfigResponseData);
 
 export type GetProjectConfigBySdkKeyData = {
   /**
@@ -2282,7 +2358,7 @@ export type GetProjectConfigBySdkKeyData = {
   sdkKey: string;
 };
 
-export type GetProjectConfigBySdkKeyResponse = ConfigResponseData;
+export type GetProjectConfigBySdkKeyResponse = (ConfigResponseData);
 
 export type SendTrackingEventsSdkKeyData = {
   /**
@@ -2295,7 +2371,7 @@ export type SendTrackingEventsSdkKeyData = {
   sdkKey: string;
 };
 
-export type SendTrackingEventsSdkKeyResponse = SuccessData;
+export type SendTrackingEventsSdkKeyResponse = (SuccessData);
 
 export type SendTrackingEventsData = {
   /**
@@ -2312,69 +2388,69 @@ export type SendTrackingEventsData = {
   requestBody: SendTrackingEventsRequestData;
 };
 
-export type SendTrackingEventsResponse = SuccessData;
+export type SendTrackingEventsResponse = (SuccessData);
 
 export type $OpenApiTs = {
   '/config/{account_id}/{project_id}': {
-    get: {
-      req: GetProjectConfigData;
-      res: {
-        /**
-         * Object consumed by SDKs
-         *
-         */
-        200: ConfigResponseData;
-        /**
-         * A response signaling an error
-         */
-        default: ErrorData;
+      get: {
+          req: GetProjectConfigData;
+          res: {
+              /**
+               * Object consumed by SDKs
+               *
+               */
+              200: ConfigResponseData;
+              /**
+               * A response signaling an error
+               */
+              default: ErrorData;
+          };
       };
-    };
   };
   '/config/{sdk_key}': {
-    get: {
-      req: GetProjectConfigBySdkKeyData;
-      res: {
-        /**
-         * Object consumed by SDKs
-         *
-         */
-        200: ConfigResponseData;
-        /**
-         * A response signaling an error
-         */
-        default: ErrorData;
+      get: {
+          req: GetProjectConfigBySdkKeyData;
+          res: {
+              /**
+               * Object consumed by SDKs
+               *
+               */
+              200: ConfigResponseData;
+              /**
+               * A response signaling an error
+               */
+              default: ErrorData;
+          };
       };
-    };
   };
   '/track/{sdkKey}': {
-    post: {
-      req: SendTrackingEventsSdkKeyData;
-      res: {
-        /**
-         * A response signaling a generic success
-         */
-        200: SuccessData;
-        /**
-         * A response signaling an error
-         */
-        default: ErrorData;
+      post: {
+          req: SendTrackingEventsSdkKeyData;
+          res: {
+              /**
+               * A response signaling a generic success
+               */
+              200: SuccessData;
+              /**
+               * A response signaling an error
+               */
+              default: ErrorData;
+          };
       };
-    };
   };
   '/track/{account_id}/{project_id}': {
-    post: {
-      req: SendTrackingEventsData;
-      res: {
-        /**
-         * A response signaling a generic success
-         */
-        200: SuccessData;
-        /**
-         * A response signaling an error
-         */
-        default: ErrorData;
+      post: {
+          req: SendTrackingEventsData;
+          res: {
+              /**
+               * A response signaling a generic success
+               */
+              200: SuccessData;
+              /**
+               * A response signaling an error
+               */
+              default: ErrorData;
+          };
       };
-    };
   };
 };
