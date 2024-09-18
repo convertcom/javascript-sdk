@@ -2102,7 +2102,7 @@ export const GoalTypes = {
  * This one describes a logical triggering rule that is being used inside the app
  */
 export type LocationTrigger =
-  | LocationTriggerDomChange
+  | LocationTriggerDomElement
   | LocationTriggerCallback
   | LocationTriggerManual
   | LocationTriggerUponRun;
@@ -2113,7 +2113,7 @@ export type LocationTrigger =
 export type LocationTriggerTypes =
   | 'upon_run'
   | 'manual'
-  | 'dom_change'
+  | 'dom_element'
   | 'callback';
 
 /**
@@ -2122,7 +2122,7 @@ export type LocationTriggerTypes =
 export const LocationTriggerTypes = {
   UPON_RUN: 'upon_run',
   MANUAL: 'manual',
-  DOM_CHANGE: 'dom_change',
+  DOM_ELEMENT: 'dom_element',
   CALLBACK: 'callback'
 } as const;
 
@@ -2150,22 +2150,37 @@ export const type20 = {
   MANUAL: 'manual'
 } as const;
 
-export type LocationTriggerDomChange = LocationTriggerBase & {
-  type?: 'dom_change';
+/**
+ * Allowed events for LocationTriggerDomElement
+ */
+export type LocationDomTriggerEvents = 'click' | 'hover' | 'in_view' | 'change';
+
+/**
+ * Allowed events for LocationTriggerDomElement
+ */
+export const LocationDomTriggerEvents = {
+  CLICK: 'click',
+  HOVER: 'hover',
+  IN_VIEW: 'in_view',
+  CHANGE: 'change'
+} as const;
+
+export type LocationTriggerDomElement = LocationTriggerBase & {
+  type?: 'dom_element';
   /**
    * Describes html selector
    */
   selector: string;
   /**
-   * Describes event
+   * Events for LocationTriggerDomElement
    */
-  event: string;
+  events: Array<LocationDomTriggerEvents>;
 };
 
-export type type21 = 'dom_change';
+export type type21 = 'dom_element';
 
 export const type21 = {
-  DOM_CHANGE: 'dom_change'
+  DOM_ELEMENT: 'dom_element'
 } as const;
 
 export type LocationTriggerCallback = LocationTriggerBase & {
