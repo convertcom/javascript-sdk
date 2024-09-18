@@ -389,8 +389,9 @@ export class FeatureManager implements FeatureManagerInterface {
         if (
           (filter &&
             arrayNotEmpty(filter?.features) &&
-            filter?.features?.indexOf(declaredFeatures[featureId]?.key) !==
-              -1) ||
+            filter?.features?.indexOf(
+              declaredFeatures[String(featureId)]?.key
+            ) !== -1) ||
           !filter?.features
         ) {
           const variables = changes?.variables_data;
@@ -404,9 +405,9 @@ export class FeatureManager implements FeatureManagerInterface {
 
           if (typeCasting && objectNotEmpty(variables)) {
             // Convert variables values types
-            for (const variableName in variables) {
+            for (const variableName in variables as object) {
               const variableDefinition = declaredFeatures[
-                featureId
+                String(featureId)
               ]?.variables?.find((obj) => {
                 return obj.key === variableName;
               });
@@ -432,9 +433,9 @@ export class FeatureManager implements FeatureManagerInterface {
               experienceKey: bucketedVariation.experienceKey
             },
             ...{
-              key: declaredFeatures[featureId]?.key,
-              name: declaredFeatures[featureId]?.name,
-              id: featureId,
+              key: declaredFeatures[String(featureId)]?.key,
+              name: declaredFeatures[String(featureId)]?.name,
+              id: String(featureId),
               status: FeatureStatus.ENABLED,
               variables: variables
             }
