@@ -41,7 +41,8 @@ import {
   BucketingAttributes,
   LocationAttributes,
   ConfigAudienceTypes,
-  VariationStatuses
+  VariationStatuses,
+  eventType
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -254,13 +255,14 @@ export class DataManager implements DataManagerInterface {
       }
 
       // Check location rules against locationProperties
-      let locationMatched: boolean | RuleError = false,
-        matchedLocations = [];
-      if (locationProperties) {
+      let locationMatched: boolean | RuleError =
+        ignoreLocationProperties === true;
+      if (!locationMatched && locationProperties) {
         if (
           Array.isArray(experience?.locations) &&
           experience.locations.length
         ) {
+          let matchedLocations = [];
           // Get attached locations
           const locations = this.getItemsByIds(
             experience.locations,
@@ -299,7 +301,7 @@ export class DataManager implements DataManagerInterface {
           );
         }
       }
-      if (!locationMatched && !ignoreLocationProperties) {
+      if (!locationMatched) {
         this._loggerManager?.debug?.(
           'DataManager.matchRulesByField()',
           MESSAGES.LOCATION_NOT_MATCH,
@@ -647,7 +649,7 @@ export class DataManager implements DataManagerInterface {
           variationId: variationId.toString()
         };
         const visitorEvent: VisitorTrackingEvents = {
-          eventType: VisitorTrackingEvents.eventType.BUCKETING,
+          eventType: eventType.BUCKETING,
           data: bucketingEvent
         };
         this._apiManager.enqueue(visitorId, visitorEvent, segments);
@@ -1012,7 +1014,7 @@ export class DataManager implements DataManagerInterface {
       };
       if (bucketingData) data.bucketingData = bucketingData;
       const event: VisitorTrackingEvents = {
-        eventType: VisitorTrackingEvents.eventType.CONVERSION,
+        eventType: eventType.CONVERSION,
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);
@@ -1031,7 +1033,7 @@ export class DataManager implements DataManagerInterface {
       };
       if (bucketingData) data.bucketingData = bucketingData;
       const event: VisitorTrackingEvents = {
-        eventType: VisitorTrackingEvents.eventType.CONVERSION,
+        eventType: eventType.CONVERSION,
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);
