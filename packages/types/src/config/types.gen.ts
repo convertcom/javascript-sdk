@@ -2328,6 +2328,11 @@ export type ConfigProject = {
      * Maximum order value for transactions outliers
      */
     max_order_value?: number;
+    /**
+     * Tracks the project's version, updated with each change done inside the project, which would affect the config of that project. The format is [ISO_datetime]-[incremental_number].
+     *
+     */
+    readonly version?: string | null;
   };
   /**
    * A user-defined key-value object which describes environments available for the project.
