@@ -328,7 +328,8 @@ const ConvertSDK = (ConvertSDKModule as any).default;
 <p>The SDK instance can be initialized by either providing an <code>sdkKey</code> or a full project's data object.</p>
 <h4>Initialize Using the SDK Key</h4>
 <p>Include <code>sdkKey</code> as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every <code>dataRefreshInterval</code> milliseconds.</p>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
+<pre class="prettyprint source lang-typescript"><code>import type {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const convertSDK: ConvertInterface = new ConvertSDK({
   sdkKey: 'xxx',
@@ -344,7 +345,8 @@ convertSDK.onReady().then(() => {
 <p>After this, the SDK has been successfully instantiated, the project config data has been downloaded, and it is ready to be used for starting a UserContext.</p>
 <h4>Initialize Using Static Configuration</h4>
 <p>Alternatively, instead of providing an <code>sdkKey</code>, you can provide a static project configuration. The project configuration data can be fetched from <em>https://cdn-4.convertexperiments.com/api/v1/config/account_id/project_id</em>.</p>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
+<pre class="prettyprint source lang-typescript"><code>import type {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const projectConfig = {
   // your static project configuration data
@@ -388,7 +390,7 @@ const config = {
     tracking: true, // can be set to false to disable tracking events
     cacheLevel: 'default', // can be set to 'low' for short-lived cache (for development purposes only)
     source: 'js-sdk', // string identifier indicating the source of network requests
-  }
+  },
 };
 </code></pre>
 <p>The <code>projectData</code> structure is described at <a href="https://api.convert.com/doc/serving/#tag/Project-Config">https://api.convert.com/doc/serving/#tag/Project-Config</a>.</p>
@@ -396,18 +398,18 @@ const config = {
 <p>Once the SDK has been created and instantiated, the next step is to create a unique context for the user in scope.</p>
 <p>When creating the UserContext, a unique <code>userId</code> is required. This will be used to decide which variation/feature to present. As long as this <code>userId</code> does not change for a user and the experience configuration remains the same (variations not getting added or removed and traffic allocation not changed), the feature/variation bucketing will stay unchanged. Otherwise, see <a href="#provide-persistent-datastore">Provide Persistent DataStore</a>.</p>
 <p>For convenience, a list of <strong>User Properties</strong> that can be later used inside audience definition evaluation can be provided when creating a UserContext. Any of these can be changed by providing them again when calling any of the functional SDK methods for running experiences, under the <code>attributes.visitorProperties</code> while setting the value for <code>attributes.updateVisitorProperties</code> to <code>true</code>.</p>
-<pre class="prettyprint source lang-typescript"><code>import {ContextInterface} from '@convertcom/js-sdk';
+<pre class="prettyprint source lang-typescript"><code>import type {ContextInterface} from '@convertcom/js-sdk';
 
 const userContext: ContextInterface = convertSDK.createContext(
   'user-unique-id',
   {
     country: 'US',
-    language: 'en'
+    language: 'en',
   }
 );
 </code></pre>
 <p>After creating a <code>userContext</code>, methods for running experiences can be called:</p>
-<pre class="prettyprint source lang-typescript"><code>import {BucketedVariation} from '@convertcom/js-sdk';
+<pre class="prettyprint source lang-typescript"><code>import type {BucketedVariation} from '@convertcom/js-sdk';
 
 const variation: BucketedVariation =
   userContext.runExperience('experience-key');
@@ -469,12 +471,13 @@ const variation: BucketedVariation =
 <h4>Returns</h4>
 <p>List of bucketed variations.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -541,12 +544,13 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>Bucketed variation.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -613,12 +617,13 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>List of bucketed features.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature
+  BucketedFeature,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -697,12 +702,13 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>Bucketed feature.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature
+  BucketedFeature,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -787,11 +793,12 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>Void.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -802,25 +809,25 @@ convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.trackConversion('goal-key', {
     ruleData: {
-      action: 'buy'
+      action: 'buy',
     },
     conversionData: [
       {
         key: 'amount',
-        value: 10.3
+        value: 10.3,
       },
       {
         key: 'productsCount',
-        value: 2
+        value: 2,
       },
       {
         key: 'transactionId',
-        value: 'transaction-unique-id'
+        value: 'transaction-unique-id',
       }
     ],
     conversionSetting: {
-      forceMultipleTransactions: false
-    }
+      forceMultipleTransactions: false,
+    },
   });
 });
 </code></pre>
@@ -854,11 +861,12 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>Void.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -896,11 +904,12 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>Void.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -909,7 +918,9 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  context.setDefaultSegments({ country: 'US' });
+  context.setDefaultSegments({
+    country: 'US',
+  });
 });
 </code></pre>
 <h3>Update Visitor Properties</h3>
@@ -942,11 +953,12 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>Void.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -955,7 +967,9 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  context.updateVisitorProperties({ weather: 'rainy' });
+  context.updateVisitorProperties({
+    weather: 'rainy',
+  });
 });
 </code></pre>
 <h3>Get Config Entity</h3>
@@ -988,13 +1002,13 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>Void.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  EntityType,
-  Experience
+  Experience,
 } from '@convertcom/js-sdk';
+import ConvertSDK, {EntityType} from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -1039,16 +1053,15 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>Void.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
   BucketedVariation,
-  EntityType,
   Feature,
   VariationChange,
-  VariationChangeType
 } from '@convertcom/js-sdk';
+import ConvertSDK, {EntityType, VariationChangeType} from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -1091,12 +1104,13 @@ convertSDK.onReady().then(() => {
 <h4>Returns</h4>
 <p>Void.</p>
 <h4>Example</h4>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -1108,7 +1122,9 @@ convertSDK.onReady().then(() => {
   const variations: BucketedVariation[] = context.runExperiences();
 
   // manually release all pending queue at some point later, like on click, component unmount
-  context.releaseQueues();
+  context.releaseQueues().then(() => {
+    console.log('all pending queue has been released');
+  });
 });
 </code></pre>
 <h3>Events</h3>
@@ -1159,17 +1175,18 @@ convertSDK.onReady().then(() => {
 </tr>
 </tbody>
 </table>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  EntityType,
   Experience,
-  SystemEvents,
-  Variation
+  Variation,
 } from '@convertcom/js-sdk';
+import ConvertSDK, {EntityType, SystemEvents} from '@convertcom/js-sdk';
 
-const convertSDK: ConvertInterface = new ConvertSDK({sdkKey: 'xxx'} as ConvertConfig);
+const convertSDK: ConvertInterface = new ConvertSDK({
+  sdkKey: 'xxx',
+} as ConvertConfig);
 
 convertSDK.on(SystemEvents.READY, function (res, err) {
   if (err) {
@@ -1179,7 +1196,13 @@ convertSDK.on(SystemEvents.READY, function (res, err) {
 
 convertSDK.on(
   SystemEvents.BUCKETING,
-  function ({ visitorId, experienceKey, variationKey, featureKey, status }, err) {
+  function ({
+    visitorId,
+    experienceKey,
+    variationKey,
+    featureKey,
+    status,
+  }, err) {
     if (err) {
       console.error(err);
     } else {
@@ -1194,12 +1217,18 @@ convertSDK.on(
         variationKey,
         EntityType.VARIATION
       ).name;
-      gtag('event', 'YOUR_GA_CUSTOM_EVENT', { experienceName, variationName });
+      gtag('event', 'YOUR_GA_CUSTOM_EVENT', {
+        experienceName,
+        variationName,
+      });
     }
   }
 );
 
-convertSDK.on(SystemEvents.CONVERSION, function ({ visitorId, goalKey }, err) {
+convertSDK.on(SystemEvents.CONVERSION, function ({
+  visitorId,
+  goalKey,
+}, err) {
   if (err) {
     console.error(err);
   } else {
@@ -1219,11 +1248,12 @@ convertSDK.on(SystemEvents.CONFIG_UPDATED, function (res, err) {
 </blockquote>
 <p>You can provide your own DataStore to make user bucketing persistent, ensuring consistent experience variation selection regardless of changes in experience configurations. As long as experience variations and traffic allocation do not change, the initial user bucketing remains persistent. The <a href="https://en.wikipedia.org/wiki/MurmurHash">MurmurHash algorithm</a> is used to decide which variation will be selected, ensuring consistency.</p>
 <p>The provided DataStore interface is expected to have two methods: <code>set</code> and <code>get</code>.</p>
-<pre class="prettyprint source lang-typescript"><code>import ConvertSDK, {
+<pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -1231,7 +1261,7 @@ const config: ConvertConfig = {
 
 class CustomDataStore {
   #data = {};
-  
+
   get(key) {
     if (!key) return this.#data;
     return this.#data[key.toString()];
@@ -1313,9 +1343,7 @@ const convertSDK: ConvertInterface = new ConvertSDK({
 <li>
 <p><strong>Workspaces</strong>: Add the following <code>workspaces</code> to your <code>package.json</code> (<em>assuming that the submodule is located under your repository root</em>):</p>
 <pre class="prettyprint source lang-json"><code>{
-  &quot;workspaces&quot;: [
-    &quot;javascript-sdk/packages/*&quot;
-  ]
+  &quot;workspaces&quot;: [&quot;javascript-sdk/packages/*&quot;]
 }
 </code></pre>
 <p>If using PnP, add the following <code>packages</code> to your <code>pnpm-workspace.yaml</code> instead:</p>
@@ -1329,14 +1357,20 @@ const convertSDK: ConvertInterface = new ConvertSDK({
   &quot;compilerOptions&quot;: {
     &quot;paths&quot;: {
       &quot;@convertcom/js-sdk-api&quot;: [&quot;./javascript-sdk/packages/api&quot;],
-      &quot;@convertcom/js-sdk-bucketing&quot;: [&quot;./javascript-sdk/packages/bucketing&quot;],
+      &quot;@convertcom/js-sdk-bucketing&quot;: [
+        &quot;./javascript-sdk/packages/bucketing&quot;
+      ],
       &quot;@convertcom/js-sdk-data&quot;: [&quot;./javascript-sdk/packages/data&quot;],
       &quot;@convertcom/js-sdk-enums&quot;: [&quot;./javascript-sdk/packages/enums&quot;],
       &quot;@convertcom/js-sdk-event&quot;: [&quot;./javascript-sdk/packages/event&quot;],
-      &quot;@convertcom/js-sdk-experience&quot;: [&quot;./javascript-sdk/packages/experience&quot;],
+      &quot;@convertcom/js-sdk-experience&quot;: [
+        &quot;./javascript-sdk/packages/experience&quot;
+      ],
       &quot;@convertcom/js-sdk-logger&quot;: [&quot;./javascript-sdk/packages/logger&quot;],
       &quot;@convertcom/js-sdk-rules&quot;: [&quot;./javascript-sdk/packages/rules&quot;],
-      &quot;@convertcom/js-sdk-segments&quot;: [&quot;./javascript-sdk/packages/segments&quot;],
+      &quot;@convertcom/js-sdk-segments&quot;: [
+        &quot;./javascript-sdk/packages/segments&quot;
+      ],
       &quot;@convertcom/js-sdk-types&quot;: [&quot;./javascript-sdk/packages/types&quot;],
       &quot;@convertcom/js-sdk-utils&quot;: [&quot;./javascript-sdk/packages/utils&quot;],
       &quot;@convertcom/js-sdk&quot;: [&quot;./javascript-sdk/packages/js-sdk&quot;]
