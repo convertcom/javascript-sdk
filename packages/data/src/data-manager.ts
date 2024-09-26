@@ -577,7 +577,7 @@ export class DataManager implements DataManagerInterface {
       ))
     ) {
       variationId = storedVariationId;
-      // If it's found log info. The return value will be formed next step
+      // If it's found log debug info. The return value will be formed next step
       this._loggerManager?.info?.(
         'DataManager._retrieveBucketing()',
         MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
@@ -611,7 +611,7 @@ export class DataManager implements DataManagerInterface {
           ? null
           : {experienceId: experience.id.toString()}
       );
-      variationId = bucketing?.variationId;
+      variationId = variationId || bucketing?.variationId; // variation might be forced
       bucketingAllocation = bucketing?.bucketingAllocation;
       // Return bucketing errors if present
       if (!variationId) {
