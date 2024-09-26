@@ -611,16 +611,18 @@ export class DataManager implements DataManagerInterface {
           ? null
           : {experienceId: experience.id.toString()}
       );
-      variationId = variationId || bucketing?.variationId; // variation might be forced
+      variationId = bucketing?.variationId;
       bucketingAllocation = bucketing?.bucketingAllocation;
       // Return bucketing errors if present
       if (!variationId) {
-        this._loggerManager?.error?.(
+        this._loggerManager?.debug?.(
           'DataManager._retrieveBucketing()',
           ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
           this._mapper({
             visitorId: visitorId,
-            experience: experience
+            experience: experience,
+            buckets: buckets,
+            bucketing: bucketing
           })
         );
         return BucketingError.VARIAION_NOT_DECIDED;
