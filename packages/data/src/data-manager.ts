@@ -41,7 +41,8 @@ import {
   BucketingAttributes,
   LocationAttributes,
   ConfigAudienceTypes,
-  VariationStatuses
+  VariationStatuses,
+  eventType
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -254,13 +255,14 @@ export class DataManager implements DataManagerInterface {
       }
 
       // Check location rules against locationProperties
-      let locationMatched: boolean | RuleError = false,
-        matchedLocations = [];
-      if (locationProperties) {
+      let locationMatched: boolean | RuleError =
+        ignoreLocationProperties === true;
+      if (!locationMatched && locationProperties) {
         if (
           Array.isArray(experience?.locations) &&
           experience.locations.length
         ) {
+          let matchedLocations = [];
           // Get attached locations
           const locations = this.getItemsByIds(
             experience.locations,
@@ -299,7 +301,7 @@ export class DataManager implements DataManagerInterface {
           );
         }
       }
-      if (!locationMatched && !ignoreLocationProperties) {
+      if (!locationMatched) {
         this._loggerManager?.debug?.(
           'DataManager.matchRulesByField()',
           MESSAGES.LOCATION_NOT_MATCH,
@@ -575,7 +577,7 @@ export class DataManager implements DataManagerInterface {
       ))
     ) {
       variationId = storedVariationId;
-      // If it's found log debug info. The return value will be formed next step
+      // If it's found log info. The return value will be formed next step
       this._loggerManager?.info?.(
         'DataManager._retrieveBucketing()',
         MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variationId}`)
@@ -609,16 +611,18 @@ export class DataManager implements DataManagerInterface {
           ? null
           : {experienceId: experience.id.toString()}
       );
-      variationId = variationId || bucketing?.variationId; // variation might be forced
+      variationId = bucketing?.variationId;
       bucketingAllocation = bucketing?.bucketingAllocation;
       // Return bucketing errors if present
       if (!variationId) {
-        this._loggerManager?.error?.(
+        this._loggerManager?.debug?.(
           'DataManager._retrieveBucketing()',
           ERROR_MESSAGES.UNABLE_TO_SELECT_BUCKET_FOR_VISITOR,
           this._mapper({
             visitorId: visitorId,
-            experience: experience
+            experience: experience,
+            buckets: buckets,
+            bucketing: bucketing
           })
         );
         return BucketingError.VARIAION_NOT_DECIDED;
@@ -647,7 +651,7 @@ export class DataManager implements DataManagerInterface {
           variationId: variationId.toString()
         };
         const visitorEvent: VisitorTrackingEvents = {
-          eventType: VisitorTrackingEvents.eventType.BUCKETING,
+          eventType: eventType.BUCKETING,
           data: bucketingEvent
         };
         this._apiManager.enqueue(visitorId, visitorEvent, segments);
@@ -1012,7 +1016,7 @@ export class DataManager implements DataManagerInterface {
       };
       if (bucketingData) data.bucketingData = bucketingData;
       const event: VisitorTrackingEvents = {
-        eventType: VisitorTrackingEvents.eventType.CONVERSION,
+        eventType: eventType.CONVERSION,
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);
@@ -1031,7 +1035,7 @@ export class DataManager implements DataManagerInterface {
       };
       if (bucketingData) data.bucketingData = bucketingData;
       const event: VisitorTrackingEvents = {
-        eventType: VisitorTrackingEvents.eventType.CONVERSION,
+        eventType: eventType.CONVERSION,
         data
       };
       this._apiManager.enqueue(visitorId, event, segments);

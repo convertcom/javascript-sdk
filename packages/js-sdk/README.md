@@ -216,7 +216,8 @@ The SDK instance can be initialized by either providing an `sdkKey` or a full pr
 Include `sdkKey` as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every `dataRefreshInterval` milliseconds.
 
 ```typescript
-import ConvertSDK, {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
+import type {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const convertSDK: ConvertInterface = new ConvertSDK({
   sdkKey: 'xxx',
@@ -237,7 +238,8 @@ After this, the SDK has been successfully instantiated, the project config data 
 Alternatively, instead of providing an `sdkKey`, you can provide a static project configuration. The project configuration data can be fetched from _https://cdn-4.convertexperiments.com/api/v1/config/account_id/project_id_.
 
 ```typescript
-import ConvertSDK, {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
+import type {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const projectConfig = {
   // your static project configuration data
@@ -286,7 +288,7 @@ const config = {
     tracking: true, // can be set to false to disable tracking events
     cacheLevel: 'default', // can be set to 'low' for short-lived cache (for development purposes only)
     source: 'js-sdk', // string identifier indicating the source of network requests
-  }
+  },
 };
 ```
 
@@ -301,13 +303,13 @@ When creating the UserContext, a unique `userId` is required. This will be used 
 For convenience, a list of **User Properties** that can be later used inside audience definition evaluation can be provided when creating a UserContext. Any of these can be changed by providing them again when calling any of the functional SDK methods for running experiences, under the `attributes.visitorProperties` while setting the value for `attributes.updateVisitorProperties` to `true`.
 
 ```typescript
-import {ContextInterface} from '@convertcom/js-sdk';
+import type {ContextInterface} from '@convertcom/js-sdk';
 
 const userContext: ContextInterface = convertSDK.createContext(
   'user-unique-id',
   {
     country: 'US',
-    language: 'en'
+    language: 'en',
   }
 );
 ```
@@ -315,7 +317,7 @@ const userContext: ContextInterface = convertSDK.createContext(
 After creating a `userContext`, methods for running experiences can be called:
 
 ```typescript
-import {BucketedVariation} from '@convertcom/js-sdk';
+import type {BucketedVariation} from '@convertcom/js-sdk';
 
 const variation: BucketedVariation =
   userContext.runExperience('experience-key');
@@ -355,12 +357,13 @@ List of bucketed variations.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -396,12 +399,13 @@ Bucketed variation.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -437,12 +441,13 @@ List of bucketed features.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature
+  BucketedFeature,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -480,12 +485,13 @@ Bucketed feature.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature
+  BucketedFeature,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -524,11 +530,12 @@ Void.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -539,25 +546,25 @@ convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.trackConversion('goal-key', {
     ruleData: {
-      action: 'buy'
+      action: 'buy',
     },
     conversionData: [
       {
         key: 'amount',
-        value: 10.3
+        value: 10.3,
       },
       {
         key: 'productsCount',
-        value: 2
+        value: 2,
       },
       {
         key: 'transactionId',
-        value: 'transaction-unique-id'
+        value: 'transaction-unique-id',
       }
     ],
     conversionSetting: {
-      forceMultipleTransactions: false
-    }
+      forceMultipleTransactions: false,
+    },
   });
 });
 ```
@@ -580,11 +587,12 @@ Void.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -616,11 +624,12 @@ Void.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -629,7 +638,9 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  context.setDefaultSegments({ country: 'US' });
+  context.setDefaultSegments({
+    country: 'US',
+  });
 });
 ```
 
@@ -651,11 +662,12 @@ Void.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface
+  ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -664,7 +676,9 @@ const config: ConvertConfig = {
 const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
-  context.updateVisitorProperties({ weather: 'rainy' });
+  context.updateVisitorProperties({
+    weather: 'rainy',
+  });
 });
 ```
 
@@ -686,13 +700,13 @@ Void.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  EntityType,
-  Experience
+  Experience,
 } from '@convertcom/js-sdk';
+import ConvertSDK, {EntityType} from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -726,16 +740,15 @@ Void.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
   BucketedVariation,
-  EntityType,
   Feature,
   VariationChange,
-  VariationChangeType
 } from '@convertcom/js-sdk';
+import ConvertSDK, {EntityType, VariationChangeType} from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -772,12 +785,13 @@ Void.
 #### Example
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation
+  BucketedVariation,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -789,7 +803,9 @@ convertSDK.onReady().then(() => {
   const variations: BucketedVariation[] = context.runExperiences();
 
   // manually release all pending queue at some point later, like on click, component unmount
-  context.releaseQueues();
+  context.releaseQueues().then(() => {
+    console.log('all pending queue has been released');
+  });
 });
 ```
 
@@ -808,17 +824,18 @@ You can capture SDK events as well:
 | `config.updated`       | Refreshing the configuration                             | null                                                                                     |
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  EntityType,
   Experience,
-  SystemEvents,
-  Variation
+  Variation,
 } from '@convertcom/js-sdk';
+import ConvertSDK, {EntityType, SystemEvents} from '@convertcom/js-sdk';
 
-const convertSDK: ConvertInterface = new ConvertSDK({sdkKey: 'xxx'} as ConvertConfig);
+const convertSDK: ConvertInterface = new ConvertSDK({
+  sdkKey: 'xxx',
+} as ConvertConfig);
 
 convertSDK.on(SystemEvents.READY, function (res, err) {
   if (err) {
@@ -828,7 +845,13 @@ convertSDK.on(SystemEvents.READY, function (res, err) {
 
 convertSDK.on(
   SystemEvents.BUCKETING,
-  function ({ visitorId, experienceKey, variationKey, featureKey, status }, err) {
+  function ({
+    visitorId,
+    experienceKey,
+    variationKey,
+    featureKey,
+    status,
+  }, err) {
     if (err) {
       console.error(err);
     } else {
@@ -843,12 +866,18 @@ convertSDK.on(
         variationKey,
         EntityType.VARIATION
       ).name;
-      gtag('event', 'YOUR_GA_CUSTOM_EVENT', { experienceName, variationName });
+      gtag('event', 'YOUR_GA_CUSTOM_EVENT', {
+        experienceName,
+        variationName,
+      });
     }
   }
 );
 
-convertSDK.on(SystemEvents.CONVERSION, function ({ visitorId, goalKey }, err) {
+convertSDK.on(SystemEvents.CONVERSION, function ({
+  visitorId,
+  goalKey,
+}, err) {
   if (err) {
     console.error(err);
   } else {
@@ -872,11 +901,12 @@ You can provide your own DataStore to make user bucketing persistent, ensuring c
 The provided DataStore interface is expected to have two methods: `set` and `get`.
 
 ```typescript
-import ConvertSDK, {
+import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
 } from '@convertcom/js-sdk';
+import ConvertSDK from '@convertcom/js-sdk';
 
 const config: ConvertConfig = {
   // full configuration options
@@ -884,7 +914,7 @@ const config: ConvertConfig = {
 
 class CustomDataStore {
   #data = {};
-  
+
   get(key) {
     if (!key) return this.#data;
     return this.#data[key.toString()];
@@ -957,9 +987,7 @@ Additionally, you can even include this repository as part of your own `TypeScri
 
      ```json
      {
-       "workspaces": [
-         "javascript-sdk/packages/*"
-       ]
+       "workspaces": ["javascript-sdk/packages/*"]
      }
      ```
 
@@ -977,14 +1005,20 @@ Additionally, you can even include this repository as part of your own `TypeScri
        "compilerOptions": {
          "paths": {
            "@convertcom/js-sdk-api": ["./javascript-sdk/packages/api"],
-           "@convertcom/js-sdk-bucketing": ["./javascript-sdk/packages/bucketing"],
+           "@convertcom/js-sdk-bucketing": [
+             "./javascript-sdk/packages/bucketing"
+           ],
            "@convertcom/js-sdk-data": ["./javascript-sdk/packages/data"],
            "@convertcom/js-sdk-enums": ["./javascript-sdk/packages/enums"],
            "@convertcom/js-sdk-event": ["./javascript-sdk/packages/event"],
-           "@convertcom/js-sdk-experience": ["./javascript-sdk/packages/experience"],
+           "@convertcom/js-sdk-experience": [
+             "./javascript-sdk/packages/experience"
+           ],
            "@convertcom/js-sdk-logger": ["./javascript-sdk/packages/logger"],
            "@convertcom/js-sdk-rules": ["./javascript-sdk/packages/rules"],
-           "@convertcom/js-sdk-segments": ["./javascript-sdk/packages/segments"],
+           "@convertcom/js-sdk-segments": [
+             "./javascript-sdk/packages/segments"
+           ],
            "@convertcom/js-sdk-types": ["./javascript-sdk/packages/types"],
            "@convertcom/js-sdk-utils": ["./javascript-sdk/packages/utils"],
            "@convertcom/js-sdk": ["./javascript-sdk/packages/js-sdk"]
