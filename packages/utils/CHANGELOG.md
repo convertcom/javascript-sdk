@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.1.0...js-sdk-utils-v2.2.0) (2024-09-26)
+
+
+### Features
+
+* enable "keepalive" on "fetch" ([8574193](https://github.com/convertcom/javascript-sdk/commit/85741934738275981d7bd2079b69e959adf93c1b))
+
 ## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.0.0...js-sdk-utils-v2.1.0) (2024-07-16)
 
 
