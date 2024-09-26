@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.1.0...js-sdk-v4.2.0) (2024-09-26)
+
+
+### Features
+
+* promisify Context.releaseQueues() ([8a13ba9](https://github.com/convertcom/javascript-sdk/commit/8a13ba922036d9ac77b862a70574aebf5d2673e7))
+* promisify Context.releaseQueues() ([42ffc87](https://github.com/convertcom/javascript-sdk/commit/42ffc87f00770f1fd36ad1e5809fab18e4301d49))
+
 ## [4.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.0.1...js-sdk-v4.1.0) (2024-07-16)
 
 
