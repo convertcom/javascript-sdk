@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.2.0...js-sdk-data-v3.2.1) (2024-09-26)
+
+
+### Bug Fixes
+
+* always pick forced variation if provided ([76a4237](https://github.com/convertcom/javascript-sdk/commit/76a4237a91c799c1ec8208b75e1788d4f70d70b6))
+
 ## [3.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.1.0...js-sdk-data-v3.2.0) (2024-07-16)
 
 
