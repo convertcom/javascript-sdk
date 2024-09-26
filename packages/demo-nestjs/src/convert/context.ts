@@ -1,3 +1,5 @@
+import type { ContextInterface } from '@convertcom/js-sdk'; // [ConvertSDK]
+
 export default function (sdkInstance, dataStore) {
   return function (req, res, next) {
     if (dataStore.driver === 'cookie') {
@@ -17,7 +19,7 @@ export default function (sdkInstance, dataStore) {
       .onReady()
       .then(function () {
         console.log('SDK Ready');
-        const context = sdkInstance.createContext(userId, {
+        const context: ContextInterface = sdkInstance.createContext(userId, {
           mobile: true,
         });
         context.setDefaultSegments({ country: 'US' });
