@@ -552,6 +552,12 @@ video {
 .h-6 {
   height: 1.5rem;
 }
+.h-\[calc\(100vh-16rem\)\] {
+  height: calc(100vh - 16rem);
+}
+.h-\[calc\(100vh-64px\)\] {
+  height: calc(100vh - 64px);
+}
 .w-6 {
   width: 1.5rem;
 }
@@ -569,6 +575,9 @@ video {
 }
 .items-baseline {
   align-items: baseline;
+}
+.justify-center {
+  justify-content: center;
 }
 .justify-between {
   justify-content: space-between;
@@ -623,6 +632,9 @@ video {
 }
 .pt-\[64px\] {
   padding-top: 64px;
+}
+.pt-16 {
+  padding-top: 4rem;
 }
 .text-2xl {
   font-size: 1.5rem;
