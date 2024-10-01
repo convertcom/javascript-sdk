@@ -12,9 +12,9 @@ export function ConvertProvider({ children }) {
     // Access localStorage directly
     if (typeof window !== 'undefined') {
       const storedUserId = localStorage.getItem('user-id');
-      return storedUserId || `${Date.now()}-${Math.random()}`;
+      return storedUserId || `${Date.now()}`;
     }
-    return `${Date.now()}-${Math.random()}`;
+    return `${Date.now()}`;
   });
 
   useEffect(() => {
