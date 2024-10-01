@@ -12,7 +12,7 @@ function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/">
-              <a className="text-xl font-bold text-gray-800">MyApp</a>
+              <span className="text-xl font-bold text-gray-800">MyApp</span>
             </Link>
           </div>
 
@@ -20,16 +20,16 @@ function Navbar() {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               <Link href="/">
-                <a className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                <span className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium">Home</span>
               </Link>
               <Link href="/about">
-                <a className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium">About</a>
+                <span className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium">About</span>
               </Link>
               <Link href="/services">
-                <a className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium">Services</a>
+                <span className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium">Services</span>
               </Link>
               <Link href="/contact">
-                <a className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                <span className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium">Contact</span>
               </Link>
             </div>
           </div>
@@ -66,16 +66,16 @@ function Navbar() {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link href="/">
-              <a className="block text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-base font-medium">Home</a>
+              <span className="block text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-base font-medium">Home</span>
             </Link>
             <Link href="/about">
-              <a className="block text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-base font-medium">About</a>
+              <span className="block text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-base font-medium">About</span>
             </Link>
             <Link href="/services">
-              <a className="block text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-base font-medium">Services</a>
+              <span className="block text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-base font-medium">Services</span>
             </Link>
             <Link href="/contact">
-              <a className="block text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-base font-medium">Contact</a>
+              <span className="block text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-base font-medium">Contact</span>
             </Link>
           </div>
         </div>
