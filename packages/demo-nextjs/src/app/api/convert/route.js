@@ -11,20 +11,28 @@ export async function GET() {
       mobile: false,
     });
     context.setDefaultSegments({ country: 'US' });
-
+    const variations = context.runExperiences();
+    console.log('Variations:', variations);
     // Perform SDK operations...
-    const contextData = {
-        userId,
-        context: context,
-        // Include any other necessary data from the context
-      };
-    return new Response(JSON.stringify({ success: true , data: contextData }), {
+    
+    const replacer = (key, value) => {
+      // Exclude properties causing circular reference issues
+      if (key === '_idlePrev' || key === '_idleNext') {
+        return undefined;
+      }
+      return value;
+    };
+
+    // Convert the context object to JSON, excluding specific properties
+    const serializableContextData = JSON.stringify(context, replacer);
+
+    return new Response( serializableContextData, {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('SDK Error:', error);
-    return new Response(JSON.stringify({ error: 'SDK Initialization Failed' }), {
+    return new Response(stringify({ error: 'SDK Initialization Failed' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

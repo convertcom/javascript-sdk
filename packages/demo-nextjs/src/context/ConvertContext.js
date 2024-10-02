@@ -22,19 +22,15 @@ export function ConvertProvider({ children }) {
     if (typeof window !== 'undefined') {
       localStorage.setItem('user-id', userId);
     }
-
     fetch('/api/convert')
       .then((res) => res.json())
       .then((data) => {
-        console.log('data', data);
-        if(!data?.success || !data?.data) {
-          console.error('Error fetching SDK context:', data?.error);
+        if(!data) {
           return;
         }
-        const { userId, context } = data.data;
-        setUserId(userId);
-        setSdkContext(context);
-        console.log('SDK Ready');
+        const { _visitorId } = data;
+        setUserId(_visitorId);
+        setSdkContext(data);
       })
       .catch((error) => {
         console.error('Error fetching SDK context:', error);
