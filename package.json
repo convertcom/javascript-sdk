@@ -40,7 +40,8 @@
     "sdk:docs": "cd packages/js-sdk/docs && yarn docs",
     "demo:react:start": "cd packages/demo-react && yarn start",
     "demo:nodejs:start": "cd packages/demo-nodejs && yarn start",
-    "demo:nestjs:start": "cd packages/demo-nestjs && yarn start"
+    "demo:nestjs:start": "cd packages/demo-nestjs && yarn start",
+    "demo:nextjs:start": "cd packages/demo-nextjs && yarn start"
   },
   "private": true,
   "workspaces": [
