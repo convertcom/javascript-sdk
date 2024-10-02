@@ -1,15 +1,15 @@
 // app/api/convert/route.js
-import sdkInstance from '@/lib/convertSdk';
+import sdkInstance from '@/lib/convertSdk'; // [ConvertSDK]
 export async function GET() {
   try {
     await sdkInstance.onReady();
 
     // You can create a context here if needed
-    const userId = 'user-id-123'; // Replace with actual user ID
+    const userId = 'user-id-123'; // Replace with actual user ID // [ConvertSDK]
     const context = sdkInstance.createContext(userId, {
       mobile: false,
-    });
-    context.setDefaultSegments({ country: 'US' });
+    }); // [ConvertSDK]
+    context.setDefaultSegments({ country: 'US' }); // [ConvertSDK]
   
     const replacer = (key, value) => {
       // Exclude properties causing circular reference issues

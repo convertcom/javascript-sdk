@@ -13,3 +13,4 @@ dist/
 docs/
 coverage/
 !packages/demo-nestjs/lib/
+.next
