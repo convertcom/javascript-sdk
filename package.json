@@ -39,6 +39,7 @@
     "test": "yarn utils:test && yarn event:test && yarn bucketing:test && yarn logger:test && yarn rules:test && yarn segments:test && yarn api:test && yarn data:test && yarn experience:test && yarn sdk:test",
     "sdk:docs": "cd packages/js-sdk/docs && yarn docs",
     "demo:react:start": "cd packages/demo-react && yarn start",
+    "demo:nextjs:start": "cd packages/demo-nextjs && yarn build && yarn start",
     "demo:nodejs:start": "cd packages/demo-nodejs && yarn start",
     "demo:nestjs:start": "cd packages/demo-nestjs && yarn start"
   },
