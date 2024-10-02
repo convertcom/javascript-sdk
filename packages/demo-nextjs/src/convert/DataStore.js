@@ -1,12 +1,12 @@
 // lib/DataStore.js
 
 import { getCookie, setCookie } from 'cookies-next';
-import path from 'path';
+
 export default class DataStore {
   constructor(options = {}) {
     this.driver = options.driver || 'cookie'; // 'fs' or 'cookie'
     this.expire = options.expire || 360000; // 1 hour
-    this.store = options.store || path.resolve('/tmp/demo'); // safer handling for file system path
+
     this.req = options.req || null;
     this.res = options.res || null;
     this.data = {};
