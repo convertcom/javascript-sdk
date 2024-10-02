@@ -35,3 +35,9 @@
 1. Start demo server: `yarn demo:nestjs:start`
 2. Build packages: `yarn build`
 3. Test demo app: http://localhost:3004
+
+### NextJs
+
+1. Start demo server: `yarn demo:nextjs:start`
+2. Build packages: `yarn build`
+3. Test demo app: http://localhost:3005
