@@ -27,11 +27,11 @@ export function ConvertProvider({ children }) {
       .then((res) => res.json())
       .then((data) => {
         console.log('data', data);
-        if(!data?.success) {
+        if(!data?.success || !data?.data) {
           console.error('Error fetching SDK context:', data?.error);
           return;
         }
-        const { userId, context } = data?.data;
+        const { userId, context } = data.data;
         setUserId(userId);
         setSdkContext(context);
         console.log('SDK Ready');
