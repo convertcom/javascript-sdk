@@ -1,7 +1,7 @@
 'use client';
 
 import { ConvertInterface } from '@convertcom/js-sdk';
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 
 // Define the shape of the context
 interface ConvertContextType {
@@ -9,14 +9,17 @@ interface ConvertContextType {
   userId: string;
   setUserId: (userId: string) => void;
 }
+
 // Define the initial context value
 const ConvertContext = createContext<ConvertContextType | undefined>(undefined);
+
 // Define props for the ConvertProvider
 interface ConvertProviderProps {
   children: ReactNode;
 }
-export function ConvertProvider({ children }: ConvertProviderProps) {
-  const [sdkContext, setSdkContext] = useState<ConvertInterface >({} as ConvertInterface);
+
+export function ConvertProvider({ children }: Readonly<ConvertProviderProps>) {
+  const [sdkContext, setSdkContext] = useState<ConvertInterface>({} as ConvertInterface);
   const [userId, setUserId] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       const storedUserId = localStorage.getItem('user-id');
@@ -45,8 +48,11 @@ export function ConvertProvider({ children }: ConvertProviderProps) {
       });
   }, [userId]);
 
+  // Memoize the value to prevent unnecessary re-renders
+  const value = useMemo(() => ({ sdkContext, userId, setUserId }), [sdkContext, userId, setUserId]);
+
   return (
-    <ConvertContext.Provider value={{ sdkContext, userId, setUserId }}>
+    <ConvertContext.Provider value={value}>
       {children}
     </ConvertContext.Provider>
   );

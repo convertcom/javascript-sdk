@@ -3,7 +3,6 @@ import sdkInstance from '@/lib/convertSdk';
 export async function GET() {
   try {
     await sdkInstance.onReady();
-    console.log('SDK Ready');
 
     // You can create a context here if needed
     const userId = 'user-id-123'; // Replace with actual user ID
@@ -11,10 +10,7 @@ export async function GET() {
       mobile: false,
     });
     context.setDefaultSegments({ country: 'US' });
-    const variations = context.runExperiences();
-    console.log('Variations:', variations);
-    // Perform SDK operations...
-    
+  
     const replacer = (key, value) => {
       // Exclude properties causing circular reference issues
       if (key === '_idlePrev' || key === '_idleNext') {
