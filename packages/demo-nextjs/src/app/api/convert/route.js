@@ -1,5 +1,5 @@
 // app/api/convert/route.js
-import sdkInstance from '@/lib/convertSdk'; // [ConvertSDK]
+import sdkInstance from '@/convert/convertSdk'; // [ConvertSDK]
 export async function GET() {
   try {
     await sdkInstance.onReady();
