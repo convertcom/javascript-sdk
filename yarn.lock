@@ -1781,8 +1781,8 @@ __metadata:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-event": ">=2.1.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
-    "@convertcom/js-sdk-utils": ">=2.2.0"
+    "@convertcom/js-sdk-types": ">=3.4.0"
+    "@convertcom/js-sdk-utils": ">=2.1.0"
   languageName: unknown
   linkType: soft
 
@@ -1829,8 +1829,8 @@ __metadata:
   peerDependencies:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
-    "@convertcom/js-sdk-utils": ">=2.2.0"
+    "@convertcom/js-sdk-types": ">=3.4.0"
+    "@convertcom/js-sdk-utils": ">=2.1.0"
   languageName: unknown
   linkType: soft
 
@@ -1881,14 +1881,14 @@ __metadata:
     "@convertcom/js-sdk-event": ">=2.1.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
     "@convertcom/js-sdk-rules": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
-    "@convertcom/js-sdk-utils": ">=2.2.0"
+    "@convertcom/js-sdk-types": ">=3.4.0"
+    "@convertcom/js-sdk-utils": ">=2.1.0"
   languageName: unknown
   linkType: soft
 
-"@convertcom/js-sdk-demo-nodejs@workspace:demo/demo-nodejs":
+"@convertcom/js-sdk-demo-nodejs@workspace:demo/nodejs":
   version: 0.0.0-use.local
-  resolution: "@convertcom/js-sdk-demo-nodejs@workspace:demo/demo-nodejs"
+  resolution: "@convertcom/js-sdk-demo-nodejs@workspace:demo/nodejs"
   dependencies:
     cookie-parser: "npm:^1.4.6"
     debug: "npm:^4.3.5"
@@ -1902,9 +1902,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@convertcom/js-sdk-demo-react@workspace:demo/demo-react":
+"@convertcom/js-sdk-demo-react@workspace:demo/reactjs":
   version: 0.0.0-use.local
-  resolution: "@convertcom/js-sdk-demo-react@workspace:demo/demo-react"
+  resolution: "@convertcom/js-sdk-demo-react@workspace:demo/reactjs"
   dependencies:
     feather-icons: "npm:^4.29.2"
     framer-motion: "npm:^11.2.10"
@@ -1993,7 +1993,7 @@ __metadata:
   peerDependencies:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.4.0"
   languageName: unknown
   linkType: soft
 
@@ -2041,7 +2041,7 @@ __metadata:
     "@convertcom/js-sdk-data": ">=3.2.0"
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.4.0"
   languageName: unknown
   linkType: soft
 
@@ -2130,8 +2130,8 @@ __metadata:
   peerDependencies:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
-    "@convertcom/js-sdk-utils": ">=2.2.0"
+    "@convertcom/js-sdk-types": ">=3.4.0"
+    "@convertcom/js-sdk-utils": ">=2.1.0"
   languageName: unknown
   linkType: soft
 
@@ -2180,7 +2180,7 @@ __metadata:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
     "@convertcom/js-sdk-rules": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.4.0"
   languageName: unknown
   linkType: soft
 
@@ -2331,8 +2331,8 @@ __metadata:
     "@convertcom/js-sdk-logger": ">=2.1.0"
     "@convertcom/js-sdk-rules": ">=2.1.0"
     "@convertcom/js-sdk-segments": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
-    "@convertcom/js-sdk-utils": ">=2.2.0"
+    "@convertcom/js-sdk-types": ">=3.4.0"
+    "@convertcom/js-sdk-utils": ">=2.1.0"
   languageName: unknown
   linkType: soft
 
@@ -8757,9 +8757,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"demo-nestjs@workspace:demo/demo-nestjs":
+"demo-nestjs@workspace:demo/nestjs":
   version: 0.0.0-use.local
-  resolution: "demo-nestjs@workspace:demo/demo-nestjs"
+  resolution: "demo-nestjs@workspace:demo/nestjs"
   dependencies:
     "@nestjs/cli": "npm:^9.0.0"
     "@nestjs/common": "npm:^9.0.0"
@@ -8795,9 +8795,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"demo-nextjs@workspace:demo/demo-nextjs":
+"demo-nextjs@workspace:demo/nextjs":
   version: 0.0.0-use.local
-  resolution: "demo-nextjs@workspace:demo/demo-nextjs"
+  resolution: "demo-nextjs@workspace:demo/nextjs"
   dependencies:
     "@types/node": "npm:^20"
     "@types/react": "npm:^18"
