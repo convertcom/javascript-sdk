@@ -1,45 +1,26 @@
-import React, { useEffect, useState, useContext } from "react";
-import tw from "twin.macro";
-import AnimationRevealPage from "helpers/AnimationRevealPage.js";
-import Hero from "components/hero/FullWidthWithImage.js";
-import HeroEmpty from "components/hero/Empty.js";
-import Pricing from "components/pricing/ThreePlans.js";
-import Footer from "components/footers/FiveColumnWithBackground.js";
+import React, {useContext} from 'react';
+import tw from 'twin.macro';
+import AnimationRevealPage from 'helpers/AnimationRevealPage.js';
+import Hero from 'components/hero/FullWidthWithImage.js';
+import HeroEmpty from 'components/hero/Empty.js';
+import Pricing from 'components/pricing/ThreePlans.js';
+import Footer from 'components/footers/FiveColumnWithBackground.js';
+import {useDecideFeature} from 'helpers/useDecideFeature';
+import {UserContext} from '../Context';
 
-import { UserContext } from "../Context";
-
-const featureKey = "feature-5"; // [ConvertSDK]
-const goalKey = "button-primary-click"; // [ConvertSDK]
+const featureKey = 'feature-5'; // [ConvertSDK]
+const goalKey = 'button-primary-click'; // [ConvertSDK]
 
 export default () => {
   const Subheading = tw.span`uppercase tracking-widest font-bold text-primary-500`;
   const HighlightedText = tw.span`text-primary-500`;
 
-  const { sdkContext } = useContext(UserContext);
-  const [experiences, setExperiences] = useState([]);
-  const [feature, setFeature] = useState(null);
-
-  const decide = () => {
-    const bucketedVariations = sdkContext.runExperiences({
-      locationProperties: { location: "pricing" },
-    });
-
-    console.log("bucketed variation(s):", bucketedVariations);
-    setExperiences(bucketedVariations.map((e) => e.experienceKey));
-
-    const bucketedFeature = sdkContext.runFeature(featureKey, {
-      locationProperties: { location: "pricing" },
-    });
-    console.log("bucketed feature:", bucketedFeature);
-    if (bucketedFeature && bucketedFeature.status === "enabled")
-      setFeature(bucketedFeature);
-  }; // [ConvertSDK]
-
-  useEffect(() => sdkContext && decide(), [sdkContext]);
+  const {sdkContext} = useContext(UserContext);
+  const {experiences, feature} = useDecideFeature(featureKey, sdkContext);
 
   return (
     <AnimationRevealPage>
-      {experiences.find((e) => e === "test-experience-ab-fullstack-1") ? (
+      {experiences.find((e) => e === 'test-experience-ab-fullstack-1') ? (
         <Hero />
       ) : (
         <HeroEmpty />
@@ -56,48 +37,48 @@ export default () => {
             ? Object.values(feature.variables.plans)
             : [
                 {
-                  name: "Personal",
-                  price: "$17.99",
-                  duration: "Monthly",
-                  mainFeature: "For Individuals",
+                  name: 'Personal',
+                  price: '$17.99',
+                  duration: 'Monthly',
+                  mainFeature: 'For Individuals',
                   features: [
-                    "30 Templates",
-                    "7 Landing Pages",
-                    "12 Internal Pages",
-                    "Basic Assistance",
-                  ],
+                    '30 Templates',
+                    '7 Landing Pages',
+                    '12 Internal Pages',
+                  'Basic Assistance'
+                  ]
                 },
                 {
-                  name: "Business",
-                  price: "$37.99",
-                  duration: "Monthly",
-                  mainFeature: "For Small Businesses",
+                  name: 'Business',
+                  price: '$37.99',
+                  duration: 'Monthly',
+                  mainFeature: 'For Small Businesses',
                   features: [
-                    "60 Templates",
-                    "15 Landing Pages",
-                    "22 Internal Pages",
-                    "Priority Assistance",
+                    '60 Templates',
+                    '15 Landing Pages',
+                    '22 Internal Pages',
+                  'Priority Assistance'
                   ],
-                  featured: true,
+                  featured: true
                 },
                 {
-                  name: "Enterprise",
-                  price: "$57.99",
-                  duration: "Monthly",
-                  mainFeature: "For Large Companies",
+                  name: 'Enterprise',
+                  price: '$57.99',
+                  duration: 'Monthly',
+                  mainFeature: 'For Large Companies',
                   features: [
-                    "90 Templates",
-                    "27 Landing Pages",
-                    "37 Internal Pages",
-                    "Personal Assistance",
-                  ],
-                },
+                    '90 Templates',
+                    '27 Landing Pages',
+                    '37 Internal Pages',
+                  'Personal Assistance'
+                  ]
+                }
               ]
         }
         primaryButtonAction={() => {
           sdkContext.trackConversion(goalKey, {
             ruleData: {
-              action: "buy",
+              action: 'buy'
             },
             conversionData: [
               {
@@ -108,7 +89,7 @@ export default () => {
                 key: 'productsCount',
                 value: 2
               }
-            ],
+            ]
           }); // [ConvertSDK]
         }}
       />
