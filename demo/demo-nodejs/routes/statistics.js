@@ -1,41 +1,41 @@
-var express = require("express");
-var router = express.Router();
+var expressStats = require('express');
+var routerStats = expressStats.Router();
 
-var featureKey = "feature-4"; // [ConvertSDK]
+var featureKeyStats = 'feature-4'; // [ConvertSDK]
 
-function decide(sdkContext) {
+function decideStats(sdkContext) {
   var output = {
     variations: [],
-    feature: null,
+    feature: null
   };
 
   var bucketedVariations = sdkContext.runExperiences({
-    locationProperties: { location: "statistics" },
+    locationProperties: {location: 'statistics'}
   });
 
-  console.log("bucketed variation(s):", bucketedVariations);
+  console.log('bucketed variation(s):', bucketedVariations);
   output.variations = bucketedVariations;
 
-  var bucketedFeature = sdkContext.runFeature(featureKey, {
-    locationProperties: { location: "statistics" },
+  var bucketedFeatureStats = sdkContext.runFeature(featureKeyStats, {
+    locationProperties: {location: 'statistics'}
   });
-  console.log("bucketed feature:", bucketedFeature);
-  if (bucketedFeature && bucketedFeature.status === "enabled") {
-    output.feature = bucketedFeature;
+  console.log('bucketed feature:', bucketedFeatureStats);
+  if (bucketedFeatureStats && bucketedFeatureStats.status === 'enabled') {
+    output.feature = bucketedFeatureStats;
   }
 
   return output;
 } // [ConvertSDK]
 
 /* GET statistics page. */
-router.get("/", function (req, res, next) {
+routerStats.get('/', function (req, res, next) {
   // console.log("userId:", req.cookies.userId);
-  var data = decide(req.sdkContext);
-  res.render("statistics", {
-    title: "Statistics",
-    variations: data.variations,
-    feature: data.feature,
+  var dataStats = decideStats(req.sdkContext);
+  res.render('statistics', {
+    title: 'Statistics',
+    variations: dataStats.variations,
+    feature: dataStats.feature
   });
 });
 
-module.exports = router;
+module.exports = routerStats;
