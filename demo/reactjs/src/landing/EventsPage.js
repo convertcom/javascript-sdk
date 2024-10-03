@@ -30,7 +30,7 @@ export default () => {
     setFeature(!!bucketedFeatureRollout);
     if (bucketedFeatureRollout)
       setCaption(
-        bucketedFeatureRollout?.changes[0]?.data?.variables_data?.caption
+        bucketedFeatureRollout?.changes?.[0]?.data?.variables_data?.caption
       );
     // test custom segments
     sdkContext.setCustomSegments(segmentsKey, {

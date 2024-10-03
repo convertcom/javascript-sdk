@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3005",
+    "get:port": "dotenv -- bash -c 'echo $PORT'",
+    "dev": "dotenv -- next dev -p $(yarn get:port)",
     "build": "next build",
-    "start": "next build && next start -p 3005",
+    "start": "dotenv -- next build && next start -p $(yarn get:port)",
     "lint": "next lint"
   },
   "dependencies": {
@@ -18,6 +19,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "dotenv-cli": "^7.4.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.13",
     "postcss": "^8",
