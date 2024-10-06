@@ -16,7 +16,7 @@ import {
   TrackingEvent,
   VisitorTrackingEvents
 } from '@convertcom/js-sdk-types';
-import {SystemEvents} from '@convertcom/js-sdk-enums';
+import {MESSAGES, SystemEvents} from '@convertcom/js-sdk-enums';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
 import {EventManagerInterface} from '@convertcom/js-sdk-event';
 import {
@@ -212,7 +212,11 @@ export class ApiManager implements ApiManagerInterface {
    */
   releaseQueue(reason?: string): Promise<any> {
     if (!this._requestsQueue.length) return;
-    this._loggerManager?.info?.('ApiManager.releaseQueue()', {
+    this._loggerManager?.info?.(
+      'ApiManager.releaseQueue()',
+      MESSAGES.RELEASING_QUEUE
+    );
+    this._loggerManager?.trace?.('ApiManager.releaseQueue()', {
       reason: reason || ''
     });
     this.stopQueue();
