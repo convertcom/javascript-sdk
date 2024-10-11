@@ -20,18 +20,28 @@
 
 ### React
 
-1. Start demo server: `yarn demo:react:start`
+1. Start demo server: `yarn demo:reactjs:start`
 2. Build packages: `yarn build`
-3. Test demo app: http://localhost:3002
+3. Create enviroment file: `cp demo/reactjs/.env.example demo/reactjs/.env`
+4. Test demo app: http://localhost:3002
 
 ### NodeJS
 
 1. Start demo server: `yarn demo:nodejs:start`
 2. Build packages: `yarn build`
-3. Test demo app: http://localhost:3003
+3. Create enviroment file: `cp demo/nodejs/.env.example demo/nodejs/.env`
+4. Test demo app: http://localhost:3003
 
 ### NestJS
 
 1. Start demo server: `yarn demo:nestjs:start`
 2. Build packages: `yarn build`
-3. Test demo app: http://localhost:3004
+3. Create enviroment file: `cp demo/nestjs/.env.example demo/nestjs/.env`
+4. Test demo app: http://localhost:3004
+
+### NextJs
+
+1. Start demo server: `yarn demo:nextjs:start`
+2. Build packages: `yarn build`
+3. Create enviroment file: `cp demo/nextjs/.env.example demo/nextjs/.env`
+4. Test demo app: http://localhost:3005
