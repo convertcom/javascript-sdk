@@ -6,7 +6,10 @@
  */
 
 export const DEFAULT_CONFIG_ENDPOINT =
-  process.env.CONFIG_ENDPOINT || 'https://cdn-4.convertexperiments.com/api/v1/';
+  typeof process.env.CONFIG_ENDPOINT === 'string'
+    ? process.env.CONFIG_ENDPOINT
+    : 'https://cdn-4.convertexperiments.com/api/v1/';
 export const DEFAULT_TRACK_ENDPOINT =
-  process.env.TRACK_ENDPOINT ||
-  'https://[project_id].metrics.convertexperiments.com/v1/';
+  typeof process.env.TRACK_ENDPOINT === 'string'
+    ? process.env.TRACK_ENDPOINT
+    : 'https://[project_id].metrics.convertexperiments.com/v1/';

@@ -66,5 +66,6 @@ export const MESSAGES = {
   SEGMENTS_RULE_NOT_MATCH: 'Segments rule do not match',
   CUSTOM_SEGMENTS_KEY_FOUND: 'Custom segments key already set',
   SEND_BEACON_SUCCESS:
-    'The user agent successfully queued the data for transfer'
+    'The user agent successfully queued the data for transfer',
+  RELEASING_QUEUE: 'Releasing event queue...'
 };
