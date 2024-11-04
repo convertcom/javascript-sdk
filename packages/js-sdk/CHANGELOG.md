@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.2.0...js-sdk-v4.2.1) (2024-11-04)
+
+
+### Bug Fixes
+
+* handle forced variation ([0e75106](https://github.com/convertcom/javascript-sdk/commit/0e75106955fdfa4a1641abc426ab4590d3791a18))
+
 ## [4.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.1.0...js-sdk-v4.2.0) (2024-09-26)
 
 
