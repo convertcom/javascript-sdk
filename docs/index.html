@@ -334,7 +334,7 @@ import ConvertSDK from '@convertcom/js-sdk';
 const convertSDK: ConvertInterface = new ConvertSDK({
   sdkKey: 'xxx',
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
-  environment: 'staging', // can also be &quot;live&quot;; this is configured in the Convert UI.
+  environment: 'staging' // can also be &quot;live&quot;; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
   // create user context
@@ -354,12 +354,11 @@ const projectConfig = {
 
 const convertSDK: ConvertInterface = new ConvertSDK({
   projectConfig,
-  environment: 'staging', // can also be &quot;live&quot;; this is configured in the Convert UI.
+  environment: 'staging' // can also be &quot;live&quot;; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
   // create user context
   // run experience(s)
-  // ...
 });
 </code></pre>
 <p>When using static project data, the SDK is instantiated as soon as the instance is created and can be used right away for starting a UserContext.</p>
@@ -372,25 +371,25 @@ const config = {
   environment: 'staging',
   logger: {
     logLevel: LogLevel.DEBUG,
-    customLoggers: [], // Allows 3rd party loggers to be passed
+    customLoggers: [] // Allows 3rd party loggers to be passed
   },
   bucketing: {
     hash_seed: 9999, // murmurhash seed
     max_traffic: 10000, // max hash (representing 100% traffic allocation)
-    excludeExperienceIdHash: false, // whether to ignore prefixing the generated hash with the experience id
+    excludeExperienceIdHash: false // whether to ignore prefixing the generated hash with the experience id
   },
   dataStore: null, // Allows 3rd party data store to be passed (optional)
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   data: projectData,
   events: {
     batch_size: 10, // max network requests to be released per call
-    release_interval: 10000, // time in milliseconds between network releasing queue (including the initial release)
+    release_interval: 10000 // time in milliseconds between network releasing queue (including the initial release)
   },
   network: {
     tracking: true, // can be set to false to disable tracking events
     cacheLevel: 'default', // can be set to 'low' for short-lived cache (for development purposes only)
-    source: 'js-sdk', // string identifier indicating the source of network requests
-  },
+    source: 'js-sdk' // string identifier indicating the source of network requests
+  }
 };
 </code></pre>
 <p>The <code>projectData</code> structure is described at <a href="https://api.convert.com/doc/serving/#tag/Project-Config">https://api.convert.com/doc/serving/#tag/Project-Config</a>.</p>
@@ -404,7 +403,7 @@ const userContext: ContextInterface = convertSDK.createContext(
   'user-unique-id',
   {
     country: 'US',
-    language: 'en',
+    language: 'en'
   }
 );
 </code></pre>
@@ -475,7 +474,7 @@ const variation: BucketedVariation =
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation,
+  BucketedVariation
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -548,7 +547,7 @@ convertSDK.onReady().then(() => {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation,
+  BucketedVariation
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -621,7 +620,7 @@ convertSDK.onReady().then(() => {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature,
+  BucketedFeature
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -706,7 +705,7 @@ convertSDK.onReady().then(() => {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature,
+  BucketedFeature
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -796,7 +795,7 @@ convertSDK.onReady().then(() => {
 <pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -809,25 +808,25 @@ convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.trackConversion('goal-key', {
     ruleData: {
-      action: 'buy',
+      action: 'buy'
     },
     conversionData: [
       {
         key: 'amount',
-        value: 10.3,
+        value: 10.3
       },
       {
         key: 'productsCount',
-        value: 2,
+        value: 2
       },
       {
         key: 'transactionId',
-        value: 'transaction-unique-id',
+        value: 'transaction-unique-id'
       }
     ],
     conversionSetting: {
-      forceMultipleTransactions: false,
-    },
+      forceMultipleTransactions: false
+    }
   });
 });
 </code></pre>
@@ -864,7 +863,7 @@ convertSDK.onReady().then(() => {
 <pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -876,7 +875,7 @@ const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.runCustomSegments(['segment-key'], {
-    enabled: true,
+    enabled: true
   });
 });
 </code></pre>
@@ -907,7 +906,7 @@ convertSDK.onReady().then(() => {
 <pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -919,7 +918,7 @@ const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.setDefaultSegments({
-    country: 'US',
+    country: 'US'
   });
 });
 </code></pre>
@@ -956,7 +955,7 @@ convertSDK.onReady().then(() => {
 <pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -968,7 +967,7 @@ const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.updateVisitorProperties({
-    weather: 'rainy',
+    weather: 'rainy'
   });
 });
 </code></pre>
@@ -1006,7 +1005,7 @@ convertSDK.onReady().then(() => {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  Experience,
+  Experience
 } from '@convertcom/js-sdk';
 import ConvertSDK, {EntityType} from '@convertcom/js-sdk';
 
@@ -1059,7 +1058,7 @@ convertSDK.onReady().then(() => {
   ContextInterface,
   BucketedVariation,
   Feature,
-  VariationChange,
+  VariationChange
 } from '@convertcom/js-sdk';
 import ConvertSDK, {EntityType, VariationChangeType} from '@convertcom/js-sdk';
 
@@ -1108,7 +1107,7 @@ convertSDK.onReady().then(() => {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation,
+  BucketedVariation
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -1180,12 +1179,12 @@ convertSDK.onReady().then(() => {
   ConvertConfig,
   ContextInterface,
   Experience,
-  Variation,
+  Variation
 } from '@convertcom/js-sdk';
 import ConvertSDK, {EntityType, SystemEvents} from '@convertcom/js-sdk';
 
 const convertSDK: ConvertInterface = new ConvertSDK({
-  sdkKey: 'xxx',
+  sdkKey: 'xxx'
 } as ConvertConfig);
 
 convertSDK.on(SystemEvents.READY, function (res, err) {
@@ -1196,13 +1195,7 @@ convertSDK.on(SystemEvents.READY, function (res, err) {
 
 convertSDK.on(
   SystemEvents.BUCKETING,
-  function ({
-    visitorId,
-    experienceKey,
-    variationKey,
-    featureKey,
-    status,
-  }, err) {
+  function ({visitorId, experienceKey, variationKey, featureKey, status}, err) {
     if (err) {
       console.error(err);
     } else {
@@ -1219,16 +1212,13 @@ convertSDK.on(
       ).name;
       gtag('event', 'YOUR_GA_CUSTOM_EVENT', {
         experienceName,
-        variationName,
+        variationName
       });
     }
   }
 );
 
-convertSDK.on(SystemEvents.CONVERSION, function ({
-  visitorId,
-  goalKey,
-}, err) {
+convertSDK.on(SystemEvents.CONVERSION, function ({visitorId, goalKey}, err) {
   if (err) {
     console.error(err);
   } else {
@@ -1251,7 +1241,7 @@ convertSDK.on(SystemEvents.CONFIG_UPDATED, function (res, err) {
 <pre class="prettyprint source lang-typescript"><code>import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -1276,7 +1266,7 @@ class CustomDataStore {
 const dataStore = new CustomDataStore();
 const convertSDK: ConvertInterface = new ConvertSDK({
   ...config,
-  dataStore,
+  dataStore
 } as ConvertConfig);
 </code></pre>
 <h3>Common Errors and Troubleshooting</h3>
