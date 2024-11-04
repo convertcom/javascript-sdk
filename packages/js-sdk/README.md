@@ -222,7 +222,7 @@ import ConvertSDK from '@convertcom/js-sdk';
 const convertSDK: ConvertInterface = new ConvertSDK({
   sdkKey: 'xxx',
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
-  environment: 'staging', // can also be "live"; this is configured in the Convert UI.
+  environment: 'staging' // can also be "live"; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
   // create user context
@@ -247,12 +247,11 @@ const projectConfig = {
 
 const convertSDK: ConvertInterface = new ConvertSDK({
   projectConfig,
-  environment: 'staging', // can also be "live"; this is configured in the Convert UI.
+  environment: 'staging' // can also be "live"; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
   // create user context
   // run experience(s)
-  // ...
 });
 ```
 
@@ -270,25 +269,25 @@ const config = {
   environment: 'staging',
   logger: {
     logLevel: LogLevel.DEBUG,
-    customLoggers: [], // Allows 3rd party loggers to be passed
+    customLoggers: [] // Allows 3rd party loggers to be passed
   },
   bucketing: {
     hash_seed: 9999, // murmurhash seed
     max_traffic: 10000, // max hash (representing 100% traffic allocation)
-    excludeExperienceIdHash: false, // whether to ignore prefixing the generated hash with the experience id
+    excludeExperienceIdHash: false // whether to ignore prefixing the generated hash with the experience id
   },
   dataStore: null, // Allows 3rd party data store to be passed (optional)
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   data: projectData,
   events: {
     batch_size: 10, // max network requests to be released per call
-    release_interval: 10000, // time in milliseconds between network releasing queue (including the initial release)
+    release_interval: 10000 // time in milliseconds between network releasing queue (including the initial release)
   },
   network: {
     tracking: true, // can be set to false to disable tracking events
     cacheLevel: 'default', // can be set to 'low' for short-lived cache (for development purposes only)
-    source: 'js-sdk', // string identifier indicating the source of network requests
-  },
+    source: 'js-sdk' // string identifier indicating the source of network requests
+  }
 };
 ```
 
@@ -309,7 +308,7 @@ const userContext: ContextInterface = convertSDK.createContext(
   'user-unique-id',
   {
     country: 'US',
-    language: 'en',
+    language: 'en'
   }
 );
 ```
@@ -342,13 +341,13 @@ This method loops through each of the active experiences, runs them, and returns
 
 #### Parameters
 
-| Parameter  | Type   | Required | Description                                                                          |
-|------------|--------|----------|--------------------------------------------------------------------------------------|
-| attributes | object | No       | An object specifying attributes for the user.                                        |
-|            |        |          | `locationProperties`: An object of key-value pairs used for location matching.       |
-|            |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.       |
-|            |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties.|
-|            |        |          | `environment`: Optional string.                                                      |
+| Parameter  | Type   | Required | Description                                                                            |
+| ---------- | ------ | -------- | -------------------------------------------------------------------------------------- |
+| attributes | object | No       | An object specifying attributes for the user.                                          |
+|            |        |          | `locationProperties`: An object of key-value pairs used for location matching.         |
+|            |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.         |
+|            |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties. |
+|            |        |          | `environment`: Optional string.                                                        |
 
 #### Returns
 
@@ -361,7 +360,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation,
+  BucketedVariation
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -383,14 +382,14 @@ Decides whether the user should be bucketed into a single variation mapped to an
 
 #### Parameters
 
-| Parameter     | Type   | Required | Description                                                                          |
-|---------------|--------|----------|--------------------------------------------------------------------------------------|
-| experienceKey | string | Yes      | An experience's key that should be activated.                                        |
-| attributes    | object | No       | An object specifying attributes for the user.                                        |
-|               |        |          | `locationProperties`: An object of key-value pairs used for location matching.       |
-|               |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.       |
-|               |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties.|
-|               |        |          | `environment`: Optional string.                                                      |
+| Parameter     | Type   | Required | Description                                                                            |
+| ------------- | ------ | -------- | -------------------------------------------------------------------------------------- |
+| experienceKey | string | Yes      | An experience's key that should be activated.                                          |
+| attributes    | object | No       | An object specifying attributes for the user.                                          |
+|               |        |          | `locationProperties`: An object of key-value pairs used for location matching.         |
+|               |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.         |
+|               |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties. |
+|               |        |          | `environment`: Optional string.                                                        |
 
 #### Returns
 
@@ -403,7 +402,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation,
+  BucketedVariation
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -425,13 +424,13 @@ Retrieves a list of features that the user is already bucketed into.
 
 #### Parameters
 
-| Parameter  | Type   | Required | Description                                                                          |
-|------------|--------|----------|--------------------------------------------------------------------------------------|
-| attributes | object | No       | An object specifying attributes for the user.                                        |
-|            |        |          | `locationProperties`: An object of key-value pairs used for location matching.       |
-|            |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.       |
-|            |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties.|
-|            |        |          | `environment`: Optional string.                                                      |
+| Parameter  | Type   | Required | Description                                                                                                              |
+| ---------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| attributes | object | No       | An object specifying attributes for the user.                                                                            |
+|            |        |          | `locationProperties`: An object of key-value pairs used for location matching.                                           |
+|            |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.                                           |
+|            |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties.                                   |
+|            |        |          | `environment`: Optional string.                                                                                          |
 |            |        |          | `typeCasting`: Optional boolean to control automatic type conversion to the variable's defined type. Defaults to `true`. |
 
 #### Returns
@@ -445,7 +444,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature,
+  BucketedFeature
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -467,16 +466,16 @@ Retrieves a single feature that the user is already bucketed into, mapped to a f
 
 #### Parameters
 
-| Parameter  | Type   | Required | Description                                                                          |
-|------------|--------|----------|--------------------------------------------------------------------------------------|
-| featureKey | string | Yes      | A feature key.                                                                       |
-| attributes | object | No       | An object specifying attributes for the user.                                        |
-|            |        |          | `locationProperties`: An object of key-value pairs used for location matching.       |
-|            |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.       |
-|            |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties.|
-|            |        |          | `environment`: Optional string.                                                      |
-|            |        |          | `typeCasting`: Optional boolean to control automatic type conversion to the variable's defined type. Defaults to `true`.|
-|            |        |          | `experienceKeys`: Optional array of strings to use only specified experiences.       |
+| Parameter  | Type   | Required | Description                                                                                                              |
+| ---------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| featureKey | string | Yes      | A feature key.                                                                                                           |
+| attributes | object | No       | An object specifying attributes for the user.                                                                            |
+|            |        |          | `locationProperties`: An object of key-value pairs used for location matching.                                           |
+|            |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.                                           |
+|            |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties.                                   |
+|            |        |          | `environment`: Optional string.                                                                                          |
+|            |        |          | `typeCasting`: Optional boolean to control automatic type conversion to the variable's defined type. Defaults to `true`. |
+|            |        |          | `experienceKeys`: Optional array of strings to use only specified experiences.                                           |
 
 #### Returns
 
@@ -489,7 +488,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedFeature,
+  BucketedFeature
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -533,7 +532,7 @@ Void.
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -546,25 +545,25 @@ convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.trackConversion('goal-key', {
     ruleData: {
-      action: 'buy',
+      action: 'buy'
     },
     conversionData: [
       {
         key: 'amount',
-        value: 10.3,
+        value: 10.3
       },
       {
         key: 'productsCount',
-        value: 2,
+        value: 2
       },
       {
         key: 'transactionId',
-        value: 'transaction-unique-id',
+        value: 'transaction-unique-id'
       }
     ],
     conversionSetting: {
-      forceMultipleTransactions: false,
-    },
+      forceMultipleTransactions: false
+    }
   });
 });
 ```
@@ -575,10 +574,10 @@ Decides whether to update custom segments in the user context, mapped to segment
 
 #### Parameters
 
-| Parameter         | Type   | Required | Description                                                                        |
-|-------------------|--------|----------|------------------------------------------------------------------------------------|
-| segmentsKeys      | array  | Yes      | A list of segment keys.                                                            |
-| visitorProperties | object | No       | An object of key-value pairs used for segments matching.                           |
+| Parameter         | Type   | Required | Description                                              |
+| ----------------- | ------ | -------- | -------------------------------------------------------- |
+| segmentsKeys      | array  | Yes      | A list of segment keys.                                  |
+| visitorProperties | object | No       | An object of key-value pairs used for segments matching. |
 
 #### Returns
 
@@ -590,7 +589,7 @@ Void.
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -602,7 +601,7 @@ const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.runCustomSegments(['segment-key'], {
-    enabled: true,
+    enabled: true
   });
 });
 ```
@@ -613,9 +612,9 @@ Permanently update the visitor segments for reporting purposes. Only the followi
 
 #### Parameters
 
-| Parameter | Type   | Required | Description                                                                        |
-|-----------|--------|----------|------------------------------------------------------------------------------------|
-| segments  | object | Yes      | An object of key-value pairs to be merged with the initial **User Properties** created with [context](#create-user-context).|
+| Parameter | Type   | Required | Description                                                                                                                  |
+| --------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| segments  | object | Yes      | An object of key-value pairs to be merged with the initial **User Properties** created with [context](#create-user-context). |
 
 #### Returns
 
@@ -627,7 +626,7 @@ Void.
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -639,7 +638,7 @@ const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.setDefaultSegments({
-    country: 'US',
+    country: 'US'
   });
 });
 ```
@@ -650,10 +649,10 @@ Permanently update all of the visitor properties used inside audience definition
 
 #### Parameters
 
-| Parameter         | Type   | Required | Description                                                                        |
-|-------------------|--------|----------|------------------------------------------------------------------------------------|
-| visitorId         | string | Yes      | User unique ID.                                                                    |
-| visitorProperties | object | Yes      | An object of key-value pairs to be merged with the initial **User Properties** created with [context](#create-user-context).|
+| Parameter         | Type   | Required | Description                                                                                                                  |
+| ----------------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| visitorId         | string | Yes      | User unique ID.                                                                                                              |
+| visitorProperties | object | Yes      | An object of key-value pairs to be merged with the initial **User Properties** created with [context](#create-user-context). |
 
 #### Returns
 
@@ -665,7 +664,7 @@ Void.
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -677,7 +676,7 @@ const convertSDK: ConvertInterface = new ConvertSDK(config);
 convertSDK.onReady().then(() => {
   const context: ContextInterface = convertSDK.createContext('user-unique-id');
   context.updateVisitorProperties({
-    weather: 'rainy',
+    weather: 'rainy'
   });
 });
 ```
@@ -688,10 +687,10 @@ Find a single entity in configuration by `key`.
 
 #### Parameters
 
-| Parameter  | Type       | Required | Description                                                                        |
-|------------|------------|----------|------------------------------------------------------------------------------------|
-| key        | string     | Yes      | Entity key as found in configuration.                                              |
-| entityType | EntityType | Yes      | One of the configuration entities: `EntityType.AUDIENCE`, `EntityType.LOCATION`, `EntityType.SEGMENT`, `EntityType.FEATURE`, `EntityType.GOAL`, `EntityType.EXPERIENCE`, and `EntityType.VARIATION`.|
+| Parameter  | Type       | Required | Description                                                                                                                                                                                          |
+| ---------- | ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| key        | string     | Yes      | Entity key as found in configuration.                                                                                                                                                                |
+| entityType | EntityType | Yes      | One of the configuration entities: `EntityType.AUDIENCE`, `EntityType.LOCATION`, `EntityType.SEGMENT`, `EntityType.FEATURE`, `EntityType.GOAL`, `EntityType.EXPERIENCE`, and `EntityType.VARIATION`. |
 
 #### Returns
 
@@ -704,7 +703,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  Experience,
+  Experience
 } from '@convertcom/js-sdk';
 import ConvertSDK, {EntityType} from '@convertcom/js-sdk';
 
@@ -728,10 +727,10 @@ Find a single entity in configuration by `id`.
 
 #### Parameters
 
-| Parameter  | Type       | Required | Description                                                                        |
-|------------|------------|----------|------------------------------------------------------------------------------------|
-| id         | number     | Yes      | Entity id as found in configuration.                                               |
-| entityType | EntityType | Yes      | One of the configuration entities: `EntityType.AUDIENCE`, `EntityType.LOCATION`, `EntityType.SEGMENT`, `EntityType.FEATURE`, `EntityType.GOAL`, `EntityType.EXPERIENCE`, and `EntityType.VARIATION`.|
+| Parameter  | Type       | Required | Description                                                                                                                                                                                          |
+| ---------- | ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| id         | number     | Yes      | Entity id as found in configuration.                                                                                                                                                                 |
+| entityType | EntityType | Yes      | One of the configuration entities: `EntityType.AUDIENCE`, `EntityType.LOCATION`, `EntityType.SEGMENT`, `EntityType.FEATURE`, `EntityType.GOAL`, `EntityType.EXPERIENCE`, and `EntityType.VARIATION`. |
 
 #### Returns
 
@@ -746,7 +745,7 @@ import type {
   ContextInterface,
   BucketedVariation,
   Feature,
-  VariationChange,
+  VariationChange
 } from '@convertcom/js-sdk';
 import ConvertSDK, {EntityType, VariationChangeType} from '@convertcom/js-sdk';
 
@@ -774,9 +773,9 @@ Send all pending API/DataStore queues to the server.
 
 #### Parameters
 
-| Parameter | Type   | Required | Description                                  |
-|-----------|--------|----------|----------------------------------------------|
-| reason    | string | No       | Custom message for debugging purposes.       |
+| Parameter | Type   | Required | Description                            |
+| --------- | ------ | -------- | -------------------------------------- |
+| reason    | string | No       | Custom message for debugging purposes. |
 
 #### Returns
 
@@ -789,7 +788,7 @@ import type {
   ConvertInterface,
   ConvertConfig,
   ContextInterface,
-  BucketedVariation,
+  BucketedVariation
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -813,15 +812,15 @@ convertSDK.onReady().then(() => {
 
 You can capture SDK events as well:
 
-| Event                  | Triggered by                                             | Callback data                                                                            |
-|------------------------|----------------------------------------------------------|------------------------------------------------------------------------------------------|
-| `ready`                | Initializing the SDK                                     | null                                                                                     |
-| `bucketing`            | Running experience(s)                                    | { visitorId: `string`, experienceKey: `string`, variationKey: `string` }                 |
-|                        | Running feature(s)                                       | { visitorId: `string`, experienceKey: `string`, featureKey: `string`, status: `string` } |
-| `conversion`           | Tracking conversion                                      | { visitorId: `string`, goalKey: `string` }                                               |
-| `location.activated`   | Location rules matched                                   | { visitorId: `string`, location: { id: `string`, name: `string`, key: `string` } }       |
-| `location.deactivated` | Location rules not matched (only if activated earlier)   | { visitorId: `string`, location: { id: `string`, name: `string`, key: `string` } }       |
-| `config.updated`       | Refreshing the configuration                             | null                                                                                     |
+| Event                  | Triggered by                                           | Callback data                                                                            |
+| ---------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `ready`                | Initializing the SDK                                   | null                                                                                     |
+| `bucketing`            | Running experience(s)                                  | { visitorId: `string`, experienceKey: `string`, variationKey: `string` }                 |
+|                        | Running feature(s)                                     | { visitorId: `string`, experienceKey: `string`, featureKey: `string`, status: `string` } |
+| `conversion`           | Tracking conversion                                    | { visitorId: `string`, goalKey: `string` }                                               |
+| `location.activated`   | Location rules matched                                 | { visitorId: `string`, location: { id: `string`, name: `string`, key: `string` } }       |
+| `location.deactivated` | Location rules not matched (only if activated earlier) | { visitorId: `string`, location: { id: `string`, name: `string`, key: `string` } }       |
+| `config.updated`       | Refreshing the configuration                           | null                                                                                     |
 
 ```typescript
 import type {
@@ -829,12 +828,12 @@ import type {
   ConvertConfig,
   ContextInterface,
   Experience,
-  Variation,
+  Variation
 } from '@convertcom/js-sdk';
 import ConvertSDK, {EntityType, SystemEvents} from '@convertcom/js-sdk';
 
 const convertSDK: ConvertInterface = new ConvertSDK({
-  sdkKey: 'xxx',
+  sdkKey: 'xxx'
 } as ConvertConfig);
 
 convertSDK.on(SystemEvents.READY, function (res, err) {
@@ -845,13 +844,7 @@ convertSDK.on(SystemEvents.READY, function (res, err) {
 
 convertSDK.on(
   SystemEvents.BUCKETING,
-  function ({
-    visitorId,
-    experienceKey,
-    variationKey,
-    featureKey,
-    status,
-  }, err) {
+  function ({visitorId, experienceKey, variationKey, featureKey, status}, err) {
     if (err) {
       console.error(err);
     } else {
@@ -868,16 +861,13 @@ convertSDK.on(
       ).name;
       gtag('event', 'YOUR_GA_CUSTOM_EVENT', {
         experienceName,
-        variationName,
+        variationName
       });
     }
   }
 );
 
-convertSDK.on(SystemEvents.CONVERSION, function ({
-  visitorId,
-  goalKey,
-}, err) {
+convertSDK.on(SystemEvents.CONVERSION, function ({visitorId, goalKey}, err) {
   if (err) {
     console.error(err);
   } else {
@@ -904,7 +894,7 @@ The provided DataStore interface is expected to have two methods: `set` and `get
 import type {
   ConvertInterface,
   ConvertConfig,
-  ContextInterface,
+  ContextInterface
 } from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
@@ -929,7 +919,7 @@ class CustomDataStore {
 const dataStore = new CustomDataStore();
 const convertSDK: ConvertInterface = new ConvertSDK({
   ...config,
-  dataStore,
+  dataStore
 } as ConvertConfig);
 ```
 
@@ -959,10 +949,10 @@ const convertSDK: ConvertInterface = new ConvertSDK({
 
 ## Build Environment Variables
 
-| Environment Variable | Description                                                                                         | Value                                                                   |
-|----------------------|-----------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| `LOG_LEVEL`          | Specifies the level of log statements to keep, while removing the rest from the bundle output.      | `0` = ALL, `1` = DEBUG, `2` = INFO, `3` = WARN, `4` = ERROR, `5` = SILENT |
-| `BUNDLES`            | Comma-separated tokens for specifying which bundles to build. Defaults to include all bundles.      | `cjs`, `cjs-legacy`, `esm`, `umd`                                       |
+| Environment Variable | Description                                                                                    | Value                                                                     |
+| -------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `LOG_LEVEL`          | Specifies the level of log statements to keep, while removing the rest from the bundle output. | `0` = ALL, `1` = DEBUG, `2` = INFO, `3` = WARN, `4` = ERROR, `5` = SILENT |
+| `BUNDLES`            | Comma-separated tokens for specifying which bundles to build. Defaults to include all bundles. | `cjs`, `cjs-legacy`, `esm`, `umd`                                         |
 
 ---
 

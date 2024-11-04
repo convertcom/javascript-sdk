@@ -6,7 +6,7 @@ import ConvertSDK, { LogLevel } from '@convertcom/js-sdk'; // [ConvertSDK]
 import type { ConvertConfig, ConvertInterface } from '@convertcom/js-sdk'; // [ConvertSDK]
 import DataStore from './convert/datastore';
 
-const PORT = process.env.PORT || 3004;
+const PORT = typeof process.env.PORT !== 'undefined' ? process.env.PORT : 3004;
 
 const dataStore = new DataStore();
 
