@@ -6,21 +6,11 @@
  */
 import {LogLevel} from '@convertcom/js-sdk-enums';
 
-export const DEFAULT_CONFIG_ENDPOINT =
-  typeof process.env.CONFIG_ENDPOINT === 'string' &&
-  !!process.env.CONFIG_ENDPOINT
-    ? process.env.CONFIG_ENDPOINT
-    : 'https://cdn-4.convertexperiments.com/api/v1/';
-export const DEFAULT_TRACK_ENDPOINT =
-  typeof process.env.TRACK_ENDPOINT === 'string' && !!process.env.TRACK_ENDPOINT
-    ? process.env.TRACK_ENDPOINT
-    : 'https://[project_id].metrics.convertexperiments.com/v1/';
-
 export const defaultConfig = {
   api: {
     endpoint: {
-      config: DEFAULT_CONFIG_ENDPOINT,
-      track: DEFAULT_TRACK_ENDPOINT
+      config: process.env.CONFIG_ENDPOINT,
+      track: process.env.TRACK_ENDPOINT
     }
   },
   environment: 'staging',

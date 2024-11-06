@@ -28,16 +28,13 @@ import {
   objectDeepValue
 } from '@convertcom/js-sdk-utils';
 
-import {
-  DEFAULT_CONFIG_ENDPOINT,
-  DEFAULT_TRACK_ENDPOINT
-} from './config/default';
-
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json'
 };
 const DEFAULT_BATCH_SIZE = 10;
 const DEFAULT_RELEASE_INTERVAL = 10000;
+const DEFAULT_CONFIG_ENDPOINT = process.env.CONFIG_ENDPOINT;
+const DEFAULT_TRACK_ENDPOINT = process.env.TRACK_ENDPOINT;
 
 /**
  * Provides logic for network requests. Reads remote configuration and sends tracking events to Convert server.
