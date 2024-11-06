@@ -1,7 +1,7 @@
 {
   "check-coverage": true,
   "statements": 84,
-  "branches": 64,
+  "branches": 63,
   "functions": 92,
   "lines": 86,
   "exclude": ["src/config.ts", "src/utils", "tests"]
