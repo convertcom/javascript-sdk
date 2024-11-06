@@ -48,14 +48,18 @@ switch (logLevel) {
     break;
 }
 
+const DEFAULT_CONFIG_ENDPOINT = 'https://cdn-4.convertexperiments.com/api/v1/';
+const DEFAULT_TRACK_ENDPOINT =
+  'https://[project_id].metrics.convertexperiments.com/v1/';
+
 const CONFIG_ENV = {
   find: 'process.env.CONFIG_ENDPOINT',
-  replace: `'${process.env.CONFIG_ENDPOINT || ''}'`
+  replace: `'${process.env.CONFIG_ENDPOINT || DEFAULT_CONFIG_ENDPOINT}'`
 };
 
 const TRACK_ENV = {
   find: 'process.env.TRACK_ENDPOINT',
-  replace: `'${process.env.TRACK_ENDPOINT || ''}'`
+  replace: `'${process.env.TRACK_ENDPOINT || DEFAULT_TRACK_ENDPOINT}'`
 };
 
 const JSDOC_PATH = 'docs';
