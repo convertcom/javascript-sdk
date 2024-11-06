@@ -77,7 +77,7 @@
     "@convertcom/js-sdk-event": ">=2.1.0",
     "@convertcom/js-sdk-logger": ">=2.1.0",
     "@convertcom/js-sdk-rules": ">=2.1.0",
-    "@convertcom/js-sdk-types": ">=3.4.0",
-    "@convertcom/js-sdk-utils": ">=2.1.0"
+    "@convertcom/js-sdk-types": ">=3.5.0",
+    "@convertcom/js-sdk-utils": ">=2.2.0"
   }
 }
