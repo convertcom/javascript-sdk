@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.5.0...js-sdk-types-v3.6.0) (2024-11-06)
+
+
+### Features
+
+* automated TS Serving API update ([7f008f7](https://github.com/convertcom/javascript-sdk/commit/7f008f7adc4120632ab445444fa475a1f3d70807))
+
 ## [3.5.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.4.0...js-sdk-types-v3.5.0) (2024-09-26)
 
 

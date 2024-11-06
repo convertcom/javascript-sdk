@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.2.1...js-sdk-v4.2.2) (2024-11-06)
+
+
+### Bug Fixes
+
+* environment endpoints ([eb27ab2](https://github.com/convertcom/javascript-sdk/commit/eb27ab261cd5a144ca5152aefe4376ac79750b74))
+
 ## [4.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.2.0...js-sdk-v4.2.1) (2024-11-04)
 
 

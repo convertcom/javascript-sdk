@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.1.0...js-sdk-api-v2.1.1) (2024-11-06)
+
+
+### Bug Fixes
+
+* environment endpoints ([eb27ab2](https://github.com/convertcom/javascript-sdk/commit/eb27ab261cd5a144ca5152aefe4376ac79750b74))
+
 ## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.0.0...js-sdk-api-v2.1.0) (2024-07-16)
 
 
