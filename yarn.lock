@@ -2110,7 +2110,7 @@ __metadata:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-event": ">=2.1.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.6.0"
     "@convertcom/js-sdk-utils": ">=2.2.0"
   languageName: unknown
   linkType: soft
@@ -2158,7 +2158,7 @@ __metadata:
   peerDependencies:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.6.0"
     "@convertcom/js-sdk-utils": ">=2.2.0"
   languageName: unknown
   linkType: soft
@@ -2204,13 +2204,13 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-api": ">=2.1.0"
+    "@convertcom/js-sdk-api": ">=2.1.1"
     "@convertcom/js-sdk-bucketing": ">=3.1.0"
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-event": ">=2.1.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
     "@convertcom/js-sdk-rules": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.6.0"
     "@convertcom/js-sdk-utils": ">=2.2.0"
   languageName: unknown
   linkType: soft
@@ -2322,7 +2322,7 @@ __metadata:
   peerDependencies:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.6.0"
   languageName: unknown
   linkType: soft
 
@@ -2370,7 +2370,7 @@ __metadata:
     "@convertcom/js-sdk-data": ">=3.2.1"
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.6.0"
   languageName: unknown
   linkType: soft
 
@@ -2459,7 +2459,7 @@ __metadata:
   peerDependencies:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.6.0"
     "@convertcom/js-sdk-utils": ">=2.2.0"
   languageName: unknown
   linkType: soft
@@ -2509,7 +2509,7 @@ __metadata:
     "@convertcom/js-sdk-enums": ">=2.2.0"
     "@convertcom/js-sdk-logger": ">=2.1.0"
     "@convertcom/js-sdk-rules": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.6.0"
   languageName: unknown
   linkType: soft
 
@@ -2588,7 +2588,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@convertcom/js-sdk@npm:^4.2.2, @convertcom/js-sdk@workspace:packages/js-sdk":
+"@convertcom/js-sdk@workspace:packages/js-sdk":
   version: 0.0.0-use.local
   resolution: "@convertcom/js-sdk@workspace:packages/js-sdk"
   dependencies:
@@ -2651,7 +2651,7 @@ __metadata:
     watchify: "npm:^4.0.0"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-api": ">=2.1.0"
+    "@convertcom/js-sdk-api": ">=2.1.1"
     "@convertcom/js-sdk-bucketing": ">=3.1.0"
     "@convertcom/js-sdk-data": ">=3.2.1"
     "@convertcom/js-sdk-enums": ">=2.2.0"
@@ -2660,7 +2660,7 @@ __metadata:
     "@convertcom/js-sdk-logger": ">=2.1.0"
     "@convertcom/js-sdk-rules": ">=2.1.0"
     "@convertcom/js-sdk-segments": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.5.0"
+    "@convertcom/js-sdk-types": ">=3.6.0"
     "@convertcom/js-sdk-utils": ">=2.2.0"
   languageName: unknown
   linkType: soft
@@ -21882,7 +21882,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "remix-client-side@workspace:demo/remixjs-client-side"
   dependencies:
-    "@convertcom/js-sdk": "npm:^4.2.2"
     "@remix-run/css-bundle": "npm:^2.8.1"
     "@remix-run/dev": "npm:^2.8.1"
     "@remix-run/node": "npm:^2.8.1"
@@ -21891,6 +21890,7 @@ __metadata:
     "@types/react": "npm:^18.2.65"
     "@types/react-dom": "npm:^18.2.21"
     "@typescript-eslint/eslint-plugin": "npm:^7.2.0"
+    dotenv-cli: "npm:^7.4.2"
     eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^9.0.0"
     eslint-import-resolver-typescript: "npm:^3.6.1"
@@ -21903,6 +21903,8 @@ __metadata:
     react-dom: "npm:^18.2.0"
     typescript: "npm:^5.4.2"
     uuid: "npm:^11.0.2"
+  peerDependencies:
+    "@convertcom/js-sdk": ">=2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -21910,7 +21912,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "remix@workspace:demo/remixjs-server-side"
   dependencies:
-    "@convertcom/js-sdk": "npm:^4.2.2"
     "@remix-run/css-bundle": "npm:^2.8.1"
     "@remix-run/dev": "npm:^2.8.1"
     "@remix-run/node": "npm:^2.8.1"
@@ -21919,6 +21920,7 @@ __metadata:
     "@types/react": "npm:^18.2.65"
     "@types/react-dom": "npm:^18.2.21"
     "@typescript-eslint/eslint-plugin": "npm:^7.2.0"
+    dotenv-cli: "npm:^7.4.2"
     eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^9.0.0"
     eslint-import-resolver-typescript: "npm:^3.6.1"
@@ -21931,6 +21933,8 @@ __metadata:
     react-dom: "npm:^18.2.0"
     typescript: "npm:^5.4.2"
     uuid: "npm:^11.0.2"
+  peerDependencies:
+    "@convertcom/js-sdk": ">=2.0.0"
   languageName: unknown
   linkType: soft
 
