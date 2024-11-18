@@ -1,5 +1,5 @@
 {
-  "name": "remix",
+  "name": "remix-client-side",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -11,7 +11,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@convertcom/js-sdk": "^4.2.1",
+    "@convertcom/js-sdk": "^4.2.2",
     "@remix-run/css-bundle": "^2.8.1",
     "@remix-run/node": "^2.8.1",
     "@remix-run/react": "^2.8.1",

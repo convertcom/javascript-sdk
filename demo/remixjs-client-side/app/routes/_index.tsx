@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import type { MetaFunction } from "@remix-run/node";
-import { ConvertInterface } from "@convertcom/js-sdk";
-import { useConvertContext } from "../providers/ConvertProvider";
+import { useConvertContext } from "../providers/Convert";
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,14 +10,18 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const convertContext = useConvertContext() as ConvertInterface;
+  const convertContext = useConvertContext();
 
   useEffect(() => {
-    if (convertContext) {
-      const convertVariations = convertContext.runExperiences({
-        locationProperties: { location: "global" },
-      });
-      console.log("convertVariations:", convertVariations);
+    try {
+      if (convertContext) {
+        const convertVariations = convertContext.runExperiences({
+          locationProperties: { location: "global" },
+        });
+        console.log("convertVariations:", convertVariations);
+      }
+    } catch (error) {
+      console.error("Error running experiences:", error);
     }
   }, [convertContext]);
 
