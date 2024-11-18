@@ -41,7 +41,9 @@
     "demo:reactjs:start": "cd demo/reactjs && yarn start",
     "demo:nodejs:start": "cd demo/nodejs && yarn start",
     "demo:nestjs:start": "cd demo/nestjs && yarn start",
-    "demo:nextjs:start": "cd demo/nextjs && yarn start"
+    "demo:nextjs:start": "cd demo/nextjs && yarn start",
+    "demo:remixjs:client:start": "cd demo/remixjs-client-side && yarn dev",
+    "demo:remixjs:server:start": "cd demo/remixjs-server-side && yarn dev"
   },
   "private": true,
   "workspaces": [
