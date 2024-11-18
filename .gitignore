@@ -14,3 +14,7 @@ docs/
 coverage/
 packages/demo-*
 .next
+demo/remixjs-server-side/build
+demo/remixjs-server-side/public
+demo/remixjs-server-side/workspace
+demo/remixjs-server-side/.cache
