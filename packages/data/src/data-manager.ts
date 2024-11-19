@@ -598,6 +598,11 @@ export class DataManager implements DataManagerInterface {
             ? variation.status === VariationStatuses.RUNNING
             : true
         )
+        .filter(
+          (variation) =>
+            variation?.traffic_allocation > 0 || // zero-traffic means stopped variation
+            isNaN(variation?.traffic_allocation) // no allocation means 100% traffic
+        )
         .reduce((bucket, variation) => {
           if (variation?.id)
             bucket[variation.id] = variation?.traffic_allocation || 100.0;
