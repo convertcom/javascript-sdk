@@ -2190,10 +2190,19 @@ export type ConfigProject = {
         readonly version?: (string) | null;
     };
     /**
-     * A user-defined key-value object which describes environments available for the project.
+     * A user-defined key-value object which describes environments available for the project. The number of environments a user can add depends on their plan, by default only one environment is allowed.
      */
     environments?: {
-        [key: string]: unknown;
+        [key: string]: {
+            /**
+             * The display name of the environment.
+             */
+            label: string;
+            /**
+             * Specifies whether this environment is set as the default environment for the project.
+             */
+            is_default: boolean;
+        };
     };
 };
 
