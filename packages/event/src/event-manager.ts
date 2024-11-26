@@ -94,7 +94,11 @@ export class EventManager implements EventManagerInterface {
         Object.hasOwnProperty.call(this._listeners, event) &&
         typeof fn === 'function'
       ) {
-        fn.apply(null, [this._mapper(args), err]);
+        try {
+          fn.apply(null, [this._mapper(args), err]);
+        } catch (error) {
+          this._loggerManager?.error?.('EventManager.fire()', error);
+        }
       }
     }
     if (deferred && !Object.hasOwnProperty.call(this._deferred, event)) {

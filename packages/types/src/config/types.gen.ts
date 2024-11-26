@@ -767,6 +767,25 @@ export type SuccessData = {
     message?: string;
 };
 
+export type BulkSuccessData = SuccessData & {
+    code?: number;
+    /**
+     * List of unprocessed entities. Would be empty, if all passed entities processed
+     */
+    errors?: Array<BulkEntityError>;
+};
+
+export type BulkEntityError = {
+    /**
+     * ID of entity which has not been processed
+     */
+    id?: number;
+    /**
+     * A reason explaining why entity has not been processed
+     */
+    message?: string;
+};
+
 /**
  * Offset in seconds, from UTC time, for the give timezone
  */
@@ -829,6 +848,86 @@ export type GenericListMatchingOptions = 'any' | 'all';
 export const GenericListMatchingOptions = {
     ANY: 'any',
     ALL: 'all'
+} as const;
+
+/**
+ * Type of the outlier detection mechanism
+ */
+export type NumericOutlierTypes = 'none' | 'min_max' | 'percentile';
+
+/**
+ * Type of the outlier detection mechanism
+ */
+export const NumericOutlierTypes = {
+    NONE: 'none',
+    MIN_MAX: 'min_max',
+    PERCENTILE: 'percentile'
+} as const;
+
+export type NumericOutlierBase = {
+    detection_type: NumericOutlierTypes;
+};
+
+export type NumericOutlierNone = NumericOutlierBase & {
+    detection_type?: 'none';
+};
+
+export type detection_type = 'none';
+
+export const detection_type = {
+    NONE: 'none'
+} as const;
+
+export type NumericOutlierMinMax = NumericOutlierBase & {
+    detection_type?: 'min_max';
+    /**
+     * Minimum value for the outlier detection, under which, the value is considered an outlier
+     */
+    min?: number;
+    /**
+     * Maximum value for the outlier detection, over which, the value is considered an outlier
+     */
+    max?: number;
+};
+
+export type detection_type2 = 'min_max';
+
+export const detection_type2 = {
+    MIN_MAX: 'min_max'
+} as const;
+
+export type NumericOutlierPercentile = NumericOutlierBase & {
+    detection_type?: 'percentile';
+    min?: (unknown & Percentiles);
+    max?: (unknown & Percentiles);
+};
+
+export type detection_type3 = 'percentile';
+
+export const detection_type3 = {
+    PERCENTILE: 'percentile'
+} as const;
+
+export type NumericOutlier = NumericOutlierNone | NumericOutlierMinMax | NumericOutlierPercentile;
+
+/**
+ * List of supported percentiles
+ */
+export type Percentiles = 1 | 5 | 10 | 25 | 50 | 75 | 90 | 95 | 99;
+
+/**
+ * List of supported percentiles
+ */
+export const Percentiles = {
+    '_1': 1,
+    '_5': 5,
+    '_10': 10,
+    '_25': 25,
+    '_50': 50,
+    '_75': 75,
+    '_90': 90,
+    '_95': 95,
+    '_99': 99
 } as const;
 
 /**
@@ -1460,12 +1559,27 @@ export type ConfigExperience = {
     settings?: {
         /**
          * Minimum order value for transactions outliers
+         * @deprecated
          */
         min_order_value?: number;
         /**
          * Maximum order value for transactions outliers
+         * @deprecated
          */
         max_order_value?: number;
+        /**
+         * Various settings used by the stats engine to detect outliers
+         */
+        outliers?: {
+            /**
+             * Order value outlier settings
+             */
+            order_value?: (NumericOutlier);
+            /**
+             * Products Ordered count outlier settings
+             */
+            products_ordered_count?: (NumericOutlier);
+        };
         /**
          * Various settings used for matching the list of Audiences and Locations
          */
@@ -2048,12 +2162,27 @@ export type ConfigProject = {
         };
         /**
          * Minimum order value for transactions outliers
+         * @deprecated
          */
         min_order_value?: number;
         /**
          * Maximum order value for transactions outliers
+         * @deprecated
          */
         max_order_value?: number;
+        /**
+         * Various settings used by the stats engine to detect outliers
+         */
+        outliers?: {
+            /**
+             * Order value outlier settings
+             */
+            order_value?: (NumericOutlier);
+            /**
+             * Products Ordered count outlier settings
+             */
+            products_ordered_count?: (NumericOutlier);
+        };
         /**
          * Tracks the project's version, updated with each change done inside the project, which would affect the config of that project. The format is [ISO_datetime]-[incremental_number].
          *
@@ -2061,10 +2190,19 @@ export type ConfigProject = {
         readonly version?: (string) | null;
     };
     /**
-     * A user-defined key-value object which describes environments available for the project.
+     * A user-defined key-value object which describes environments available for the project. The number of environments a user can add depends on their plan, by default only one environment is allowed.
      */
     environments?: {
-        [key: string]: unknown;
+        [key: string]: {
+            /**
+             * The display name of the environment.
+             */
+            label: string;
+            /**
+             * Specifies whether this environment is set as the default environment for the project.
+             */
+            is_default: boolean;
+        };
     };
 };
 
