@@ -28,6 +28,8 @@ export const MESSAGES = {
   CORE_INITIALIZED: 'Core Manager has been initialized',
   EXPERIENCE_CONSTRUCTOR: 'Experience Manager constructor has been called',
   EXPERIENCE_NOT_FOUND: 'Experience not found',
+  EXPERIENCE_ARCHIVED: 'Experience archived',
+  EXPERIENCE_ENVIRONMENT_NOT_MATCH: 'Experience environment does not match',
   EXPERIENCE_RULES_MATCHED: 'Experience rules matched',
   VARIATIONS_NOT_FOUND: 'Variations not found',
   VARIATION_CHANGE_NOT_SUPPORTED: 'Variation change not supported',

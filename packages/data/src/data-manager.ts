@@ -228,6 +228,18 @@ export class DataManager implements DataManagerInterface {
       'experiences',
       identityField
     ) as ConfigExperience;
+    // Check experience
+    if (!experience) {
+      this._loggerManager?.debug?.(
+        'DataManager.matchRulesByField()',
+        MESSAGES.EXPERIENCE_NOT_FOUND,
+        this._mapper({
+          identity: identity,
+          identityField: identityField
+        })
+      );
+      return null;
+    }
     // Retrieve archived experiences
     const archivedExperiences = this.getEntitiesList(
       'archived_experiences'
@@ -236,194 +248,199 @@ export class DataManager implements DataManagerInterface {
     const isArchivedExperience = !!archivedExperiences.find(
       (id) => String(experience?.id) === String(id)
     );
+    if (isArchivedExperience) {
+      this._loggerManager?.debug?.(
+        'DataManager.matchRulesByField()',
+        MESSAGES.EXPERIENCE_ARCHIVED,
+        this._mapper({
+          identity: identity,
+          identityField: identityField
+        })
+      );
+      return null;
+    }
     // Check environment
     const isEnvironmentMatch = experience?.environment
       ? experience.environment === environment
       : true; // skip if no environment
+    if (!isEnvironmentMatch) {
+      this._loggerManager?.debug?.(
+        'DataManager.matchRulesByField()',
+        MESSAGES.EXPERIENCE_ENVIRONMENT_NOT_MATCH,
+        this._mapper({
+          identity: identity,
+          identityField: identityField
+        })
+      );
+      return null;
+    }
 
     let matchedErrors = [];
-    if (experience && !isArchivedExperience && isEnvironmentMatch) {
-      // Check that visitor id already bucketed and stored and skip bucketing logic
-      const {bucketing} = this.getData(visitorId) || {};
-      const {[experience.id.toString()]: variationId} = bucketing || {};
-      let isBucketed = false;
-      if (
-        variationId &&
-        this.retrieveVariation(experience.id, String(variationId))
-      ) {
-        isBucketed = true;
-      }
+    // Check that visitor id already bucketed and stored and skip bucketing logic
+    const {bucketing} = this.getData(visitorId) || {};
+    const {[experience.id.toString()]: variationId} = bucketing || {};
+    let isBucketed = false;
+    if (
+      variationId &&
+      this.retrieveVariation(experience.id, String(variationId))
+    ) {
+      isBucketed = true;
+    }
 
-      // Check location rules against locationProperties
-      let locationMatched: boolean | RuleError =
-        ignoreLocationProperties === true;
-      if (!locationMatched && locationProperties) {
-        if (
-          Array.isArray(experience?.locations) &&
-          experience.locations.length
-        ) {
-          let matchedLocations = [];
-          // Get attached locations
-          const locations = this.getItemsByIds(
-            experience.locations,
-            'locations'
-          ) as Array<ConfigLocation>;
-          if (locations.length) {
-            // Validate locationProperties against locations rules
-            // and trigger activated/deactivated events
-            matchedLocations = this.selectLocations(visitorId, locations, {
-              locationProperties,
-              identityField
-            });
-            // Return rule errors if present
-            matchedErrors = matchedLocations.filter((match) =>
-              Object.values(RuleError).includes(match as RuleError)
-            );
-            if (matchedErrors.length) return matchedErrors[0] as RuleError;
-          }
-          // If there are some matched locations
-          locationMatched = Boolean(matchedLocations.length);
-        } else if (experience?.site_area) {
-          // Validate locationProperties against site area rules
-          locationMatched = this._ruleManager.isRuleMatched(
+    // Check location rules against locationProperties
+    let locationMatched: boolean | RuleError =
+      ignoreLocationProperties === true;
+    if (!locationMatched && locationProperties) {
+      if (Array.isArray(experience?.locations) && experience.locations.length) {
+        let matchedLocations = [];
+        // Get attached locations
+        const locations = this.getItemsByIds(
+          experience.locations,
+          'locations'
+        ) as Array<ConfigLocation>;
+        if (locations.length) {
+          // Validate locationProperties against locations rules
+          // and trigger activated/deactivated events
+          matchedLocations = this.selectLocations(visitorId, locations, {
             locationProperties,
-            experience.site_area,
-            'SiteArea'
-          );
+            identityField
+          });
           // Return rule errors if present
-          if (Object.values(RuleError).includes(locationMatched as RuleError))
-            return locationMatched as RuleError;
-        } else {
-          locationMatched = true; // Empty experience locations list means no restrictions
-          this._loggerManager?.info?.(
-            'DataManager.matchRulesByField()',
-            MESSAGES.LOCATION_NOT_RESTRICTED
+          matchedErrors = matchedLocations.filter((match) =>
+            Object.values(RuleError).includes(match as RuleError)
           );
+          if (matchedErrors.length) return matchedErrors[0] as RuleError;
         }
-      }
-      if (!locationMatched) {
-        this._loggerManager?.debug?.(
-          'DataManager.matchRulesByField()',
-          MESSAGES.LOCATION_NOT_MATCH,
-          this._mapper({
-            locationProperties: locationProperties,
-            [experience?.locations
-              ? 'experiences[].variations[].locations'
-              : 'experiences[].variations[].site_area']:
-              experience?.locations || experience?.site_area || ''
-          })
+        // If there are some matched locations
+        locationMatched = Boolean(matchedLocations.length);
+      } else if (experience?.site_area) {
+        // Validate locationProperties against site area rules
+        locationMatched = this._ruleManager.isRuleMatched(
+          locationProperties,
+          experience.site_area,
+          'SiteArea'
         );
-        return null;
-      }
-
-      // Check audience rules against visitorProperties
-      let audiences = [],
-        segments = [],
-        matchedAudiences = [],
-        matchedSegments = [],
-        audiencesToCheck: Array<ConfigAudience> = [],
-        audiencesMatched = false,
-        segmentsMatched = false;
-      if (visitorProperties) {
-        if (
-          Array.isArray(experience?.audiences) &&
-          experience.audiences.length
-        ) {
-          // Get attached transient and/or permnent audiences
-          audiences = this.getItemsByIds(
-            experience.audiences,
-            'audiences'
-          ) as Array<ConfigAudience>;
-
-          // If visitor already bucketed into this experience, check only audiences of type transient
-          audiencesToCheck = audiences.filter(
-            (audience) =>
-              !(isBucketed && audience.type === ConfigAudienceTypes.PERMANENT)
-          );
-          if (audiencesToCheck.length) {
-            // Validate visitorProperties against audiences rules
-            matchedAudiences = this.filterMatchedRecordsWithRule(
-              audiencesToCheck,
-              visitorProperties,
-              'audience',
-              identityField
-            );
-            // Return rule errors if present
-            matchedErrors = matchedAudiences.filter((match) =>
-              Object.values(RuleError).includes(match as RuleError)
-            );
-            if (matchedErrors.length) return matchedErrors[0] as RuleError;
-            if (matchedAudiences.length) {
-              for (const item of matchedAudiences) {
-                this._loggerManager?.info?.(
-                  'DataManager.matchRulesByField()',
-                  MESSAGES.AUDIENCE_MATCH.replace('#', item?.[identityField])
-                );
-              }
-            }
-            audiencesMatched = Boolean(matchedAudiences.length);
-          } else {
-            audiencesMatched = true; // Empty non-permanent experience audiences list means no restrictions
-            this._loggerManager?.info?.(
-              'DataManager.matchRulesByField()',
-              MESSAGES.NON_PERMANENT_AUDIENCE_NOT_RESTRICTED
-            );
-          }
-        } else {
-          audiencesMatched = true; // Empty experience audiences list means no restrictions
-          this._loggerManager?.info?.(
-            'DataManager.matchRulesByField()',
-            MESSAGES.AUDIENCE_NOT_RESTRICTED
-          );
-        }
-      }
-      // Get attached segmentation audiences
-      segments = this.getItemsByIds(
-        experience.audiences,
-        'segments'
-      ) as Array<ConfigSegment>;
-      if (segments.length) {
-        // Validate custom segments against segmentations
-        matchedSegments = this.filterMatchedCustomSegments(segments, visitorId);
-        if (matchedSegments.length) {
-          for (const item of matchedSegments) {
-            this._loggerManager?.info?.(
-              'DataManager.matchRulesByField()',
-              MESSAGES.SEGMENTATION_MATCH.replace('#', item?.[identityField])
-            );
-          }
-        }
-        segmentsMatched = Boolean(matchedSegments.length);
+        // Return rule errors if present
+        if (Object.values(RuleError).includes(locationMatched as RuleError))
+          return locationMatched as RuleError;
       } else {
-        segmentsMatched = true; // Empty experience segmentation list means no restrictions
+        locationMatched = true; // Empty experience locations list means no restrictions
         this._loggerManager?.info?.(
           'DataManager.matchRulesByField()',
-          MESSAGES.SEGMENTATION_NOT_RESTRICTED
+          MESSAGES.LOCATION_NOT_RESTRICTED
         );
       }
-      // If there are some matched audiences
-      if (audiencesMatched && segmentsMatched) {
-        // And experience has variations
-        if (experience?.variations && experience?.variations?.length) {
+    }
+    if (!locationMatched) {
+      this._loggerManager?.debug?.(
+        'DataManager.matchRulesByField()',
+        MESSAGES.LOCATION_NOT_MATCH,
+        this._mapper({
+          locationProperties: locationProperties,
+          [experience?.locations
+            ? 'experiences[].variations[].locations'
+            : 'experiences[].variations[].site_area']:
+            experience?.locations || experience?.site_area || ''
+        })
+      );
+      return null;
+    }
+
+    // Check audience rules against visitorProperties
+    let audiences = [],
+      segments = [],
+      matchedAudiences = [],
+      matchedSegments = [],
+      audiencesToCheck: Array<ConfigAudience> = [],
+      audiencesMatched = false,
+      segmentsMatched = false;
+    if (visitorProperties) {
+      if (Array.isArray(experience?.audiences) && experience.audiences.length) {
+        // Get attached transient and/or permnent audiences
+        audiences = this.getItemsByIds(
+          experience.audiences,
+          'audiences'
+        ) as Array<ConfigAudience>;
+
+        // If visitor already bucketed into this experience, check only audiences of type transient
+        audiencesToCheck = audiences.filter(
+          (audience) =>
+            !(isBucketed && audience.type === ConfigAudienceTypes.PERMANENT)
+        );
+        if (audiencesToCheck.length) {
+          // Validate visitorProperties against audiences rules
+          matchedAudiences = this.filterMatchedRecordsWithRule(
+            audiencesToCheck,
+            visitorProperties,
+            'audience',
+            identityField
+          );
+          // Return rule errors if present
+          matchedErrors = matchedAudiences.filter((match) =>
+            Object.values(RuleError).includes(match as RuleError)
+          );
+          if (matchedErrors.length) return matchedErrors[0] as RuleError;
+          if (matchedAudiences.length) {
+            for (const item of matchedAudiences) {
+              this._loggerManager?.info?.(
+                'DataManager.matchRulesByField()',
+                MESSAGES.AUDIENCE_MATCH.replace('#', item?.[identityField])
+              );
+            }
+          }
+          audiencesMatched = Boolean(matchedAudiences.length);
+        } else {
+          audiencesMatched = true; // Empty non-permanent experience audiences list means no restrictions
           this._loggerManager?.info?.(
             'DataManager.matchRulesByField()',
-            MESSAGES.EXPERIENCE_RULES_MATCHED
-          );
-          return experience;
-        } else {
-          this._loggerManager?.debug?.(
-            'DataManager.matchRulesByField()',
-            MESSAGES.VARIATIONS_NOT_FOUND,
-            this._mapper({
-              visitorProperties: visitorProperties,
-              audiences: audiences
-            })
+            MESSAGES.NON_PERMANENT_AUDIENCE_NOT_RESTRICTED
           );
         }
       } else {
+        audiencesMatched = true; // Empty experience audiences list means no restrictions
+        this._loggerManager?.info?.(
+          'DataManager.matchRulesByField()',
+          MESSAGES.AUDIENCE_NOT_RESTRICTED
+        );
+      }
+    }
+    // Get attached segmentation audiences
+    segments = this.getItemsByIds(
+      experience.audiences,
+      'segments'
+    ) as Array<ConfigSegment>;
+    if (segments.length) {
+      // Validate custom segments against segmentations
+      matchedSegments = this.filterMatchedCustomSegments(segments, visitorId);
+      if (matchedSegments.length) {
+        for (const item of matchedSegments) {
+          this._loggerManager?.info?.(
+            'DataManager.matchRulesByField()',
+            MESSAGES.SEGMENTATION_MATCH.replace('#', item?.[identityField])
+          );
+        }
+      }
+      segmentsMatched = Boolean(matchedSegments.length);
+    } else {
+      segmentsMatched = true; // Empty experience segmentation list means no restrictions
+      this._loggerManager?.info?.(
+        'DataManager.matchRulesByField()',
+        MESSAGES.SEGMENTATION_NOT_RESTRICTED
+      );
+    }
+    // If there are some matched audiences
+    if (audiencesMatched && segmentsMatched) {
+      // And experience has variations
+      if (experience?.variations && experience?.variations?.length) {
+        this._loggerManager?.info?.(
+          'DataManager.matchRulesByField()',
+          MESSAGES.EXPERIENCE_RULES_MATCHED
+        );
+        return experience;
+      } else {
         this._loggerManager?.debug?.(
           'DataManager.matchRulesByField()',
-          MESSAGES.AUDIENCE_NOT_MATCH,
+          MESSAGES.VARIATIONS_NOT_FOUND,
           this._mapper({
             visitorProperties: visitorProperties,
             audiences: audiences
@@ -433,10 +450,10 @@ export class DataManager implements DataManagerInterface {
     } else {
       this._loggerManager?.debug?.(
         'DataManager.matchRulesByField()',
-        MESSAGES.EXPERIENCE_NOT_FOUND,
+        MESSAGES.AUDIENCE_NOT_MATCH,
         this._mapper({
-          identity: identity,
-          identityField: identityField
+          visitorProperties: visitorProperties,
+          audiences: audiences
         })
       );
     }
