@@ -767,6 +767,34 @@ export type SuccessData = {
     message?: string;
 };
 
+export type ImportProjectDataSuccess = SuccessData & {
+    /**
+     * List of imported objects
+     */
+    imported?: {
+        /**
+         * List of created experiences. Empty if nothing imported
+         */
+        experiences?: Array<(number)>;
+        /**
+         * List of created audiences. Empty if nothing imported
+         */
+        audiences?: Array<(number)>;
+        /**
+         * List of created locations. Empty if nothing imported
+         */
+        locations?: Array<(number)>;
+        /**
+         * List of created goals. Empty if nothing imported
+         */
+        goals?: Array<(number)>;
+        /**
+         * List of created hypothesis. Empty if nothing imported
+         */
+        hypothesis?: Array<(number)>;
+    };
+};
+
 export type BulkSuccessData = SuccessData & {
     code?: number;
     /**
