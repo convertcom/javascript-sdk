@@ -129,6 +129,11 @@
         },
         "audiences": ["100299433"],
         "goals": ["100215959", "100215960", "100215961"],
+        "settings": {
+          "matching_options": {
+            "audiences": "any"
+          }
+        },
         "variations": [
           {
             "id": "100299456",
@@ -221,6 +226,11 @@
         },
         "audiences": ["100299433"],
         "goals": ["100215959", "100215960", "100215961"],
+        "settings": {
+          "matching_options": {
+            "audiences": "any"
+          }
+        },
         "variations": [
           {
             "id": "100299460",
@@ -301,6 +311,11 @@
         },
         "audiences": ["100299433"],
         "goals": ["100215959", "100215960", "100215961"],
+        "settings": {
+          "matching_options": {
+            "audiences": "any"
+          }
+        },
         "variations": [{}]
       }
     ],
