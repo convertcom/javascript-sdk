@@ -45,3 +45,17 @@
 2. Build packages: `yarn build`
 3. Create enviroment file: `cp demo/nextjs/.env.example demo/nextjs/.env`
 4. Test demo app: http://localhost:3005
+
+### RemixJs (client side)
+
+1. Start demo server: `yarn demo:remixjs:client:start`
+2. Build packages: `yarn build`
+3. Create enviroment file: `cp demo/remixjs-client-side/.env.example demo/remixjs-client-side/.env`
+4. Test demo app: http://localhost:3006
+
+### RemixJs (server side)
+
+1. Start demo server: `yarn demo:remixjs:server:start`
+2. Build packages: `yarn build`
+3. Create enviroment file: `cp demo/remixjs-server-side/.env.example demo/remixjs-server-side/.env`
+4. Test demo app: http://localhost:3007
