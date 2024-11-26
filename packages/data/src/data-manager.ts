@@ -42,7 +42,8 @@ import {
   LocationAttributes,
   ConfigAudienceTypes,
   VariationStatuses,
-  eventType
+  eventType,
+  GenericListMatchingOptions
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -388,7 +389,16 @@ export class DataManager implements DataManagerInterface {
               );
             }
           }
-          audiencesMatched = Boolean(matchedAudiences.length);
+          if (
+            experience.settings.matching_options.audiences ===
+            GenericListMatchingOptions.ALL
+          ) {
+            audiencesMatched = Boolean(
+              matchedAudiences.length === audiencesToCheck.length
+            );
+          } else {
+            audiencesMatched = Boolean(matchedAudiences.length);
+          }
         } else {
           audiencesMatched = true; // Empty non-permanent experience audiences list means no restrictions
           this._loggerManager?.info?.(
