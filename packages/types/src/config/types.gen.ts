@@ -767,6 +767,34 @@ export type SuccessData = {
     message?: string;
 };
 
+export type ImportProjectDataSuccess = SuccessData & {
+    /**
+     * List of imported objects
+     */
+    imported?: {
+        /**
+         * List of created experiences. Empty if nothing imported
+         */
+        experiences?: Array<(number)>;
+        /**
+         * List of created audiences. Empty if nothing imported
+         */
+        audiences?: Array<(number)>;
+        /**
+         * List of created locations. Empty if nothing imported
+         */
+        locations?: Array<(number)>;
+        /**
+         * List of created goals. Empty if nothing imported
+         */
+        goals?: Array<(number)>;
+        /**
+         * List of created hypothesis. Empty if nothing imported
+         */
+        hypothesis?: Array<(number)>;
+    };
+};
+
 export type BulkSuccessData = SuccessData & {
     code?: number;
     /**
@@ -2132,6 +2160,10 @@ export type ConfigProject = {
          *
          */
         global_privacy_control?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
+        /**
+         * Target tracking script version to be used for the project
+         */
+        tracking_script_version?: (string) | null;
         /**
          * Whether to include jQuery library or not into the javascript tracking file served by Convert and loaded via the tracking snippet. If jQuery is not included, it has to be loaded on page, before Convert's tracking code
          */
