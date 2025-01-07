@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.2.1...js-sdk-data-v3.3.0) (2024-11-26)
+
+
+### Features
+
+* handle audience matching options "any/all" ([e7b2da3](https://github.com/convertcom/javascript-sdk/commit/e7b2da303d053b01c81aac3e94da90d0cb3eee14))
+
+
+### Bug Fixes
+
+* handle zer-traffic allocation as stopped variation ([69ae40e](https://github.com/convertcom/javascript-sdk/commit/69ae40e0ab3ee4c14655e3f8b940da60681780aa))
+
 ## [3.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.2.0...js-sdk-data-v3.2.1) (2024-09-26)
 
 
