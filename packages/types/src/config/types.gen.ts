@@ -2161,6 +2161,10 @@ export type ConfigProject = {
          */
         global_privacy_control?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
         /**
+         * Target tracking script version to be used for the project
+         */
+        tracking_script_version?: (string) | null;
+        /**
          * Whether to include jQuery library or not into the javascript tracking file served by Convert and loaded via the tracking snippet. If jQuery is not included, it has to be loaded on page, before Convert's tracking code
          */
         include_jquery?: boolean;
