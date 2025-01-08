@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.2.2...js-sdk-v4.3.0) (2024-11-26)
+
+
+### Features
+
+* handle audience matching options "any/all" ([e7b2da3](https://github.com/convertcom/javascript-sdk/commit/e7b2da303d053b01c81aac3e94da90d0cb3eee14))
+
 ## [4.2.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.2.1...js-sdk-v4.2.2) (2024-11-06)
 
 

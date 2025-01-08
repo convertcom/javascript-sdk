@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-event-v2.1.0...js-sdk-event-v2.1.1) (2024-11-26)
+
+
+### Bug Fixes
+
+* handle exceptions at event listeners ([6b5067a](https://github.com/convertcom/javascript-sdk/commit/6b5067aafbe8c4bc3dd30b06a016aeb775f0f664))
+
 ## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-event-v2.0.0...js-sdk-event-v2.1.0) (2024-07-16)
 
 

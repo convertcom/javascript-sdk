@@ -192,12 +192,10 @@ export class ApiManager implements ApiManagerInterface {
     );
     this._requestsQueue.push(visitorId, eventRequest, segments);
     if (this._trackingEnabled) {
-      if (this._requestsQueue.length === this.batchSize) {
+      if (this._requestsQueue.length === 1) {
+        this.startQueue();
+      } else if (this._requestsQueue.length === this.batchSize) {
         this.releaseQueue('size').then();
-      } else {
-        if (this._requestsQueue.length === 1) {
-          this.startQueue();
-        }
       }
     }
   }
