@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-experience-v2.2.0...js-sdk-experience-v2.3.0) (2024-11-26)
+
+
+### Features
+
+* handle audience matching options "any/all" ([e7b2da3](https://github.com/convertcom/javascript-sdk/commit/e7b2da303d053b01c81aac3e94da90d0cb3eee14))
+
 ## [2.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-experience-v2.1.0...js-sdk-experience-v2.2.0) (2024-07-16)
 
 
