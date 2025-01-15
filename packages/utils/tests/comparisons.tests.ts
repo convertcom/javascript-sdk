@@ -28,6 +28,14 @@ describe('Comparison Processor utils tests', function () {
     const result = Comparisons['equals']('value', 123, true);
     expect(result).to.equal(true);
   });
+  it('Less should return true comparing string `122.5` and number 123', function () {
+    const result = Comparisons['less']('122.5', 123);
+    expect(result).to.equal(true);
+  });
+  it('Less should return true comparing string `1,123.5` and number 123 with negation', function () {
+    const result = Comparisons['less']('1,123.5', 123, true);
+    expect(result).to.equal(true);
+  });
   it('Less should return true comparing numbers -111 against 123', function () {
     const result = Comparisons['less'](-111, 123);
     expect(result).to.equal(true);
@@ -107,6 +115,26 @@ describe('Comparison Processor utils tests', function () {
   it('LessEqual should return true comparing strings `abcde` against `axyz`', function () {
     const result = Comparisons['lessEqual']('abcde', 'axyz');
     expect(result).to.equal(true);
+  });
+  it('LessEqual should return true comparing string `122.5` and number 123', function () {
+    const result = Comparisons['lessEqual']('122.5', 123);
+    expect(result).to.equal(true);
+  });
+  it('LessEqual should return true comparing string `122.5` and number 122.5', function () {
+    const result = Comparisons['lessEqual']('122.5', 122.5);
+    expect(result).to.equal(true);
+  });
+  it('LessEqual should return false comparing string `123.5` and number 122.5', function () {
+    const result = Comparisons['lessEqual']('123.5', 122.5);
+    expect(result).to.equal(false);
+  });
+  it('LessEqual should return true comparing string `1,124,000.5` and number 1123.5 with negation', function () {
+    const result = Comparisons['lessEqual']('1,124,000.5', 1123.5, true);
+    expect(result).to.equal(true);
+  });
+  it('LessEqual should return false comparing string `1,123.5` and number 1123.5 with negation', function () {
+    const result = Comparisons['lessEqual']('1,123.5', 1123.5, true);
+    expect(result).to.equal(false);
   });
   it('Contains should return true comparing strings `abcde` against `a`', function () {
     const result = Comparisons['contains']('abcde', 'a');

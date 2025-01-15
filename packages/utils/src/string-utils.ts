@@ -59,3 +59,33 @@ export function camelCase(input: string): string {
 export function generateHash(value: string, seed = 9999): number {
   return Murmurhash.v3(String(value), seed);
 }
+
+/**
+ * Check if a value is numeric
+ * @param {string | number} value
+ * @returns {boolean}
+ */
+export function isNumeric(value: string | number): boolean {
+  if (typeof value === 'number') {
+    return true;
+  }
+  const number = parseFloat(String(value));
+  return Number.isFinite(number) && !isNaN(number);
+}
+
+/**
+ * Convert a string to a number
+ * @param {string | number} value
+ * @returns {number}
+ */
+export function toNumber(value: string | number): number {
+  if (typeof value === 'number') {
+    return value;
+  }
+  const parts = String(value).split(',');
+  return parseFloat(
+    parts[0] == '0'
+      ? String(value).replace(/,/g, '.')
+      : String(value).replace(/,/g, '')
+  );
+}
