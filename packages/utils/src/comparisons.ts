@@ -6,6 +6,7 @@
  */
 
 import {objectNotEmpty} from './object-utils';
+import {isNumeric, toNumber} from './string-utils';
 
 /**
  * Comparison Processor. Provides comparison methods for rules validation
@@ -46,6 +47,8 @@ export class Comparisons {
     testAgainst: string | number,
     negation?: boolean
   ): boolean {
+    value = isNumeric(value) ? toNumber(value) : value;
+    testAgainst = isNumeric(testAgainst) ? toNumber(testAgainst) : testAgainst;
     if (typeof value !== typeof testAgainst) {
       return false;
     }
@@ -57,6 +60,8 @@ export class Comparisons {
     testAgainst: string | number,
     negation?: boolean
   ): boolean {
+    value = isNumeric(value) ? toNumber(value) : value;
+    testAgainst = isNumeric(testAgainst) ? toNumber(testAgainst) : testAgainst;
     if (typeof value !== typeof testAgainst) {
       return false;
     }
