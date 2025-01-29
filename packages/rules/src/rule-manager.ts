@@ -121,6 +121,9 @@ export class RuleManager implements RuleManagerInterface {
     ) {
       for (let i = 0, l = ruleSet.OR.length; i < l; i++) {
         match = this._processAND(data, ruleSet.OR[i] as RuleAnd);
+        if (match === true) {
+          return match;
+        }
         if (Object.values(RuleError).includes(match as RuleError)) {
           this._loggerManager?.info?.(
             'RuleManager.isRuleMatched()',
@@ -136,9 +139,9 @@ export class RuleManager implements RuleManagerInterface {
               : MESSAGES.RULE_MATCH.replace('#', String(i))
           );
         }
-        if (match !== false) {
-          return match;
-        }
+      }
+      if (match !== false) {
+        return match;
       }
     } else {
       this._loggerManager?.warn?.(
@@ -231,9 +234,12 @@ export class RuleManager implements RuleManagerInterface {
     ) {
       for (let i = 0, l = rulesSubset.OR_WHEN.length; i < l; i++) {
         match = this._processRuleItem(data, rulesSubset.OR_WHEN[i]);
-        if (match !== false) {
+        if (match === true) {
           return match;
         }
+      }
+      if (match !== false) {
+        return match;
       }
     } else {
       this._loggerManager?.warn?.(
