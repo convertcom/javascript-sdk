@@ -686,7 +686,12 @@ export class DataManager implements DataManagerInterface {
           eventType: eventType.BUCKETING,
           data: bucketingEvent
         };
-        this._apiManager.enqueue(visitorId, visitorEvent, segments);
+        const visitorSegments = this._ruleManager.isUsingCustomInterface(
+          visitorProperties
+        )
+          ? visitorProperties?.get?.() || {}
+          : segments;
+        this._apiManager.enqueue(visitorId, visitorEvent, visitorSegments);
         this._loggerManager?.trace?.(
           'DataManager._retrieveBucketing()',
           this._mapper({
