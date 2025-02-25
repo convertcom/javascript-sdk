@@ -29,6 +29,8 @@ const DEFAULT_DATA_REFRESH_INTERVAL = 300000; // in milliseconds (5 minutes)
  * @implements {CoreInterface}
  */
 export class Core implements CoreInterface {
+  public data: ConfigResponseData;
+
   private _dataManager: DataManagerInterface;
   private _eventManager: EventManagerInterface;
   private _experienceManager: ExperienceManagerInterface;
@@ -102,6 +104,7 @@ export class Core implements CoreInterface {
       // Get data by sdk key
       this.fetchConfig();
     } else if (Object.prototype.hasOwnProperty.call(config, 'data')) {
+      this.data = config.data;
       this._dataManager.data = config.data;
       if (config.data['error']) {
         this._loggerManager?.error?.('Core.initialize()', {
@@ -217,6 +220,7 @@ export class Core implements CoreInterface {
           );
           this._initialized = true;
         }
+        this.data = data;
         this._dataManager.data = data;
         this._apiManager.setData(data);
       }
