@@ -110,14 +110,14 @@
   "peerDependencies": {
     "@convertcom/js-sdk-api": ">=2.1.1",
     "@convertcom/js-sdk-bucketing": ">=3.1.0",
-    "@convertcom/js-sdk-data": ">=3.2.1",
+    "@convertcom/js-sdk-data": ">=3.3.0",
     "@convertcom/js-sdk-enums": ">=2.2.0",
-    "@convertcom/js-sdk-event": ">=2.1.0",
-    "@convertcom/js-sdk-experience": ">=2.2.0",
+    "@convertcom/js-sdk-event": ">=2.1.1",
+    "@convertcom/js-sdk-experience": ">=2.3.0",
     "@convertcom/js-sdk-logger": ">=2.1.0",
     "@convertcom/js-sdk-rules": ">=2.1.0",
     "@convertcom/js-sdk-segments": ">=2.1.0",
-    "@convertcom/js-sdk-types": ">=3.6.0",
+    "@convertcom/js-sdk-types": ">=3.7.0",
     "@convertcom/js-sdk-utils": ">=2.2.0"
   }
 }
