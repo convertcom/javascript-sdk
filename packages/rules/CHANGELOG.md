@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.1.0...js-sdk-rules-v2.1.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* properly evaluate OR rules for ensuring matched conditions positioned later in the list ([673cb63](https://github.com/convertcom/javascript-sdk/commit/673cb631bc396167e3599ddbe5412d43bdd832a6))
+* set visitor default segments when using custom interface for "visitorProperties" ([abe94f4](https://github.com/convertcom/javascript-sdk/commit/abe94f4f4f185cd5af091c0fb48ec04a6a2f8434))
+
 ## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.0.0...js-sdk-rules-v2.1.0) (2024-07-16)
 
 

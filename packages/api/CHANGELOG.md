@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.1.1...js-sdk-api-v2.1.2) (2025-03-26)
+
+
+### Bug Fixes
+
+* allow smaller batch size in api manager ([07e9563](https://github.com/convertcom/javascript-sdk/commit/07e95630a8ebd9fcc63f896a881e62a2f4f0a682))
+
 ## [2.1.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.1.0...js-sdk-api-v2.1.1) (2024-11-06)
 
 
