@@ -225,6 +225,7 @@ const convertSDK: ConvertInterface = new ConvertSDK({
   environment: 'staging' // can also be "live"; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
+  console.log('SDK Data:', convertSDK.data);
   // create user context
   // run experience(s)
   // ...
