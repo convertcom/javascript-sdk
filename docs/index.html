@@ -337,7 +337,7 @@ const convertSDK: ConvertInterface = new ConvertSDK({
   environment: 'staging' // can also be &quot;live&quot;; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
-  console.log('SDK Data:', convertSDK.data);
+  // console.log('SDK Data:', convertSDK.data);
   // create user context
   // run experience(s)
   // ...
@@ -464,6 +464,12 @@ const variation: BucketedVariation =
 <td></td>
 <td></td>
 <td></td>
+<td><code>enableTracking</code>: Optional boolean for controlling whether to track bucketing events immediately (<em>Defaults to <code>true</code></em>).</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
 <td><code>environment</code>: Optional string.</td>
 </tr>
 </tbody>
@@ -532,6 +538,12 @@ convertSDK.onReady().then(() => {
 <td></td>
 <td></td>
 <td><code>updateVisitorProperties</code>: Optional boolean for updating in-memory visitor properties.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td><code>enableTracking</code>: Optional boolean for controlling whether to track bucketing events immediately (<em>Defaults to <code>true</code></em>).</td>
 </tr>
 <tr>
 <td></td>
