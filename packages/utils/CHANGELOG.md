@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.2.0...js-sdk-utils-v2.2.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* handle numeric strings in comparison rules ([cbca105](https://github.com/convertcom/javascript-sdk/commit/cbca1051a314bf22d40fb95ba035474632f7018d))
+
 ## [2.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.1.0...js-sdk-utils-v2.2.0) (2024-09-26)
 
 
