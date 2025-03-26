@@ -6,8 +6,10 @@
  */
 import {SystemEvents} from '@convertcom/js-sdk-enums';
 import {ContextInterface} from './context';
+import {ConfigResponseData} from '@convertcom/js-sdk-types';
 
 export interface CoreInterface {
+  data: ConfigResponseData;
   createContext(
     visitorId: string,
     visitorAttributes?: Record<any, any>
