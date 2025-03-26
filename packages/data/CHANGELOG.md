@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.3.1...js-sdk-data-v3.3.2) (2025-03-26)
+
+
+### Bug Fixes
+
+* expose "data" property ([9c5528d](https://github.com/convertcom/javascript-sdk/commit/9c5528d8989bbca80c7c4b56fa8fb1b4e1d2826d))
+
 ## [3.3.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.3.0...js-sdk-data-v3.3.1) (2025-03-26)
 
 
