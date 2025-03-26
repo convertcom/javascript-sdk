@@ -69,7 +69,7 @@
     "typescript-eslint": "^7.13.1",
     "webpack": "^5.92.0"
   },
-  "version": "2.1.2",
+  "version": "2.1.3",
   "peerDependencies": {
     "@convertcom/js-sdk-enums": ">=2.2.0",
     "@convertcom/js-sdk-event": ">=2.1.0",

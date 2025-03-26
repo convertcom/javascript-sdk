@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-logger-v2.1.0...js-sdk-logger-v2.1.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* expose "data" property ([9c5528d](https://github.com/convertcom/javascript-sdk/commit/9c5528d8989bbca80c7c4b56fa8fb1b4e1d2826d))
+
 ## [2.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-logger-v2.0.0...js-sdk-logger-v2.1.0) (2024-07-16)
 
 
