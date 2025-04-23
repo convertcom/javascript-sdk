@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.3.1...js-sdk-v4.3.2) (2025-03-26)
+
+
+### Bug Fixes
+
+* updating npm config ([309acf8](https://github.com/convertcom/javascript-sdk/commit/309acf81918bc7ee1682a7070212b73dd7206a87))
+
 ## [4.3.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.3.0...js-sdk-v4.3.1) (2025-03-26)
 
 
