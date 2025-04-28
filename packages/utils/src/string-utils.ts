@@ -66,11 +66,11 @@ export function generateHash(value: string, seed = 9999): number {
  * @returns {boolean}
  */
 export function isNumeric(value: string | number): boolean {
-  if (typeof value === 'number') {
-    return true;
-  }
-  const number = parseFloat(String(value));
-  return Number.isFinite(number) && !isNaN(number);
+  const regex = /^-?(?:(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?|\.\d+)$/;
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (typeof value !== 'string' || !regex.test(value)) return false;
+  const num = parseFloat(value.replace(/,/g, ''));
+  return Number.isFinite(num);
 }
 
 /**
