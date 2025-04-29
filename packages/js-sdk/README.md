@@ -225,6 +225,7 @@ const convertSDK: ConvertInterface = new ConvertSDK({
   environment: 'staging' // can also be "live"; this is configured in the Convert UI.
 } as ConvertConfig);
 convertSDK.onReady().then(() => {
+  // console.log('SDK Data:', convertSDK.data);
   // create user context
   // run experience(s)
   // ...
@@ -341,13 +342,14 @@ This method loops through each of the active experiences, runs them, and returns
 
 #### Parameters
 
-| Parameter  | Type   | Required | Description                                                                            |
-| ---------- | ------ | -------- | -------------------------------------------------------------------------------------- |
-| attributes | object | No       | An object specifying attributes for the user.                                          |
-|            |        |          | `locationProperties`: An object of key-value pairs used for location matching.         |
-|            |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.         |
-|            |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties. |
-|            |        |          | `environment`: Optional string.                                                        |
+| Parameter  | Type   | Required | Description                                                                                                              |
+| ---------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| attributes | object | No       | An object specifying attributes for the user.                                                                            |
+|            |        |          | `locationProperties`: An object of key-value pairs used for location matching.                                           |
+|            |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.                                           |
+|            |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties.                                   |
+|            |        |          | `enableTracking`: Optional boolean for controlling whether to track bucketing events immediately (_Defaults to `true`_). |
+|            |        |          | `environment`: Optional string.                                                                                          |
 
 #### Returns
 
@@ -382,14 +384,15 @@ Decides whether the user should be bucketed into a single variation mapped to an
 
 #### Parameters
 
-| Parameter     | Type   | Required | Description                                                                            |
-| ------------- | ------ | -------- | -------------------------------------------------------------------------------------- |
-| experienceKey | string | Yes      | An experience's key that should be activated.                                          |
-| attributes    | object | No       | An object specifying attributes for the user.                                          |
-|               |        |          | `locationProperties`: An object of key-value pairs used for location matching.         |
-|               |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.         |
-|               |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties. |
-|               |        |          | `environment`: Optional string.                                                        |
+| Parameter     | Type   | Required | Description                                                                                                              |
+| ------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| experienceKey | string | Yes      | An experience's key that should be activated.                                                                            |
+| attributes    | object | No       | An object specifying attributes for the user.                                                                            |
+|               |        |          | `locationProperties`: An object of key-value pairs used for location matching.                                           |
+|               |        |          | `visitorProperties`: An object of key-value pairs used for audience targeting.                                           |
+|               |        |          | `updateVisitorProperties`: Optional boolean for updating in-memory visitor properties.                                   |
+|               |        |          | `enableTracking`: Optional boolean for controlling whether to track bucketing events immediately (_Defaults to `true`_). |
+|               |        |          | `environment`: Optional string.                                                                                          |
 
 #### Returns
 

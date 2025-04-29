@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.8.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.8.0...js-sdk-types-v3.8.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* expose "data" property ([9c5528d](https://github.com/convertcom/javascript-sdk/commit/9c5528d8989bbca80c7c4b56fa8fb1b4e1d2826d))
+
+## [3.8.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.7.0...js-sdk-types-v3.8.0) (2025-03-26)
+
+
+### Features
+
+* automated TS Serving API update ([46b98b9](https://github.com/convertcom/javascript-sdk/commit/46b98b9f13156d53ccbf53f67ed1c9433fc033b3))
+* automated TS Serving API update ([78857bf](https://github.com/convertcom/javascript-sdk/commit/78857bf1a6544126a97c740d72727ea464b185bb))
+
 ## [3.7.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.6.0...js-sdk-types-v3.7.0) (2024-11-26)
 
 
