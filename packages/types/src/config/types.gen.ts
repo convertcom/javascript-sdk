@@ -919,10 +919,35 @@ export type SuccessData = {
 };
 
 export type ImportProjectDataSuccess = SuccessData & {
-  /**
-   * List of imported objects
-   */
-  imported?: {
+    /**
+     * List of imported objects
+     */
+    imported?: {
+        /**
+         * List of created experiences. Empty if nothing imported
+         */
+        experiences?: Array<(number)>;
+        /**
+         * List of created audiences. Empty if nothing imported
+         */
+        audiences?: Array<(number)>;
+        /**
+         * List of created locations. Empty if nothing imported
+         */
+        locations?: Array<(number)>;
+        /**
+         * List of created goals. Empty if nothing imported
+         */
+        goals?: Array<(number)>;
+        /**
+         * List of created hypothesis. Empty if nothing imported
+         */
+        hypothesis?: Array<(number)>;
+    };
+};
+
+export type BulkSuccessData = SuccessData & {
+    code?: number;
     /**
      * List of created experiences. Empty if nothing imported
      */
@@ -1112,6 +1137,19 @@ export const Percentiles = {
   _99: 99
 } as const;
 
+export type DateRange = {
+    /**
+     * The start date for the range. The value must be in the format `YYYY-MM-DD`.
+     *
+     */
+    date_from?: (string) | null;
+    /**
+     * The end date for the range. The value must be in the format `YYYY-MM-DD`.
+     *
+     */
+    date_to?: (string) | null;
+};
+
 /**
  * Response containing project's config data needed in order to serve experiences
  */
@@ -1164,6 +1202,17 @@ export type ConfigMinimalResponseData = {
    * Project ID
    */
   project_id?: string;
+} & ConfigProjectMinimalSettings;
+
+export type ConfigMinimalResponseData = {
+    /**
+     * Account ID
+     */
+    account_id?: string;
+    /**
+     * Project ID
+     */
+    project_id?: string;
 } & ConfigProjectMinimalSettings;
 
 /**
@@ -1776,95 +1825,60 @@ export type ExperienceIntegrationYsance = ExperienceIntegrationBase & {
 };
 
 export type ConfigExperience = {
-  /**
-   * Experience ID
-   */
-  id?: string;
-  /**
-   * Experience Name
-   */
-  name?: string;
-  /**
-   * Experience readable key that uniquely identifies this experience
-   */
-  key?: string;
-  /**
-   * List of locations IDs on which this experience is presented. Either this or **site_area** is given but should not be both.
-   */
-  locations?: Array<string> | null;
-  /**
-   * Rules that define where the experience is gonna run. Either this or **locations** is given but should not be both.
-   */
-  site_area?: RuleObject | null;
-  /**
-   * List of audiences IDs to which this experience is presented to
-   */
-  audiences?: Array<string> | null;
-  /**
-   * List of goals IDs to which will be tracked for this experience
-   */
-  goals?: Array<string>;
-  status?: ExperienceStatuses;
-  /**
-   * Global Experience's JavaScript that will run for this experience before its changes are applied
-   *
-   */
-  global_js?: string;
-  /**
-   * Global Experience's StyleSheet that will run for this experience before its changes are applied
-   *
-   */
-  global_css?: string;
-  type?: ExperienceTypes;
-  /**
-   * Experience's version number
-   */
-  version?: number;
-  /**
-   * Experience's variations list
-   */
-  variations?: Array<ExperienceVariationConfig>;
-  /**
-   * List of integrations that this experience's data is sent to
-   */
-  integrations?: Array<
-    | ExperienceIntegrationBaidu
-    | ExperienceIntegrationClicktale
-    | ExperienceIntegrationClicky
-    | ExperienceIntegrationCnzz
-    | ExperienceIntegrationCrazyegg
-    | ExperienceIntegrationEconda
-    | ExperienceIntegrationEulerian
-    | ExperienceIntegrationGAServing
-    | ExperienceIntegrationGosquared
-    | ExperienceIntegrationHeapanalytics
-    | ExperienceIntegrationHotjar
-    | ExperienceIntegrationMixpanel
-    | ExperienceIntegrationMouseflow
-    | ExperienceIntegrationPiwik
-    | ExperienceIntegrationSegmentio
-    | ExperienceIntegrationSitecatalyst
-    | ExperienceIntegrationWoopra
-    | ExperienceIntegrationYsance
-  >;
-  /**
-   * List of environments that this experience is supposed to run on. The full list of available environments is defined at
-   * project level. If this list is empty, the experience will run on all environments.
-   *
-   * @deprecated
-   */
-  environments?: Array<string>;
-  /**
-   * The environment where this experience will run. It has to be one of the environments defined at the project level
-   */
-  environment?: string;
-  /**
-   * Various experience's settings
-   */
-  settings?: {
     /**
-     * Minimum order value for transactions outliers
-     * @deprecated
+     * Experience ID
+     */
+    id?: string;
+    /**
+     * Experience Name
+     */
+    name?: string;
+    /**
+     * Experience readable key that uniquely identifies this experience
+     */
+    key?: string;
+    /**
+     * List of locations IDs on which this experience is presented. Either this or **site_area** is given but should not be both.
+     */
+    locations?: Array<(string)> | null;
+    /**
+     * Rules that define where the experience is gonna run. Either this or **locations** is given but should not be both.
+     */
+    site_area?: ((RuleObject) | null);
+    /**
+     * List of audiences IDs to which this experience is presented to
+     */
+    audiences?: Array<(string)> | null;
+    /**
+     * List of goals IDs to which will be tracked for this experience
+     */
+    goals?: Array<(string)>;
+    /**
+     * Only for multipage experience type
+     */
+    multipage_pages?: Array<MultipageExperiencePage>;
+    status?: ExperienceStatuses;
+    /**
+     * Global Experience's JavaScript that will run for this experience before its changes are applied
+     *
+     */
+    global_js?: string;
+    /**
+     * Global Experience's StyleSheet that will run for this experience before its changes are applied
+     *
+     */
+    global_css?: string;
+    type?: ExperienceTypes;
+    /**
+     * Experience's version number
+     */
+    version?: number;
+    /**
+     * Experience's variations list
+     */
+    variations?: Array<ExperienceVariationConfig>;
+    /**
+     * List of integrations that this experience's data is sent to
      */
     min_order_value?: number;
     /**
@@ -1893,6 +1907,24 @@ export type ConfigExperience = {
       locations?: GenericListMatchingOptions;
     };
   };
+};
+
+/**
+ * Multipage Experience Page object
+ */
+export type MultipageExperiencePage = {
+    /**
+     * The ID of the page.
+     */
+    id?: string;
+    /**
+     * Name of the page
+     */
+    name?: string;
+    /**
+     * The url of page to load
+     */
+    url?: string;
 };
 
 /**
@@ -2417,6 +2449,27 @@ export type ConfigProjectMinimalSettings = {
   tracking_script?: TrackingScriptReleaseBase;
 };
 
+export type ConfigProjectMinimalSettings = {
+    /**
+     * Whether to include jQuery library or not into the javascript tracking file served by Convert and loaded via the tracking snippet. If jQuery is not included, it has to be loaded on page, before Convert's tracking code
+     */
+    include_jquery?: boolean;
+    /**
+     * Whether to include jQuery library or not into the v1 javascript tracking file served by Convert and loaded via the tracking snippet.
+     */
+    include_jquery_v1?: boolean;
+    /**
+     * Whether to disable the SPA (Single Page Application) related functionalities from the tracking scripts V1. Most websites work fine without disabling SPA functionality regardless of the fact they are Single Page Apps or not. In edge situation, this setting might prove handy
+     */
+    disable_spa_functionality?: boolean;
+    /**
+     * Tracks the project's version, updated with each change done inside the project, which would affect the config of that project. The format is [ISO_datetime]-[incremental_number].
+     *
+     */
+    readonly version?: (string) | null;
+    tracking_script?: TrackingScriptReleaseBase;
+};
+
 /**
  * Project Object under which experiences would get created
  */
@@ -2509,12 +2562,72 @@ export type ConfigProject = {
      * Minimum order value for transactions outliers
      * @deprecated
      */
+    global_javascript?: (string) | null;
+    settings?: ({
+    /**
+     * Flag indicating whether decoration of outgoing links (appending tracking cookies inside the link URL in order to
+     * make cross domain tracking possible) is done automatically on page
+     *
+     */
+    allow_crossdomain_tracking?: boolean;
+    /**
+     * Whether or not data is [anonymized](https://convert.zendesk.com/hc/en-us/articles/204506339-Prevent-Experiment-Details-Data-Leak-with-Data-Anonymization).
+     */
+    data_anonymization?: boolean;
+    /**
+     * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
+     */
+    do_not_track?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
+    /**
+     * Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
+     * - OFF: Do not follow GPC signals.
+     * - EU ONLY: Follow GPC signals for users in the European Union only.
+     * - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
+     * - Worldwide: Follow GPC signals for users worldwide.
+     *
+     */
+    global_privacy_control?: 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
+    /**
+     * When this is turned to true, Convert won't track any referral data like http referral, utm query strings etc. Those will be used on the current page if available but won't be stored in cookies in order to be used on subsequent pages.
+     */
+    do_not_track_referral?: boolean;
+    /**
+     * This holds project wide settings used by integrations
+     */
+    integrations?: {
+        google_analytics?: GA_Settings;
+        visitor_insights?: VisitorInsightsData;
+        kissmetrics?: {
+            /**
+             * Flag indicating whether Kissmetrics integration is enabled or not for this project
+             */
+            enabled?: boolean;
+        };
+    };
+    /**
+     * Minimum order value for transactions outliers
+     * @deprecated
+     */
     min_order_value?: number;
     /**
      * Maximum order value for transactions outliers
      * @deprecated
      */
     max_order_value?: number;
+    /**
+     * Various settings used by the stats engine to detect outliers
+     */
+    outliers?: {
+        /**
+         * Order value outlier settings
+         */
+        order_value?: (NumericOutlier);
+        /**
+         * Products Ordered count outlier settings
+         */
+        products_ordered_count?: (NumericOutlier);
+    };
+} & ConfigProjectMinimalSettings);
     /**
      * Various settings used by the stats engine to detect outliers
      */
@@ -2607,15 +2720,19 @@ export const global_privacy_control = {
  * Settings to identify which tracking script version will be applied to the project.
  */
 export type TrackingScriptReleaseBase = {
-  /**
-   * Current version of the tracking script bundle
-   */
-  readonly current_version?: string;
-  /**
-   * Latest available version of the tracking script bundle.
-   */
-  readonly latest_version?: string | null;
+    /**
+     * Current version of the tracking script bundle
+     */
+    readonly current_version?: string;
+    /**
+     * Latest available version of the tracking script bundle.
+     */
+    readonly latest_version?: (string) | null;
 } | null;
+
+export type VisitorInsightsData = {
+    tracking_id?: string;
+};
 
 export type ProjectGASettingsBase = GA_SettingsBase & {
   /**
@@ -2913,6 +3030,19 @@ export type GetProjectSettingsData = {
 
 export type GetProjectSettingsResponse = ConfigMinimalResponseData;
 
+export type GetProjectSettingsData = {
+    /**
+     * ID of the account that owns the retrieved/saved data
+     */
+    accountId: number;
+    /**
+     * ID of the project to be retrieved
+     */
+    projectId: number;
+};
+
+export type GetProjectSettingsResponse = (ConfigMinimalResponseData);
+
 export type SendTrackingEventsSdkKeyData = {
   /**
    * A JSON object containing the tracking events sent to the Convert tracking servers.
@@ -2975,21 +3105,36 @@ export type $OpenApiTs = {
         default: ErrorData;
       };
     };
-  };
-  '/project-settings/{account_id}/{project_id}': {
-    get: {
-      req: GetProjectSettingsData;
-      res: {
-        /**
-         * Object consumed by SDKs
-         *
-         */
-        200: ConfigMinimalResponseData;
-        /**
-         * A response signaling an error
-         */
-        default: ErrorData;
-      };
+    '/project-settings/{account_id}/{project_id}': {
+        get: {
+            req: GetProjectSettingsData;
+            res: {
+                /**
+                 * Object consumed by SDKs
+                 *
+                 */
+                200: ConfigMinimalResponseData;
+                /**
+                 * A response signaling an error
+                 */
+                default: ErrorData;
+            };
+        };
+    };
+    '/track/{sdk_key}': {
+        post: {
+            req: SendTrackingEventsSdkKeyData;
+            res: {
+                /**
+                 * A response signaling a generic success
+                 */
+                200: SuccessData;
+                /**
+                 * A response signaling an error
+                 */
+                default: ErrorData;
+            };
+        };
     };
   };
   '/track/{sdkKey}': {
