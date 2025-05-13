@@ -32,10 +32,22 @@ export class Comparisons {
         Object.keys(value).indexOf(String(testAgainst)) !== -1,
         negation
       );
+    
+    // Convert to strings for comparison
     value = String(value);
     testAgainst = String(testAgainst);
-    value = value.valueOf().toLowerCase();
-    testAgainst = testAgainst.valueOf().toLowerCase();
+    
+    // Check if both are URLs (contain http:// or https://)
+    if (value.match(/^https?:\/\//) && testAgainst.match(/^https?:\/\//)) {
+      // Remove trailing slashes for URL comparison
+      value = value.replace(/\/+$/, '').toLowerCase();
+      testAgainst = testAgainst.replace(/\/+$/, '').toLowerCase();
+    } else {
+      // Normal string comparison for non-URLs
+      value = value.valueOf().toLowerCase();
+      testAgainst = testAgainst.valueOf().toLowerCase();
+    }
+    
     return this._returnNegationCheck(value === testAgainst, negation);
   }
 
