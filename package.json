@@ -38,12 +38,12 @@
     "sdk:test": "cd packages/js-sdk && yarn test",
     "test": "yarn utils:test && yarn event:test && yarn bucketing:test && yarn logger:test && yarn rules:test && yarn segments:test && yarn api:test && yarn data:test && yarn experience:test && yarn sdk:test",
     "sdk:docs": "cd packages/js-sdk/docs && yarn docs",
-    "demo:reactjs:start": "cd demo/reactjs && yarn start",
-    "demo:nodejs:start": "cd demo/nodejs && yarn start",
-    "demo:nestjs:start": "cd demo/nestjs && yarn start",
-    "demo:nextjs:start": "cd demo/nextjs && yarn start",
-    "demo:remixjs:client:start": "cd demo/remixjs-client-side && yarn dev",
-    "demo:remixjs:server:start": "cd demo/remixjs-server-side && yarn dev"
+    "demo:reactjs:start": "yarn build && cp demo/reactjs/.env.example demo/reactjs/.env && cd demo/reactjs && yarn install && yarn start",
+    "demo:nodejs:start": "yarn build && cp demo/nodejs/.env.example demo/nodejs/.env && cd demo/nodejs && yarn install && yarn start",
+    "demo:nestjs:start": "yarn build && cp demo/nestjs/.env.example demo/nestjs/.env && cd demo/nestjs && yarn install && yarn start",
+    "demo:nextjs:start": "yarn build && cp demo/nextjs/.env.example demo/nextjs/.env && cd demo/nextjs && yarn install && yarn start",
+    "demo:remixjs:client:start": "yarn build && cp demo/remixjs-client-side/.env.example demo/remixjs-client-side/.env && cd demo/remixjs-client-side && yarn install && yarn dev",
+    "demo:remixjs:server:start": "yarn build && cp demo/remixjs-server-side/.env.example demo/remixjs-server-side/.env && cd demo/remixjs-server-side && yarn install && yarn dev"
   },
   "private": true,
   "workspaces": [
