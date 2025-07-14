@@ -978,6 +978,29 @@ export type TimeRange = {
 };
 
 /**
+ * File Object
+ */
+export type UploadedFileData = {
+    /**
+     * Storage key of the uploaded file.
+     */
+    key?: string;
+    /**
+     * Original name of the uploaded file.
+     */
+    name?: string;
+    /**
+     * Endpoint to access the file resource associated with the project.
+     */
+    readonly url?: string;
+};
+
+/**
+ * A server-generated hash that represents the object's state at the time of retrieval. When included in an update request, the operation will only succeed if the object hasn't been modified since this key was obtained. If another update has occurred in the meantime, the request will fail with a conflict error, requiring you to fetch the latest version and retry your update with the new concurrency_key. This implements optimistic concurrency control to prevent lost updates in concurrent scenarios.
+ */
+export type ConcurrencyKey = (string) | null;
+
+/**
  * Response containing project's config data needed in order to serve experiences
  */
 export type ConfigResponseData = {
@@ -1102,6 +1125,11 @@ export type ExperienceChangeIdReadOnly = {
 /**
  * Object that represents one change done inside an experience
  */
+export type ExperienceChangeServing = ExperienceChangeDefaultCodeDataServing | ExperienceChangeDefaultCodeMultipageDataServing | ExperienceChangeDefaultRedirectDataServing | ExperienceChangeCustomCodeDataServing | ExperienceChangeRichStructureDataServing | ExperienceChangeFullStackFeatureServing;
+
+/**
+ * Object that represents one change done inside an experience
+ */
 export type ExperienceChange = ExperienceChangeDefaultCodeData | ExperienceChangeDefaultCodeMultipageData | ExperienceChangeDefaultRedirectData | ExperienceChangeCustomCodeData | ExperienceChangeRichStructureData | ExperienceChangeFullStackFeature;
 
 /**
@@ -1152,7 +1180,14 @@ export const type4 = {
 /**
  * Describes structure for "defaultCode" type of experience change
  */
-export type ExperienceChangeDefaultCodeData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeDataBase;
+export type ExperienceChangeDefaultCodeData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeDataBase & {
+    concurrency_key?: ConcurrencyKey;
+};
+
+/**
+ * Describes structure for "defaultCode" type of experience change
+ */
+export type ExperienceChangeDefaultCodeDataServing = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeDataBase;
 
 /**
  * Describes structure for adding a "defaultCode" type of experience change
@@ -1164,12 +1199,16 @@ export type ExperienceChangeDefaultCodeDataAdd = ExperienceChangeIdReadOnly & Ex
 /**
  * Describes structure for "defaultCode" type of experience change
  */
-export type ExperienceChangeDefaultCodeDataUpdateNoId = ExperienceChangeDefaultCodeDataBase & unknown;
+export type ExperienceChangeDefaultCodeDataUpdateNoId = ExperienceChangeDefaultCodeDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "defaultCode" type of experience change
  */
-export type ExperienceChangeDefaultCodeDataUpdate = ExperienceChangeId & ExperienceChangeDefaultCodeDataBase & unknown;
+export type ExperienceChangeDefaultCodeDataUpdate = ExperienceChangeId & ExperienceChangeDefaultCodeDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "defaultRedirect" type of experience change
@@ -1204,7 +1243,14 @@ export const type5 = {
 /**
  * Describes structure for "defaultRedirect" type of experience change
  */
-export type ExperienceChangeDefaultRedirectData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultRedirectDataBase;
+export type ExperienceChangeDefaultRedirectData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultRedirectDataBase & {
+    concurrency_key?: ConcurrencyKey;
+};
+
+/**
+ * Describes structure for "defaultRedirect" type of experience change
+ */
+export type ExperienceChangeDefaultRedirectDataServing = ExperienceChangeIdReadOnly & ExperienceChangeDefaultRedirectDataBase;
 
 /**
  * Describes structure for "defaultRedirect" type of experience change
@@ -1216,12 +1262,16 @@ export type ExperienceChangeDefaultRedirectDataAdd = ExperienceChangeIdReadOnly 
 /**
  * Describes structure for "defaultRedirect" type of experience change
  */
-export type ExperienceChangeDefaultRedirectDataUpdateNoId = ExperienceChangeDefaultRedirectDataBase & unknown;
+export type ExperienceChangeDefaultRedirectDataUpdateNoId = ExperienceChangeDefaultRedirectDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "defaultRedirect" type of experience change
  */
-export type ExperienceChangeDefaultRedirectDataUpdate = ExperienceChangeId & ExperienceChangeDefaultRedirectDataBase & unknown;
+export type ExperienceChangeDefaultRedirectDataUpdate = ExperienceChangeId & ExperienceChangeDefaultRedirectDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "defaultCodeMultipage" type of experience change
@@ -1260,7 +1310,14 @@ export const type6 = {
 /**
  * Describes structure for "defaultCodeMultipage" type of experience change
  */
-export type ExperienceChangeDefaultCodeMultipageData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeMultipageDataBase;
+export type ExperienceChangeDefaultCodeMultipageData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeMultipageDataBase & {
+    concurrency_key?: ConcurrencyKey;
+};
+
+/**
+ * Describes structure for "defaultCodeMultipage" type of experience change
+ */
+export type ExperienceChangeDefaultCodeMultipageDataServing = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeMultipageDataBase;
 
 /**
  * Describes structure for "defaultCodeMultipage" type of experience change
@@ -1272,12 +1329,16 @@ export type ExperienceChangeDefaultCodeMultipageDataAdd = ExperienceChangeIdRead
 /**
  * Describes structure for "defaultCodeMultipage" type of experience change
  */
-export type ExperienceChangeDefaultCodeMultipageDataUpdateNoId = ExperienceChangeDefaultCodeMultipageDataBase & unknown;
+export type ExperienceChangeDefaultCodeMultipageDataUpdateNoId = ExperienceChangeDefaultCodeMultipageDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "defaultCodeMultipage" type of experience change
  */
-export type ExperienceChangeDefaultCodeMultipageDataUpdate = ExperienceChangeId & ExperienceChangeDefaultCodeMultipageDataBase & unknown;
+export type ExperienceChangeDefaultCodeMultipageDataUpdate = ExperienceChangeId & ExperienceChangeDefaultCodeMultipageDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "defaultCode" type of experience change
@@ -1316,7 +1377,14 @@ export const type7 = {
 /**
  * Describes structure for "defaultCode" type of experience change
  */
-export type ExperienceChangeRichStructureData = ExperienceChangeIdReadOnly & ExperienceChangeRichStructureDataBase;
+export type ExperienceChangeRichStructureData = ExperienceChangeIdReadOnly & ExperienceChangeRichStructureDataBase & {
+    concurrency_key?: ConcurrencyKey;
+};
+
+/**
+ * Describes structure for "defaultCode" type of experience change
+ */
+export type ExperienceChangeRichStructureDataServing = ExperienceChangeIdReadOnly & ExperienceChangeRichStructureDataBase;
 
 /**
  * Describes structure for "defaultCode" type of experience change
@@ -1328,12 +1396,16 @@ export type ExperienceChangeRichStructureDataAdd = ExperienceChangeIdReadOnly & 
 /**
  * Describes structure for "defaultCode" type of experience change
  */
-export type ExperienceChangeRichStructureDataUpdateNoId = ExperienceChangeRichStructureDataBase & unknown;
+export type ExperienceChangeRichStructureDataUpdateNoId = ExperienceChangeRichStructureDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "defaultCode" type of experience change
  */
-export type ExperienceChangeRichStructureDataUpdate = ExperienceChangeId & ExperienceChangeRichStructureDataBase & unknown;
+export type ExperienceChangeRichStructureDataUpdate = ExperienceChangeId & ExperienceChangeRichStructureDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "defaultCode" type of experience change
@@ -1368,7 +1440,14 @@ export const type8 = {
 /**
  * Describes structure for "defaultCode" type of experience change
  */
-export type ExperienceChangeCustomCodeData = ExperienceChangeIdReadOnly & ExperienceChangeCustomCodeDataBase;
+export type ExperienceChangeCustomCodeData = ExperienceChangeIdReadOnly & ExperienceChangeCustomCodeDataBase & {
+    concurrency_key?: ConcurrencyKey;
+};
+
+/**
+ * Describes structure for "defaultCode" type of experience change
+ */
+export type ExperienceChangeCustomCodeDataServing = ExperienceChangeIdReadOnly & ExperienceChangeCustomCodeDataBase;
 
 /**
  * Describes structure for "defaultCode" type of experience change
@@ -1380,12 +1459,16 @@ export type ExperienceChangeCustomCodeDataAdd = ExperienceChangeIdReadOnly & Exp
 /**
  * Describes structure for "customCode" type of experience change
  */
-export type ExperienceChangeCustomCodeDataUpdateNoId = ExperienceChangeCustomCodeDataBase & unknown;
+export type ExperienceChangeCustomCodeDataUpdateNoId = ExperienceChangeCustomCodeDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "customCode" type of experience change
  */
-export type ExperienceChangeCustomCodeDataUpdate = ExperienceChangeId & ExperienceChangeCustomCodeDataBase & unknown;
+export type ExperienceChangeCustomCodeDataUpdate = ExperienceChangeId & ExperienceChangeCustomCodeDataBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "fullStackFeature" type of experience change
@@ -1418,7 +1501,14 @@ export const type9 = {
 /**
  * Describes structure for "fullStackFeature" type of experience change
  */
-export type ExperienceChangeFullStackFeature = ExperienceChangeIdReadOnly & ExperienceChangeFullStackFeatureBase;
+export type ExperienceChangeFullStackFeature = ExperienceChangeIdReadOnly & ExperienceChangeFullStackFeatureBase & {
+    concurrency_key?: ConcurrencyKey;
+};
+
+/**
+ * Describes structure for "fullStackFeature" type of experience change
+ */
+export type ExperienceChangeFullStackFeatureServing = ExperienceChangeIdReadOnly & ExperienceChangeFullStackFeatureBase;
 
 /**
  * Describes structure for "fullStackFeature" type of experience change
@@ -1430,12 +1520,16 @@ export type ExperienceChangeFullStackFeatureAdd = ExperienceChangeIdReadOnly & E
 /**
  * Describes structure for "fullStackFeature" type of experience change
  */
-export type ExperienceChangeFullStackFeatureUpdate = ExperienceChangeId & ExperienceChangeFullStackFeatureBase & unknown;
+export type ExperienceChangeFullStackFeatureUpdate = ExperienceChangeId & ExperienceChangeFullStackFeatureBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 /**
  * Describes structure for "fullStackFeature" type of experience change
  */
-export type ExperienceChangeFullStackFeatureUpdateNoId = ExperienceChangeFullStackFeatureBase & unknown;
+export type ExperienceChangeFullStackFeatureUpdateNoId = ExperienceChangeFullStackFeatureBase & {
+    concurrency_key?: ConcurrencyKey;
+} & unknown;
 
 export type UpdateExperienceChangeRequestData = ExperienceChangeAdd;
 
@@ -1725,7 +1819,7 @@ export type ExperienceVariationConfig = {
     /**
      * List of changes that this variation is exposing.
      */
-    changes?: Array<ExperienceChange>;
+    changes?: Array<ExperienceChangeServing>;
 };
 
 export type ExperienceStatuses = 'draft' | 'active' | 'paused' | 'completed' | 'scheduled';
@@ -2230,8 +2324,10 @@ export type ConfigProject = {
     }>;
     /**
      * The global javascript code that will be loaded on all pages where
-     * the tracking script is installed, prior do processing any of
-     * experiences, goals, audiences etc.
+     * the tracking script is installed, prior to processing any of
+     * experiences, goals, audiences etc. When an environment is specified in the request,
+     * this will be combined with the environment-specific global_js (if any) by appending
+     * the environment's code with a newline character.
      *
      */
     global_javascript?: (string) | null;
@@ -2302,21 +2398,6 @@ export type ConfigProject = {
         products_ordered_count?: (NumericOutlier);
     };
 } & ConfigProjectMinimalSettings);
-    /**
-     * A user-defined key-value object which describes environments available for the project. The number of environments a user can add depends on their plan, by default only one environment is allowed.
-     */
-    environments?: {
-        [key: string]: {
-            /**
-             * The display name of the environment.
-             */
-            label: string;
-            /**
-             * Specifies whether this environment is set as the default environment for the project.
-             */
-            is_default: boolean;
-        };
-    };
 };
 
 /**
