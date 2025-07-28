@@ -2533,7 +2533,7 @@ export type ConversionEvent = {
         /**
          * Value of the metric
          */
-        value?: (number | string);
+        value?: (number | string | Array<string>);
     }>;
     /**
      * Bucketing data (experiences that this visitor is currently part of) for the visitor. In case that **enrichData=true** flag is being sent and
