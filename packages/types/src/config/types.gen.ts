@@ -2529,11 +2529,11 @@ export type ConversionEvent = {
         /**
          * Key of the metric
          */
-        key?: 'amount' | 'productsCount' | 'transactionId';
+        key?: 'amount' | 'productsCount' | 'transactionId' | 'customDimension1' | 'customDimension2' | 'customDimension3' | 'customDimension4' | 'customDimension5';
         /**
          * Value of the metric
          */
-        value?: (number | string);
+        value?: (number | string | Array<string>);
     }>;
     /**
      * Bucketing data (experiences that this visitor is currently part of) for the visitor. In case that **enrichData=true** flag is being sent and
