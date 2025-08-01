@@ -215,7 +215,7 @@ The SDK instance can be initialized by either providing an `sdkKey` or a full pr
 
 Include `sdkKey` as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every `dataRefreshInterval` milliseconds.
 
-> Note: if you use an authenticated key, then you need to include `seksdkKeySecret` as a string property.
+> Note: if you use an authenticated key, then you need to include `sdkKeySecret` as a string property.
 
 ```typescript
 import type {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
@@ -223,7 +223,7 @@ import ConvertSDK from '@convertcom/js-sdk';
 
 const convertSDK: ConvertInterface = new ConvertSDK({
   sdkKey: 'xxx',
-  seksdkKeySecret: 'xxx', // required when using an authenticated SDK key
+  sdkKeySecret: 'xxx', // required when using an authenticated SDK key
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   environment: 'staging' // can also be "live"; this is configured in the Convert UI.
 } as ConvertConfig);
