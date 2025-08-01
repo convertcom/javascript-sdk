@@ -270,6 +270,7 @@ import {LogLevel} from '@convertcom/js-sdk';
 
 const config = {
   sdkKey: '', // either this or 'data' has to be provided
+  sdkKeySecret: '', // required when using an authenticated SDK key
   environment: 'staging',
   logger: {
     logLevel: LogLevel.DEBUG,
