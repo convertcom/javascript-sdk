@@ -328,11 +328,15 @@ const ConvertSDK = (ConvertSDKModule as any).default;
 <p>The SDK instance can be initialized by either providing an <code>sdkKey</code> or a full project's data object.</p>
 <h4>Initialize Using the SDK Key</h4>
 <p>Include <code>sdkKey</code> as a string property in the options object you pass to the constructor instance. The SDK will fetch the project configuration from Convert's CDN and will then refresh it every <code>dataRefreshInterval</code> milliseconds.</p>
+<blockquote>
+<p>Note: if you use an authenticated key, then you need to include <code>sdkKeySecret</code> as a string property.</p>
+</blockquote>
 <pre class="prettyprint source lang-typescript"><code>import type {ConvertInterface, ConvertConfig} from '@convertcom/js-sdk';
 import ConvertSDK from '@convertcom/js-sdk';
 
 const convertSDK: ConvertInterface = new ConvertSDK({
   sdkKey: 'xxx',
+  sdkKeySecret: 'xxx', // required when using an authenticated SDK key
   dataRefreshInterval: 300000, // in milliseconds (5 minutes)
   environment: 'staging' // can also be &quot;live&quot;; this is configured in the Convert UI.
 } as ConvertConfig);
@@ -369,6 +373,7 @@ convertSDK.onReady().then(() => {
 
 const config = {
   sdkKey: '', // either this or 'data' has to be provided
+  sdkKeySecret: '', // required when using an authenticated SDK key
   environment: 'staging',
   logger: {
     logLevel: LogLevel.DEBUG,
