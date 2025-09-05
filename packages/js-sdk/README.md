@@ -29,6 +29,7 @@
    - [SDK Configuration Options](#sdk-configuration-options)
    - [Create User Context](#create-user-context)
 7. [SDK Methods for Running Experiences](#sdk-methods-for-running-experiences)
+   - [General Considerations](#general-considerations)
    - [Run All Active Experiences](#run-all-active-experiences)
    - [Run a Single Experience](#run-a-single-experience)
    - [Run Multiple Features](#run-multiple-features)
@@ -42,10 +43,11 @@
    - [Release Pending Queues](#release-pending-queues)
 8. [Events](#events)
 9. [Provide Persistent DataStore](#provide-persistent-datastore)
-10. [Build Environment Variables](#build-environment-variables)
-11. [Custom Build](#custom-build)
-12. [Conclusion](#conclusion)
-13. [Credits](#credits)
+10. [Common Errors and Troubleshooting](#common-errors-and-troubleshooting)
+11. [Build Environment Variables](#build-environment-variables)
+12. [Custom Build](#custom-build)
+13. [Conclusion](#conclusion)
+14. [Credits](#credits)
 
 ---
 
