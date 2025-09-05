@@ -362,7 +362,7 @@ export type BaseMatch = {
     negated?: boolean;
 };
 
-export type TextMatchRulesTypes = 'url' | 'url_with_query' | 'query_string' | 'campaign' | 'keyword' | 'medium' | 'source_name' | 'city' | 'region' | 'browser_version' | 'user_agent' | 'page_tag_page_type' | 'page_tag_category_id' | 'page_tag_category_name' | 'page_tag_product_sku' | 'page_tag_product_name' | 'page_tag_customer_id' | 'page_tag_custom_1' | 'page_tag_custom_2' | 'page_tag_custom_3' | 'page_tag_custom_4';
+export type TextMatchRulesTypes = 'url' | 'url_with_query' | 'query_string' | 'campaign' | 'keyword' | 'medium' | 'source_name' | 'city' | 'region' | 'browser_version' | 'user_agent' | 'page_tag_page_type' | 'page_tag_category_id' | 'page_tag_category_name' | 'page_tag_product_sku' | 'page_tag_product_name' | 'page_tag_customer_id' | 'page_tag_custom_1' | 'page_tag_custom_2' | 'page_tag_custom_3' | 'page_tag_custom_4' | 'visitor_id' | 'group_id';
 
 export const TextMatchRulesTypes = {
     URL: 'url',
@@ -385,7 +385,9 @@ export const TextMatchRulesTypes = {
     PAGE_TAG_CUSTOM_1: 'page_tag_custom_1',
     PAGE_TAG_CUSTOM_2: 'page_tag_custom_2',
     PAGE_TAG_CUSTOM_3: 'page_tag_custom_3',
-    PAGE_TAG_CUSTOM_4: 'page_tag_custom_4'
+    PAGE_TAG_CUSTOM_4: 'page_tag_custom_4',
+    VISITOR_ID: 'visitor_id',
+    GROUP_ID: 'group_id'
 } as const;
 
 export type NumericMatchRulesTypes = 'avg_time_page' | 'days_since_last_visit' | 'pages_visited_count' | 'visit_duration' | 'visits_count' | 'page_tag_product_price';
@@ -975,6 +977,24 @@ export type TimeRange = {
      */
     end_time?: (number) | null;
     utc_offset?: UTC_Offset;
+};
+
+/**
+ * File Object
+ */
+export type UploadedFileData = {
+    /**
+     * Storage key of the uploaded file.
+     */
+    key?: string;
+    /**
+     * Original name of the uploaded file.
+     */
+    name?: string;
+    /**
+     * Endpoint to access the file resource associated with the project.
+     */
+    readonly url?: string;
 };
 
 /**
@@ -2230,8 +2250,10 @@ export type ConfigProject = {
     }>;
     /**
      * The global javascript code that will be loaded on all pages where
-     * the tracking script is installed, prior do processing any of
-     * experiences, goals, audiences etc.
+     * the tracking script is installed, prior to processing any of
+     * experiences, goals, audiences etc. When an environment is specified in the request,
+     * this will be combined with the environment-specific global_js (if any) by appending
+     * the environment's code with a newline character.
      *
      */
     global_javascript?: (string) | null;
@@ -2302,21 +2324,6 @@ export type ConfigProject = {
         products_ordered_count?: (NumericOutlier);
     };
 } & ConfigProjectMinimalSettings);
-    /**
-     * A user-defined key-value object which describes environments available for the project. The number of environments a user can add depends on their plan, by default only one environment is allowed.
-     */
-    environments?: {
-        [key: string]: {
-            /**
-             * The display name of the environment.
-             */
-            label: string;
-            /**
-             * Specifies whether this environment is set as the default environment for the project.
-             */
-            is_default: boolean;
-        };
-    };
 };
 
 /**
