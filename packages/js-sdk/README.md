@@ -1075,4 +1075,4 @@ Happy converting!
 
 ## Credits
 
-Copyright © 2025 Convert Insights, Inc.
+Copyright © 2024 Convert Insights, Inc.
