@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.9.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.8.1...js-sdk-types-v3.9.0) (2025-09-05)
+
+
+### Features
+
+* automated TS Serving API update ([112017f](https://github.com/convertcom/javascript-sdk/commit/112017fa49a4c94ce3ff963e1c98ea4411ebde19))
+
+
+### Bug Fixes
+
+* expose "data" property ([5df9d29](https://github.com/convertcom/javascript-sdk/commit/5df9d295af348485a2f8a1aff8c5440ef1552681))
+* Improve numeric check utility ([af0d74c](https://github.com/convertcom/javascript-sdk/commit/af0d74cd027664da90d719a9b9a325dbf60ee62d))
+
 ## [3.8.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.8.0...js-sdk-types-v3.8.1) (2025-03-26)
 
 
