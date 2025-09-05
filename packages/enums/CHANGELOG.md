@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v2.2.1...js-sdk-enums-v2.3.0) (2025-09-05)
+
+
+### Features
+
+* Add support for custom dimensions when tracking conversions ([35dba11](https://github.com/convertcom/javascript-sdk/commit/35dba11880b3bad30bec0e15d2e9853148075ae6))
+
+
+### Bug Fixes
+
+* expose "data" property ([5df9d29](https://github.com/convertcom/javascript-sdk/commit/5df9d295af348485a2f8a1aff8c5440ef1552681))
+* Improve numeric check utility ([af0d74c](https://github.com/convertcom/javascript-sdk/commit/af0d74cd027664da90d719a9b9a325dbf60ee62d))
+
 ## [2.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v2.2.0...js-sdk-enums-v2.2.1) (2025-03-26)
 
 

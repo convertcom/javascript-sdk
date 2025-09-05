@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.2.2...js-sdk-utils-v2.2.3) (2025-09-05)
+
+
+### Bug Fixes
+
+* expose "data" property ([5df9d29](https://github.com/convertcom/javascript-sdk/commit/5df9d295af348485a2f8a1aff8c5440ef1552681))
+* Improve numeric check utility ([af0d74c](https://github.com/convertcom/javascript-sdk/commit/af0d74cd027664da90d719a9b9a325dbf60ee62d))
+* Improve numeric check utility ([dc49c20](https://github.com/convertcom/javascript-sdk/commit/dc49c20f4237b63ecda1ed5d230d228e8b35d2a7))
+
 ## [2.2.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.2.1...js-sdk-utils-v2.2.2) (2025-03-26)
 
 
