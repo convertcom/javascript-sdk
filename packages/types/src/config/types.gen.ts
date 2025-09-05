@@ -41,9 +41,8 @@ export const ConfigAudienceTypes = {
 
 export type PageNumber = {
     /**
-     * Describes the page number of the fetched results. "results_per_page" results are gonna be returned for each page
-     *
-     * Defaults to 1 when not sent
+     * The page number for paginated results. For example, if `results_per_page` is 30, `page: 2` will retrieve items 31-60.
+     * Defaults to 1 if not specified.
      *
      */
     page?: number;
@@ -51,29 +50,27 @@ export type PageNumber = {
 
 export type Pagination = {
     /**
-     * Current page number
+     * The current page number being displayed from the paginated set.
      */
     current_page?: number;
     /**
-     * Total number of records
+     * The total number of items available across all pages for the current filter criteria.
      */
     items_count?: number;
     /**
-     * Number of records per page
+     * The number of items included in the current page of results (matches `results_per_page` from the request).
      */
     items_per_page?: number;
     /**
-     * Limitation number of records per page
+     * The total number of pages available for the current filter criteria and `results_per_page` setting.
      */
     pages_count?: number;
 };
 
 export type ResultsPerPage = {
     /**
-     * A value that would be used for setting the number of records that
-     * would be returned per page.
-     *
-     * Defaults to 30 when not sent
+     * Specifies the maximum number of items to return in a single page of results.
+     * Used for pagination. Default is 30, maximum is 50.
      *
      */
     results_per_page?: (number) | null;
@@ -81,26 +78,29 @@ export type ResultsPerPage = {
 
 export type SortDirection = {
     /**
-     * Data sorting direction using "sort_by" field. "asc" for ascending direction, "desc" for descending direction
-     *
-     * Defaults to **desc** when not sent in a request
+     * The direction for sorting the list results, based on the `sort_by` field.
+     * - `asc`: Ascending order (e.g., A-Z, 1-10, oldest to newest).
+     * - `desc`: Descending order (e.g., Z-A, 10-1, newest to oldest).
+     * Defaults to `desc` (newest/highest first) if not specified.
      *
      */
     sort_direction?: ('asc' | 'desc') | null;
 };
 
 /**
- * Data sorting direction using "sort_by" field. "asc" for ascending direction, "desc" for descending direction
- *
- * Defaults to **desc** when not sent in a request
+ * The direction for sorting the list results, based on the `sort_by` field.
+ * - `asc`: Ascending order (e.g., A-Z, 1-10, oldest to newest).
+ * - `desc`: Descending order (e.g., Z-A, 10-1, newest to oldest).
+ * Defaults to `desc` (newest/highest first) if not specified.
  *
  */
 export type sort_direction = 'asc' | 'desc';
 
 /**
- * Data sorting direction using "sort_by" field. "asc" for ascending direction, "desc" for descending direction
- *
- * Defaults to **desc** when not sent in a request
+ * The direction for sorting the list results, based on the `sort_by` field.
+ * - `asc`: Ascending order (e.g., A-Z, 1-10, oldest to newest).
+ * - `desc`: Descending order (e.g., Z-A, 10-1, newest to oldest).
+ * Defaults to `desc` (newest/highest first) if not specified.
  *
  */
 export const sort_direction = {
@@ -110,7 +110,8 @@ export const sort_direction = {
 
 export type OnlyCount = {
     /**
-     * When provided in requests that allow it, the response would only contain count of records and no real records' data
+     * If set to `true` in a list request, the response will only contain the total count of matching items (`extra.pagination.items_count`)
+     * and will not include the actual item data. Useful for quickly getting totals without fetching full datasets.
      *
      */
     onlyCount?: boolean;
@@ -122,7 +123,9 @@ export type Extra = {
 
 export type BaseRule = {
     /**
-     * It defines the type of the rule
+     * The specific attribute or condition to evaluate. Examples: 'url', 'cookie', 'browser_name', 'js_condition', 'page_tag_product_price'.
+     * The allowed `rule_type` values depend on whether the rule is for an Audience (which can use visitor and page content attributes if it's a 'segmentation' type) or a Location (typically URL or page tag based).
+     *
      */
     rule_type: string;
 };
@@ -137,6 +140,7 @@ export type BaseRuleWithStringValue = BaseRule & {
 export type BaseRuleWithJsCodeValue = BaseRule & {
     /**
      * The JS code that would be executed when rule is checked. The return value of this JS code is what is gonna be matched
+     *
      * against **true**(or **false** if **matching.negated = true** is provided)
      *
      */
@@ -286,6 +290,7 @@ export const value3 = {
 export type BaseRuleWithWeatherConditionValue = BaseRule & {
     /**
      * Weather Condition name used for matching. Full or partial condition.
+     *
      * The weather provider used by Convert detects the following conditions:
      * - Blizzard
      * - Blowing snow
@@ -304,26 +309,18 @@ export type BaseRuleWithWeatherConditionValue = BaseRule & {
      * - Moderate rain at times
      * - Overcast
      * - Partly cloudy
-     * - Patchy freezing drizzle possible
-     * - Patchy light drizzle
-     * - Patchy light rain
-     * - Patchy rain possible
-     * - Patchy sleet possible
-     * - Patchy snow possible
-     * - Sunny
-     * - Thundery outbreaks possible
      *
      */
     value?: string;
 };
 
 /**
- * Weather Conditions
+ * Standardized weather condition strings used for targeting.
  */
 export type WeatherConditions = 'Blizzard' | 'Blowing snow' | 'Cloudy' | 'Fog' | 'Freezing drizzle' | 'Freezing fog' | 'Heavy freezing drizzle' | 'Heavy rain' | 'Heavy rain at times' | 'Light drizzle' | 'Light freezing rain' | 'Light rain' | 'Mist' | 'Moderate rain' | 'Moderate rain at times' | 'Overcast' | 'Partly cloudy' | 'Patchy freezing drizzle possible' | 'Patchy light drizzle' | 'Patchy light rain' | 'Patchy rain possible' | 'Patchy sleet possible' | 'Patchy snow possible' | 'Sunny' | 'Thundery outbreaks possible';
 
 /**
- * Weather Conditions
+ * Standardized weather condition strings used for targeting.
  */
 export const WeatherConditions = {
     BLIZZARD: 'Blizzard',
@@ -355,8 +352,8 @@ export const WeatherConditions = {
 
 export type BaseMatch = {
     /**
-     * When true, the rule result is gonna be negated.
-     * example: `url contains "test"` with *negated* = true becomes `url does not contain "test"`
+     * If `true`, the logical result of the match is inverted.
+     * For example, if `match_type` is 'contains' and `value` is 'apple', `negated: true` means the rule matches if the attribute *does not* contain 'apple'.
      *
      */
     negated?: boolean;
@@ -541,7 +538,7 @@ export type GenericSetMatchRule = BaseRuleWithStringValue & {
 
 export type GenericKey = {
     /**
-     * The key used to identify the data that would be matched against rule **value**
+     * The name of the key whose value will be retrieved and compared against the rule's `value`.
      */
     key?: string;
 };
@@ -710,19 +707,24 @@ export const SetMatchingOptions = {
 } as const;
 
 /**
- * This one describes a logical rule that is being used inside the app for triggering goals, matching audiences etc
+ * Defines the logical structure for combining multiple rule conditions. It uses a nested OR -> AND -> OR_WHEN structure.
+ * - The top-level `OR` array means if *any* of its contained AND blocks evaluate to true, the entire rule set is true.
+ * - Each object within the `OR` array has an `AND` array. For this AND block to be true, *all* of its contained OR_WHEN blocks must evaluate to true.
+ * - Each object within the `AND` array has an `OR_WHEN` array. For this OR_WHEN block to be true, *any* of its individual `RuleElement` conditions must evaluate to true.
+ * This structure allows for complex logical expressions like `(CondA AND CondB) OR (CondC AND CondD)`.
+ *
  */
 export type RuleObject = {
     /**
-     * This describes an outer set of blocks which are evaluated using OR's between them
+     * An array of AND-blocks. The overall rule matches if any of these AND-blocks match.
      */
     OR?: Array<{
         /**
-         * This describes a colections of logical blocks which are evaluated using AND's between them
+         * An array of OR_WHEN-blocks. This AND-block matches if all its OR_WHEN-blocks match.
          */
         AND?: Array<{
             /**
-             * This describes a colections of logical blocks which are evaluated using OR's between them
+             * An array of individual rule elements. This OR_WHEN-block matches if any of its rule elements match.
              */
             OR_WHEN?: Array<RuleElement>;
         }>;
@@ -730,19 +732,21 @@ export type RuleObject = {
 } | null;
 
 /**
- * This one describes a logical rule that is being used inside the app for triggering goals, matching audiences etc
+ * Similar to `RuleObject`, but the individual `RuleElementNoUrl` conditions within `OR_WHEN` arrays cannot include URL-based matching types.
+ * Used for 'permanent' or 'transient' audiences where URL context is not persistently evaluated or relevant for the audience type.
+ *
  */
 export type RuleObjectNoUrl = {
     /**
-     * This describes an outer set of blocks which are evaluated using OR's between them
+     * An array of AND-blocks.
      */
     OR?: Array<{
         /**
-         * This describes a colections of logical blocks which are evaluated using AND's between them
+         * An array of OR_WHEN-blocks.
          */
         AND?: Array<{
             /**
-             * This describes a colections of logical blocks which are evaluated using OR's between them
+             * An array of individual rule elements that do not involve URL matching.
              */
             OR_WHEN?: Array<RuleElementNoUrl>;
         }>;
@@ -751,7 +755,7 @@ export type RuleObjectNoUrl = {
 
 export type Base64Image = {
     /**
-     * Image's content, base64 encoded
+     * The base64 encoded string representation of the image's binary data.
      */
     data?: string;
 };
@@ -805,11 +809,11 @@ export type BulkSuccessData = SuccessData & {
 
 export type BulkEntityError = {
     /**
-     * ID of entity which has not been processed
+     * The unique identifier of the entity that could not be processed.
      */
     id?: number;
     /**
-     * A reason explaining why entity has not been processed
+     * A message explaining the reason for the failure for this specific entity.
      */
     message?: string;
 };
@@ -821,7 +825,7 @@ export type UTC_Offset = number;
 
 export type GA_SettingsBase = {
     /**
-     * Flag indicating whether Google Analytics integration is enabled or not.
+     * If true, integration with Google Analytics is enabled for this project or experience, allowing experiment data to be sent to GA.
      */
     enabled?: boolean;
 };
@@ -829,7 +833,7 @@ export type GA_SettingsBase = {
 export type IntegrationGA3 = {
     type?: 'ga3';
     /**
-     * Universal Analytics property to be used for tracking
+     * The Universal Analytics Property ID (e.g., "UA-XXXXXXXX-Y") to which Convert experiment data will be sent.
      */
     property_UA?: (string) | null;
 };
@@ -843,7 +847,7 @@ export const type = {
 export type IntegrationGA4Base = {
     type?: 'ga4';
     /**
-     * ID of the ga4 property where data will be sent. Used internally for API calls to GoogleAnalytics
+     * The GA4 Measurement ID (e.g., "G-XXXXXXXXXX") for the data stream where Convert experiment data will be sent.
      */
     measurementId?: string;
 };
@@ -862,15 +866,19 @@ export type IntegrationGA4 = IntegrationGA4Base & {
 };
 
 /**
- * The way the list is processed. `any` means at least one element in the list is matched.
- * `all` means all elements in the list are matched. Default is any.
+ * Defines how multiple conditions within a list (e.g., multiple audiences or locations linked to an experience) are logically combined:
+ * - `any`: The overall condition is met if *at least one* item in the list matches (logical OR).
+ * - `all`: The overall condition is met only if *all* items in the list match (logical AND).
+ * Default is typically 'any' (OR).
  *
  */
 export type GenericListMatchingOptions = 'any' | 'all';
 
 /**
- * The way the list is processed. `any` means at least one element in the list is matched.
- * `all` means all elements in the list are matched. Default is any.
+ * Defines how multiple conditions within a list (e.g., multiple audiences or locations linked to an experience) are logically combined:
+ * - `any`: The overall condition is met if *at least one* item in the list matches (logical OR).
+ * - `all`: The overall condition is met only if *all* items in the list match (logical AND).
+ * Default is typically 'any' (OR).
  *
  */
 export const GenericListMatchingOptions = {
@@ -880,18 +888,27 @@ export const GenericListMatchingOptions = {
 
 export type VisitorInsightsBase = {
     /**
-     * Flag indicating whether Visitor Insights is enabled or not.
+     * If true, Convert Signals™ is enabled for the project, allowing the system to capture sessions exhibiting user frustration or usability issues.
+     *
      */
     enabled?: boolean;
 };
 
 /**
- * Type of the outlier detection mechanism
+ * The method used for detecting and handling order outliers in revenue or product count tracking:
+ * - `none`: No outlier detection is applied.
+ * - `min_max`: Orders with values below a specified minimum or above a specified maximum are capped at those boundaries.
+ * - `percentile`: Orders falling below a lower percentile or above an upper percentile are capped at the values corresponding to those percentiles.
+ *
  */
 export type NumericOutlierTypes = 'none' | 'min_max' | 'percentile';
 
 /**
- * Type of the outlier detection mechanism
+ * The method used for detecting and handling order outliers in revenue or product count tracking:
+ * - `none`: No outlier detection is applied.
+ * - `min_max`: Orders with values below a specified minimum or above a specified maximum are capped at those boundaries.
+ * - `percentile`: Orders falling below a lower percentile or above an upper percentile are capped at the values corresponding to those percentiles.
+ *
  */
 export const NumericOutlierTypes = {
     NONE: 'none',
@@ -946,12 +963,16 @@ export const detection_type3 = {
 export type NumericOutlier = NumericOutlierNone | NumericOutlierMinMax | NumericOutlierPercentile;
 
 /**
- * List of supported percentiles
+ * Standard percentile values used for outlier detection thresholds.
+ * For example, a `min` of 5 and `max` of 95 means orders in the bottom 5% and top 5% of values are considered outliers and capped.
+ *
  */
 export type Percentiles = 1 | 5 | 10 | 25 | 50 | 75 | 90 | 95 | 99;
 
 /**
- * List of supported percentiles
+ * Standard percentile values used for outlier detection thresholds.
+ * For example, a `min` of 5 and `max` of 95 means orders in the bottom 5% and top 5% of values are considered outliers and capped.
+ *
  */
 export const Percentiles = {
     '_1': 1,
@@ -967,14 +988,32 @@ export const Percentiles = {
 
 export type TimeRange = {
     /**
-     * Unix timestamp when reporting period should start, provided in the given **utc_time_offset**
+     * Unix timestamp (seconds since epoch, UTC) marking the beginning of the time range. If null, implies from the beginning of data.
      */
     start_time?: (number) | null;
     /**
-     * Unix timestamp when reporting period should end, provided in the given **utc_time_offset**
+     * Unix timestamp (seconds since epoch, UTC) marking the end of the time range. If null, implies up to the current time.
      */
     end_time?: (number) | null;
     utc_offset?: UTC_Offset;
+};
+
+/**
+ * File Object
+ */
+export type UploadedFileData = {
+    /**
+     * Storage key of the uploaded file.
+     */
+    key?: string;
+    /**
+     * Original name of the uploaded file.
+     */
+    name?: string;
+    /**
+     * Endpoint to access the file resource associated with the project.
+     */
+    readonly url?: string;
 };
 
 /**
@@ -1049,18 +1088,14 @@ export type ConfigOptionalResponseData = {
 };
 
 /**
- * Object that represents the change done inside an experience
+ * The fundamental structure representing a single modification applied within an experience's variation. The specific content and behavior of the change are determined by its `type` and detailed in the `data` object.
  */
 export type ExperienceChangeBase = {
     type?: 'richStructure' | 'customCode' | 'defaultCode' | 'defaultCodeMultipage' | 'defaultRedirect' | 'fullStackFeature';
     /**
-     * This contains all data of this change, any code, settings etc
-     *
-     * This is sent by default in the following requests responses: **getExperienceChange**;
-     *
-     * All other responses that return this field, will only return it if "include" request parameter contains its name
-     *
-     * Data object structure will correspond to the "type" field
+     * A flexible object containing the specific details and content for this change, structured according to the change `type`.
+     * For example, for `customCode`, it would contain `js` and `css` strings. For `defaultRedirect`, it would contain `original_pattern` and `variation_pattern`.
+     * This field is included by default when fetching a single `ExperienceChange` but might be omitted in list views unless specified in an `include` parameter.
      *
      */
     data?: {
@@ -1080,47 +1115,47 @@ export const type3 = {
 } as const;
 
 /**
- * Object that represents id of the change done inside an experience
+ * Represents the unique identifier of an existing change within an experience variation. Used when updating or referencing a specific change.
  */
 export type ExperienceChangeId = {
     /**
-     * The ID of the experience change
+     * The unique numerical identifier for this specific change.
      */
     id: number;
 };
 
 /**
- * Object that represents id of the change done inside an experience
+ * Represents the unique identifier of a change, typically when returned by the API after creation or in a list.
  */
 export type ExperienceChangeIdReadOnly = {
     /**
-     * The ID of the experience change
+     * The unique numerical identifier for this specific change.
      */
     readonly id?: number;
 };
 
 /**
- * Object that represents one change done inside an experience
+ * Represents a single, specific modification applied as part of an experience's variation. The exact structure and content depend on the `type` of change.
  */
 export type ExperienceChange = ExperienceChangeDefaultCodeData | ExperienceChangeDefaultCodeMultipageData | ExperienceChangeDefaultRedirectData | ExperienceChangeCustomCodeData | ExperienceChangeRichStructureData | ExperienceChangeFullStackFeature;
 
 /**
- * Object that represents one change done inside an experience, used when adding changes
+ * Data structure for adding a new change to an experience variation. The `id` field is omitted as it will be assigned upon creation.
  */
 export type ExperienceChangeAdd = ExperienceChangeDefaultCodeDataAdd | ExperienceChangeDefaultCodeMultipageDataAdd | ExperienceChangeDefaultRedirectDataAdd | ExperienceChangeCustomCodeDataAdd | ExperienceChangeRichStructureDataAdd | ExperienceChangeFullStackFeatureAdd;
 
 /**
- * Object that represents one change done inside an experience
+ * Data structure for updating an existing change within an experience variation. Requires the `id` of the change to be modified.
  */
 export type ExperienceChangeUpdate = ExperienceChangeDefaultCodeDataUpdate | ExperienceChangeDefaultCodeMultipageDataUpdate | ExperienceChangeDefaultRedirectDataUpdate | ExperienceChangeRichStructureDataUpdate | ExperienceChangeCustomCodeDataUpdate | ExperienceChangeFullStackFeatureUpdate;
 
 /**
- * Object that represents one change done inside an experience
+ * Data structure for defining a change when updating a collection of changes (e.g., within a variation update), where the `id` might be part of a parent object or implied.
  */
 export type ExperienceChangeUpdateNoId = ExperienceChangeDefaultCodeDataUpdateNoId | ExperienceChangeDefaultCodeMultipageDataUpdateNoId | ExperienceChangeDefaultRedirectDataUpdateNoId | ExperienceChangeRichStructureDataUpdateNoId | ExperienceChangeCustomCodeDataUpdateNoId | ExperienceChangeFullStackFeatureUpdateNoId;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Defines a standard code-based change, typically generated by the Visual Editor for modifications like text replacement, style changes, or element removal. It can include CSS, Convert's internal JS representation, and custom JS.
  */
 export type ExperienceChangeDefaultCodeDataBase = ExperienceChangeBase & {
     type?: 'defaultCode';
@@ -1150,29 +1185,29 @@ export const type4 = {
 } as const;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Represents a 'defaultCode' type change, including its system-assigned ID.
  */
 export type ExperienceChangeDefaultCodeData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeDataBase;
 
 /**
- * Describes structure for adding a "defaultCode" type of experience change
+ * Data for creating a new 'defaultCode' type change.
  */
 export type ExperienceChangeDefaultCodeDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeDataBase & {
     data: unknown;
 };
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Data for updating a 'defaultCode' type change when its ID is managed externally.
  */
 export type ExperienceChangeDefaultCodeDataUpdateNoId = ExperienceChangeDefaultCodeDataBase & unknown;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Data for updating an existing 'defaultCode' type change, identified by its `id`.
  */
 export type ExperienceChangeDefaultCodeDataUpdate = ExperienceChangeId & ExperienceChangeDefaultCodeDataBase & unknown;
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
+ * Defines a URL redirect, typically used in Split URL experiments. It specifies how to match an original URL and construct the URL for the variation page.
  */
 export type ExperienceChangeDefaultRedirectDataBase = ExperienceChangeBase & {
     type?: 'defaultRedirect';
@@ -1202,29 +1237,29 @@ export const type5 = {
 } as const;
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
+ * Represents a 'defaultRedirect' type change, including its system-assigned ID.
  */
 export type ExperienceChangeDefaultRedirectData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultRedirectDataBase;
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
+ * Data for creating a new 'defaultRedirect' type change.
  */
 export type ExperienceChangeDefaultRedirectDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeDefaultRedirectDataBase & {
     data: unknown;
 };
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
+ * Data for updating a 'defaultRedirect' type change when its ID is managed externally.
  */
 export type ExperienceChangeDefaultRedirectDataUpdateNoId = ExperienceChangeDefaultRedirectDataBase & unknown;
 
 /**
- * Describes structure for "defaultRedirect" type of experience change
+ * Data for updating an existing 'defaultRedirect' type change, identified by its `id`.
  */
 export type ExperienceChangeDefaultRedirectDataUpdate = ExperienceChangeId & ExperienceChangeDefaultRedirectDataBase & unknown;
 
 /**
- * Describes structure for "defaultCodeMultipage" type of experience change
+ * Defines a standard code-based change that applies to a specific page within a Multi-page Funnel experiment. This allows different code (CSS, JS) to be applied to different steps of the funnel for the same variation.
  */
 export type ExperienceChangeDefaultCodeMultipageDataBase = ExperienceChangeBase & {
     type?: 'defaultCodeMultipage';
@@ -1258,29 +1293,29 @@ export const type6 = {
 } as const;
 
 /**
- * Describes structure for "defaultCodeMultipage" type of experience change
+ * Represents a 'defaultCodeMultipage' type change, including its system-assigned ID.
  */
 export type ExperienceChangeDefaultCodeMultipageData = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeMultipageDataBase;
 
 /**
- * Describes structure for "defaultCodeMultipage" type of experience change
+ * Data for creating a new 'defaultCodeMultipage' type change.
  */
 export type ExperienceChangeDefaultCodeMultipageDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeDefaultCodeMultipageDataBase & {
     data: unknown;
 };
 
 /**
- * Describes structure for "defaultCodeMultipage" type of experience change
+ * Data for updating a 'defaultCodeMultipage' type change when its ID is managed externally.
  */
 export type ExperienceChangeDefaultCodeMultipageDataUpdateNoId = ExperienceChangeDefaultCodeMultipageDataBase & unknown;
 
 /**
- * Describes structure for "defaultCodeMultipage" type of experience change
+ * Data for updating an existing 'defaultCodeMultipage' type change, identified by its `id`.
  */
 export type ExperienceChangeDefaultCodeMultipageDataUpdate = ExperienceChangeId & ExperienceChangeDefaultCodeMultipageDataBase & unknown;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Defines a complex change, often involving multiple DOM manipulations or structured data, typically generated by advanced Visual Editor interactions or specific integrations. (Primarily for internal or advanced programmatic use).
  */
 export type ExperienceChangeRichStructureDataBase = ExperienceChangeBase & {
     type?: 'richStructure';
@@ -1314,29 +1349,29 @@ export const type7 = {
 } as const;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Represents a 'richStructure' type change, including its system-assigned ID.
  */
 export type ExperienceChangeRichStructureData = ExperienceChangeIdReadOnly & ExperienceChangeRichStructureDataBase;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Data for creating a new 'richStructure' type change.
  */
 export type ExperienceChangeRichStructureDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeRichStructureDataBase & {
     data: unknown;
 };
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Data for updating a 'richStructure' type change when its ID is managed externally.
  */
 export type ExperienceChangeRichStructureDataUpdateNoId = ExperienceChangeRichStructureDataBase & unknown;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Data for updating an existing 'richStructure' type change, identified by its `id`.
  */
 export type ExperienceChangeRichStructureDataUpdate = ExperienceChangeId & ExperienceChangeRichStructureDataBase & unknown;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Defines a change applied purely through custom-written CSS and/or JavaScript code, bypassing the Visual Editor's generated code. This offers maximum flexibility for developers.
  */
 export type ExperienceChangeCustomCodeDataBase = ExperienceChangeBase & {
     type?: 'customCode';
@@ -1366,29 +1401,29 @@ export const type8 = {
 } as const;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Represents a 'customCode' type change, including its system-assigned ID.
  */
 export type ExperienceChangeCustomCodeData = ExperienceChangeIdReadOnly & ExperienceChangeCustomCodeDataBase;
 
 /**
- * Describes structure for "defaultCode" type of experience change
+ * Data for creating a new 'customCode' type change.
  */
 export type ExperienceChangeCustomCodeDataAdd = ExperienceChangeIdReadOnly & ExperienceChangeCustomCodeDataBase & {
     data: unknown;
 };
 
 /**
- * Describes structure for "customCode" type of experience change
+ * Data for updating a 'customCode' type change when its ID is managed externally.
  */
 export type ExperienceChangeCustomCodeDataUpdateNoId = ExperienceChangeCustomCodeDataBase & unknown;
 
 /**
- * Describes structure for "customCode" type of experience change
+ * Data for updating an existing 'customCode' type change, identified by its `id`.
  */
 export type ExperienceChangeCustomCodeDataUpdate = ExperienceChangeId & ExperienceChangeCustomCodeDataBase & unknown;
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
+ * Defines a change for a Full Stack experiment that involves enabling or configuring a specific 'Feature' and its variables for this variation.
  */
 export type ExperienceChangeFullStackFeatureBase = ExperienceChangeBase & {
     type?: 'fullStackFeature';
@@ -1416,36 +1451,42 @@ export const type9 = {
 } as const;
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
+ * Represents a 'fullStackFeature' type change, including its system-assigned ID.
  */
 export type ExperienceChangeFullStackFeature = ExperienceChangeIdReadOnly & ExperienceChangeFullStackFeatureBase;
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
+ * Data for creating a new 'fullStackFeature' type change.
  */
 export type ExperienceChangeFullStackFeatureAdd = ExperienceChangeIdReadOnly & ExperienceChangeFullStackFeatureBase & {
     data: unknown;
 };
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
+ * Data for updating an existing 'fullStackFeature' type change, identified by its `id`.
  */
 export type ExperienceChangeFullStackFeatureUpdate = ExperienceChangeId & ExperienceChangeFullStackFeatureBase & unknown;
 
 /**
- * Describes structure for "fullStackFeature" type of experience change
+ * Data for updating a 'fullStackFeature' type change when its ID is managed externally.
  */
 export type ExperienceChangeFullStackFeatureUpdateNoId = ExperienceChangeFullStackFeatureBase & unknown;
 
 export type UpdateExperienceChangeRequestData = ExperienceChangeAdd;
 
 /**
- * Describes the provider with which Convert integrates to send experience data
+ * Identifies the third-party analytics, heatmap, or data platform with which Convert Experiences is integrated for this specific experience.
+ * This allows experiment data (like experience ID and variation ID/name) to be sent to the selected provider.
+ * Knowledge Base has many articles on integrations, e.g., "Integrate Convert Experiences with Google Analytics", "Hotjar Integration".
+ *
  */
 export type IntegrationProvider = 'baidu' | 'clicktale' | 'clicky' | 'cnzz' | 'crazyegg' | 'econda' | 'eulerian' | 'google_analytics' | 'gosquared' | 'heapanalytics' | 'hotjar' | 'mixpanel' | 'mouseflow' | 'piwik' | 'segmentio' | 'sitecatalyst' | 'woopra' | 'ysance';
 
 /**
- * Describes the provider with which Convert integrates to send experience data
+ * Identifies the third-party analytics, heatmap, or data platform with which Convert Experiences is integrated for this specific experience.
+ * This allows experiment data (like experience ID and variation ID/name) to be sent to the selected provider.
+ * Knowledge Base has many articles on integrations, e.g., "Integrate Convert Experiences with Google Analytics", "Hotjar Integration".
+ *
  */
 export const IntegrationProvider = {
     BAIDU: 'baidu',
@@ -1471,8 +1512,8 @@ export const IntegrationProvider = {
 export type ExperienceIntegrationBase = {
     provider: IntegrationProvider;
     /**
-     * Boolean flag indicating whether the integration is enabled or not. When updating experience's integrations,
-     * to disable an integration, this flag needs to be passed as **false**. If not passed, integration is assumed to be **enabled=true**
+     * If `true`, this integration is active for the experience, and Convert will attempt to send experiment data to the specified provider.
+     * If `false` or omitted when updating, the integration is disabled.
      *
      */
     enabled?: (boolean) | null;
@@ -1497,10 +1538,9 @@ export type ExperienceIntegrationCnzz = ExperienceIntegrationBase & {
 };
 
 /**
- * Crazyegg integration requires API key and secret which are set at the project level and can be
- * updated using updateProject operation
- *
- * **Important:** Not having API key and secret set for the project, would cause integration to fail
+ * Configuration for integrating with Crazy Egg. Convert sends experiment and variation data to allow segmentation of Crazy Egg heatmaps and recordings by variation.
+ * Project-level API key and secret for Crazy Egg might be required for some functionalities (not specified here, but in KB for other tools).
+ * KB: "Integrate Convert Experiences with Crazy Egg".
  *
  */
 export type ExperienceIntegrationCrazyegg = ExperienceIntegrationBase;
@@ -2033,20 +2073,31 @@ export const GoalTypes = {
 } as const;
 
 /**
- * This one describes a logical triggering rule that is being used inside the app
+ * Defines how and when an experience associated with this location should be activated for a visitor who matches the location's rules.
+ * The `type` determines the activation mechanism.
+ * Knowledge Base: "Locations" - "Dynamic Website Triggers".
+ *
  */
 export type LocationTrigger = LocationTriggerDomElement | LocationTriggerCallback | LocationTriggerManual | LocationTriggerUponRun;
 
 /**
- * Describes possible location trigger types.
- * Note that `upon_run` is always the case for **fullstack** projects.
+ * Specifies the mechanism that activates an experience when its location rules are met:
+ * - `upon_run`: (Default) The experience activates as soon as the Convert tracking script loads and evaluates that the visitor matches the location's rules (e.g., URL match). This is the standard behavior for most A/B tests.
+ * - `manual`: The experience only activates when explicitly triggered by a JavaScript call (`window._conv_q.push({ what: 'triggerLocation', params: { locationId: '...' } })`). Gives precise programmatic control over activation.
+ * - `dom_element`: The experience activates upon a specific user interaction (e.g., 'click', 'hover', 'in_view', 'change') with a defined DOM element (identified by a CSS `selector`). Useful for testing changes related to interactive elements.
+ * - `callback`: The experience activates when a custom JavaScript `callback` function (provided in `js`) calls the `activate()` function passed to it. Allows for complex asynchronous activation logic, e.g., after an API response or a specific SPA state change.
+ * Note: For Full Stack projects, `upon_run` is effectively the only mode, as activation is handled by the SDK.
  *
  */
 export type LocationTriggerTypes = 'upon_run' | 'manual' | 'dom_element' | 'callback';
 
 /**
- * Describes possible location trigger types.
- * Note that `upon_run` is always the case for **fullstack** projects.
+ * Specifies the mechanism that activates an experience when its location rules are met:
+ * - `upon_run`: (Default) The experience activates as soon as the Convert tracking script loads and evaluates that the visitor matches the location's rules (e.g., URL match). This is the standard behavior for most A/B tests.
+ * - `manual`: The experience only activates when explicitly triggered by a JavaScript call (`window._conv_q.push({ what: 'triggerLocation', params: { locationId: '...' } })`). Gives precise programmatic control over activation.
+ * - `dom_element`: The experience activates upon a specific user interaction (e.g., 'click', 'hover', 'in_view', 'change') with a defined DOM element (identified by a CSS `selector`). Useful for testing changes related to interactive elements.
+ * - `callback`: The experience activates when a custom JavaScript `callback` function (provided in `js`) calls the `activate()` function passed to it. Allows for complex asynchronous activation logic, e.g., after an API response or a specific SPA state change.
+ * Note: For Full Stack projects, `upon_run` is effectively the only mode, as activation is handled by the SDK.
  *
  */
 export const LocationTriggerTypes = {
@@ -2081,12 +2132,22 @@ export const type20 = {
 } as const;
 
 /**
- * Allowed events for LocationTriggerDomElement
+ * The type of user interaction with a DOM element that will trigger the experience:
+ * - `click`: Activates when the element is clicked.
+ * - `hover`: Activates when the mouse pointer hovers over the element (mouseenter).
+ * - `in_view`: Activates when the element becomes visible in the browser's viewport (e.g., user scrolls to it). KB: "Launch Experiments Using Custom JavaScript When Elements Appear in DOM".
+ * - `change`: Activates when the value of a form element (like input, select, textarea) changes.
+ *
  */
 export type LocationDomTriggerEvents = 'click' | 'hover' | 'in_view' | 'change';
 
 /**
- * Allowed events for LocationTriggerDomElement
+ * The type of user interaction with a DOM element that will trigger the experience:
+ * - `click`: Activates when the element is clicked.
+ * - `hover`: Activates when the mouse pointer hovers over the element (mouseenter).
+ * - `in_view`: Activates when the element becomes visible in the browser's viewport (e.g., user scrolls to it). KB: "Launch Experiments Using Custom JavaScript When Elements Appear in DOM".
+ * - `change`: Activates when the value of a form element (like input, select, textarea) changes.
+ *
  */
 export const LocationDomTriggerEvents = {
     CLICK: 'click',
@@ -2117,19 +2178,19 @@ export type LocationTriggerCallback = LocationTriggerBase & {
     type?: 'callback';
     /**
      * Describes the js callback that will be executed in order to fire the experience.
+     *
      * It is called with two arguments:
      * - `activate` - a function that should be called when the experience should be activated
      * - `options` - an object with the following properties:
      * - `locationId` - id of the location that is being activated
      * - `isActive` - boolean flag that indicates if the location is active
-     *
      * Example:
      * ```
      * function(activate, options) {
      * if (options.isActive) {
      * setTimeout(function() {
      * * it activates the experiences 1 second after the
-     * location trigger is initialized - at the load of the tracking script*
+     * location trigger is initialized - at the load of the tracking script *
      * activate();
      * }, 1000);
      * }
@@ -2230,8 +2291,10 @@ export type ConfigProject = {
     }>;
     /**
      * The global javascript code that will be loaded on all pages where
-     * the tracking script is installed, prior do processing any of
-     * experiences, goals, audiences etc.
+     * the tracking script is installed, prior to processing any of
+     * experiences, goals, audiences etc. When an environment is specified in the request,
+     * this will be combined with the environment-specific global_js (if any) by appending
+     * the environment's code with a newline character.
      *
      */
     global_javascript?: (string) | null;
@@ -2302,21 +2365,6 @@ export type ConfigProject = {
         products_ordered_count?: (NumericOutlier);
     };
 } & ConfigProjectMinimalSettings);
-    /**
-     * A user-defined key-value object which describes environments available for the project. The number of environments a user can add depends on their plan, by default only one environment is allowed.
-     */
-    environments?: {
-        [key: string]: {
-            /**
-             * The display name of the environment.
-             */
-            label: string;
-            /**
-             * Specifies whether this environment is set as the default environment for the project.
-             */
-            is_default: boolean;
-        };
-    };
 };
 
 /**
