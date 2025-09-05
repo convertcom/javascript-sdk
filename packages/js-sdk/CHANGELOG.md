@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.3.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.3.2...js-sdk-v4.3.3) (2025-09-05)
+
+
+### Bug Fixes
+
+* expose "data" property ([5df9d29](https://github.com/convertcom/javascript-sdk/commit/5df9d295af348485a2f8a1aff8c5440ef1552681))
+* Improve numeric check utility ([5cdfb11](https://github.com/convertcom/javascript-sdk/commit/5cdfb11201c77c349c94a95634e990512841fe55))
+* Improve numeric check utility ([8e61900](https://github.com/convertcom/javascript-sdk/commit/8e619009cfa7dc03b2bb1d1836aa7743b9c7de0e))
+* Improve numeric check utility ([88e8e08](https://github.com/convertcom/javascript-sdk/commit/88e8e08f7d687c363d10874a5b9ff4b5e3df19e1))
+* Improve numeric check utility ([af0d74c](https://github.com/convertcom/javascript-sdk/commit/af0d74cd027664da90d719a9b9a325dbf60ee62d))
+
 ## [4.3.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.3.1...js-sdk-v4.3.2) (2025-03-26)
 
 
