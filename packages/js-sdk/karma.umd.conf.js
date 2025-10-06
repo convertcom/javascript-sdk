@@ -9,7 +9,12 @@ module.exports = function (config) {
   config.set({
     ...baseConfig,
     // list of files / patterns to load in the browser
-    files: ['./lib/index.umd.min.js', './index.browser.umd.tests.js'],
+    files: [
+      './lib/index.umd.min.js',
+      './index.browser.umd.tests.js',
+      // Serve WASM file but don't include it in the test runner
+      {pattern: './lib/decisions_core_bg.wasm', included: false, served: true, watched: false}
+    ],
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
