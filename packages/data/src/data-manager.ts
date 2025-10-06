@@ -47,6 +47,21 @@ import {
 } from '@convertcom/js-sdk-types';
 
 import {
+  aggregateFeaturesWithRust as runRustFeatureAggregation,
+  decideExperienceWithRust,
+  initializeRustDecider,
+  isRustDeciderReady,
+  RustDeciderNotReadyError,
+  RustDecisionResponsePayload,
+  RustFeatureAggregationPayload,
+  RustLogRecord,
+  RustSelectionPayload,
+  RustTrackingInstruction,
+  RustTrackingInstructionBucket,
+  RustVariationSummary
+} from './rust-decider';
+
+import {
   BucketingError,
   DATA_ENTITIES,
   DATA_ENTITIES_MAP,
@@ -83,6 +98,7 @@ export class DataManager implements DataManagerInterface {
   private _asyncStorage: boolean;
   private _environment: string;
   private _mapper: (...args: any) => any;
+  private _useRustDecider: boolean;
   /**
    * @param {Config} config
    * @param {Object} dependencies
@@ -119,6 +135,16 @@ export class DataManager implements DataManagerInterface {
     this._loggerManager = loggerManager;
     this._eventManager = eventManager;
     this._config = config;
+    this._useRustDecider = Boolean(config?.experimental?.useRustDecider);
+    if (this._useRustDecider) {
+      initializeRustDecider().catch((error: Error) => {
+        this._loggerManager?.warn?.(
+          'DataManager()',
+          'Unable to initialize Rust decision engine',
+          error
+        );
+      });
+    }
     this._mapper = config?.mapper || ((value: any) => value);
     this._asyncStorage = asyncStorage;
     this._data = objectDeepValue(config, 'data');
@@ -470,6 +496,109 @@ export class DataManager implements DataManagerInterface {
     return null;
   }
 
+  private _maybeDecideExperienceWithRust({
+    visitorId,
+    identity,
+    identityField,
+    visitorProperties,
+    locationProperties,
+    environment,
+    ignoreLocationProperties,
+    forceVariationId,
+    enableTracking,
+    updateVisitorProperties
+  }: {
+    visitorId: string;
+    identity: string;
+    identityField: IdentityField;
+    visitorProperties?: Record<string, any>;
+    locationProperties?: Record<string, any>;
+    environment: string;
+    ignoreLocationProperties?: boolean;
+    forceVariationId?: string;
+    enableTracking: boolean;
+    updateVisitorProperties: boolean;
+  }): BucketedVariation | RuleError | BucketingError | null | undefined {
+    if (!this._useRustDecider || !isRustDeciderReady()) return undefined;
+    const project = this._data?.project;
+    if (!project) return undefined;
+
+    const storeData = (this.getData(visitorId) || {}) as StoreData;
+    const options: Record<string, unknown> = {
+      ignoreLocationProperties: Boolean(ignoreLocationProperties),
+      enableTracking,
+      updateVisitorProperties
+    };
+    if (forceVariationId) options.forceVariationId = forceVariationId;
+
+    const request = {
+      visitorId,
+      experienceKey: identityField === 'key' ? identity : undefined,
+      experienceId: identityField === 'id' ? identity : undefined,
+      context: {
+        visitorProperties: visitorProperties || {},
+        locationProperties: ignoreLocationProperties
+          ? {}
+          : locationProperties || {}
+      },
+      environment,
+      options,
+      visitorState: this._buildRustVisitorState(storeData)
+    };
+
+    try {
+      const response = decideExperienceWithRust(
+        project,
+        request
+      ) as RustDecisionResponsePayload;
+
+      this._replayRustLogs(response.logs);
+
+      const visitorPropsForState = updateVisitorProperties
+        ? visitorProperties || null
+        : null;
+
+      if (response.outcome.type !== 'matched') {
+        this._applyRustStateDiff(
+          visitorId,
+          response.state_diff,
+          visitorPropsForState
+        );
+        this._emitRustLocationTransitions(visitorId, response.location_transitions);
+        return null;
+      }
+
+      const bucketedVariation = this._mapRustSelectionToVariation(
+        response.outcome.selection,
+        identity
+      );
+
+      this._applyRustStateDiff(
+        visitorId,
+        response.state_diff,
+        visitorPropsForState
+      );
+      this._emitRustLocationTransitions(visitorId, response.location_transitions);
+      this._handleRustTracking(
+        visitorId,
+        response.tracking,
+        enableTracking,
+        visitorProperties,
+        storeData?.segments
+      );
+
+      return bucketedVariation;
+    } catch (error) {
+      if (error instanceof RustDeciderNotReadyError) return undefined;
+      this._loggerManager?.warn?.(
+        'DataManager._getBucketingByField()',
+        'Falling back to JavaScript decision path',
+        error
+      );
+      return undefined;
+    }
+  }
+
   /**
    * Retrieve variation for visitor
    * @param {string} visitorId
@@ -515,6 +644,23 @@ export class DataManager implements DataManagerInterface {
         environment: environment
       })
     );
+
+    const rustResult = this._maybeDecideExperienceWithRust({
+      visitorId,
+      identity,
+      identityField,
+      visitorProperties,
+      locationProperties,
+      environment,
+      ignoreLocationProperties,
+      forceVariationId,
+      enableTracking,
+      updateVisitorProperties: Boolean(updateVisitorProperties)
+    });
+
+    if (rustResult !== undefined) {
+      return rustResult;
+    }
 
     // Retrieve the experience
     const experience = this.matchRulesByField(
@@ -719,6 +865,228 @@ export class DataManager implements DataManagerInterface {
     return bucketedVariation as BucketedVariation;
   }
 
+  private _buildRustVisitorState(
+    storeData: StoreData | null | undefined
+  ): Record<string, unknown> {
+    const state: Record<string, unknown> = {
+      bucketing: storeData?.bucketing || {}
+    };
+
+    if (Array.isArray(storeData?.locations) && storeData.locations.length) {
+      state.active_locations = storeData.locations;
+    }
+
+    const customSegments = this._extractCustomSegments(storeData?.segments);
+    if (customSegments.length) {
+      state.custom_segments = customSegments;
+    }
+
+    return state;
+  }
+
+  private _extractCustomSegments(segments?: VisitorSegments): Array<string> {
+    if (!segments) return [];
+    const customSegments = (segments as Record<string, any>)[
+      SegmentsKeys.CUSTOM_SEGMENTS
+    ];
+    if (!Array.isArray(customSegments)) return [];
+    return customSegments
+      .map((segment) =>
+        segment && typeof segment === 'object' && 'toString' in segment
+          ? segment.toString()
+          : String(segment)
+      )
+      .filter((value) => typeof value === 'string' && value.length);
+  }
+
+  private _replayRustLogs(logs: Array<RustLogRecord>): void {
+    if (!Array.isArray(logs) || !logs.length) return;
+    logs.forEach(({level, message, data}) => {
+      const normalizedLevel = level?.toLowerCase?.();
+      const payload = [
+        'RustDecisionEngine',
+        message,
+        data && this._mapper(data)
+      ] as [string, any?, any?];
+      switch (normalizedLevel) {
+        case 'trace':
+          this._loggerManager?.trace?.(...payload);
+          break;
+        case 'debug':
+          this._loggerManager?.debug?.(...payload);
+          break;
+        case 'warn':
+          this._loggerManager?.warn?.(...payload);
+          break;
+        case 'error':
+          this._loggerManager?.error?.(...payload);
+          break;
+        default:
+          this._loggerManager?.info?.(...payload);
+          break;
+      }
+    });
+  }
+
+  private _applyRustStateDiff(
+    visitorId: string,
+    stateDiff: RustDecisionResponsePayload['state_diff'],
+    visitorProperties: Record<string, any> | null
+  ): void {
+    const updates: StoreData = {};
+
+    if (stateDiff?.bucketing && Object.keys(stateDiff.bucketing).length) {
+      updates.bucketing = {...stateDiff.bucketing};
+    }
+
+    if (Array.isArray(stateDiff?.active_locations)) {
+      updates.locations = [...stateDiff.active_locations];
+    }
+
+    const segmentUpdates: VisitorSegments = {};
+    if (visitorProperties && objectNotEmpty(visitorProperties)) {
+      Object.assign(segmentUpdates, visitorProperties);
+    }
+    if (Array.isArray(stateDiff?.custom_segments)) {
+      segmentUpdates[SegmentsKeys.CUSTOM_SEGMENTS] = stateDiff.custom_segments;
+    }
+
+    if (objectNotEmpty(segmentUpdates)) {
+      updates.segments = segmentUpdates;
+    }
+
+    if (objectNotEmpty(updates)) {
+      this.putData(visitorId, updates);
+    }
+  }
+
+  private _emitRustLocationTransitions(
+    visitorId: string,
+    transitions: Array<RustDecisionResponsePayload['location_transitions'][number]>
+  ): void {
+    if (!Array.isArray(transitions) || !transitions.length) return;
+    transitions.forEach((transition) => {
+      const identity = transition.location_key || transition.location_id;
+      const payload = {
+        visitorId,
+        location: {
+          id: transition.location_id,
+          key: transition.location_key,
+          name: transition.location_name
+        }
+      };
+
+      if (transition.type === 'activated') {
+        this._eventManager.fire(
+          SystemEvents.LOCATION_ACTIVATED,
+          payload,
+          null,
+          true
+        );
+        if (identity) {
+          this._loggerManager?.info?.(
+            'DataManager._getBucketingByField()',
+            MESSAGES.LOCATION_ACTIVATED.replace('#', `#${identity}`)
+          );
+        }
+      } else if (transition.type === 'deactivated') {
+        this._eventManager.fire(
+          SystemEvents.LOCATION_DEACTIVATED,
+          payload,
+          null,
+          true
+        );
+        if (identity) {
+          this._loggerManager?.info?.(
+            'DataManager._getBucketingByField()',
+            MESSAGES.LOCATION_DEACTIVATED.replace('#', `#${identity}`)
+          );
+        }
+      }
+    });
+  }
+
+  private _handleRustTracking(
+    visitorId: string,
+    tracking: RustTrackingInstruction,
+    enableTracking: boolean,
+    visitorProperties?: Record<string, any>,
+    segments?: VisitorSegments
+  ): void {
+    if (!enableTracking || !tracking || tracking.type !== 'bucket') return;
+    const {experience_id, variation_id} = tracking as RustTrackingInstructionBucket;
+    const bucketingEvent: BucketingEvent = {
+      experienceId: experience_id,
+      variationId: variation_id
+    };
+    const visitorEvent: VisitorTrackingEvents = {
+      eventType: eventType.BUCKETING,
+      data: bucketingEvent
+    };
+    const visitorSegments = this._ruleManager.isUsingCustomInterface(
+      visitorProperties
+    )
+      ? visitorProperties?.get?.() || {}
+      : segments;
+    this._apiManager.enqueue(visitorId, visitorEvent, visitorSegments);
+    this._loggerManager?.trace?.(
+      'DataManager._getBucketingByField()',
+      this._mapper({
+        visitorEvent
+      })
+    );
+  }
+
+  private _mapRustSelectionToVariation(
+    selection: RustSelectionPayload,
+    identity: string
+  ): BucketedVariation {
+    const {summary} = selection;
+    const experience = this.getEntityById(
+      summary.experience_id,
+      'experiences'
+    ) as ConfigExperience;
+    const variation = summary.variation;
+    const bucketedVariation: BucketedVariation = {
+      ...variation,
+      experienceId: summary.experience_id,
+      experienceKey: summary.experience_key,
+      experienceName: experience?.name,
+      bucketingAllocation: summary.allocation?.[1]
+    };
+
+    const logTarget = 'DataManager._getBucketingByField()';
+    switch (selection.type) {
+      case 'forced':
+        this._loggerManager?.info?.(
+          logTarget,
+          MESSAGES.BUCKETED_VISITOR_FORCED.replace('#', `#${variation.id}`)
+        );
+        break;
+      case 'cached':
+        this._loggerManager?.info?.(
+          logTarget,
+          MESSAGES.BUCKETED_VISITOR_FOUND.replace('#', `#${variation.id}`)
+        );
+        break;
+      default:
+        this._loggerManager?.info?.(
+          logTarget,
+          MESSAGES.BUCKETED_VISITOR.replace('#', `#${variation.id}`)
+        );
+        this._loggerManager?.debug?.(
+          logTarget,
+          this._mapper({
+            identity,
+            variationId: variation.id
+          })
+        );
+        break;
+    }
+
+    return bucketedVariation;
+  }
+
   /**
    * @param {string} experienceId
    * @param {string} variationId
@@ -737,6 +1105,41 @@ export class DataManager implements DataManagerInterface {
       'id',
       'id'
     ) as ExperienceVariationConfig;
+  }
+
+  aggregateFeaturesWithRust(
+    variationSummaries: Array<RustVariationSummary>,
+    {
+      filters,
+      typeCasting = true
+    }: {filters?: Record<string, unknown>; typeCasting?: boolean} = {}
+  ): RustFeatureAggregationPayload | null {
+    if (!this._useRustDecider || !isRustDeciderReady()) return null;
+    const project = this._data?.project;
+    if (!project || !Array.isArray(variationSummaries) || !variationSummaries.length)
+      return null;
+    try {
+      const response = runRustFeatureAggregation(project, {
+        variationSummaries,
+        filters,
+        typeCasting
+      });
+      this._replayRustLogs(response.logs);
+      return response;
+    } catch (error) {
+      if (!(error instanceof RustDeciderNotReadyError)) {
+        this._loggerManager?.warn?.(
+          'DataManager.aggregateFeaturesWithRust()',
+          'Falling back to JavaScript feature aggregation',
+          error
+        );
+      }
+      return null;
+    }
+  }
+
+  isRustDeciderEnabled(): boolean {
+    return this._useRustDecider;
   }
 
   reset() {

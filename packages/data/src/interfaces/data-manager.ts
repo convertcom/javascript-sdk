@@ -16,6 +16,10 @@ import {
   LocationAttributes,
   GoalData
 } from '@convertcom/js-sdk-types';
+import {
+  RustFeatureAggregationPayload,
+  RustVariationSummary
+} from '../rust-decider';
 import {DataStoreManagerInterface} from './data-store-manager';
 import {
   BucketingError,
@@ -86,4 +90,9 @@ export interface DataManagerInterface {
 
   isValidConfigData(data: ConfigResponseData): boolean;
   setDataStore(dataStore: any): void;
+  isRustDeciderEnabled(): boolean;
+  aggregateFeaturesWithRust(
+    variationSummaries: Array<RustVariationSummary>,
+    options?: {filters?: Record<string, unknown>; typeCasting?: boolean}
+  ): RustFeatureAggregationPayload | null;
 }

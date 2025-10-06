@@ -15,7 +15,8 @@ import {
   IdentityField,
   VariableType,
   ConfigExperience,
-  BucketingAttributes
+  BucketingAttributes,
+  ExperienceVariationConfig
 } from '@convertcom/js-sdk-types';
 import {
   MESSAGES,
@@ -30,6 +31,18 @@ import {
   objectNotEmpty
 } from '@convertcom/js-sdk-utils';
 import {BucketedVariation} from '@convertcom/js-sdk-types';
+
+type RustFeatureDecision = {
+  id: string;
+  key: string;
+  name?: string;
+  status: 'Enabled' | 'Disabled';
+  experience_id?: string;
+  experience_key?: string;
+  variation_id?: string;
+  variation_key?: string;
+  variables?: Record<string, any> | null;
+};
 
 /**
  * Provides features specific logic
@@ -362,6 +375,13 @@ export class FeatureManager implements FeatureManagerInterface {
     );
     if (matchedErrors.length) return matchedErrors as Array<RuleError>;
 
+    const rustAggregated = this._maybeAggregateFeaturesWithRust(
+      bucketedVariations as Array<BucketedVariation>,
+      filter,
+      typeCasting
+    );
+    if (rustAggregated) return rustAggregated;
+
     // Collect features from bucketed variations
     for (const k in bucketedVariations) {
       const bucketedVariation = bucketedVariations[k] as BucketedVariation;
@@ -469,5 +489,99 @@ export class FeatureManager implements FeatureManagerInterface {
    */
   castType(value: any, type: VariableType): any {
     return castType(value, type);
+  }
+
+  private _maybeAggregateFeaturesWithRust(
+    variations: Array<BucketedVariation>,
+    filter: Record<string, Array<string>> | undefined,
+    typeCasting: boolean
+  ): Array<BucketedFeature> | null {
+    if (!this._dataManager?.isRustDeciderEnabled()) return null;
+    const variationSummaries = variations
+      .map((variation) => this._toRustVariationSummary(variation))
+      .filter(Boolean) as Array<{
+        experience_id: string;
+        experience_key: string;
+        variation: ExperienceVariationConfig;
+        allocation?: [number, number];
+      }>;
+
+    if (!variationSummaries.length) return null;
+
+    const filters = filter
+      ? {
+          feature_keys: filter.features,
+          experience_keys: filter.experiences
+        }
+      : undefined;
+
+    const response = this._dataManager.aggregateFeaturesWithRust(
+      variationSummaries,
+      {
+        filters,
+        typeCasting
+      }
+    );
+
+    if (!response) return null;
+
+    return response.features.map((decision: RustFeatureDecision) =>
+      this._mapRustFeatureDecision(decision as RustFeatureDecision)
+    );
+  }
+
+  private _toRustVariationSummary(
+    variation: BucketedVariation
+  ): {
+    experience_id: string;
+    experience_key: string;
+    variation: ExperienceVariationConfig;
+    allocation?: [number, number];
+  } | null {
+    const {
+      experienceId,
+      experienceKey,
+      experienceName: _experienceName,
+      bucketingAllocation,
+      ...variationPayload
+    } = variation;
+
+    if (!experienceId || !experienceKey || !variationPayload?.id) return null;
+
+    return {
+      experience_id: String(experienceId),
+      experience_key: String(experienceKey),
+      variation: variationPayload as ExperienceVariationConfig,
+      allocation: undefined
+    };
+  }
+
+  private _mapRustFeatureDecision(decision: RustFeatureDecision): BucketedFeature {
+    const status =
+      decision.status === 'Enabled'
+        ? FeatureStatus.ENABLED
+        : FeatureStatus.DISABLED;
+
+    const feature: BucketedFeature = {
+      id: decision.id,
+      key: decision.key,
+      name: decision.name,
+      status,
+      experienceId: decision.experience_id || undefined,
+      experienceKey: decision.experience_key || undefined,
+      variables: decision.variables || undefined
+    } as BucketedFeature;
+
+    if (decision.experience_id) {
+      const experience = this._dataManager.getEntityById(
+        decision.experience_id,
+        'experiences'
+      ) as ConfigExperience;
+      if (experience?.name) {
+        feature.experienceName = experience.name;
+      }
+    }
+
+    return feature;
   }
 }

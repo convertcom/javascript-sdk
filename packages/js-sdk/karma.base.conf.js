@@ -64,6 +64,20 @@ module.exports = {
     devtool: 'inline-source-map',
     performance: {
       hints: false
+    },
+    experiments: {
+      asyncWebAssembly: true
+    },
+    module: {
+      rules: [
+        {
+          test: /decisions_core_bg\.wasm$/,
+          type: 'asset/resource',
+          generator: {
+            filename: '[name][ext]'
+          }
+        }
+      ]
     }
   },
   // define browsers

@@ -79,5 +79,8 @@
     "@convertcom/js-sdk-rules": ">=2.1.0",
     "@convertcom/js-sdk-types": ">=3.6.0",
     "@convertcom/js-sdk-utils": ">=2.2.0"
+  },
+  "dependencies": {
+    "@convertcom/decisions-core": "file:../../../decisions-core-sdk/pkg-node"
   }
 }

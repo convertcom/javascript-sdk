@@ -48,6 +48,9 @@ type ConfigBase = {
     cacheLevel?: string;
     source?: string;
   };
+  experimental?: {
+    useRustDecider?: boolean;
+  };
   mapper?: (...args: any) => any;
 };
 

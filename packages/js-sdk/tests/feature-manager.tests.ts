@@ -8,12 +8,14 @@ import {BucketingManager as bm} from '@convertcom/js-sdk-bucketing';
 import {RuleManager as rm} from '@convertcom/js-sdk-rules';
 import {EventManager as em} from '@convertcom/js-sdk-event';
 import {ApiManager as am} from '@convertcom/js-sdk-api';
-import {DataManager as dm} from '@convertcom/js-sdk-data';
+import {DataManager as dm, DataManagerInterface} from '@convertcom/js-sdk-data';
 import {FeatureManager as fm} from '../src/feature-manager';
 import testConfig from './test-config.json';
 import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {defaultConfig} from '../src/config/default';
+import {FeatureStatus} from '@convertcom/js-sdk-enums';
+import {BucketedVariation, ConfigFeature} from '@convertcom/js-sdk-types';
 
 const host = 'http://localhost';
 const port = 8090;
@@ -37,6 +39,124 @@ const bucketingManager = new bm(configuration);
 const ruleManager = new rm(configuration);
 const eventManager = new em(configuration);
 const apiManager = new am(configuration, {eventManager});
+
+class RustDataManagerStub {
+  public aggregateCalled = false;
+  public aggregateArgs: any;
+
+  private _experiences = [
+    {
+      id: 'exp-1',
+      key: 'experience-1',
+      name: 'Experience 1'
+    }
+  ];
+
+  private _variation: BucketedVariation = {
+    id: 'var-1',
+    key: 'variation-1',
+    name: 'Variation 1',
+    status: 'running' as any,
+    changes: [],
+    traffic_allocation: 10000,
+    experienceId: 'exp-1',
+    experienceKey: 'experience-1',
+    experienceName: 'Experience 1'
+  };
+
+  data = configuration.data;
+
+  aggregateFeaturesWithRust(variationSummaries, options): any {
+    this.aggregateCalled = true;
+    this.aggregateArgs = {variationSummaries, options};
+    return {
+      api_version: '1.0.0',
+      features: [
+        {
+          id: 'feature-1',
+          key: 'feature-1',
+          name: 'Feature 1',
+          status: 'Enabled',
+          experience_id: 'exp-1',
+          experience_key: 'experience-1',
+          variation_id: 'var-1',
+          variation_key: 'variation-1',
+          variables: {flag: true}
+        }
+      ],
+      logs: []
+    };
+  }
+
+  getEntitiesList(entityType: string): Array<Record<string, any>> {
+    if (entityType === 'experiences') {
+      return this._experiences;
+    }
+    if (entityType === 'features') {
+      return configuration?.data?.features || [];
+    }
+    return [];
+  }
+
+  getEntities(keys: Array<string>, entityType: string): Array<Record<string, any>> {
+    if (entityType === 'experiences') {
+      return this._experiences.filter((experience) =>
+        keys?.includes?.(experience.key)
+      );
+    }
+    if (entityType === 'features') {
+      return (configuration?.data?.features || []).filter((feature: ConfigFeature) =>
+        keys?.includes?.(feature.key)
+      );
+    }
+    return [];
+  }
+
+  getBucketing(): BucketedVariation {
+    return this._variation;
+  }
+
+  getEntityById(id: string): Record<string, any> {
+    return this._experiences.find((experience) => experience.id === id);
+  }
+
+  getEntity(key: string, entityType: string): Record<string, any> {
+    if (entityType === 'features') {
+      return (configuration?.data?.features || []).find(
+        (feature: ConfigFeature) => feature.key === key
+      );
+    }
+    return null;
+  }
+
+  getEntitiesListObject(
+    entityType: string,
+    field: string
+  ): Record<string, ConfigFeature> {
+    if (entityType !== 'features') return {};
+    const features = configuration?.data?.features || [];
+    return features.reduce((acc, feature) => {
+      const identity = feature?.[field];
+      if (identity) acc[String(identity)] = feature;
+      return acc;
+    }, {} as Record<string, ConfigFeature>);
+  }
+
+  getItemsByKeys(keys: Array<string>, entityType: string): Array<Record<string, any>> {
+    if (entityType === 'features') {
+      return (configuration?.data?.features || []).filter((feature: ConfigFeature) =>
+        keys?.includes?.(feature.key)
+      );
+    }
+    return [];
+  }
+
+  isRustDeciderEnabled(): boolean {
+    return true;
+  }
+
+  reset(): void {}
+}
 
 describe('FeatureManager tests', function () {
   const visitorId = 'XXX';
@@ -254,6 +374,31 @@ describe('FeatureManager tests', function () {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end('{}');
       });
+    });
+    it('Should prefer Rust aggregation when available', function () {
+      const stub = new RustDataManagerStub();
+      const rustFeatureManager = new fm(configuration, {
+        dataManager: stub as unknown as DataManagerInterface
+      });
+      const features = rustFeatureManager.runFeatures('visitor-123', {
+        visitorProperties: {},
+        locationProperties: {}
+      });
+
+      expect(stub.aggregateCalled).to.equal(true);
+      expect(stub.aggregateArgs?.options?.filters).to.equal(undefined);
+      expect(features).to.deep.equal([
+        {
+          id: 'feature-1',
+          key: 'feature-1',
+          name: 'Feature 1',
+          status: FeatureStatus.ENABLED,
+          experienceId: 'exp-1',
+          experienceKey: 'experience-1',
+          experienceName: 'Experience 1',
+          variables: {flag: true}
+        }
+      ]);
     });
     it('Convert value type', function () {
       let value = featureManager.castType('123', 'integer');

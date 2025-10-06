@@ -22,6 +22,9 @@ class DataStore {
 }
 
 const dataStore = new DataStore();
+testConfig.experimental = {
+  useRustDecider: true
+};
 testConfig.dataStore = dataStore;
 testConfig.events = {
   batch_size: 1,
