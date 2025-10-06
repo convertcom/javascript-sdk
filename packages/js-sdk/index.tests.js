@@ -23,7 +23,7 @@ class DataStore {
 
 const dataStore = new DataStore();
 testConfig.experimental = {
-  useRustDecider: true
+  useCoreDecider: true
 };
 testConfig.dataStore = dataStore;
 testConfig.events = {

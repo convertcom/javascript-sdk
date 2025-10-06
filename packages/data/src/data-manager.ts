@@ -47,11 +47,8 @@ import {
 } from '@convertcom/js-sdk-types';
 
 import {
-  aggregateFeaturesWithRust as runRustFeatureAggregation,
-  decideExperienceWithRust,
-  initializeRustDecider,
-  isRustDeciderReady,
-  RustDeciderNotReadyError,
+  CoreDecider,
+  CoreDeciderNotReadyError,
   RustDecisionResponsePayload,
   RustFeatureAggregationPayload,
   RustLogRecord,
@@ -59,7 +56,7 @@ import {
   RustTrackingInstruction,
   RustTrackingInstructionBucket,
   RustVariationSummary
-} from './rust-decider';
+} from './core-decider';
 
 import {
   BucketingError,
@@ -98,7 +95,8 @@ export class DataManager implements DataManagerInterface {
   private _asyncStorage: boolean;
   private _environment: string;
   private _mapper: (...args: any) => any;
-  private _useRustDecider: boolean;
+  private _useCoreDecider: boolean;
+  private _coreDecider: CoreDecider | null = null;
   /**
    * @param {Config} config
    * @param {Object} dependencies
@@ -135,15 +133,11 @@ export class DataManager implements DataManagerInterface {
     this._loggerManager = loggerManager;
     this._eventManager = eventManager;
     this._config = config;
-    this._useRustDecider = Boolean(config?.experimental?.useRustDecider);
-    if (this._useRustDecider) {
-      initializeRustDecider().catch((error: Error) => {
-        this._loggerManager?.warn?.(
-          'DataManager()',
-          'Unable to initialize Rust decision engine',
-          error
-        );
-      });
+    this._useCoreDecider = Boolean(config?.experimental?.useCoreDecider);
+    if (this._useCoreDecider) {
+      // Initialize CoreDecider instance with logger
+      // Note: Initialization will be awaited by Core before firing READY event
+      this._coreDecider = new CoreDecider({loggerManager});
     }
     this._mapper = config?.mapper || ((value: any) => value);
     this._asyncStorage = asyncStorage;
@@ -198,6 +192,13 @@ export class DataManager implements DataManagerInterface {
    */
   get dataStoreManager(): DataStoreManagerInterface {
     return this._dataStoreManager;
+  }
+
+  /**
+   * coreDecider getter
+   */
+  get coreDecider(): CoreDecider | null {
+    return this._coreDecider;
   }
 
   /**
@@ -496,7 +497,7 @@ export class DataManager implements DataManagerInterface {
     return null;
   }
 
-  private _maybeDecideExperienceWithRust({
+  private _maybeDecideExperienceWithCore({
     visitorId,
     identity,
     identityField,
@@ -519,7 +520,7 @@ export class DataManager implements DataManagerInterface {
     enableTracking: boolean;
     updateVisitorProperties: boolean;
   }): BucketedVariation | RuleError | BucketingError | null | undefined {
-    if (!this._useRustDecider || !isRustDeciderReady()) return undefined;
+    if (!this._useCoreDecider || !this._coreDecider?.isReady()) return undefined;
     const project = this._data?.project;
     if (!project) return undefined;
 
@@ -543,11 +544,11 @@ export class DataManager implements DataManagerInterface {
       },
       environment,
       options,
-      visitorState: this._buildRustVisitorState(storeData)
+      visitorState: this._buildCoreVisitorState(storeData)
     };
 
     try {
-      const response = decideExperienceWithRust(
+      const response = this._coreDecider.decideExperience(
         project,
         request
       ) as RustDecisionResponsePayload;
@@ -589,7 +590,7 @@ export class DataManager implements DataManagerInterface {
 
       return bucketedVariation;
     } catch (error) {
-      if (error instanceof RustDeciderNotReadyError) return undefined;
+      if (error instanceof CoreDeciderNotReadyError) return undefined;
       this._loggerManager?.warn?.(
         'DataManager._getBucketingByField()',
         'Falling back to JavaScript decision path',
@@ -645,7 +646,7 @@ export class DataManager implements DataManagerInterface {
       })
     );
 
-    const rustResult = this._maybeDecideExperienceWithRust({
+    const coreResult = this._maybeDecideExperienceWithCore({
       visitorId,
       identity,
       identityField,
@@ -658,8 +659,8 @@ export class DataManager implements DataManagerInterface {
       updateVisitorProperties: Boolean(updateVisitorProperties)
     });
 
-    if (rustResult !== undefined) {
-      return rustResult;
+    if (coreResult !== undefined) {
+      return coreResult;
     }
 
     // Retrieve the experience
@@ -865,7 +866,7 @@ export class DataManager implements DataManagerInterface {
     return bucketedVariation as BucketedVariation;
   }
 
-  private _buildRustVisitorState(
+  private _buildCoreVisitorState(
     storeData: StoreData | null | undefined
   ): Record<string, unknown> {
     const state: Record<string, unknown> = {
@@ -1107,19 +1108,19 @@ export class DataManager implements DataManagerInterface {
     ) as ExperienceVariationConfig;
   }
 
-  aggregateFeaturesWithRust(
+  aggregateFeaturesWithCore(
     variationSummaries: Array<RustVariationSummary>,
     {
       filters,
       typeCasting = true
     }: {filters?: Record<string, unknown>; typeCasting?: boolean} = {}
   ): RustFeatureAggregationPayload | null {
-    if (!this._useRustDecider || !isRustDeciderReady()) return null;
+    if (!this._useCoreDecider || !this._coreDecider?.isReady()) return null;
     const project = this._data?.project;
     if (!project || !Array.isArray(variationSummaries) || !variationSummaries.length)
       return null;
     try {
-      const response = runRustFeatureAggregation(project, {
+      const response = this._coreDecider.aggregateFeatures(project, {
         variationSummaries,
         filters,
         typeCasting
@@ -1127,9 +1128,9 @@ export class DataManager implements DataManagerInterface {
       this._replayRustLogs(response.logs);
       return response;
     } catch (error) {
-      if (!(error instanceof RustDeciderNotReadyError)) {
+      if (!(error instanceof CoreDeciderNotReadyError)) {
         this._loggerManager?.warn?.(
-          'DataManager.aggregateFeaturesWithRust()',
+          'DataManager.aggregateFeaturesWithCore()',
           'Falling back to JavaScript feature aggregation',
           error
         );
@@ -1138,8 +1139,8 @@ export class DataManager implements DataManagerInterface {
     }
   }
 
-  isRustDeciderEnabled(): boolean {
-    return this._useRustDecider;
+  isCoreDeciderEnabled(): boolean {
+    return this._useCoreDecider;
   }
 
   reset() {

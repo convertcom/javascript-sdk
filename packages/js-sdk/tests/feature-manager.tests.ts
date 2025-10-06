@@ -40,7 +40,7 @@ const ruleManager = new rm(configuration);
 const eventManager = new em(configuration);
 const apiManager = new am(configuration, {eventManager});
 
-class RustDataManagerStub {
+class CoreDataManagerStub {
   public aggregateCalled = false;
   public aggregateArgs: any;
 
@@ -66,7 +66,7 @@ class RustDataManagerStub {
 
   data = configuration.data;
 
-  aggregateFeaturesWithRust(variationSummaries, options): any {
+  aggregateFeaturesWithCore(variationSummaries, options): any {
     this.aggregateCalled = true;
     this.aggregateArgs = {variationSummaries, options};
     return {
@@ -151,7 +151,7 @@ class RustDataManagerStub {
     return [];
   }
 
-  isRustDeciderEnabled(): boolean {
+  isCoreDeciderEnabled(): boolean {
     return true;
   }
 
@@ -375,8 +375,8 @@ describe('FeatureManager tests', function () {
         res.end('{}');
       });
     });
-    it('Should prefer Rust aggregation when available', function () {
-      const stub = new RustDataManagerStub();
+    it('Should prefer Core aggregation when available', function () {
+      const stub = new CoreDataManagerStub();
       const rustFeatureManager = new fm(configuration, {
         dataManager: stub as unknown as DataManagerInterface
       });

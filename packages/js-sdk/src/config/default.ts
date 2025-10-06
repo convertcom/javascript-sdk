@@ -34,7 +34,7 @@ export const defaultConfig = {
     comparisonProcessor: null // Allows 3rd party comparison processor to be passed
   },
   experimental: {
-    useRustDecider: false
+    useCoreDecider: false
   },
   network: {
     tracking: true,

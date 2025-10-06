@@ -111,12 +111,38 @@ export class Core implements CoreInterface {
           error: config.data['error']
         });
       } else {
-        this._eventManager.fire(SystemEvents.READY, null, null, true);
-        this._loggerManager?.trace?.(
-          'Core.initialize()',
-          MESSAGES.CORE_INITIALIZED
-        );
-        this._initialized = true;
+        // If using Core decider, wait for it to initialize before firing READY
+        if (config?.experimental?.useCoreDecider && this._dataManager.coreDecider) {
+          this._dataManager.coreDecider.initialize()
+            .then(() => {
+              this._eventManager.fire(SystemEvents.READY, null, null, true);
+              this._loggerManager?.trace?.(
+                'Core.initialize()',
+                MESSAGES.CORE_INITIALIZED
+              );
+              this._initialized = true;
+            })
+            .catch((error: Error) => {
+              this._loggerManager?.warn?.(
+                'Core.initialize()',
+                'Core decider initialization failed, falling back to TypeScript',
+                error
+              );
+              this._eventManager.fire(SystemEvents.READY, null, null, true);
+              this._loggerManager?.trace?.(
+                'Core.initialize()',
+                MESSAGES.CORE_INITIALIZED
+              );
+              this._initialized = true;
+            });
+        } else {
+          this._eventManager.fire(SystemEvents.READY, null, null, true);
+          this._loggerManager?.trace?.(
+            'Core.initialize()',
+            MESSAGES.CORE_INITIALIZED
+          );
+          this._initialized = true;
+        }
       }
     } else {
       this._loggerManager?.error?.(
@@ -200,25 +226,34 @@ export class Core implements CoreInterface {
         this._loggerManager?.trace?.('Core.fetchConfig()', {
           data
         });
-        this._eventManager.fire(
-          objectNotEmpty(this._dataManager.data)
-            ? SystemEvents.CONFIG_UPDATED
-            : SystemEvents.READY,
-          null,
-          null,
-          true
-        );
-        if (objectNotEmpty(this._dataManager.data)) {
-          this._loggerManager?.trace?.(
-            'Core.fetchConfig()',
-            MESSAGES.CONFIG_DATA_UPDATED
-          );
-        } else {
+
+        const isInitialLoad = !objectNotEmpty(this._dataManager.data);
+        const eventType = isInitialLoad ? SystemEvents.READY : SystemEvents.CONFIG_UPDATED;
+
+        // If using Rust decider on initial load, wait for it to initialize before firing READY
+        if (isInitialLoad && this._config?.experimental?.useCoreDecider && this._dataManager.coreDecider) {
+          await this._dataManager.coreDecider.initialize().catch((error: Error) => {
+            this._loggerManager?.warn?.(
+              'Core.fetchConfig()',
+              'Rust decider initialization failed, falling back to TypeScript',
+              error
+            );
+          });
+        }
+
+        this._eventManager.fire(eventType, null, null, true);
+
+        if (isInitialLoad) {
           this._loggerManager?.trace?.(
             'Core.fetchConfig()',
             MESSAGES.CORE_INITIALIZED
           );
           this._initialized = true;
+        } else {
+          this._loggerManager?.trace?.(
+            'Core.fetchConfig()',
+            MESSAGES.CONFIG_DATA_UPDATED
+          );
         }
         this.data = data;
         this._dataManager.data = data;

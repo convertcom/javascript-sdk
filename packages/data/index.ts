@@ -8,3 +8,4 @@ export {DataManager} from './src/data-manager';
 export {DataManagerInterface} from './src/interfaces/data-manager';
 export {DataStoreManager} from './src/data-store-manager';
 export {DataStoreManagerInterface} from './src/interfaces/data-store-manager';
+export {CoreDecider} from './src/core-decider';

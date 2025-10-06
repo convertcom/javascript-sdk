@@ -32,7 +32,7 @@ import {
 } from '@convertcom/js-sdk-utils';
 import {BucketedVariation} from '@convertcom/js-sdk-types';
 
-type RustFeatureDecision = {
+type CoreFeatureDecision = {
   id: string;
   key: string;
   name?: string;
@@ -375,12 +375,12 @@ export class FeatureManager implements FeatureManagerInterface {
     );
     if (matchedErrors.length) return matchedErrors as Array<RuleError>;
 
-    const rustAggregated = this._maybeAggregateFeaturesWithRust(
+    const coreAggregated = this._maybeAggregateFeaturesWithCore(
       bucketedVariations as Array<BucketedVariation>,
       filter,
       typeCasting
     );
-    if (rustAggregated) return rustAggregated;
+    if (coreAggregated) return coreAggregated;
 
     // Collect features from bucketed variations
     for (const k in bucketedVariations) {
@@ -491,14 +491,14 @@ export class FeatureManager implements FeatureManagerInterface {
     return castType(value, type);
   }
 
-  private _maybeAggregateFeaturesWithRust(
+  private _maybeAggregateFeaturesWithCore(
     variations: Array<BucketedVariation>,
     filter: Record<string, Array<string>> | undefined,
     typeCasting: boolean
   ): Array<BucketedFeature> | null {
-    if (!this._dataManager?.isRustDeciderEnabled()) return null;
+    if (!this._dataManager?.isCoreDeciderEnabled()) return null;
     const variationSummaries = variations
-      .map((variation) => this._toRustVariationSummary(variation))
+      .map((variation) => this._toCoreVariationSummary(variation))
       .filter(Boolean) as Array<{
         experience_id: string;
         experience_key: string;
@@ -515,7 +515,7 @@ export class FeatureManager implements FeatureManagerInterface {
         }
       : undefined;
 
-    const response = this._dataManager.aggregateFeaturesWithRust(
+    const response = this._dataManager.aggregateFeaturesWithCore(
       variationSummaries,
       {
         filters,
@@ -525,12 +525,12 @@ export class FeatureManager implements FeatureManagerInterface {
 
     if (!response) return null;
 
-    return response.features.map((decision: RustFeatureDecision) =>
-      this._mapRustFeatureDecision(decision as RustFeatureDecision)
+    return response.features.map((decision: CoreFeatureDecision) =>
+      this._mapCoreFeatureDecision(decision as CoreFeatureDecision)
     );
   }
 
-  private _toRustVariationSummary(
+  private _toCoreVariationSummary(
     variation: BucketedVariation
   ): {
     experience_id: string;
@@ -556,7 +556,7 @@ export class FeatureManager implements FeatureManagerInterface {
     };
   }
 
-  private _mapRustFeatureDecision(decision: RustFeatureDecision): BucketedFeature {
+  private _mapCoreFeatureDecision(decision: CoreFeatureDecision): BucketedFeature {
     const status =
       decision.status === 'Enabled'
         ? FeatureStatus.ENABLED

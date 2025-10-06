@@ -190,7 +190,9 @@ const commonJSBundle = ({
       tsconfig: resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
       tsconfigOverride: tsconfigOverride(basePath, packageName)
     }),
-    nodeResolve(),
+    nodeResolve({
+      exportConditions: ['node', 'default']
+    }),
     commonjs(),
     generatePackageJson({
       baseContents: (pkg) => ({
@@ -265,7 +267,9 @@ const commonJSLegacyBundle = ({basePath, input, info, packageName}) => ({
       tsconfig: resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
       tsconfigOverride: tsconfigOverride(basePath, packageName)
     }),
-    nodeResolve(),
+    nodeResolve({
+      exportConditions: ['node', 'default']
+    }),
     commonjs(),
     babel({
       babelHelpers: 'bundled',
@@ -305,7 +309,9 @@ const esmBundle = ({basePath, input, info, packageName}) => ({
       tsconfig: resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
       tsconfigOverride: tsconfigOverride(basePath, packageName, true)
     }),
-    nodeResolve(),
+    nodeResolve({
+      exportConditions: ['node', 'default']
+    }),
     commonjs()
   ])
 });
@@ -342,8 +348,10 @@ const umdBundle = ({basePath, input, info}) => ({
       tsconfigOverride: tsconfigOverride(basePath)
     }),
     nodeResolve({
-      mainFields: ['browser'],
-      preferBuiltins: false
+      mainFields: ['browser', 'module', 'main'],
+      preferBuiltins: false,
+      browser: true,
+      exportConditions: ['browser', 'import', 'require', 'default']
     }),
     commonjs(),
     json()

@@ -51,6 +51,6 @@
   },
   "version": "3.9.0",
   "peerDependencies": {
-    "@convertcom/js-sdk-enums": ">=2.2.0"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
   }
 }

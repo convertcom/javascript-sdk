@@ -49,7 +49,7 @@ type ConfigBase = {
     source?: string;
   };
   experimental?: {
-    useRustDecider?: boolean;
+    useCoreDecider?: boolean;
   };
   mapper?: (...args: any) => any;
 };

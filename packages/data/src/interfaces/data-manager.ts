@@ -14,12 +14,13 @@ import {
   ConfigExperience,
   BucketingAttributes,
   LocationAttributes,
-  GoalData
+  GoalData,
+  CoreDecider
 } from '@convertcom/js-sdk-types';
-import {
+import type {
   RustFeatureAggregationPayload,
   RustVariationSummary
-} from '../rust-decider';
+} from '../core-decider';
 import {DataStoreManagerInterface} from './data-store-manager';
 import {
   BucketingError,
@@ -30,6 +31,7 @@ import {
 export interface DataManagerInterface {
   data: ConfigResponseData;
   dataStoreManager: DataStoreManagerInterface;
+  coreDecider: CoreDecider | null;
 
   reset();
   putData(storeKey: string, storeData: StoreData);
@@ -90,8 +92,8 @@ export interface DataManagerInterface {
 
   isValidConfigData(data: ConfigResponseData): boolean;
   setDataStore(dataStore: any): void;
-  isRustDeciderEnabled(): boolean;
-  aggregateFeaturesWithRust(
+  isCoreDeciderEnabled(): boolean;
+  aggregateFeaturesWithCore(
     variationSummaries: Array<RustVariationSummary>,
     options?: {filters?: Record<string, unknown>; typeCasting?: boolean}
   ): RustFeatureAggregationPayload | null;
