@@ -2068,15 +2068,15 @@ __metadata:
 
 "@convertcom/decisions-core@file:../../../decisions-core-sdk/pkg-node::locator=%40convertcom%2Fjs-sdk%40workspace%3Apackages%2Fjs-sdk":
   version: 0.1.0
-  resolution: "@convertcom/decisions-core@file:../../../decisions-core-sdk/pkg-node#../../../decisions-core-sdk/pkg-node::hash=6eda83&locator=%40convertcom%2Fjs-sdk%40workspace%3Apackages%2Fjs-sdk"
-  checksum: 10c0/c502d6b87a5b3ca1b7180106ba066067d6e30ffcbf8abaedeaf9dce4fb16fee0b107bb3df785dd5b971374d8ce6f3743ac071713f5ed3e6d5aa7fe919d799d56
+  resolution: "@convertcom/decisions-core@file:../../../decisions-core-sdk/pkg-node#../../../decisions-core-sdk/pkg-node::hash=0f6de7&locator=%40convertcom%2Fjs-sdk%40workspace%3Apackages%2Fjs-sdk"
+  checksum: 10c0/f7077de5f0d68357cd80e6e5c42acbc852288159a517a956584c264b9caedd347ebb5a12538cfb3b3839a29a292236065254fc3d8efcc57537b7a4678b479b57
   languageName: node
   linkType: hard
 
 "@convertcom/decisions-core@file:../../../decisions-core-sdk/pkg-node::locator=%40convertcom%2Fjs-sdk-data%40workspace%3Apackages%2Fdata":
   version: 0.1.0
-  resolution: "@convertcom/decisions-core@file:../../../decisions-core-sdk/pkg-node#../../../decisions-core-sdk/pkg-node::hash=6eda83&locator=%40convertcom%2Fjs-sdk-data%40workspace%3Apackages%2Fdata"
-  checksum: 10c0/c502d6b87a5b3ca1b7180106ba066067d6e30ffcbf8abaedeaf9dce4fb16fee0b107bb3df785dd5b971374d8ce6f3743ac071713f5ed3e6d5aa7fe919d799d56
+  resolution: "@convertcom/decisions-core@file:../../../decisions-core-sdk/pkg-node#../../../decisions-core-sdk/pkg-node::hash=0f6de7&locator=%40convertcom%2Fjs-sdk-data%40workspace%3Apackages%2Fdata"
+  checksum: 10c0/f7077de5f0d68357cd80e6e5c42acbc852288159a517a956584c264b9caedd347ebb5a12538cfb3b3839a29a292236065254fc3d8efcc57537b7a4678b479b57
   languageName: node
   linkType: hard
 
@@ -2121,11 +2121,11 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-enums": ">=2.2.0"
-    "@convertcom/js-sdk-event": ">=2.1.0"
-    "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.6.0"
-    "@convertcom/js-sdk-utils": ">=2.2.0"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
+    "@convertcom/js-sdk-event": ">=2.1.3"
+    "@convertcom/js-sdk-logger": ">=2.1.2"
+    "@convertcom/js-sdk-types": ">=3.9.0"
+    "@convertcom/js-sdk-utils": ">=2.2.3"
   languageName: unknown
   linkType: soft
 
@@ -2170,10 +2170,10 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-enums": ">=2.2.0"
-    "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.6.0"
-    "@convertcom/js-sdk-utils": ">=2.2.0"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
+    "@convertcom/js-sdk-logger": ">=2.1.2"
+    "@convertcom/js-sdk-types": ">=3.9.0"
+    "@convertcom/js-sdk-utils": ">=2.2.3"
   languageName: unknown
   linkType: soft
 
@@ -2219,14 +2219,14 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-api": ">=2.1.1"
-    "@convertcom/js-sdk-bucketing": ">=3.1.0"
-    "@convertcom/js-sdk-enums": ">=2.2.0"
-    "@convertcom/js-sdk-event": ">=2.1.0"
-    "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-rules": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.6.0"
-    "@convertcom/js-sdk-utils": ">=2.2.0"
+    "@convertcom/js-sdk-api": ">=2.1.4"
+    "@convertcom/js-sdk-bucketing": ">=3.1.2"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
+    "@convertcom/js-sdk-event": ">=2.1.3"
+    "@convertcom/js-sdk-logger": ">=2.1.2"
+    "@convertcom/js-sdk-rules": ">=2.1.3"
+    "@convertcom/js-sdk-types": ">=3.9.0"
+    "@convertcom/js-sdk-utils": ">=2.2.3"
   languageName: unknown
   linkType: soft
 
@@ -2335,9 +2335,9 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-enums": ">=2.2.0"
-    "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.6.0"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
+    "@convertcom/js-sdk-logger": ">=2.1.2"
+    "@convertcom/js-sdk-types": ">=3.9.0"
   languageName: unknown
   linkType: soft
 
@@ -2382,10 +2382,10 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-data": ">=3.2.1"
-    "@convertcom/js-sdk-enums": ">=2.2.0"
-    "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.6.0"
+    "@convertcom/js-sdk-data": ">=3.3.3"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
+    "@convertcom/js-sdk-logger": ">=2.1.2"
+    "@convertcom/js-sdk-types": ">=3.9.0"
   languageName: unknown
   linkType: soft
 
@@ -2427,7 +2427,7 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-enums": ">=2.2.0"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
   languageName: unknown
   linkType: soft
 
@@ -2472,10 +2472,10 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-enums": ">=2.2.0"
-    "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.6.0"
-    "@convertcom/js-sdk-utils": ">=2.2.0"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
+    "@convertcom/js-sdk-logger": ">=2.1.2"
+    "@convertcom/js-sdk-types": ">=3.9.0"
+    "@convertcom/js-sdk-utils": ">=2.2.3"
   languageName: unknown
   linkType: soft
 
@@ -2520,11 +2520,11 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-data": ">=3.2.1"
-    "@convertcom/js-sdk-enums": ">=2.2.0"
-    "@convertcom/js-sdk-logger": ">=2.1.0"
-    "@convertcom/js-sdk-rules": ">=2.1.0"
-    "@convertcom/js-sdk-types": ">=3.6.0"
+    "@convertcom/js-sdk-data": ">=3.3.3"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
+    "@convertcom/js-sdk-logger": ">=2.1.2"
+    "@convertcom/js-sdk-rules": ">=2.1.3"
+    "@convertcom/js-sdk-types": ">=3.9.0"
   languageName: unknown
   linkType: soft
 
@@ -2555,7 +2555,7 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-enums": ">=2.2.0"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
   languageName: unknown
   linkType: soft
 
@@ -2599,7 +2599,7 @@ __metadata:
     typescript-eslint: "npm:^7.13.1"
     webpack: "npm:^5.92.0"
   peerDependencies:
-    "@convertcom/js-sdk-enums": ">=2.2.0"
+    "@convertcom/js-sdk-enums": ">=2.3.0"
   languageName: unknown
   linkType: soft
 

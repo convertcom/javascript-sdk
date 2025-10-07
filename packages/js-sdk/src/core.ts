@@ -4,21 +4,21 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {ApiManagerInterface} from '@convertcom/js-sdk-api';
-import {ContextInterface} from './interfaces/context';
-import {CoreInterface} from './interfaces/core';
-import {DataManagerInterface} from '@convertcom/js-sdk-data';
-import {EventManagerInterface} from '@convertcom/js-sdk-event';
-import {ExperienceManagerInterface} from '@convertcom/js-sdk-experience';
-import {FeatureManagerInterface} from './interfaces/feature-manager';
-import {LogManagerInterface} from '@convertcom/js-sdk-logger';
-import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
+import { ApiManagerInterface } from '@convertcom/js-sdk-api';
+import { ContextInterface } from './interfaces/context';
+import { CoreInterface } from './interfaces/core';
+import { DataManagerInterface } from '@convertcom/js-sdk-data';
+import { EventManagerInterface } from '@convertcom/js-sdk-event';
+import { ExperienceManagerInterface } from '@convertcom/js-sdk-experience';
+import { FeatureManagerInterface } from './interfaces/feature-manager';
+import { LogManagerInterface } from '@convertcom/js-sdk-logger';
+import { SegmentsManagerInterface } from '@convertcom/js-sdk-segments';
 
-import {Config, ConfigResponseData} from '@convertcom/js-sdk-types';
+import { Config, ConfigResponseData } from '@convertcom/js-sdk-types';
 
-import {ERROR_MESSAGES, MESSAGES, SystemEvents} from '@convertcom/js-sdk-enums';
-import {objectNotEmpty} from '@convertcom/js-sdk-utils';
-import {Context} from './context';
+import { ERROR_MESSAGES, MESSAGES, SystemEvents } from '@convertcom/js-sdk-enums';
+import { objectNotEmpty } from '@convertcom/js-sdk-utils';
+import { Context } from './context';
 
 const DEFAULT_DATA_REFRESH_INTERVAL = 300000; // in milliseconds (5 minutes)
 
@@ -235,7 +235,7 @@ export class Core implements CoreInterface {
           await this._dataManager.coreDecider.initialize().catch((error: Error) => {
             this._loggerManager?.warn?.(
               'Core.fetchConfig()',
-              'Rust decider initialization failed, falling back to TypeScript',
+              'Core decider initialization failed, falling back to TypeScript',
               error
             );
           });
