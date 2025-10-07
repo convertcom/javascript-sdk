@@ -65,7 +65,8 @@ export default function runTests(bundle) {
       await convert.onReady();
       assert.equal(true, true);
     });
-    it('Shoud successfully create visitor context', function () {
+    it('Shoud successfully create visitor context', async function () {
+      await convert.onReady();
       const visitorContext = convert.createContext(visitorId, defaultSegments);
       expect(visitorContext).to.be.an('object');
       [
@@ -83,8 +84,9 @@ export default function runTests(bundle) {
   });
   describe('Basic SDK methods', function () {
     // eslint-disable-next-line mocha/no-hooks-for-single-case
-    before(function () {
+    before(async function () {
       convert = new ConvertSDK(testConfig);
+      await convert.onReady();
     });
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     beforeEach(function () {
@@ -211,8 +213,9 @@ export default function runTests(bundle) {
   });
   describe('Test invalid visitor', function () {
     // eslint-disable-next-line mocha/no-hooks-for-single-case
-    before(function () {
+    before(async function () {
       convert = new ConvertSDK(testConfig);
+      await convert.onReady();
     });
     // eslint-disable-next-line mocha/no-hooks-for-single-case
     beforeEach(function () {
