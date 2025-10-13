@@ -22,6 +22,7 @@
     "test:browser": "yarn build && yarn test:cjsbrowser && yarn test:umdbrowser",
     "test:cjsbrowser": "karma start karma.cjs.conf.js --single-run",
     "test:umdbrowser": "karma start karma.umd.conf.js --single-run",
+    "test:umdbrowser:wasm": "karma start karma.umd.wasm.conf.js --single-run",
     "test:server": "nyc yarn test:mocha",
     "test:mocha": "mocha -r ts-node/register --recursive \"tests/**/*.tests.ts\" --exit",
     "clean": "rm -rf lib",
