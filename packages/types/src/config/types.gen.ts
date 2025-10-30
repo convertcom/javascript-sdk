@@ -17,7 +17,7 @@ export type ConfigAudience = {
      */
     name?: string;
     type?: ConfigAudienceTypes;
-    rules?: ((RuleObject) | null);
+    rules?: ((RuleObjectAudience) | null);
 };
 
 /**
@@ -359,7 +359,7 @@ export type BaseMatch = {
     negated?: boolean;
 };
 
-export type TextMatchRulesTypes = 'url' | 'url_with_query' | 'query_string' | 'campaign' | 'keyword' | 'medium' | 'source_name' | 'city' | 'region' | 'browser_version' | 'user_agent' | 'page_tag_page_type' | 'page_tag_category_id' | 'page_tag_category_name' | 'page_tag_product_sku' | 'page_tag_product_name' | 'page_tag_customer_id' | 'page_tag_custom_1' | 'page_tag_custom_2' | 'page_tag_custom_3' | 'page_tag_custom_4';
+export type TextMatchRulesTypes = 'url' | 'url_with_query' | 'query_string' | 'campaign' | 'keyword' | 'medium' | 'source_name' | 'city' | 'region' | 'browser_version' | 'user_agent' | 'page_tag_page_type' | 'page_tag_category_id' | 'page_tag_category_name' | 'page_tag_product_sku' | 'page_tag_product_name' | 'page_tag_customer_id' | 'page_tag_custom_1' | 'page_tag_custom_2' | 'page_tag_custom_3' | 'page_tag_custom_4' | 'visitor_id';
 
 export const TextMatchRulesTypes = {
     URL: 'url',
@@ -382,7 +382,8 @@ export const TextMatchRulesTypes = {
     PAGE_TAG_CUSTOM_1: 'page_tag_custom_1',
     PAGE_TAG_CUSTOM_2: 'page_tag_custom_2',
     PAGE_TAG_CUSTOM_3: 'page_tag_custom_3',
-    PAGE_TAG_CUSTOM_4: 'page_tag_custom_4'
+    PAGE_TAG_CUSTOM_4: 'page_tag_custom_4',
+    VISITOR_ID: 'visitor_id'
 } as const;
 
 export type NumericMatchRulesTypes = 'avg_time_page' | 'days_since_last_visit' | 'pages_visited_count' | 'visit_duration' | 'visits_count' | 'page_tag_product_price';
@@ -421,6 +422,12 @@ export type GenericBoolKeyValueMatchRulesTypes = 'generic_bool_key_value';
 
 export const GenericBoolKeyValueMatchRulesTypes = {
     GENERIC_BOOL_KEY_VALUE: 'generic_bool_key_value'
+} as const;
+
+export type VisitorDataExistsMatchRulesTypes = 'visitor_data_exists';
+
+export const VisitorDataExistsMatchRulesTypes = {
+    VISITOR_DATA_EXISTS: 'visitor_data_exists'
 } as const;
 
 export type JsConditionMatchRulesTypes = 'js_condition';
@@ -506,7 +513,7 @@ export const WeatherConditionMatchRulesTypes = {
     WEATHER_CONDITION: 'weather_condition'
 } as const;
 
-export type RulesTypes = TextMatchRulesTypes & NumericMatchRulesTypes & BoolMatchRulesTypes & KeyValueMatchRulesTypes & CookieMatchRulesTypes & CountryMatchRulesTypes & VisitorTypeMatchRulesTypes & LanguageMatchRulesTypes & GoalTriggeredMatchRulesTypes & SegmentBucketedMatchRulesTypes & DayOfWeekMatchRulesTypes & HourOfDayMatchRulesTypes & MinuteOfHourMatchRulesTypes & BrowserNameMatchRulesTypes & OsMatchRulesTypes & WeatherConditionMatchRulesTypes;
+export type RulesTypes = TextMatchRulesTypes & NumericMatchRulesTypes & BoolMatchRulesTypes & KeyValueMatchRulesTypes & VisitorDataExistsMatchRulesTypes & CookieMatchRulesTypes & CountryMatchRulesTypes & VisitorTypeMatchRulesTypes & LanguageMatchRulesTypes & GoalTriggeredMatchRulesTypes & SegmentBucketedMatchRulesTypes & DayOfWeekMatchRulesTypes & HourOfDayMatchRulesTypes & MinuteOfHourMatchRulesTypes & BrowserNameMatchRulesTypes & OsMatchRulesTypes & WeatherConditionMatchRulesTypes;
 
 export type GenericTextMatchRule = BaseRuleWithStringValue & {
     rule_type: TextMatchRulesTypes;
@@ -563,6 +570,13 @@ export type GenericBoolKeyValueMatchRule = BaseRuleWithBooleanValue & {
     match_type?: ChoiceMatchingOptions;
 });
 } & GenericKey;
+
+export type VisitorDataExistsMatchRule = BaseRuleWithBooleanValue & {
+    rule_type: VisitorDataExistsMatchRulesTypes;
+    matching?: (BaseMatch & {
+    match_type?: ChoiceMatchingOptions;
+});
+};
 
 export type CookieMatchRule = BaseRuleWithStringValue & {
     rule_type: CookieMatchRulesTypes;
@@ -666,9 +680,11 @@ export type WeatherConditionMatchRule = BaseRuleWithWeatherConditionValue & {
 });
 };
 
-export type RuleElementNoUrl = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | CookieMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule;
+export type RuleElementNoUrl = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | CookieMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule | VisitorDataExistsMatchRule;
 
 export type RuleElement = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CookieMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule;
+
+export type RuleElementAudience = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CookieMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule | VisitorDataExistsMatchRule;
 
 export type TextMatchingOptions = 'matches' | 'regexMatches' | 'contains' | 'endsWith' | 'startsWith';
 
@@ -749,6 +765,26 @@ export type RuleObjectNoUrl = {
              * An array of individual rule elements that do not involve URL matching.
              */
             OR_WHEN?: Array<RuleElementNoUrl>;
+        }>;
+    }>;
+} | null;
+
+/**
+ * This one describes a logical rule that is being used inside the app for triggering goals, matching audiences etc
+ */
+export type RuleObjectAudience = {
+    /**
+     * This describes an outer set of blocks which are evaluated using OR's between them
+     */
+    OR?: Array<{
+        /**
+         * An array of OR_WHEN-blocks.
+         */
+        AND?: Array<{
+            /**
+             * An array of individual rule elements that do not involve URL matching.
+             */
+            OR_WHEN?: Array<RuleElementAudience>;
         }>;
     }>;
 } | null;
@@ -2445,6 +2481,10 @@ export type ConfigProject = {
          */
         products_ordered_count?: (NumericOutlier);
     };
+    /**
+     * List of active placeholders which are used in experiences for the project
+     */
+    placeholders?: Array<(string)>;
 } & ConfigProjectMinimalSettings);
 };
 
@@ -2778,6 +2818,28 @@ export const visitorType = {
     RETURNING: 'returning'
 } as const;
 
+/**
+ * Response containing project's visitor data
+ */
+export type VisitorDataResponse = {
+    [key: string]: (string);
+};
+
+/**
+ * Response containing project's visitor data with default values
+ */
+export type VisitorDataDefaultResponse = {
+    [key: string]: (string);
+};
+
+/**
+ * Response containing project's visitor data
+ */
+export type VisitorDataResponseData = {
+    data?: VisitorDataResponse;
+    default?: VisitorDataDefaultResponse;
+};
+
 export type GetProjectConfigData = {
     /**
      * ID of the account that owns the retrieved/saved data
@@ -2863,6 +2925,36 @@ export type SendTrackingEventsData = {
 };
 
 export type SendTrackingEventsResponse = (SuccessData);
+
+export type GetVisitorDataData = {
+    /**
+     * ID of the account that owns the retrieved/saved data
+     */
+    accountId: number;
+    /**
+     * ID of the project to be retrieved
+     */
+    projectId: number;
+    /**
+     * ID of the visitor to be retrieved
+     */
+    visitorId: string;
+};
+
+export type GetVisitorDataResponse = (VisitorDataResponseData);
+
+export type GetVisitorDataBySdkKeyData = {
+    /**
+     * The SDK key used to retrieve the project's visitor data
+     */
+    sdkKey: string;
+    /**
+     * ID of the visitor to be retrieved
+     */
+    visitorId: string;
+};
+
+export type GetVisitorDataBySdkKeyResponse = (VisitorDataResponseData);
 
 export type $OpenApiTs = {
     '/config/{account_id}/{project_id}': {
@@ -2952,6 +3044,38 @@ export type $OpenApiTs = {
                  * A response signaling a generic success
                  */
                 200: SuccessData;
+                /**
+                 * A response signaling an error
+                 */
+                default: ErrorData;
+            };
+        };
+    };
+    '/visitor-data/{account_id}/{project_id}/{visitor_id}': {
+        get: {
+            req: GetVisitorDataData;
+            res: {
+                /**
+                 * Object consumed by SDKs
+                 *
+                 */
+                200: VisitorDataResponseData;
+                /**
+                 * A response signaling an error
+                 */
+                default: ErrorData;
+            };
+        };
+    };
+    '/visitor-data/{sdk_key}/{visitor_id}': {
+        get: {
+            req: GetVisitorDataBySdkKeyData;
+            res: {
+                /**
+                 * Object consumed by SDKs
+                 *
+                 */
+                200: VisitorDataResponseData;
                 /**
                  * A response signaling an error
                  */
