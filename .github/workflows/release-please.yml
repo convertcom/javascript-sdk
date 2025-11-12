@@ -11,8 +11,50 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
+        id: release
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release
+    if: ${{ needs.release.outputs.releases_created }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rel: ${{ fromJson(needs.release.outputs.paths_released) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org
+      - name: Install deps
+        run: |
+          yarn set version berry
+          yarn
+      - name: Build & publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          REL_PATH: ${{ matrix.rel.path }}
+        run: |
+          case "$REL_PATH" in
+            packages/enums)       yarn enums:build       && (cd packages/enums       && npm publish --access public) ;;
+            packages/types)       yarn types:build       && (cd packages/types       && npm publish --access public) ;;
+            packages/utils)       yarn utils:build       && (cd packages/utils       && npm publish --access public) ;;
+            packages/event)       yarn event:build       && (cd packages/event       && npm publish --access public) ;;
+            packages/bucketing)   yarn bucketing:build   && (cd packages/bucketing   && npm publish --access public) ;;
+            packages/logger)      yarn logger:build      && (cd packages/logger      && npm publish --access public) ;;
+            packages/rules)       yarn rules:build       && (cd packages/rules       && npm publish --access public) ;;
+            packages/segments)    yarn segments:build    && (cd packages/segments    && npm publish --access public) ;;
+            packages/api)         yarn api:build         && (cd packages/api         && npm publish --access public) ;;
+            packages/data)        yarn data:build        && (cd packages/data        && npm publish --access public) ;;
+            packages/experience)  yarn experience:build  && (cd packages/experience  && npm publish --access public) ;;
+            packages/js-sdk)      yarn sdk:build         && (cd packages/js-sdk      && npm publish --access public) ;;
+            *) echo "Unknown path: $REL_PATH" && exit 1 ;;
+          esac

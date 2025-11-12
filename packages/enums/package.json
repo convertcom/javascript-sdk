@@ -49,5 +49,5 @@
     "typescript-eslint": "^8.46.4",
     "webpack": "^5.102.1"
   },
-  "version": "2.2.1"
+  "version": "2.3.0"
 }
