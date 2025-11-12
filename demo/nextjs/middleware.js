@@ -1,16 +1,16 @@
 // middleware.js
 
-import { NextResponse } from 'next/server';
-import sdkInstance from '@/lib/convertSdk';
+import {NextResponse} from 'next/server';
+import sdkInstance from '@/convert/convertSdk';
 export async function middleware(request) {
   try {
     await sdkInstance.onReady();
 
     const userId = request.cookies.get('user-id') || 'default-user-id';
     const context = sdkInstance.createContext(userId, {
-      mobile: false,
+      mobile: false
     });
-    context.setDefaultSegments({ country: 'US' });
+    context.setDefaultSegments({country: 'US'});
 
     // You can attach the context to the request if needed
     request.convertContext = context;
@@ -24,5 +24,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
-  };
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+};
