@@ -1,5 +1,11 @@
-const {FlatCompat} = require('@eslint/eslintrc');
-const js = require('@eslint/js');
+import {FlatCompat} from '@eslint/eslintrc';
+import js from '@eslint/js';
+import {fileURLToPath} from 'url';
+import {dirname} from 'path';
+import mochaPlugin from 'eslint-plugin-mocha';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -7,7 +13,7 @@ const compat = new FlatCompat({
   recommendedConfig: js.configs.recommended
 });
 
-module.exports = [
+export default [
   {
     files: ['**/*.ts', '**/*.tsx'],
     ignores: ['.yarn', '.vscode', '.github', 'node_modules']
@@ -17,9 +23,10 @@ module.exports = [
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     // Prettier plugin and recommended rules
-    'plugin:prettier/recommended',
-    'plugin:mocha/recommended'
+    'plugin:prettier/recommended'
   ),
+  // Import mocha plugin directly (ES module)
+  mochaPlugin.configs.recommended,
   ...compat.plugins('eslint-plugin-local-rules'),
   ...compat.config({
     root: true,
