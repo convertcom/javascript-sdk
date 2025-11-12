@@ -1,7 +1,7 @@
 {
   "packages/js-sdk": "4.3.3",
   "packages/enums": "2.3.0",
-  "packages/types": "3.9.0",
+  "packages/types": "3.10.0",
   "packages/utils": "2.2.3",
   "packages/event": "2.1.3",
   "packages/bucketing": "3.1.2",
