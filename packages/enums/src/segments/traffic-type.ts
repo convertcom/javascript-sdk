@@ -6,5 +6,6 @@
  */
 export enum TrafficType {
   HUMAN = 'human',
+  BOT = 'bot',
   AI_AGENT = 'ai_agent'
 }
