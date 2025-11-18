@@ -25,3 +25,4 @@ export * from './src/segments/device-type';
 export * from './src/segments/segments-keys';
 export * from './src/segments/source-type';
 export * from './src/segments/visitor-type';
+export * from './src/segments/traffic-type';
