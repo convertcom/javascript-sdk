@@ -778,11 +778,11 @@ export type RuleObjectAudience = {
      */
     OR?: Array<{
         /**
-         * An array of OR_WHEN-blocks.
+         * This describes a colections of logical blocks which are evaluated using AND's between them
          */
         AND?: Array<{
             /**
-             * An array of individual rule elements that do not involve URL matching.
+             * This describes a colections of logical blocks which are evaluated using OR's between them
              */
             OR_WHEN?: Array<RuleElementAudience>;
         }>;
@@ -1817,6 +1817,10 @@ export type ConfigExperience = {
             products_ordered_count?: (NumericOutlier);
         };
         /**
+         * List of placeholders used by this experience (from changes, global_js, and global_css)
+         */
+        placeholders?: Array<(string)>;
+        /**
          * A couple of settings only applicable to Split URL experiments
          */
         split_url_settings?: {
@@ -2171,6 +2175,10 @@ export type ClicksElementGoalSettings = {
      * Css selector that identifies the DOM element(s) on which will track clicks in order to fire the goal.
      */
     selector: string;
+    /**
+     * If true, triggers only on pages where the associated experience runs (Experience Location). Does not apply sitewide or to unrelated pages.
+     */
+    only_where_experience_runs?: boolean;
 };
 
 /**
@@ -2485,6 +2493,10 @@ export type ConfigProject = {
      * List of active placeholders which are used in experiences for the project
      */
     placeholders?: Array<(string)>;
+    /**
+     * List of placeholders used in project's Global JavaScript (convertPlaceholders.<key>)
+     */
+    global_javascript_placeholders?: Array<(string)>;
 } & ConfigProjectMinimalSettings);
 };
 
