@@ -8,5 +8,6 @@ export enum SourceType {
   CAMPAIGN = 'campaign',
   SEARCH = 'search',
   REFERRAL = 'referral',
-  DIRECT = 'direct'
+  DIRECT = 'direct',
+  AI_AGENT = 'ai_agent'
 }
