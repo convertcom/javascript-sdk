@@ -11,6 +11,5 @@ export enum SegmentsKeys {
   SOURCE = 'source',
   CAMPAIGN = 'campaign',
   VISITOR_TYPE = 'visitorType',
-  CUSTOM_SEGMENTS = 'customSegments',
-  TRAFFIC_TYPE = 'trafficType'
+  CUSTOM_SEGMENTS = 'customSegments'
 }
