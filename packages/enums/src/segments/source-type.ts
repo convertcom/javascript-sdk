@@ -9,5 +9,5 @@ export enum SourceType {
   SEARCH = 'search',
   REFERRAL = 'referral',
   DIRECT = 'direct',
-  AI_AGENT = 'ai_agent'
+  AI_TOOL = 'ai_tool'
 }
