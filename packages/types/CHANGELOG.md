@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.11.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.10.0...js-sdk-types-v3.11.0) (2025-11-26)
+
+
+### Features
+
+* automated TS Serving API update ([ccf57de](https://github.com/convertcom/javascript-sdk/commit/ccf57dee25bda101f10a9507c66af00439e22f37))
+* automated TS Serving API update ([3d940a3](https://github.com/convertcom/javascript-sdk/commit/3d940a3e8c012a3a978908b080e81b48b2abae79))
+
 ## [3.10.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.9.0...js-sdk-types-v3.10.0) (2025-11-12)
 
 
