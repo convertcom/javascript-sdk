@@ -41,7 +41,7 @@ jobs:
       - name: Build & publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          REL_PATH: ${{ matrix.rel.path }}
+          REL_PATH: ${{ matrix.rel }}
         run: |
           case "$REL_PATH" in
             packages/enums)       yarn enums:build       && (cd packages/enums       && npm publish --access public) ;;
