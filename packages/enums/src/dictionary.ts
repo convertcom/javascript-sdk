@@ -54,7 +54,7 @@ export const MESSAGES = {
   SEGMENTATION_NOT_RESTRICTED: 'Segmentation not restricted',
   RULE_NOT_MATCH: 'Rule does not match',
   RULE_MATCH: 'Found matched rule at OR block #',
-  RULE_MATCH_AND: 'AND block rule macthed',
+  RULE_MATCH_AND: 'AND block rule matched',
   RULE_MATCH_START: 'About to evaluate rule #',
   LOCATION_ACTIVATED: 'Location # activated',
   LOCATION_DEACTIVATED: 'Location # deactivated',

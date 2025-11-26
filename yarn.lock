@@ -26013,6 +26013,7 @@ __metadata:
     "@types/eslint-plugin-mocha": "npm:^10"
     eslint-plugin-mocha: "npm:^11.2.0"
     eslint-plugin-prettier: "npm:^5.5.4"
+    prettier: "npm:^3.6.2"
   languageName: unknown
   linkType: soft
 
