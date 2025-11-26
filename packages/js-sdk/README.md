@@ -981,7 +981,6 @@ Additionally, you can even include this repository as part of your own `TypeScri
    ```
 
 2. Choose one of the following methods:
-
    - **Workspaces**: Add the following `workspaces` to your `package.json` (_assuming that the submodule is located under your repository root_):
 
      ```json
@@ -1075,4 +1074,4 @@ Happy converting!
 
 ## Credits
 
-Copyright © 2024 Convert Insights, Inc.
+Copyright © 2025 Convert Insights, Inc.
