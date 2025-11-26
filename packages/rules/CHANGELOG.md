@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.1.3...js-sdk-rules-v2.1.4) (2025-11-26)
+
+
+### Bug Fixes
+
+* **rules:** properly short-circuit AND logic to return RuleError instead of false ([f95643b](https://github.com/convertcom/javascript-sdk/commit/f95643bbabbf4a171cd1bf344126347919dcbc0c))
+
 ## [2.1.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.1.2...js-sdk-rules-v2.1.3) (2025-09-05)
 
 
