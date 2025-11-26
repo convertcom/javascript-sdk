@@ -195,17 +195,16 @@ export class RuleManager implements RuleManagerInterface {
     ) {
       for (let i = 0, l = rulesSubset.AND.length; i < l; i++) {
         match = this._processORWHEN(data, rulesSubset.AND[i]);
-        if (match === false) {
-          return false;
+        // AND requires ALL to explicitly return true
+        if (match !== true) {
+          return match;
         }
       }
-      if (match !== false) {
-        this._loggerManager?.info?.(
-          'RuleManager._processAND()',
-          MESSAGES.RULE_MATCH_AND
-        );
-      }
-      return match;
+      this._loggerManager?.info?.(
+        'RuleManager._processAND()',
+        MESSAGES.RULE_MATCH_AND
+      );
+      return true;
     } else {
       this._loggerManager?.warn?.(
         'RuleManager._processAND()',
