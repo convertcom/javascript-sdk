@@ -106,7 +106,7 @@
       "browserstack-local": "1.5.5"
     }
   },
-  "version": "4.3.4",
+  "version": "4.3.3",
   "peerDependencies": {
     "@convertcom/js-sdk-api": ">=2.1.4",
     "@convertcom/js-sdk-bucketing": ">=3.1.2",
