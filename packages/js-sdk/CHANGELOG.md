@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.3.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.3.3...js-sdk-v4.3.4) (2025-11-26)
+
+
+### Bug Fixes
+
+* properly short-circuit AND logic to return RuleError instead of false ([a99f588](https://github.com/convertcom/javascript-sdk/commit/a99f588bccb7df200555455cb4f3dfc6e6d0c5ee))
+* properly short-circuit AND logic to return RuleError instead of false ([a5b2842](https://github.com/convertcom/javascript-sdk/commit/a5b28421929c3233a61dc3bf01848288d4d67424))
+
 ## [4.3.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.3.2...js-sdk-v4.3.3) (2025-09-05)
 
 
