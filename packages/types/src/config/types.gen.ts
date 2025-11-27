@@ -2400,6 +2400,10 @@ export type ConfigProject = {
          * Custom domain to be used instead of standard Convert's one
          */
         domain?: string;
+        /**
+         * The version of the custom domain.
+         */
+        readonly version?: string;
     } | null;
     /**
      * List of domains allowed to be tracked under this project
