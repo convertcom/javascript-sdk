@@ -2400,6 +2400,10 @@ export type ConfigProject = {
          * Custom domain to be used instead of standard Convert's one
          */
         domain?: string;
+        /**
+         * The version of the custom domain.
+         */
+        readonly version?: string;
     } | null;
     /**
      * List of domains allowed to be tracked under this project
@@ -2752,7 +2756,7 @@ export type VisitorSegments = {
     /**
      * Traffic source
      */
-    source?: 'campaign' | 'search' | 'referral' | 'direct';
+    source?: 'campaign' | 'search' | 'referral' | 'direct' | 'ai_tool';
     /**
      * Campaign string
      */
@@ -2805,7 +2809,7 @@ export const browser = {
 /**
  * Traffic source
  */
-export type source = 'campaign' | 'search' | 'referral' | 'direct';
+export type source = 'campaign' | 'search' | 'referral' | 'direct' | 'ai_tool';
 
 /**
  * Traffic source
@@ -2814,7 +2818,8 @@ export const source = {
     CAMPAIGN: 'campaign',
     SEARCH: 'search',
     REFERRAL: 'referral',
-    DIRECT: 'direct'
+    DIRECT: 'direct',
+    AI_TOOL: 'ai_tool'
 } as const;
 
 /**
