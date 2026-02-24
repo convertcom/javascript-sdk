@@ -10,5 +10,6 @@
   "packages/segments": "2.1.2",
   "packages/api": "2.1.4",
   "packages/data": "3.3.3",
-  "packages/experience": "2.3.2"
+  "packages/experience": "2.3.2",
+  "packages/cloudflare": "1.0.0"
 }

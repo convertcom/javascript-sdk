@@ -56,5 +56,6 @@ jobs:
             packages/data)        yarn data:build        && (cd packages/data        && npm publish --access public) ;;
             packages/experience)  yarn experience:build  && (cd packages/experience  && npm publish --access public) ;;
             packages/js-sdk)      yarn sdk:build         && (cd packages/js-sdk      && npm publish --access public) ;;
+            packages/cloudflare)  yarn cloudflare:build  && (cd packages/cloudflare  && npm publish --access public) ;;
             *) echo "Unknown path: $REL_PATH" && exit 1 ;;
           esac
