@@ -59,7 +59,12 @@ export class KVDataStore {
    */
   async load(visitorId: string): Promise<void> {
     const raw = await this._kv.get(`${this._prefix}:${visitorId}`);
-    this._data = raw ? JSON.parse(raw) : {};
+    try {
+      this._data = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      // Corrupted data in KV, start fresh for this visitor.
+      this._data = {};
+    }
     this._dirty = false;
   }
 

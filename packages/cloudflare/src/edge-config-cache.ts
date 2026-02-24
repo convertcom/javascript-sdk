@@ -67,9 +67,15 @@ export class EdgeConfigCache {
 
     // Try KV cache first
     const cached = await this._kv.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        // Corrupted data in KV, fall through to re-fetch from CDN.
+      }
+    }
 
-    // Cache miss: fetch from CDN and store in KV
+    // Cache miss or corrupted: fetch from CDN and store in KV
     return this._fetchAndCache(cacheKey);
   }
 

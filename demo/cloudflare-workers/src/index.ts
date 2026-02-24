@@ -15,7 +15,7 @@
  * before the response reaches the browser.
  */
 
-import ConvertSDK from '@convertcom/js-sdk';
+import ConvertSDK, {BucketedVariation} from '@convertcom/js-sdk';
 import {
   KVDataStore,
   EdgeConfigCache,
@@ -41,8 +41,10 @@ interface Env {
 
 // The SDK instance persists across requests within the same Worker isolate.
 // Config is loaded from KV on the first request and reused afterwards.
+// The initialization promise is cached to prevent race conditions when
+// concurrent requests hit a cold Worker simultaneously.
 let sdk: InstanceType<typeof ConvertSDK> | null = null;
-let sdkReady = false;
+let sdkReadyPromise: Promise<InstanceType<typeof ConvertSDK>> | null = null;
 
 /**
  * Initialise (or reuse) the SDK singleton.
@@ -50,25 +52,29 @@ let sdkReady = false;
  * of fetching from the CDN (~100 ms) on every cold start.
  */
 async function getSDK(env: Env): Promise<InstanceType<typeof ConvertSDK>> {
-  if (sdk && sdkReady) return sdk;
+  if (sdk) return sdk;
+  if (sdkReadyPromise) return sdkReadyPromise;
 
-  const configCache = new EdgeConfigCache(
-    env.CONVERT_KV,
-    env.CONVERT_SDK_KEY,
-    300 // cache TTL in seconds (5 minutes)
-  );
-  const configData = await configCache.getConfig();
+  sdkReadyPromise = (async () => {
+    const configCache = new EdgeConfigCache(
+      env.CONVERT_KV,
+      env.CONVERT_SDK_KEY,
+      300 // cache TTL in seconds (5 minutes)
+    );
+    const configData = await configCache.getConfig();
 
-  sdk = new ConvertSDK({
-    data: configData,
-    // Passing data directly avoids the timer-based refresh (setTimeout)
-    // which is meaningless in a stateless Worker environment.
-    network: {tracking: true}
-  });
-  await sdk.onReady();
-  sdkReady = true;
+    const newSdk = new ConvertSDK({
+      data: configData,
+      // Passing data directly avoids the timer-based refresh (setTimeout)
+      // which is meaningless in a stateless Worker environment.
+      network: {tracking: true}
+    });
+    await newSdk.onReady();
+    sdk = newSdk;
+    return sdk;
+  })();
 
-  return sdk;
+  return sdkReadyPromise;
 }
 
 // ---------------------------------------------------------------------------
@@ -171,7 +177,10 @@ export default {
  * as it streams through the Worker -- no buffering, no DOM parsing overhead.
  * The visitor receives the final page with zero flicker.
  */
-function applyVariation(response: Response, variation: any): Response {
+function applyVariation(
+  response: Response,
+  variation: BucketedVariation
+): Response {
   // Map variation keys to HTMLRewriter transformations.
   // Customize these selectors and content for your experiments.
   switch (variation.key) {
