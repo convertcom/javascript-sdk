@@ -2,18 +2,19 @@ name = "convert-edge-experiments"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
 
-# KV namespace for config cache and visitor bucketing data.
-# Create with: wrangler kv namespace create CONVERT_KV
-# Then replace the id below with your actual namespace ID.
-[[kv_namespaces]]
-binding = "CONVERT_KV"
-id = "YOUR_KV_NAMESPACE_ID"
-
-# For local development:
-# wrangler kv namespace create CONVERT_KV --preview
-# Then add:
-# preview_id = "YOUR_PREVIEW_NAMESPACE_ID"
-
 [vars]
 # Your Convert SDK key (account_id/project_id)
 CONVERT_SDK_KEY = "YOUR_ACCOUNT_ID/YOUR_PROJECT_ID"
+
+# ------------------------------------------------------------------
+# Optional: KV namespace for persisting visitor bucketing data.
+# Only needed if you use KVDataStore (see demo/index.ts comments).
+# Most setups do NOT need this — the SDK uses deterministic bucketing.
+#
+# Create with: wrangler kv namespace create CONVERT_KV
+# Then uncomment and replace the id below.
+# ------------------------------------------------------------------
+# [[kv_namespaces]]
+# binding = "CONVERT_KV"
+# id = "YOUR_KV_NAMESPACE_ID"
+# preview_id = "YOUR_PREVIEW_NAMESPACE_ID"

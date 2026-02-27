@@ -19,13 +19,25 @@ interface KVNamespaceLike {
 }
 
 /**
- * A DataStore adapter for Cloudflare Workers KV.
+ * **Optional** DataStore adapter for Cloudflare Workers KV.
+ *
+ * This is NOT required for basic A/B testing. The SDK uses deterministic
+ * MurmurHash bucketing, so the same visitor ID always gets the same
+ * variation. You only need this if you want to:
+ *
+ * - Preserve bucketing across experience config changes
+ * - Store custom visitor attributes between requests
+ * - Share state across multiple Workers or routes
  *
  * The Convert SDK expects a synchronous DataStore (get/set).
  * Since KV is async, this adapter works in three phases:
  *   1. load()  - async read from KV into memory (call before SDK operations)
  *   2. get/set - sync read/write on in-memory snapshot (used by SDK)
  *   3. save()  - async write from memory back to KV (call after SDK operations)
+ *
+ * **Note:** Cloudflare KV is a paid feature and may not be available on all
+ * plans. For most use cases, cookie-based visitor identification with
+ * deterministic bucketing is sufficient without KV persistence.
  *
  * @example
  * ```typescript

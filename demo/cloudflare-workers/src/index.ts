@@ -17,7 +17,6 @@
 
 import ConvertSDK, {BucketedVariation} from '@convertcom/js-sdk';
 import {
-  KVDataStore,
   EdgeConfigCache,
   getVisitorId,
   setVisitorIdCookie,
@@ -31,8 +30,10 @@ import {
 // ---------------------------------------------------------------------------
 
 interface Env {
-  CONVERT_KV: KVNamespace;
   CONVERT_SDK_KEY: string;
+  // KV is optional — only needed if you enable the KVDataStore for
+  // persisting visitor bucketing data across experience config changes.
+  // CONVERT_KV: KVNamespace;
 }
 
 // ---------------------------------------------------------------------------
@@ -40,7 +41,8 @@ interface Env {
 // ---------------------------------------------------------------------------
 
 // The SDK instance persists across requests within the same Worker isolate.
-// Config is loaded from KV on the first request and reused afterwards.
+// Config is fetched from the Convert CDN and cached at the Cloudflare edge
+// using the native `cf` fetch cache (no KV required).
 // The initialization promise is cached to prevent race conditions when
 // concurrent requests hit a cold Worker simultaneously.
 let sdk: InstanceType<typeof ConvertSDK> | null = null;
@@ -48,8 +50,8 @@ let sdkReadyPromise: Promise<InstanceType<typeof ConvertSDK>> | null = null;
 
 /**
  * Initialise (or reuse) the SDK singleton.
- * Uses EdgeConfigCache so the config is served from KV (~1 ms) instead
- * of fetching from the CDN (~100 ms) on every cold start.
+ * Uses EdgeConfigCache with Cloudflare's built-in fetch cache — the config
+ * response is cached at the edge for the TTL duration, no KV needed.
  */
 async function getSDK(env: Env): Promise<InstanceType<typeof ConvertSDK>> {
   if (sdk) return sdk;
@@ -57,7 +59,6 @@ async function getSDK(env: Env): Promise<InstanceType<typeof ConvertSDK>> {
 
   sdkReadyPromise = (async () => {
     const configCache = new EdgeConfigCache(
-      env.CONVERT_KV,
       env.CONVERT_SDK_KEY,
       300 // cache TTL in seconds (5 minutes)
     );
@@ -110,17 +111,15 @@ export default {
         visitorId = generateVisitorId();
       }
 
-      // 3. Load persisted bucketing data from KV
-      const dataStore = new KVDataStore(env.CONVERT_KV);
-      await dataStore.load(visitorId);
-
-      // 4. Create visitor context
+      // 3. Create visitor context
+      //    No KV persistence needed — the SDK uses deterministic MurmurHash
+      //    bucketing, so the same visitorId always gets the same variation.
       const context = convert.createContext(visitorId);
       if (!context) {
         return fetch(request);
       }
 
-      // 5. Run experiments
+      // 4. Run experiments
       //    Replace the experience key with your actual experience key from Convert.
       const variation = context.runExperience('your-experience-key', {
         locationProperties: {url: url.pathname}
@@ -131,27 +130,30 @@ export default {
         return fetch(request);
       }
 
-      // 6. Fetch the origin page
+      // 5. Fetch the origin page
       const originResponse = await fetch(request);
 
-      // 7. Apply the variation using HTMLRewriter
+      // 6. Apply the variation using HTMLRewriter
       const modifiedResponse = applyVariation(originResponse, variation);
 
-      // 8. Build response headers (visitor cookie + cache control)
+      // 7. Build response headers (visitor cookie + cache control)
       const headers = new Headers(modifiedResponse.headers);
       if (isNewVisitor) {
         setVisitorIdCookie(headers, visitorId);
       }
       setCacheHeaders(headers, 300);
 
-      // 9. Persist bucketing data and release tracking events in the background
-      //    waitUntil() ensures these complete even after the response is sent.
-      ctx.waitUntil(
-        Promise.all([
-          dataStore.save(visitorId),
-          context.releaseQueues('edge-request-complete')
-        ])
-      );
+      // 8. Release tracking events in the background
+      //
+      //    IMPORTANT: The SDK batches tracking events and releases them on a
+      //    timer (setTimeout). In Cloudflare Workers, the isolate may finish
+      //    before that timer fires, so events would be lost. You MUST call
+      //    releaseQueues() explicitly to flush all pending tracking events
+      //    before the Worker completes.
+      //
+      //    waitUntil() ensures the tracking POST completes even after the
+      //    response is already sent to the visitor — no added latency.
+      ctx.waitUntil(context.releaseQueues('edge-request-complete'));
 
       return new Response(modifiedResponse.body, {
         status: modifiedResponse.status,
@@ -301,3 +303,23 @@ function applyVariation(
 //   ctx.waitUntil(cache.put(cacheKey, cloned.clone()));
 //   return cloned;
 // }
+
+// ---------------------------------------------------------------------------
+// Optional: KV-Backed Visitor Persistence
+// ---------------------------------------------------------------------------
+
+// If you need to persist bucketing decisions across experience config changes
+// (e.g. ensuring a visitor stays in the same variation even when rules change),
+// add KV support:
+//
+// 1. Add to Env: CONVERT_KV: KVNamespace;
+// 2. Add to wrangler.toml: [[kv_namespaces]] binding/id
+// 3. Use in the handler:
+//
+// import { KVDataStore } from '@convertcom/js-sdk-cloudflare';
+//
+// const dataStore = new KVDataStore(env.CONVERT_KV);
+// await dataStore.load(visitorId);
+// const context = convert.createContext(visitorId, { dataStore });
+// // ... run experiments ...
+// ctx.waitUntil(dataStore.save(visitorId));
