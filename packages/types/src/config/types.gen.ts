@@ -1899,7 +1899,7 @@ export const ExperienceStatuses = {
     SCHEDULED: 'scheduled'
 } as const;
 
-export type ExperienceTypes = 'a/b' | 'a/a' | 'mvt' | 'split_url' | 'multipage' | 'deploy';
+export type ExperienceTypes = 'a/b' | 'a/a' | 'mvt' | 'split_url' | 'multipage' | 'deploy' | 'a/b_fullstack' | 'feature_rollout';
 
 export const ExperienceTypes = {
     A_B: 'a/b',
@@ -1907,7 +1907,9 @@ export const ExperienceTypes = {
     MVT: 'mvt',
     SPLIT_URL: 'split_url',
     MULTIPAGE: 'multipage',
-    DEPLOY: 'deploy'
+    DEPLOY: 'deploy',
+    A_B_FULLSTACK: 'a/b_fullstack',
+    FEATURE_ROLLOUT: 'feature_rollout'
 } as const;
 
 /**
