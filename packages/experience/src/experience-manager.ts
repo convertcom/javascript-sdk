@@ -156,7 +156,12 @@ export class ExperienceManager implements ExperienceManagerInterface {
     visitorId: string,
     attributes: BucketingAttributes
   ): Array<BucketedVariation | RuleError | BucketingError> {
-    return this.getList()
+    const experienceList = attributes?.experienceTypes?.length
+      ? this.getList().filter(({type}) =>
+          attributes.experienceTypes.includes(type)
+        )
+      : this.getList();
+    return experienceList
       .map((experience) => {
         return this.selectVariation(visitorId, experience?.key, attributes);
       })

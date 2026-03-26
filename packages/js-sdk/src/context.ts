@@ -29,6 +29,7 @@ import {
   BucketingError,
   ERROR_MESSAGES,
   EntityType,
+  VariationChangeType,
   RuleError,
   SystemEvents
 } from '@convertcom/js-sdk-enums';
@@ -54,6 +55,8 @@ export class Context implements ContextInterface {
   private _visitorId: string;
   private _visitorProperties: Record<string, any>;
   private _environment: string;
+  private _appliedVariationSignatures = new Set<string>();
+  private _appliedVariationAssets = new Set<string>();
 
   /**
    * @param {Config} config
@@ -163,6 +166,123 @@ export class Context implements ContextInterface {
       );
     }
     return bucketedVariation as BucketedVariation;
+  }
+
+  /**
+   * Render web variation changes in DOM
+   * @param {BucketedVariation} bucketedVariation
+   * @param {{ experience?: ConfigExperience }=} options
+   */
+  runVariation(
+    bucketedVariation: BucketedVariation,
+    options?: {
+      experience?: ConfigExperience;
+    }
+  ): void {
+    const variationSignature = this._getVariationSignature(bucketedVariation, options);
+    if (this._appliedVariationSignatures.has(variationSignature)) {
+      this._loggerManager?.debug?.(
+        'Context.runVariation()',
+        `runVariation() variation already applied: ${variationSignature}`
+      );
+      return;
+    }
+
+    if (!this._canRunInBrowser()) {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        'runVariation() skipped: DOM not available'
+      );
+      return;
+    }
+
+    const experience = options?.experience || (this.getConfigEntity(
+      bucketedVariation.experienceKey,
+      EntityType.EXPERIENCE
+    ) as ConfigExperience);
+    if (!experience) {
+      this._loggerManager?.error?.(
+        'Context.runVariation()',
+        `runVariation() skipped: experience not found for ${bucketedVariation.experienceKey}`
+      );
+      return;
+    }
+
+    // Apply experience-level assets
+    if (experience.global_css) {
+      this._safeExecute(
+        () =>
+          this._injectStyle(
+            experience.global_css,
+            variationSignature,
+            `${experience.key || bucketedVariation.experienceKey}-global-css`
+          ),
+        'global css'
+      );
+    }
+    if (experience.global_js) {
+      this._safeExecute(
+        () =>
+          this._injectScript(
+            experience.global_js,
+            variationSignature,
+            `${experience.key || bucketedVariation.experienceKey}-global-js`
+          ),
+        'global js'
+      );
+    }
+
+    // Apply variation-level changes
+    const changes = bucketedVariation.changes || [];
+    changes.forEach((change, index) => {
+      if (!change?.type) return;
+      if (change.type === VariationChangeType.DEFAULT_REDIRECT) {
+        this._loggerManager?.warn?.(
+          'Context.runVariation()',
+          'runVariation() skipped change: defaultRedirect',
+          this._mapper({signature: variationSignature, changeIndex: index})
+        );
+        return;
+      }
+      if (change.type === VariationChangeType.FULLSTACK_FEATURE) {
+        this._loggerManager?.warn?.(
+          'Context.runVariation()',
+          'runVariation() skipped change: fullStackFeature',
+          this._mapper({signature: variationSignature, changeIndex: index})
+        );
+        return;
+      }
+
+      const data: Record<string, any> = change.data || {};
+      const changeId = `${variationSignature}:${change.id || index}`;
+      if (data.css) {
+        this._safeExecute(
+          () =>
+            this._injectStyle(data.css, variationSignature, `${changeId}-css`),
+          `variation css (${change.type})`
+        );
+      }
+      if (data.js) {
+        this._safeExecute(
+          () =>
+            this._injectScript(data.js, variationSignature, `${changeId}-js`),
+          `variation js (${change.type})`
+        );
+      }
+      if (data.custom_js) {
+        this._safeExecute(
+          () =>
+            this._injectScript(
+              data.custom_js,
+              variationSignature,
+              `${changeId}-custom-js`
+            ),
+          `custom js (${change.type})`
+        );
+      }
+    });
+
+    this._appliedVariationSignatures.add(variationSignature);
   }
 
   /**
@@ -576,5 +696,76 @@ export class Context implements ContextInterface {
       ? objectDeepMerge(this._visitorProperties || {}, attributes)
       : this._visitorProperties;
     return objectDeepMerge(segments || {}, visitorProperties || {});
+  }
+
+  private _getVariationSignature(
+    bucketedVariation: BucketedVariation,
+    options?: {
+      experience?: ConfigExperience;
+    }
+  ): string {
+    const variationId =
+      (bucketedVariation as Record<string, any>)?.id ||
+      bucketedVariation?.key ||
+      bucketedVariation?.experienceId ||
+      '';
+    const experienceKey =
+      options?.experience?.key ||
+      bucketedVariation.experienceKey ||
+      String(bucketedVariation.experienceId || '');
+    return `${experienceKey}:${variationId}`;
+  }
+
+  private _safeExecute(callback: () => void, action: string): void {
+    try {
+      callback();
+    } catch (error) {
+      this._loggerManager?.error?.(
+        'Context.runVariation()',
+        `runVariation() ${action} execution failed`,
+        error?.message || error
+      );
+    }
+  }
+
+  private _canRunInBrowser(): boolean {
+    return (
+      typeof window !== 'undefined' && typeof document !== 'undefined' && !!document
+    );
+  }
+
+  private _shouldApplyAsset(assetSignature: string): boolean {
+    if (this._appliedVariationAssets.has(assetSignature)) return false;
+    this._appliedVariationAssets.add(assetSignature);
+    return true;
+  }
+
+  private _injectStyle(
+    css: string,
+    variationSignature: string,
+    name: string
+  ): void {
+    const signature = `${variationSignature}:${name}-style`;
+    if (!css || !this._shouldApplyAsset(signature)) return;
+    const styleElement = document.createElement('style');
+    styleElement.type = 'text/css';
+    styleElement.textContent = css;
+    (document.head || document.documentElement).appendChild(styleElement);
+  }
+
+  private _injectScript(
+    code: string,
+    variationSignature: string,
+    name: string
+  ): void {
+    const signature = `${variationSignature}:${name}-script`;
+    if (!code || !this._shouldApplyAsset(signature)) return;
+    const scriptElement = document.createElement('script');
+    scriptElement.type = 'text/javascript';
+    scriptElement.appendChild(document.createTextNode(code));
+    (document.body || document.head || document.documentElement).appendChild(
+      scriptElement
+    );
+    scriptElement.remove();
   }
 }

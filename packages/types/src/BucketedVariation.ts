@@ -11,5 +11,6 @@ export type BucketedVariation = ExperienceVariationConfig & {
   experienceId?: string;
   experienceKey?: string;
   experienceName?: string;
+  experienceType?: string;
   bucketingAllocation?: number;
 };
