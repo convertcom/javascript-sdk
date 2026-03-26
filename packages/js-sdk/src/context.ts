@@ -52,6 +52,7 @@ export class Context implements ContextInterface {
   private _apiManager: ApiManagerInterface;
   private _loggerManager: LogManagerInterface;
   private _config: Config;
+  private _mapper: (...args: any) => any;
   private _visitorId: string;
   private _visitorProperties: Record<string, any>;
   private _environment: string;
@@ -102,6 +103,7 @@ export class Context implements ContextInterface {
     this._segmentsManager = segmentsManager;
     this._apiManager = apiManager;
     this._loggerManager = loggerManager;
+    this._mapper = config?.mapper || ((value: any) => value);
 
     if (objectNotEmpty(visitorProperties)) {
       const {properties} =
@@ -766,6 +768,5 @@ export class Context implements ContextInterface {
     (document.body || document.head || document.documentElement).appendChild(
       scriptElement
     );
-    scriptElement.remove();
   }
 }
