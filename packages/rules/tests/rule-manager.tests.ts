@@ -556,4 +556,89 @@ describe('RuleManager tests', function () {
     });
     // TODO: Add direct value comparison with no `key` field in rule
   });
+  describe('RuleManager with custom RuleData interface', function () {
+    let ruleManager;
+    const configuration = objectDeepMerge(testConfig, defaultConfig) as unknown as ConfigType;
+    const urlRuleSet = {
+      OR: [
+        {
+          AND: [
+            {
+              OR_WHEN: [
+                {
+                  rule_type: 'url',
+                  matching: {
+                    match_type: 'equals',
+                    negated: false
+                  },
+                  value: 'https://convert.com/'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+    const jsConditionRuleSet = {
+      OR: [
+        {
+          AND: [
+            {
+              OR_WHEN: [
+                {
+                  rule_type: 'js_condition',
+                  matching: {
+                    match_type: 'equals',
+                    negated: false
+                  },
+                  value: true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+    beforeEach(function () {
+      ruleManager = new rm(configuration);
+    });
+    it('Should evaluate RuleData getter methods for web rule types', function () {
+      expect(
+        ruleManager.isRuleMatched(
+          {
+            name: 'RuleData',
+            getUrl: () => 'https://convert.com/',
+            getBrowserName: () => 'chrome',
+            getCookie: () => 'utm_source=google'
+          },
+          urlRuleSet
+        )
+      ).to.equal(true);
+    });
+    it('Should evaluate RuleData prototype getter methods', function () {
+      class WebRuleDataProvider {
+        name = 'RuleData';
+        getJsCondition() {
+          return true;
+        }
+      }
+      expect(
+        ruleManager.isRuleMatched(
+          new WebRuleDataProvider(),
+          jsConditionRuleSet
+        )
+      ).to.equal(true);
+    });
+    it('Should return false when a RuleData getter method is missing', function () {
+      expect(
+        ruleManager.isRuleMatched(
+          {
+            name: 'RuleData',
+            getBrowserName: () => 'chrome'
+          },
+          urlRuleSet
+        )
+      ).to.equal(false);
+    });
+  });
 });

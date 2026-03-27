@@ -121,8 +121,346 @@ const mixedTypeConfiguration = objectDeepMerge(
     }
   }
 ) as unknown as ConfigType;
+const ruleDataProviderConfiguration = objectDeepMerge(
+  testConfig,
+  defaultConfig,
+  {
+    data: {
+      experiences: [
+        {
+          id: '300001',
+          name: 'Test RuleData URL Experience',
+          key: 'ruledata-url',
+          type: 'a/b',
+          version: 1,
+          status: 'active',
+          global_js: "var s = 'ruledata_url';",
+          global_css: '.ruledata-url { display: none; }',
+          url: 'https://convert.com',
+          integrations: [],
+          environments: ['live', 'staging'],
+          site_area: {
+            OR: [
+              {
+                AND: [
+                  {
+                    OR_WHEN: [
+                      {
+                        rule_type: 'url',
+                        matching: {
+                          match_type: 'equals',
+                          negated: false
+                        },
+                        value: 'https://convert.com/'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          variations: [
+            {
+              id: '300001-var-1',
+              name: 'Variation URL',
+              status: 'running',
+              is_baseline: true,
+              changes: [],
+              key: '300001-var-1',
+              traffic_allocation: 100.0
+            }
+          ]
+        },
+        {
+          id: '300002',
+          name: 'Test RuleData Cookie Experience',
+          key: 'ruledata-cookie',
+          type: 'a/b',
+          version: 1,
+          status: 'active',
+          global_js: "var s = 'ruledata_cookie';",
+          global_css: '.ruledata-cookie { display: none; }',
+          url: 'https://convert.com',
+          integrations: [],
+          environments: ['live', 'staging'],
+          site_area: {
+            OR: [
+              {
+                AND: [
+                  {
+                    OR_WHEN: [
+                      {
+                        rule_type: 'cookie',
+                        matching: {
+                          match_type: 'equals',
+                          negated: false
+                        },
+                        value: 'utm_source=google'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          variations: [
+            {
+              id: '300002-var-1',
+              name: 'Variation Cookie',
+              status: 'running',
+              is_baseline: true,
+              changes: [],
+              key: '300002-var-1',
+              traffic_allocation: 100.0
+            }
+          ]
+        },
+        {
+          id: '300003',
+          name: 'Test RuleData Geo Experience',
+          key: 'ruledata-geo',
+          type: 'a/b',
+          version: 1,
+          status: 'active',
+          global_js: "var s = 'ruledata_geo';",
+          global_css: '.ruledata-geo { display: none; }',
+          url: 'https://convert.com',
+          integrations: [],
+          environments: ['live', 'staging'],
+          site_area: {
+            OR: [
+              {
+                AND: [
+                  {
+                    OR_WHEN: [
+                      {
+                        rule_type: 'country',
+                        matching: {
+                          match_type: 'equals',
+                          negated: false
+                        },
+                        value: 'US'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          variations: [
+            {
+              id: '300003-var-1',
+              name: 'Variation Geo',
+              status: 'running',
+              is_baseline: true,
+              changes: [],
+              key: '300003-var-1',
+              traffic_allocation: 100.0
+            }
+          ]
+        },
+        {
+          id: '300004',
+          name: 'Test RuleData Browser Experience',
+          key: 'ruledata-browser',
+          type: 'a/b',
+          version: 1,
+          status: 'active',
+          global_js: "var s = 'ruledata_browser';",
+          global_css: '.ruledata-browser { display: none; }',
+          url: 'https://convert.com',
+          integrations: [],
+          environments: ['live', 'staging'],
+          site_area: {
+            OR: [
+              {
+                AND: [
+                  {
+                    OR_WHEN: [
+                      {
+                        rule_type: 'browser_name',
+                        matching: {
+                          match_type: 'equals',
+                          negated: false
+                        },
+                        value: 'chrome'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          variations: [
+            {
+              id: '300004-var-1',
+              name: 'Variation Browser',
+              status: 'running',
+              is_baseline: true,
+              changes: [],
+              key: '300004-var-1',
+              traffic_allocation: 100.0
+            }
+          ]
+        },
+        {
+          id: '300005',
+          name: 'Test RuleData JS Condition Experience',
+          key: 'ruledata-js-condition',
+          type: 'a/b',
+          version: 1,
+          status: 'active',
+          global_js: "var s = 'ruledata_js_condition';",
+          global_css: '.ruledata-js-condition { display: none; }',
+          url: 'https://convert.com',
+          integrations: [],
+          environments: ['live', 'staging'],
+          site_area: {
+            OR: [
+              {
+                AND: [
+                  {
+                    OR_WHEN: [
+                      {
+                        rule_type: 'js_condition',
+                        matching: {
+                          match_type: 'equals',
+                          negated: false
+                        },
+                        value: true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          variations: [
+            {
+              id: '300005-var-1',
+              name: 'Variation JS Condition',
+              status: 'running',
+              is_baseline: true,
+              changes: [],
+              key: '300005-var-1',
+              traffic_allocation: 100.0
+            }
+          ]
+        }
+      ]
+    }
+  }
+) as unknown as ConfigType;
+const createContextForRuleDataProvider = (
+  ruleDataProvider: Record<string, any>
+): c => {
+  const contextConfiguration = objectDeepMerge(ruleDataProviderConfiguration, {
+    ruleDataProvider
+  }) as unknown as ConfigType;
+  const contextEventManager = new em(contextConfiguration);
+  const contextApiManager = new am(contextConfiguration, {
+    eventManager: contextEventManager
+  });
+  const contextBucketingManager = new bm(contextConfiguration);
+  const contextRuleManager = new rm(contextConfiguration);
+  const contextDataManager = new dm(contextConfiguration, {
+    bucketingManager: contextBucketingManager,
+    ruleManager: contextRuleManager,
+    eventManager: contextEventManager,
+    apiManager: contextApiManager
+  });
+  const contextExperienceManager = new exm(contextConfiguration, {
+    dataManager: contextDataManager
+  });
+  const contextFeatureManager = new fm(contextConfiguration, {
+    dataManager: contextDataManager
+  });
+  const contextSegmentsManager = new sm(contextConfiguration, {
+    dataManager: contextDataManager,
+    ruleManager: contextRuleManager
+  });
+  return new c(
+    contextConfiguration,
+    'RULEDATA-VISITOR',
+    {
+      eventManager: contextEventManager,
+      experienceManager: contextExperienceManager,
+      featureManager: contextFeatureManager,
+      segmentsManager: contextSegmentsManager,
+      dataManager: contextDataManager,
+      apiManager: contextApiManager
+    },
+    {browser: 'chrome', country: 'US'}
+  );
+};
 
 describe('Context tests', function () {
+  const ruleDataProvider = {
+    name: 'RuleData',
+    getUrl: () => 'https://convert.com/',
+    getCookie: () => 'utm_source=google',
+    getCountry: () => 'US',
+    getBrowserName: () => 'chrome',
+    getJsCondition: () => true
+  };
+  describe('Context ruleDataProvider integration', function () {
+    it('Should evaluate web-only rules with custom RuleData provider methods', function () {
+      const context = createContextForRuleDataProvider(ruleDataProvider);
+
+      const urlMatch = context.runExperience('ruledata-url', {
+        enableTracking: false
+      });
+      const cookieMatch = context.runExperience('ruledata-cookie', {
+        enableTracking: false
+      });
+      const geoMatch = context.runExperience('ruledata-geo', {
+        enableTracking: false
+      });
+      const browserMatch = context.runExperience('ruledata-browser', {
+        enableTracking: false
+      });
+      const jsConditionMatch = context.runExperience('ruledata-js-condition', {
+        enableTracking: false
+      });
+
+      expect(urlMatch).to.be.an('object').that.has.property('experienceKey', 'ruledata-url');
+      expect(cookieMatch).to.be.an('object').that.has.property(
+        'experienceKey',
+        'ruledata-cookie'
+      );
+      expect(geoMatch).to.be.an('object').that.has.property('experienceKey', 'ruledata-geo');
+      expect(browserMatch).to.be.an('object').that.has.property(
+        'experienceKey',
+        'ruledata-browser'
+      );
+      expect(jsConditionMatch).to.be.an('object').that.has.property(
+        'experienceKey',
+        'ruledata-js-condition'
+      );
+    });
+    it('Should ignore invalid ruleDataProvider marker and return no match', function () {
+      const context = createContextForRuleDataProvider({
+        name: 'wrong-name',
+        getUrl: () => 'https://convert.com/'
+      });
+      expect(context.runExperience('ruledata-url', {enableTracking: false})).to.equal(
+        null
+      );
+    });
+    it('Should return no match without throwing when required getter is missing', function () {
+      const context = createContextForRuleDataProvider({
+        name: 'RuleData',
+        getBrowserName: () => 'chrome'
+      });
+      expect(
+        () =>
+          expect(context.runExperience('ruledata-url', {enableTracking: false})).to.equal(
+            null
+          )
+      ).to.not.throw();
+    });
+  });
+
   const visitorId = 'XXX';
   const featureId = '10025';
   it('Should expose Context', function () {

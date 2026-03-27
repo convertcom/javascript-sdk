@@ -274,18 +274,24 @@ export class RuleManager implements RuleManagerInterface {
                   'RuleManager._processRuleItem()',
                   MESSAGES.RULE_MATCH_START.replace('#', rule.rule_type)
                 );
-                for (const method of Object.getOwnPropertyNames(
-                  data.constructor.prototype
-                )) {
+                const rule_method = camelCase(
+                  `get ${rule.rule_type.replace(/_/g, ' ')}`
+                );
+                const methods = new Set([
+                  ...Object.getOwnPropertyNames(data),
+                  ...Object.getOwnPropertyNames(
+                    Object.getPrototypeOf(data) || {}
+                  )
+                ]);
+                for (const method of methods) {
                   if (method === 'constructor') continue;
-                  const rule_method = camelCase(
-                    `get ${rule.rule_type.replace(/_/g, ' ')}`
-                  );
+                  if (typeof (data as any)[method] !== 'function') continue;
                   if (
                     method === rule_method ||
-                    data?.mapper?.(method) === rule_method
+                    data?.mapper?.(method) === rule_method ||
+                    data?.mapper?.(rule_method) === method
                   ) {
-                    const dataValue = data[method](rule);
+                    const dataValue = (data as any)[method](rule);
                     if (
                       Object.values(RuleError).includes(dataValue as RuleError)
                     )

@@ -21,6 +21,7 @@ export * from './src/LocationAttributes';
 export * from './src/Path';
 export * from './src/RequireAtLeastOne';
 export * from './src/Rule';
+export * from './src/RuleData';
 export * from './src/SegmentsAttributes';
 export * from './src/StoreData';
 export * from './src/TrackingEvent';

@@ -16,6 +16,7 @@ import {
   BucketedFeature,
   BucketedVariation,
   BucketingAttributes,
+  RuleData,
   ConversionAttributes,
   VisitorSegments,
   SegmentsAttributes,
@@ -52,6 +53,7 @@ export class Context implements ContextInterface {
   private _loggerManager: LogManagerInterface;
   private _config: Config;
   private _visitorId: string;
+  private _ruleDataProvider?: RuleData;
   private _visitorProperties: Record<string, any>;
   private _environment: string;
 
@@ -99,6 +101,7 @@ export class Context implements ContextInterface {
     this._segmentsManager = segmentsManager;
     this._apiManager = apiManager;
     this._loggerManager = loggerManager;
+    this._ruleDataProvider = this.resolveRuleDataProvider(config);
 
     if (objectNotEmpty(visitorProperties)) {
       const {properties} =
@@ -137,7 +140,9 @@ export class Context implements ContextInterface {
       experienceKey,
       {
         visitorProperties, // represents audiences
-        locationProperties: attributes?.locationProperties, // represents site_area/locations
+        locationProperties: this.getLocationProperties(
+          attributes?.locationProperties
+        ), // represents site_area/locations
         updateVisitorProperties: attributes?.updateVisitorProperties,
         environment: attributes?.environment || this._environment
       }
@@ -192,7 +197,9 @@ export class Context implements ContextInterface {
       this._visitorId,
       {
         visitorProperties, // represents audiences
-        locationProperties: attributes?.locationProperties, // represents site_area/locations
+        locationProperties: this.getLocationProperties(
+          attributes?.locationProperties
+        ), // represents site_area/locations
         experienceTypes: attributes?.experienceTypes,
         updateVisitorProperties: attributes?.updateVisitorProperties,
         environment: attributes?.environment || this._environment
@@ -258,7 +265,9 @@ export class Context implements ContextInterface {
       key,
       {
         visitorProperties,
-        locationProperties: attributes?.locationProperties,
+        locationProperties: this.getLocationProperties(
+          attributes?.locationProperties
+        ),
         updateVisitorProperties: attributes?.updateVisitorProperties,
         typeCasting: Object.prototype.hasOwnProperty.call(
           attributes || {},
@@ -338,7 +347,9 @@ export class Context implements ContextInterface {
     );
     const bucketedFeatures = this._featureManager.runFeatures(this._visitorId, {
       visitorProperties,
-      locationProperties: attributes?.locationProperties,
+      locationProperties: this.getLocationProperties(
+        attributes?.locationProperties
+      ),
       updateVisitorProperties: attributes?.updateVisitorProperties,
       typeCasting: Object.prototype.hasOwnProperty.call(
         attributes || {},
@@ -578,5 +589,24 @@ export class Context implements ContextInterface {
       ? objectDeepMerge(this._visitorProperties || {}, attributes)
       : this._visitorProperties;
     return objectDeepMerge(segments || {}, visitorProperties || {});
+  }
+
+  private resolveRuleDataProvider(config: Config): RuleData | null {
+    const {ruleDataProvider} = config || {};
+    if (!ruleDataProvider) return null;
+    if (ruleDataProvider?.name !== 'RuleData') {
+      this._loggerManager?.warn?.(
+        'Context.resolveRuleDataProvider()',
+        `Invalid ruleDataProvider marker ${ruleDataProvider?.name || 'none'}. Expected "RuleData".`
+      );
+      return null;
+    }
+    return ruleDataProvider as RuleData;
+  }
+
+  private getLocationProperties(
+    locationProperties?: Record<any, any>
+  ): Record<any, any> | RuleData | null {
+    return locationProperties || this._ruleDataProvider;
   }
 }

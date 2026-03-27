@@ -7,6 +7,7 @@
 
 import {ConfigResponseData} from './config/index';
 import {LogLevel} from '@convertcom/js-sdk-enums';
+import {RuleData} from './RuleData';
 
 export * from './config/index';
 
@@ -49,6 +50,7 @@ type ConfigBase = {
     source?: string;
   };
   mapper?: (...args: any) => any;
+  ruleDataProvider?: RuleData;
 };
 
 type ConfigWithSdkKey = ConfigBase & {

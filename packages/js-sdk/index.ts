@@ -160,6 +160,7 @@ export {
   ConfigExperience,
   ExperienceVariationConfig,
   ExperienceChange,
+  RuleData,
   ConfigFeature,
   ConfigProject,
   ConfigGoal,
