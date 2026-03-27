@@ -16,7 +16,7 @@ import {Context as c} from '../src/context';
 import testConfig from './test-config.json';
 import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
-import {EntityType} from '@convertcom/js-sdk-enums';
+import {BucketingError, EntityType} from '@convertcom/js-sdk-enums';
 import {defaultConfig} from '../src/config/default';
 import {
   getFeaturesWithStatuses,
@@ -47,6 +47,80 @@ const bucketingManager = new bm(configuration);
 const ruleManager = new rm(configuration);
 const eventManager = new em(configuration);
 const apiManager = new am(configuration, {eventManager});
+const mixedTypeConfiguration = objectDeepMerge(
+  testConfig,
+  defaultConfig,
+  {
+    api: {
+      endpoint: {
+        config: host + ':' + port,
+        track: host + ':' + port
+      }
+    },
+    events: {
+      batch_size: batch_size,
+      release_interval: release_timeout
+    }
+  },
+  {
+    data: {
+      experiences: [
+        {
+          id: '100218248',
+          name: 'Test Experience AB Web',
+          key: 'test-experience-ab-web-1',
+          type: 'a/b',
+          version: 6,
+          status: 'active',
+          global_js: "var s = 'test_experience_web'; console.log(s);",
+          global_css: '.test-style { display: initial; }',
+          url: 'https://convert.com',
+          integrations: [],
+          environments: ['live', 'staging'],
+          site_area: {
+            OR: [
+              {
+                AND: [
+                  {
+                    OR_WHEN: [
+                      {
+                        rule_type: 'generic_key_value',
+                        matching: {
+                          match_type: 'matches',
+                          negated: false
+                        },
+                        key: 'url',
+                        value: 'https://convert.com/'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          audiences: ['100299433'],
+          goals: ['100215959', '100215960', '100215961'],
+          settings: {
+            matching_options: {
+              audiences: 'any'
+            }
+          },
+          variations: [
+            {
+              id: '100299464',
+              name: 'Variation 1',
+              status: 'running',
+              is_baseline: true,
+              changes: [],
+              key: '100299464-variation-1',
+              traffic_allocation: 100.0
+            }
+          ]
+        }
+      ]
+    }
+  }
+) as unknown as ConfigType;
 
 describe('Context tests', function () {
   const visitorId = 'XXX';
@@ -151,6 +225,7 @@ describe('Context tests', function () {
                 'experienceKey',
                 'experienceName',
                 'bucketingAllocation',
+                'experienceType',
                 'id',
                 'key',
                 'name',
@@ -447,6 +522,210 @@ describe('Context tests', function () {
       expect(data).to.deep.equal({
         bucketing: {[variation.experienceId]: variation.id}
       });
+    });
+  });
+  describe('Test mixed experience type bucketing', function () {
+    let dataManager, experienceManager, featureManager, segmentsManager, context;
+    const mixedVisitorId = 'TYPE-100';
+    const mixedEventManager = new em(mixedTypeConfiguration);
+    const mixedApiManager = new am(mixedTypeConfiguration, {
+      eventManager: mixedEventManager
+    });
+    const mixedRuleManager = new rm(mixedTypeConfiguration);
+    const mixedBucketingManager = new bm(mixedTypeConfiguration);
+    before(function () {
+      dataManager = new dm(mixedTypeConfiguration, {
+        bucketingManager: mixedBucketingManager,
+        ruleManager: mixedRuleManager,
+        eventManager: mixedEventManager,
+        apiManager: mixedApiManager
+      });
+      experienceManager = new exm(mixedTypeConfiguration, {dataManager});
+      featureManager = new fm(mixedTypeConfiguration, {dataManager});
+      segmentsManager = new sm(mixedTypeConfiguration, {
+        dataManager,
+        ruleManager: mixedRuleManager
+      });
+      context = new c(
+        mixedTypeConfiguration,
+        mixedVisitorId,
+        {
+          eventManager: mixedEventManager,
+          experienceManager,
+          featureManager,
+          segmentsManager,
+          dataManager,
+          apiManager: mixedApiManager
+        },
+        {browser: 'chrome', country: 'US'}
+      );
+    });
+    afterEach(function () {
+      dataManager.reset();
+    });
+    it('Should include experienceType in bucketed variation payload', function () {
+      const fullstackVariation = context.runExperience(
+        'test-experience-ab-fullstack-2',
+        {
+          locationProperties: {url: 'https://convert.com/'},
+          visitorProperties: {
+            varName3: 'something'
+          },
+          enableTracking: false
+        }
+      );
+      const webVariation = context.runExperience(
+        'test-experience-ab-web-1',
+        {
+          locationProperties: {url: 'https://convert.com/'},
+          visitorProperties: {
+            varName3: 'something'
+          },
+          enableTracking: false
+        }
+      );
+      expect(fullstackVariation).to.have.property('experienceType', 'a/b_fullstack');
+      expect(webVariation).to.have.property('experienceType', 'a/b');
+    });
+    it('Should return mixed web and fullstack variations without filtering', function () {
+      const variations = context.runExperiences({
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {
+          varName3: 'something'
+        },
+        enableTracking: false
+      });
+      expect(variations).to.have.length(3);
+      expect(
+        variations
+          .map(({id}) => id)
+          .includes('100299464')
+      ).to.equal(true);
+    });
+    it('Should filter variations by provided experience type', function () {
+      const webVariations = context.runExperiences({
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {
+          varName3: 'something'
+        },
+        experienceTypes: ['a/b'],
+        enableTracking: false
+      });
+      const fullstackVariations = context.runExperiences({
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {
+          varName3: 'something'
+        },
+        experienceTypes: ['a/b_fullstack'],
+        enableTracking: false
+      });
+      const unknownVariations = context.runExperiences({
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {
+          varName3: 'something'
+        },
+        experienceTypes: ['split_url'],
+        enableTracking: false
+      });
+      expect(webVariations).to.be.an('array').that.have.length(1);
+      expect(
+        webVariations.every(({experienceType}) => experienceType === 'a/b')
+      ).to.equal(true);
+      expect(fullstackVariations).to.be.an('array').that.have.length(2);
+      expect(
+        fullstackVariations.every(
+          ({experienceType}) => experienceType === 'a/b_fullstack'
+        )
+      ).to.equal(true);
+      expect(unknownVariations).to.be.an('array').that.have.length(0);
+    });
+    it('Should treat empty experienceTypes filter as no filtering', function () {
+      const variations = context.runExperiences({
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {
+          varName3: 'something'
+        },
+        experienceTypes: [],
+        enableTracking: false
+      });
+      expect(variations).to.have.length(3);
+    });
+  });
+  describe('Test Context bucketing contract', function () {
+    let dataManager, experienceManager, featureManager, segmentsManager, testContext;
+    const offlineVisitorId = 'OFFLINE-EXPERIENCE-BUCKETING';
+    before(function () {
+      dataManager = new dm(configuration, {
+        bucketingManager,
+        ruleManager,
+        eventManager,
+        apiManager
+      });
+      experienceManager = new exm(configuration, {dataManager});
+      featureManager = new fm(configuration, {dataManager});
+      segmentsManager = new sm(configuration, {dataManager, ruleManager});
+      testContext = new c(
+        configuration,
+        offlineVisitorId,
+        {
+          eventManager,
+          experienceManager,
+          featureManager,
+          segmentsManager,
+          dataManager,
+          apiManager
+        },
+        {browser: 'chrome', country: 'US'}
+      );
+    });
+    afterEach(function () {
+      dataManager.reset();
+    });
+    it('Should return stable bucketing payload for repeated runExperience calls', function () {
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      const firstVariation = testContext.runExperience(experienceKey, {
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {
+          varName3: 'something'
+        },
+        enableTracking: false
+      });
+      const secondVariation = testContext.runExperience(experienceKey, {
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {
+          varName3: 'something'
+        },
+        enableTracking: false
+      });
+      expect(firstVariation).to.be.an('object');
+      expect(secondVariation).to.be.an('object');
+      expect(firstVariation).to.have.property('id');
+      expect(secondVariation).to.have.property('id');
+      expect(secondVariation.id).to.equal(firstVariation.id);
+      expect(firstVariation).to.have.property(
+        'experienceType',
+        'a/b_fullstack'
+      );
+      expect(firstVariation)
+        .to.have.property('bucketingAllocation')
+        .that.is.a('number');
+      expect(firstVariation)
+        .to.have.property('traffic_allocation')
+        .that.is.a('number');
+      expect(testContext.getVisitorData())
+        .to.have.property('bucketing')
+        .to.deep.equal({[firstVariation.experienceId]: firstVariation.id});
+    });
+    it('Shoud fail to get variation when bucketing cannot be resolved', function () {
+      const experienceKey = 'test-experience-ab-fullstack-4';
+      const variation = testContext.runExperience(experienceKey, {
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {
+          varName3: 'something'
+        },
+        enableTracking: false
+      });
+      expect(variation).to.equal(BucketingError.VARIAION_NOT_DECIDED);
     });
   });
   describe('Test invalid visitor', function () {

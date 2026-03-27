@@ -709,7 +709,8 @@ export class DataManager implements DataManagerInterface {
         ...{
           experienceId: experience?.id,
           experienceName: experience?.name,
-          experienceKey: experience?.key
+          experienceKey: experience?.key,
+          experienceType: experience?.type
         },
         bucketingAllocation,
         ...variation

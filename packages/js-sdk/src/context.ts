@@ -170,6 +170,7 @@ export class Context implements ContextInterface {
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
    * @param {string=} attributes.locationProperties An object of key-value pairs that are used for location matching
    * @param {Record<any, any>=} attributes.visitorProperties An object of key-value pairs that are used for audience targeting
+   * @param {Array<string>=} attributes.experienceTypes A list of allowed experience types
    * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @return {Array<BucketedVariatio | RuleError | BucketingError>}
@@ -192,6 +193,7 @@ export class Context implements ContextInterface {
       {
         visitorProperties, // represents audiences
         locationProperties: attributes?.locationProperties, // represents site_area/locations
+        experienceTypes: attributes?.experienceTypes,
         updateVisitorProperties: attributes?.updateVisitorProperties,
         environment: attributes?.environment || this._environment
       }
