@@ -40,7 +40,7 @@ switch (logLevel) {
     break;
   case 4:
     console.log('log level:', 'error');
-    LOGGER_OPTIONS.find = /this\._loggerManager(\?)?\.(?!(error)).*?;$/gms;
+    LOGGER_OPTIONS.find = /this\._loggerManager(\?)?\..*?;$/gms;
     break;
   case 5:
     console.log('log level:', 'silent');
@@ -160,20 +160,21 @@ const commonJSBundle = ({
   info,
   packageName,
   peerDependencies,
-  isMainPackage
+  isMainPackage,
+  fileName = 'index'
 }) => ({
   cache: BUILD_CACHE,
   input,
   output: [
     {
       exports: 'named',
-      file: resolve(basePath, 'lib', 'index.js'),
+      file: resolve(basePath, 'lib', `${fileName}.js`),
       format: 'cjs',
       sourcemap: true
     },
     {
       exports: 'named',
-      file: resolve(basePath, 'lib', 'index.min.js'),
+      file: resolve(basePath, 'lib', `${fileName}.min.js`),
       format: 'cjs',
       sourcemap: true,
       plugins: [terser(terserConfig)]
@@ -195,10 +196,10 @@ const commonJSBundle = ({
     generatePackageJson({
       baseContents: (pkg) => ({
         name: pkg.name,
-        main: 'index.min.js',
-        module: 'index.min.mjs',
-        browser: 'index.umd.min.js',
-        types: 'index.d.ts',
+        main: `${fileName}.min.js`,
+        module: `${fileName}.min.mjs`,
+        browser: `${fileName}.umd.min.js`,
+        types: `${fileName}.d.ts`,
         files: ['**/**/*'],
         author: 'Convert Insights, Inc',
         repository: {
@@ -236,19 +237,65 @@ const commonJSBundle = ({
   ])
 });
 
-const commonJSLegacyBundle = ({basePath, input, info, packageName}) => ({
+const commonJSStandaloneBundle = ({
+  basePath,
+  input,
+  info,
+  packageName,
+  fileName = 'index'
+}) => ({
   cache: BUILD_CACHE,
   input,
   output: [
     {
       exports: 'named',
-      file: resolve(basePath, 'lib', 'legacy', 'index.js'),
+      file: resolve(basePath, 'lib', `${fileName}.js`),
       format: 'cjs',
       sourcemap: true
     },
     {
       exports: 'named',
-      file: resolve(basePath, 'lib', 'legacy', 'index.min.js'),
+      file: resolve(basePath, 'lib', `${fileName}.min.js`),
+      format: 'cjs',
+      sourcemap: true,
+      plugins: [terser(terserConfig)]
+    }
+  ],
+  plugins: withLogging.concat([
+    modify(CONFIG_ENV),
+    modify(TRACK_ENV),
+    modify({
+      find: 'process.env.VERSION',
+      replace: `'js${info.version || 'js-sdk'}'`
+    }),
+    typescript({
+      tsconfig: resolve(process.env.PROJECT_CWD, 'tsconfig.json'),
+      tsconfigOverride: tsconfigOverride(basePath, packageName)
+    }),
+    nodeResolve(),
+    commonjs()
+  ])
+});
+
+const commonJSLegacyBundle = ({
+  basePath,
+  input,
+  info,
+  packageName,
+  fileName = 'index'
+}) => ({
+  cache: BUILD_CACHE,
+  input,
+  output: [
+    {
+      exports: 'named',
+      file: resolve(basePath, 'lib', 'legacy', `${fileName}.js`),
+      format: 'cjs',
+      sourcemap: true
+    },
+    {
+      exports: 'named',
+      file: resolve(basePath, 'lib', 'legacy', `${fileName}.min.js`),
       format: 'cjs',
       sourcemap: true,
       plugins: [terser(terserConfig)]
@@ -275,20 +322,26 @@ const commonJSLegacyBundle = ({basePath, input, info, packageName}) => ({
   ])
 });
 
-const esmBundle = ({basePath, input, info, packageName}) => ({
+const esmBundle = ({
+  basePath,
+  input,
+  info,
+  packageName,
+  fileName = 'index'
+}) => ({
   cache: BUILD_CACHE,
   input,
   output: [
     {
       exports: 'auto',
       format: 'es',
-      file: resolve(basePath, 'lib', 'index.mjs'),
+      file: resolve(basePath, 'lib', `${fileName}.mjs`),
       sourcemap: true
     },
     {
       exports: 'auto',
       format: 'es',
-      file: resolve(basePath, 'lib', 'index.min.mjs'),
+      file: resolve(basePath, 'lib', `${fileName}.min.mjs`),
       plugins: [terser(terserConfig)],
       sourcemap: true
     }
@@ -310,22 +363,28 @@ const esmBundle = ({basePath, input, info, packageName}) => ({
   ])
 });
 
-const umdBundle = ({basePath, input, info}) => ({
+const umdBundle = ({
+  basePath,
+  input,
+  info,
+  name = 'ConvertSDK',
+  fileName = 'index'
+}) => ({
   cache: BUILD_CACHE,
   input,
   output: [
     {
-      name: 'ConvertSDK',
+      name,
       exports: 'named',
       format: 'umd',
-      file: resolve(basePath, 'lib', 'index.umd.js'),
+      file: resolve(basePath, 'lib', `${fileName}.umd.js`),
       sourcemap: true
     },
     {
-      name: 'ConvertSDK',
+      name,
       exports: 'named',
       format: 'umd',
-      file: resolve(basePath, 'lib', 'index.umd.min.js'),
+      file: resolve(basePath, 'lib', `${fileName}.umd.min.js`),
       plugins: [terser(terserConfig)],
       sourcemap: true
     }
@@ -362,13 +421,18 @@ const replacePackages = (dir, file, packageName, contents) => {
   return contents;
 };
 
-const typeDeclarations = ({basePath, input, packageName, isMainPackage}) => ({
+const typeDeclarations = ({
+  basePath,
+  input,
+  packageName,
+  fileName = 'index'
+}) => ({
   cache: BUILD_CACHE,
   input,
   output: [
     {
       format: 'es',
-      file: resolve(basePath, 'lib', 'index.d.ts')
+      file: resolve(basePath, 'lib', `${fileName}.d.ts`)
     }
   ],
   external,
@@ -418,27 +482,43 @@ const typeDeclarations = ({basePath, input, packageName, isMainPackage}) => ({
 
 const BUNDLES = process.env.BUNDLES
   ? process.env.BUNDLES.split(',')
-  : ['cjs', 'cjs-legacy', 'esm', 'umd'];
+  : [
+      'cjs',
+      'cjs-legacy',
+      'esm',
+      'umd'
+    ];
+
+const STANDALONE_UMD_NAMES = {
+  'visitor-entry': 'ConvertSDKVisitorEntry',
+  'goals-entry': 'ConvertSDKGoalsEntry',
+  'split-entry': 'ConvertSDKSplitEntry',
+  'integrations-entry': 'ConvertSDKIntegrationsEntry'
+};
+
+const resolveBundleInput = (input, entryName) => {
+  if (typeof input === 'string') return input;
+  return input[entryName] || input.index;
+};
 
 export default async ({basePath, input, info, packageName}) => {
   const getVersion = (pkg) =>
     JSON.parse(
       readFileSync(
-        resolve(
-          `${basePath}/../${pkg.replace('@convertcom/js-sdk-', '')}/package.json`
-        ),
+        resolve(`${basePath}/../${pkg.replace('@convertcom/js-sdk-', '')}/package.json`),
         'utf-8'
       )
     );
   const peerDependencies = depsMap[packageName]
-      ? Object.fromEntries(
-          depsMap[packageName].map((dep) => [
-            `@convertcom/js-sdk-${dep}`,
-            `>=${getVersion(dep).version}`
-          ])
-        )
-      : null,
+    ? Object.fromEntries(
+        depsMap[packageName].map((dep) => [
+          `@convertcom/js-sdk-${dep}`,
+          `>=${getVersion(dep).version}`
+        ])
+      )
+    : null,
     isMainPackage = packageName === 'js-sdk';
+
   if (peerDependencies) {
     console.log('peerDependencies:', peerDependencies);
     writeFileSync(
@@ -453,13 +533,15 @@ export default async ({basePath, input, info, packageName}) => {
       )
     );
   }
+
   return BUNDLES.map((bundle) => {
+    const bundleInput = resolveBundleInput(input, bundle);
     switch (bundle) {
       case 'cjs':
         return [
           commonJSBundle({
             basePath,
-            input,
+            input: bundleInput,
             info,
             packageName,
             peerDependencies,
@@ -467,17 +549,73 @@ export default async ({basePath, input, info, packageName}) => {
           })
         ];
       case 'cjs-legacy':
-        return [commonJSLegacyBundle({basePath, input, info, packageName})];
+        return [
+          commonJSLegacyBundle({
+            basePath,
+            input: bundleInput,
+            info,
+            packageName
+          })
+        ];
       case 'esm':
         return [
-          esmBundle({basePath, input, info, packageName}),
+          esmBundle({
+            basePath,
+            input: bundleInput,
+            info,
+            packageName
+          }),
           ...(!['enums', 'types', 'utils'].includes(packageName)
-            ? [typeDeclarations({basePath, input, packageName, isMainPackage})]
+            ? [
+                typeDeclarations({
+                  basePath,
+                  input: bundleInput,
+                  packageName
+                })
+              ]
             : [])
         ];
       case 'umd':
-        return isMainPackage ? [umdBundle({basePath, input, info})] : [];
+        return isMainPackage
+          ? [umdBundle({basePath, input: bundleInput, info})]
+          : [];
+      case 'visitor-entry':
+      case 'goals-entry':
+      case 'split-entry':
+      case 'integrations-entry':
+        return isMainPackage
+          ? [
+              commonJSStandaloneBundle({
+                basePath,
+                input: bundleInput,
+                info,
+                packageName,
+                fileName: bundle
+              }),
+              esmBundle({
+                basePath,
+                input: bundleInput,
+                info,
+                packageName,
+                fileName: bundle
+              }),
+              umdBundle({
+                basePath,
+                input: bundleInput,
+                info,
+                name: STANDALONE_UMD_NAMES[bundle],
+                fileName: bundle
+              }),
+              typeDeclarations({
+                basePath,
+                input: bundleInput,
+                packageName,
+                fileName: bundle
+              })
+            ]
+          : [];
+      default:
+        return [];
     }
-    return [];
   }).flat();
 };
