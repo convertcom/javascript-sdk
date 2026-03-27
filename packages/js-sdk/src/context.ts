@@ -31,6 +31,7 @@ import {
   ERROR_MESSAGES,
   EntityType,
   RuleError,
+  VariationChangeType,
   SystemEvents
 } from '@convertcom/js-sdk-enums';
 import {objectDeepMerge, objectNotEmpty} from '@convertcom/js-sdk-utils';
@@ -56,6 +57,7 @@ export class Context implements ContextInterface {
   private _ruleDataProvider?: RuleData;
   private _visitorProperties: Record<string, any>;
   private _environment: string;
+  private _executedWebChanges: Set<string>;
 
   /**
    * @param {Config} config
@@ -102,6 +104,7 @@ export class Context implements ContextInterface {
     this._apiManager = apiManager;
     this._loggerManager = loggerManager;
     this._ruleDataProvider = this.resolveRuleDataProvider(config);
+    this._executedWebChanges = new Set();
 
     if (objectNotEmpty(visitorProperties)) {
       const {properties} =
@@ -109,6 +112,190 @@ export class Context implements ContextInterface {
       if (properties) this._visitorProperties = properties;
       segmentsManager.putSegments(visitorId, visitorProperties);
     }
+  }
+
+  /**
+   * Render a web variation in browser
+   * @param {BucketedVariation} bucketedVariation A variation returned from runExperience/runExperiences
+   * @param {Object} options
+   * @param {ConfigExperience} options.experience Optional experience payload override
+   */
+  runVariation(
+    bucketedVariation: BucketedVariation,
+    options?: {experience?: ConfigExperience}
+  ): void {
+    if (!this._visitorId) {
+      this._loggerManager?.error?.(
+        'Context.runVariation()',
+        ERROR_MESSAGES.VISITOR_ID_REQUIRED
+      );
+      return;
+    }
+    if (!bucketedVariation) return;
+
+    const experience =
+      options?.experience ||
+      (bucketedVariation.experienceKey
+        ? (this.getConfigEntity(
+            bucketedVariation.experienceKey,
+            EntityType.EXPERIENCE
+          ) as ConfigExperience)
+        : bucketedVariation.experienceId
+        ? (this.getConfigEntityById(
+            bucketedVariation.experienceId,
+            EntityType.EXPERIENCE
+          ) as ConfigExperience)
+        : null);
+
+    if (!experience) {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        `Unable to resolve experience for variation ${bucketedVariation.id || bucketedVariation.key}`
+      );
+      return;
+    }
+
+    const globalScope = typeof globalThis === 'object' ? (globalThis as any) : null;
+    const documentRef = globalScope?.document;
+    if (
+      !documentRef ||
+      typeof documentRef.createElement !== 'function'
+    ) {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        'Variation rendering skipped due to missing document API'
+      );
+      return;
+    }
+
+    const appender =
+      documentRef.head ||
+      documentRef.documentElement ||
+      documentRef.body ||
+      (typeof documentRef.getElementsByTagName === 'function'
+        ? documentRef.getElementsByTagName('head')[0]
+        : null);
+
+    if (!appender) {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        'Variation rendering skipped because document has no append target'
+      );
+      return;
+    }
+
+    if (typeof appender.appendChild !== 'function') return;
+
+    const getChangeKey = (
+      changeId: string,
+      variationId?: string
+    ): string | null => {
+      if (variationId) return `variation:${variationId}:change:${changeId}`;
+      return null;
+    };
+
+    const variationExecutionKey = String(
+      bucketedVariation.id ||
+        bucketedVariation.key ||
+        bucketedVariation.experienceId ||
+        bucketedVariation.experienceKey
+    );
+
+    const runCss = (css?: string): void => {
+      if (!css) return;
+      try {
+        const style = documentRef.createElement('style');
+        style.type = 'text/css';
+        if (
+          typeof documentRef.createTextNode === 'function' &&
+          typeof style.appendChild === 'function'
+        ) {
+          style.appendChild(documentRef.createTextNode(css));
+        } else {
+          style.textContent = css;
+        }
+        appender.appendChild(style);
+      } catch (error) {
+        this._loggerManager?.warn?.(
+          'Context.runVariation()',
+          'Failed to inject variation CSS',
+          error
+        );
+      }
+    };
+
+    const runJs = (js?: string): void => {
+      if (!js) return;
+      try {
+        const expressionCode = String(js).trim().replace(/;+$/g, '');
+        if (!expressionCode) return;
+
+        const isFunctionCode =
+          /^(?:async\s+)?function\b/.test(expressionCode) ||
+          /^(?:async\s*)?\(\s*[^)]*\)\s*=>/.test(expressionCode) ||
+          /^(?:async\s*)?[A-Za-z_$][\w$]*\s*=>/.test(expressionCode);
+
+        const executableCode = isFunctionCode
+          ? `return (${expressionCode})`
+          : `return function(){\n${expressionCode}\n}`;
+
+        const result = Function(executableCode)();
+        if (typeof result === 'function') result();
+      } catch (error) {
+        this._loggerManager?.warn?.(
+          'Context.runVariation()',
+          'Failed to execute variation JS',
+          error
+        );
+      }
+    };
+
+    if (!this._executedWebChanges.has(`variation:${variationExecutionKey}`)) {
+      runCss(experience.global_css);
+      runJs(experience.global_js);
+      this._executedWebChanges.add(`variation:${variationExecutionKey}`);
+    }
+
+    (bucketedVariation?.changes || []).forEach((change) => {
+      const changeId = String(change?.id || '');
+      const changeExecutionKey =
+        changeId && variationExecutionKey
+          ? getChangeKey(changeId, variationExecutionKey)
+          : null;
+
+      if (changeExecutionKey && this._executedWebChanges.has(changeExecutionKey))
+        return;
+
+      const {type, data = {}} = change;
+      const {css: cssRaw, js: jsRaw, custom_js: customJsRaw} = data as {
+        css?: unknown;
+        js?: unknown;
+        custom_js?: unknown;
+      };
+      const css = typeof cssRaw === 'string' ? cssRaw : undefined;
+      const js = typeof jsRaw === 'string' ? jsRaw : undefined;
+      const customJs = typeof customJsRaw === 'string' ? customJsRaw : undefined;
+
+      if (
+        type === VariationChangeType.DEFAULT_REDIRECT ||
+        type === VariationChangeType.FULLSTACK_FEATURE
+      ) {
+        this._loggerManager?.warn?.(
+          'Context.runVariation()',
+          `Skipping unsupported change type "${type}"`
+        );
+        return;
+      }
+
+      if (!css && !js && !customJs) return;
+
+      runCss(css);
+      runJs(js);
+      runJs(customJs);
+
+      if (changeExecutionKey)
+        this._executedWebChanges.add(changeExecutionKey);
+    });
   }
 
   /**

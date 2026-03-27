@@ -279,4 +279,173 @@ describe('Core tests', function () {
       }
     });
   });
+
+  describe('Test Core branch coverage', function () {
+    it('Should initialize successfully on first fetch with fresh config', async function () {
+      const capturedEvents: string[] = [];
+      const dataManager = {
+        data: null
+      } as any;
+      const apiManager = {
+        getConfig: () =>
+          Promise.resolve({
+            account_id: 'unit-account',
+            project: {id: 'unit-project'}
+          }),
+        setData: (data) => {
+          dataManager.data = data;
+        }
+      } as any;
+
+      const core = new c(
+        {sdkKey: 'unit-account/unit-project'} as any,
+        {
+          eventManager: {
+            fire: (event, args, err, immediate) => {
+              capturedEvents.push(event);
+            },
+            on: () => {}
+          } as any,
+          experienceManager: {} as any,
+          featureManager: {} as any,
+          segmentsManager: {} as any,
+          dataManager,
+          apiManager,
+          loggerManager: {
+            trace: () => {}
+          } as any
+        }
+      );
+
+      await core.onReady();
+      expect((core as any)._initialized).to.equal(true);
+      expect(capturedEvents[0]).to.equal(SystemEvents.READY);
+    });
+
+    it('Should log fetchConfig server-side error and keep client non-initialized', async function () {
+      const loggerCalls: any[] = [];
+      const dataManager = {
+        data: null
+      } as any;
+      const apiManager = {
+        getConfig: () => Promise.resolve({error: 'server-unavailable'}),
+        setData: (data) => {
+          dataManager.data = data;
+        }
+      } as any;
+
+      new c(
+        {sdkKey: 'unit-account/unit-project'} as any,
+        {
+          eventManager: {
+            fire: () => {},
+            on: () => {}
+          } as any,
+          experienceManager: {} as any,
+          featureManager: {} as any,
+          segmentsManager: {} as any,
+          dataManager,
+          apiManager,
+          loggerManager: {
+            error: (...values) => {
+              loggerCalls.push(values);
+            }
+          } as any
+        }
+      );
+
+      await (dataManager as any).initialized;
+      await Promise.resolve();
+      expect(dataManager.data).to.deep.equal({error: 'server-unavailable'});
+      expect(loggerCalls).to.have.length(1);
+      expect(loggerCalls[0][1]).to.deep.equal({
+        error: 'server-unavailable'
+      });
+    });
+
+    it('Should handle fetchConfig promise rejection', async function () {
+      const loggerCalls: any[] = [];
+      const getConfigError = new Error('network-down');
+
+      new c(
+        {sdkKey: 'unit-account/unit-project'} as any,
+        {
+          eventManager: {
+            fire: () => {},
+            on: () => {}
+          } as any,
+          experienceManager: {} as any,
+          featureManager: {} as any,
+          segmentsManager: {} as any,
+          dataManager: {data: null} as any,
+          apiManager: {
+            getConfig: () => Promise.reject(getConfigError)
+          } as any,
+          loggerManager: {
+            error: (...values) => {
+              loggerCalls.push(values);
+            }
+          } as any
+        }
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(loggerCalls).to.have.length(1);
+      expect(loggerCalls[0][1]?.error).to.equal('network-down');
+    });
+
+    it('Should clear pending fetchConfig timer before scheduling next fetch', async function () {
+      const dataManager = {
+        data: null
+      } as any;
+
+      const originalClearTimeout = global.clearTimeout;
+      let clearTimeoutCalls = 0;
+
+      const clearSpy = ((id: any): any => {
+        clearTimeoutCalls += 1;
+        return originalClearTimeout(id);
+      }) as any;
+
+      try {
+        global.clearTimeout = clearSpy;
+
+        const apiManager = {
+          getConfig: () =>
+            Promise.resolve({
+              account_id: 'unit-account',
+              project: {id: 'unit-project'}
+            }),
+          setData: (data) => {
+            dataManager.data = data;
+          }
+        } as any;
+
+        const core = new c(
+          {sdkKey: 'unit-account/unit-project'} as any,
+          {
+            eventManager: {
+              fire: () => {},
+              on: () => {}
+            } as any,
+            experienceManager: {} as any,
+            featureManager: {} as any,
+            segmentsManager: {} as any,
+            dataManager,
+            apiManager,
+            loggerManager: {
+              trace: () => {}
+            } as any
+          }
+        );
+
+        await (core as any)._promise;
+        await (core as any).fetchConfig();
+
+        expect(clearTimeoutCalls).to.equal(1);
+      } finally {
+        global.clearTimeout = originalClearTimeout as any;
+      }
+    });
+  });
 });

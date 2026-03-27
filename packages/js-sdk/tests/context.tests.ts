@@ -16,7 +16,7 @@ import {Context as c} from '../src/context';
 import testConfig from './test-config.json';
 import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
-import {BucketingError, EntityType} from '@convertcom/js-sdk-enums';
+import {BucketingError, EntityType, RuleError} from '@convertcom/js-sdk-enums';
 import {defaultConfig} from '../src/config/default';
 import {
   getFeaturesWithStatuses,
@@ -719,6 +719,19 @@ describe('Context tests', function () {
       });
       expect(response).to.be.undefined;
     });
+
+    it('Should fail to trigger Conversion if goal data is not an array', function () {
+      const goalKey = 'increase-engagement';
+      const response = context.trackConversion(goalKey, {
+        ruleData: {
+          action: 'buy'
+        },
+        conversionData: {
+          amount: 10.3
+        } as any
+      });
+      expect(response).to.be.undefined;
+    });
     it('Should successfully set default segments', function () {
       const segments = {country: 'UK'};
       context.setDefaultSegments(segments);
@@ -1066,6 +1079,482 @@ describe('Context tests', function () {
       expect(variation).to.equal(BucketingError.VARIAION_NOT_DECIDED);
     });
   });
+  describe('Test variation rendering', function () {
+    let dataManager,
+      experienceManager,
+      featureManager,
+      segmentsManager,
+      context,
+      events;
+    let originalDocument;
+    let originalWindow;
+
+    const createBrowserStub = (): {
+      document: any;
+      events: Array<string>;
+    } => {
+      const events: Array<string> = [];
+      const assignAppend = (element, child: any) => {
+        if (
+          child &&
+          Object.prototype.hasOwnProperty.call(child, 'text') &&
+          child?.text !== undefined
+        ) {
+          element.textContent = child.text;
+        }
+      };
+      const eventLabel = (node: any): string => {
+        if (node?.tagName === 'style') return 'css';
+        if (node?.tagName === 'script') return 'js';
+        return node?.tagName;
+      };
+      const container = {
+        appendChild: (node: any) => {
+          const text = node?.textContent || '';
+          events.push(`${eventLabel(node)}:${text}`);
+          return node;
+        }
+      };
+      return {
+        document: {
+          head: container,
+          body: container,
+          documentElement: container,
+          createTextNode: (value: string) => ({text: value}),
+          createElement: (tagName: string) => {
+            const element = {
+              tagName,
+              type: '',
+              textContent: '',
+              appendChild: (node: any) => assignAppend(element, node),
+              setAttribute: () => {}
+            };
+            return element;
+          },
+          getElementsByTagName: () => [container]
+        },
+        events
+      };
+    };
+
+    const getContext = () => {
+      dataManager = new dm(configuration, {
+        bucketingManager,
+        ruleManager,
+        eventManager,
+        apiManager
+      });
+      experienceManager = new exm(configuration, {dataManager});
+      featureManager = new fm(configuration, {dataManager});
+      segmentsManager = new sm(configuration, {
+        dataManager,
+        ruleManager
+      });
+      return new c(
+        configuration,
+        'RUN-VARIATION-VISITOR',
+        {
+          eventManager,
+          experienceManager,
+          featureManager,
+          segmentsManager,
+          dataManager,
+          apiManager
+        },
+        {browser: 'chrome', country: 'US'}
+      );
+    };
+
+    beforeEach(function () {
+      const setup = createBrowserStub();
+      originalDocument = (global as any).document;
+      originalWindow = (global as any).window;
+      events = setup.events;
+      (global as any).document = setup.document;
+      (global as any).window = setup.document;
+      context = getContext();
+    });
+
+    afterEach(function () {
+      (global as any).document = originalDocument;
+      (global as any).window = originalWindow;
+    });
+
+    it('Should execute global then per-change web payload in expected order', function () {
+      (global as any).window.__webVariationLog = [];
+      const variation = {
+        id: '100500100',
+        experienceKey: 'web-experience',
+        changes: [
+          {
+            id: 10,
+            type: 'defaultCode',
+            data: {
+              css: '.global .item { color: red; }',
+              js: 'window.__webVariationLog.push("defaultCode-js");',
+              custom_js: 'window.__webVariationLog.push("defaultCode-custom");'
+            }
+          },
+          {
+            id: 11,
+            type: 'defaultRedirect',
+            data: {}
+          },
+          {
+            id: 12,
+            type: 'defaultCodeMultipage',
+            data: {
+              css: '.page .item { color: blue; }',
+              js: 'window.__webVariationLog.push("defaultCodeMultipage-js");',
+              custom_js:
+                'window.__webVariationLog.push("defaultCodeMultipage-custom");'
+            }
+          },
+          {
+            id: 13,
+            type: 'customCode',
+            data: {
+              css: '.custom .item { color: green; }',
+              js: 'window.__webVariationLog.push("customCode-js");'
+            }
+          }
+        ]
+      };
+      const experience = {
+        key: 'web-experience',
+        global_js: 'window.__webVariationLog.push("global-js");',
+        global_css: '.global {display:block;}'
+      } as any;
+
+      context.runVariation(variation as any, {experience});
+      expect(events[0]).to.include('css');
+      expect(events[0]).to.include('global {display:block;}');
+      expect(events[1]).to.include('css:.global .item { color: red; }');
+      expect(events[2]).to.include('css:.page .item { color: blue; }');
+      expect(events[3]).to.include('css:.custom .item { color: green; }');
+      expect(events).to.have.length(4);
+      expect((global as any).window.__webVariationLog).to.deep.equal([
+        'global-js',
+        'defaultCode-js',
+        'defaultCode-custom',
+        'defaultCodeMultipage-js',
+        'defaultCodeMultipage-custom',
+        'customCode-js'
+      ]);
+    });
+
+    it('Should skip unsupported web variation change types', function () {
+      const variation = {
+        id: '100500102',
+        experienceKey: 'web-experience-nonweb',
+        changes: [
+          {
+            id: 21,
+            type: 'fullStackFeature',
+            data: {
+              css: '.should-never-be-added { color: purple; }',
+              js: 'window.__webVariationLog = "fullStackFeature-js";'
+            }
+          },
+          {
+            id: 22,
+            type: 'defaultRedirect',
+            data: {
+              css: '.redirect { color: yellow; }',
+              js: 'window.__webVariationLog = "defaultRedirect-js";'
+            }
+          },
+          {
+            id: 23,
+            type: 'defaultCode',
+            data: {
+              css: '.still-applied { color: black; }'
+            }
+          }
+        ]
+      };
+      const experience = {
+        key: 'web-experience-nonweb',
+        global_css: '.global {display:block;}'
+      } as any;
+
+      context.runVariation(variation as any, {experience});
+      expect(events[0]).to.include('css:.global {display:block;}');
+      expect(events[1]).to.include('css:.still-applied { color: black; }');
+      expect(events).to.have.length(2);
+    });
+
+    it('Should keep variation and change changes idempotent across repeated rendering calls', function () {
+      const variation = {
+        id: '100500101',
+        experienceKey: 'web-experience-repeat',
+        changes: [
+          {
+            id: 21,
+            type: 'defaultCode',
+            data: {
+              css: '.global .item { color: red; }'
+            }
+          }
+        ]
+      };
+      const experience = {
+        key: 'web-experience-repeat',
+        global_css: '.global {display:block;}'
+      } as any;
+
+      context.runVariation(variation as any, {experience});
+      context.runVariation(variation as any, {experience});
+      expect(events).to.have.length(2);
+      expect(events[0]).to.include('css:.global {display:block;}');
+      expect(events[1]).to.include('css:.global .item { color: red; }');
+    });
+
+    it('Should skip global rendering when document API is unavailable', function () {
+      const variation = {
+        id: '100500104',
+        experienceKey: 'web-missing-document',
+        changes: [
+          {
+            id: 31,
+            type: 'defaultCode',
+            data: {
+              css: '.not-added { color: red; }'
+            }
+          }
+        ]
+      };
+      const experience = {
+        key: 'web-missing-document',
+        global_css: '.global {display:block;}'
+      } as any;
+
+      (global as any).document = undefined;
+      context.runVariation(variation as any, {experience});
+      expect(events).to.have.length(0);
+    });
+
+    it('Should skip global rendering when no append target exists', function () {
+      const variation = {
+        id: '100500105',
+        experienceKey: 'web-no-appender',
+        changes: [
+          {
+            id: 32,
+            type: 'defaultCode',
+            data: {
+              css: '.not-added { color: red; }'
+            }
+          }
+        ]
+      };
+      const experience = {
+        key: 'web-no-appender',
+        global_css: '.global {display:block;}'
+      } as any;
+
+      (global as any).document = {
+        createElement: (tagName: string) => ({tagName, type: '', textContent: ''}),
+        createTextNode: (value: string) => ({text: value}),
+        getElementsByTagName: () => []
+      } as any;
+
+      context.runVariation(variation as any, {experience});
+      expect(events).to.have.length(0);
+    });
+
+    it('Should skip rendering when append target does not support appendChild', function () {
+      const variation = {
+        id: '100500106',
+        experienceKey: 'web-no-append-child',
+        changes: [
+          {
+            id: 33,
+            type: 'defaultCode',
+            data: {
+              css: '.not-added { color: red; }'
+            }
+          }
+        ]
+      };
+      const experience = {
+        key: 'web-no-append-child',
+        global_css: '.global {display:block;}'
+      } as any;
+      const appender = {};
+
+      (global as any).document = {
+        head: appender,
+        body: appender,
+        documentElement: appender,
+        createElement: (tagName: string) => ({tagName, type: '', textContent: ''}),
+        createTextNode: (value: string) => ({text: value}),
+        getElementsByTagName: () => [appender]
+      } as any;
+
+      context.runVariation(variation as any, {experience});
+      expect(events).to.have.length(0);
+    });
+
+    it('Should fallback to style.textContent when createTextNode is unavailable', function () {
+      const variation = {
+        id: '100500107',
+        experienceKey: 'web-style-fallback',
+        changes: [
+          {
+            id: 34,
+            type: 'defaultCode',
+            data: {
+              css: '.fallback-item { color: green; }'
+            }
+          }
+        ]
+      };
+      const experience = {
+        key: 'web-style-fallback',
+        global_css: '.global {display:block;}'
+      } as any;
+      const rendered: string[] = [];
+      const createElement = (tagName: string) => {
+        if (tagName === 'style') {
+          return {tagName, type: '', textContent: ''};
+        }
+        const element: any = {tagName, type: '', textContent: ''};
+        element.appendChild = (node: any) => {
+          if (
+            node &&
+            Object.prototype.hasOwnProperty.call(node, 'text') &&
+            node?.text !== undefined
+          ) {
+            element.textContent = node.text;
+          }
+        };
+        return element;
+      };
+      const appender = {
+        appendChild: (node: any) => {
+          rendered.push(`${node?.tagName}:${node?.textContent || ''}`);
+        }
+      };
+      (global as any).document = {
+        head: appender,
+        body: appender,
+        documentElement: appender,
+        createElement,
+        getElementsByTagName: () => [appender]
+      } as any;
+
+      context.runVariation(variation as any, {experience});
+      expect(rendered).to.include('style:.global {display:block;}');
+      expect(rendered).to.include('style:.fallback-item { color: green; }');
+      expect(rendered).to.have.length(2);
+    });
+
+    it('Should continue rendering when CSS injection fails but JS injection still runs', function () {
+      (global as any).window.__webVariationLog = [];
+      const variation = {
+        id: '100500108',
+        experienceKey: 'web-css-error',
+        changes: []
+      };
+      const experience = {
+        key: 'web-css-error',
+        global_js: 'window.__webVariationLog.push("global-css-error");'
+      } as any;
+      const rendered: string[] = [];
+      const appender = {
+        appendChild: (node: any) => {
+          rendered.push(`${node?.tagName}:${node?.textContent || ''}`);
+        }
+      };
+      (global as any).document = {
+        head: appender,
+        body: appender,
+        documentElement: appender,
+        createTextNode: (value: string) => ({text: value}),
+        createElement: (tagName: string) => {
+          if (tagName === 'style') {
+            throw new Error('style injection failed');
+          }
+          return {tagName, type: '', textContent: ''};
+        },
+        getElementsByTagName: () => [appender]
+      } as any;
+
+      context.runVariation(variation as any, {experience});
+      expect(rendered).to.have.length(0);
+      expect((global as any).window.__webVariationLog).to.deep.equal([
+        'global-css-error'
+      ]);
+    });
+
+    it('Should continue rendering when JS injection fails', function () {
+      const variation = {
+        id: '100500109',
+        experienceKey: 'web-js-error',
+        changes: []
+      };
+      const experience = {
+        key: 'web-js-error',
+        global_css: '.global {display:block;}'
+      } as any;
+      const rendered: string[] = [];
+      const appender = {
+        appendChild: (node: any) => {
+          rendered.push(`${node?.tagName}:${node?.textContent || ''}`);
+        }
+      };
+      (global as any).document = {
+        head: appender,
+        body: appender,
+        documentElement: appender,
+        createTextNode: (value: string) => ({text: value}),
+        createElement: (tagName: string) => {
+          if (tagName === 'script') {
+            throw new Error('script injection failed');
+          }
+          const element: any = {tagName, type: '', textContent: ''};
+          element.appendChild = (node: any) => {
+            if (
+              node &&
+              Object.prototype.hasOwnProperty.call(node, 'text') &&
+              node?.text !== undefined
+            ) {
+              element.textContent = node.text;
+            }
+          };
+          return element;
+        },
+        getElementsByTagName: () => [appender]
+      } as any;
+
+      context.runVariation(variation as any, {experience});
+      expect(rendered).to.have.length(1);
+      expect(rendered[0]).to.equal('style:.global {display:block;}');
+    });
+
+    it('Should execute changes when no change id is provided', function () {
+      const variation = {
+        changes: [
+          {
+            type: 'defaultCode',
+            data: {
+              css: '.no-id-item { color: orange; }'
+            }
+          }
+        ]
+      };
+      const experience = {
+        key: 'web-no-id-change',
+        global_css: '.global {display:block;}'
+      } as any;
+
+      context.runVariation(variation as any, {experience});
+      expect(events[0]).to.include('css:.global {display:block;}');
+      expect(events[1]).to.include('css:.no-id-item { color: orange; }');
+      expect(events).to.have.length(2);
+    });
+  });
   describe('Test invalid visitor', function () {
     let dataManager,
       experienceManager,
@@ -1119,6 +1608,177 @@ describe('Context tests', function () {
       const segmentKey = 'test-segments-1';
       const output = context.setCustomSegments(segmentKey);
       expect(output).to.be.undefined;
+    });
+  });
+  describe('Test Context branch coverage', function () {
+    const createMockContext = ({
+      experienceManager,
+      featureManager,
+      segmentsManager,
+      dataManager,
+      apiManager
+    }: {
+      experienceManager?: any;
+      featureManager?: any;
+      segmentsManager?: any;
+      dataManager?: any;
+      apiManager?: any;
+    } = {}): c => {
+      return new c(
+        configuration,
+        'BRANCH-COVERAGE-VISITOR',
+        {
+          eventManager,
+          experienceManager: experienceManager || {selectVariation: () => null},
+          featureManager:
+            featureManager || {
+              runFeature: () => null,
+              runFeatures: () => []
+            },
+          segmentsManager:
+            segmentsManager || {
+              getSegments: () => ({}),
+              selectCustomSegments: () => null
+            },
+          dataManager: dataManager || {getData: () => ({})},
+          apiManager: apiManager || {releaseQueue: () => Promise.resolve()}
+        } as any
+      );
+    };
+
+    it('Should return rule error from runExperience', function () {
+      const context = createMockContext({
+        experienceManager: {
+          selectVariation: () => RuleError.NO_DATA_FOUND
+        } as any
+      });
+      const output = context.runExperience('any-experience');
+      expect(output).to.equal(RuleError.NO_DATA_FOUND);
+    });
+
+    it('Should return bucketing error from runExperience', function () {
+      const context = createMockContext({
+        experienceManager: {
+          selectVariation: () => BucketingError.VARIAION_NOT_DECIDED
+        } as any
+      });
+      const output = context.runExperience('any-experience');
+      expect(output).to.equal(BucketingError.VARIAION_NOT_DECIDED);
+    });
+
+    it('Should return rule errors from runExperiences', function () {
+      const context = createMockContext({
+        experienceManager: {
+          selectVariations: () => [RuleError.NO_DATA_FOUND, RuleError.NEED_MORE_DATA]
+        } as any
+      });
+      const output = context.runExperiences();
+      expect(output).to.deep.equal([
+        RuleError.NO_DATA_FOUND,
+        RuleError.NEED_MORE_DATA
+      ]);
+    });
+
+    it('Should return bucketing errors from runExperiences', function () {
+      const context = createMockContext({
+        experienceManager: {
+          selectVariations: () => [BucketingError.VARIAION_NOT_DECIDED]
+        } as any
+      });
+      const output = context.runExperiences();
+      expect(output).to.deep.equal([BucketingError.VARIAION_NOT_DECIDED]);
+    });
+
+    it('Should return rule error from runFeature', function () {
+      const context = createMockContext({
+        featureManager: {
+          runFeature: () => RuleError.NO_DATA_FOUND
+        } as any
+      });
+      const output = context.runFeature('feature-1');
+      expect(output).to.equal(RuleError.NO_DATA_FOUND);
+    });
+
+    it('Should return rule errors from runFeatures', function () {
+      const context = createMockContext({
+        featureManager: {
+          runFeatures: () => [RuleError.NO_DATA_FOUND]
+        } as any
+      });
+      const output = context.runFeatures();
+      expect(output).to.deep.equal([RuleError.NO_DATA_FOUND]);
+    });
+
+    it('Should return rule error from trackConversion', function () {
+      const context = createMockContext({
+        segmentsManager: {
+          getSegments: () => ({})
+        } as any,
+        dataManager: {
+          getData: () => ({}),
+          convert: () => RuleError.NEED_MORE_DATA
+        } as any
+      });
+      const output = context.trackConversion('increase-engagement');
+      expect(output).to.equal(RuleError.NEED_MORE_DATA);
+    });
+
+    it('Should return rule error from setCustomSegments', function () {
+      const context = createMockContext({
+        segmentsManager: {
+          getSegments: () => ({}),
+          selectCustomSegments: () => RuleError.NO_DATA_FOUND
+        } as any
+      });
+      const output = context.runCustomSegments(['feature-segment']);
+      expect(output).to.equal(RuleError.NO_DATA_FOUND);
+    });
+
+    it('Should release pending queues only through API when no dataStoreManager is available', async function () {
+      let apiReleaseCalls = 0;
+      let dataStoreReleaseCalls = 0;
+      const context = createMockContext({
+        dataManager: {
+          getData: () => ({}),
+          dataStoreManager: undefined
+        } as any,
+        apiManager: {
+          releaseQueue: () => {
+            apiReleaseCalls += 1;
+            return Promise.resolve();
+          }
+        } as any
+      });
+
+      await context.releaseQueues('context-branch');
+      expect(apiReleaseCalls).to.equal(1);
+      expect(dataStoreReleaseCalls).to.equal(0);
+    });
+
+    it('Should release pending queues through both dataStoreManager and API', async function () {
+      let apiReleaseCalls = 0;
+      let dataStoreReleaseCalls = 0;
+      const context = createMockContext({
+        dataManager: {
+          getData: () => ({}),
+          dataStoreManager: {
+            releaseQueue: () => {
+              dataStoreReleaseCalls += 1;
+              return Promise.resolve();
+            }
+          }
+        } as any,
+        apiManager: {
+          releaseQueue: () => {
+            apiReleaseCalls += 1;
+            return Promise.resolve();
+          }
+        } as any
+      });
+
+      await context.releaseQueues('context-branch');
+      expect(apiReleaseCalls).to.equal(1);
+      expect(dataStoreReleaseCalls).to.equal(1);
     });
   });
 });
