@@ -10,7 +10,8 @@ export default () => {
     'goals-entry': resolve('src/standalone/goals-entry.ts'),
     'split-entry': resolve('src/standalone/split-entry.ts'),
     'visitor-entry': resolve('src/standalone/visitor-entry.ts'),
-    'integrations-entry': resolve('src/standalone/integrations-entry.ts')
+    'integrations-entry': resolve('src/standalone/integrations-entry.ts'),
+    'toolkit': resolve('src/standalone/toolkit-entry.ts')
   };
   const info = JSON.parse(readFileSync(`${basePath}/package.json`, 'utf-8'));
   console.log(`build ${info.name}...`);

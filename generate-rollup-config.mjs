@@ -486,14 +486,16 @@ const BUNDLES = process.env.BUNDLES
       'cjs',
       'cjs-legacy',
       'esm',
-      'umd'
+      'umd',
+      'toolkit'
     ];
 
 const STANDALONE_UMD_NAMES = {
   'visitor-entry': 'ConvertSDKVisitorEntry',
   'goals-entry': 'ConvertSDKGoalsEntry',
   'split-entry': 'ConvertSDKSplitEntry',
-  'integrations-entry': 'ConvertSDKIntegrationsEntry'
+  'integrations-entry': 'ConvertSDKIntegrationsEntry',
+  toolkit: 'ConvertSDKToolkit'
 };
 
 const resolveBundleInput = (input, entryName) => {
@@ -583,6 +585,7 @@ export default async ({basePath, input, info, packageName}) => {
       case 'goals-entry':
       case 'split-entry':
       case 'integrations-entry':
+      case 'toolkit':
         return isMainPackage
           ? [
               commonJSStandaloneBundle({
@@ -590,27 +593,27 @@ export default async ({basePath, input, info, packageName}) => {
                 input: bundleInput,
                 info,
                 packageName,
-                fileName: bundle
+                fileName: bundle === 'toolkit' ? 'static/toolkit' : bundle
               }),
               esmBundle({
                 basePath,
                 input: bundleInput,
                 info,
                 packageName,
-                fileName: bundle
+                fileName: bundle === 'toolkit' ? 'static/toolkit' : bundle
               }),
               umdBundle({
                 basePath,
                 input: bundleInput,
                 info,
                 name: STANDALONE_UMD_NAMES[bundle],
-                fileName: bundle
+                fileName: bundle === 'toolkit' ? 'static/toolkit' : bundle
               }),
               typeDeclarations({
                 basePath,
                 input: bundleInput,
                 packageName,
-                fileName: bundle
+                fileName: bundle === 'toolkit' ? 'static/toolkit' : bundle
               })
             ]
           : [];
