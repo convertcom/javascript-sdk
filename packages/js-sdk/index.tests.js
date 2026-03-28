@@ -70,6 +70,7 @@ export default function runTests(bundle) {
         'runExperiences',
         'runFeature',
         'runFeatures',
+        'runVariation',
         'trackConversion',
         'setDefaultSegments',
         'runCustomSegments'
@@ -102,6 +103,7 @@ export default function runTests(bundle) {
           'experienceKey',
           'experienceName',
           'bucketingAllocation',
+          'experienceType',
           'id',
           'key',
           'name',

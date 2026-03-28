@@ -24,6 +24,10 @@
 6. [Using the SDK](#using-the-sdk)
    - [Comprehensive Examples](#comprehensive-examples)
    - [Import the SDK into Your Project](#import-the-sdk-into-your-project)
+   - [Web + Hybrid Bundle Model](#web--hybrid-bundle-model)
+   - [Browser Helper API Contracts](#browser-helper-api-contracts)
+   - [Run Variation](#run-variation)
+   - [runGoals and runIntegrations](#rungoals-and-runintegrations)
    - [Initialize Using the SDK Key](#initialize-using-the-sdk-key)
    - [Initialize Using Static Configuration](#initialize-using-static-configuration)
    - [SDK Configuration Options](#sdk-configuration-options)
@@ -262,6 +266,141 @@ convertSDK.onReady().then(() => {
 ```
 
 When using static project data, the SDK is instantiated as soon as the instance is created and can be used right away for starting a UserContext.
+
+### Web + Hybrid Bundle Model
+
+This SDK can run in two runtime modes:
+
+- **Legacy fullstack mode** (existing behavior, unchanged): use the classic tracking endpoint and run features/bucketing in the SDK only.
+- **Web companion mode**: use browser companion bundles for split URL + goal + integration behavior and then run the SDK in web mode.
+
+#### Five-bundle companion setup (web mode)
+
+Web mode depends on the following companion bundles:
+
+| Bundle | Responsibility |
+| --- | --- |
+| `/{account_id}-{project_id}-visitor.js` | Provides `window.convert` bootstrap, config, visitor, request, and segments state |
+| `/{account_id}-{project_id}-split.js` | Evaluates `split_url` experiences and sets redirect helpers |
+| `/{account_id}-{project_id}-goals.js` | Registers DOM and GA goal listeners |
+| `/{account_id}-{project_id}-integrations.js` | Builds integrations map + installs integration/GA callbacks |
+| `/static/toolkit.js` | Provides `window.convert.T` used by Visual Editor change JS |
+
+The SDK entry (`@convertcom/js-sdk` browser build) is always loaded after these bundles because it consumes shared `window.convert` state.
+
+#### Setup matrix
+
+| Flow | Companion bundles | SDK initialization sequence |
+| --- | --- | --- |
+| **Fullstack-only** | None | `/v1/js/{account_id}-{project_id}.js` + SDK only |
+| **Web-only** | `visitor -> split -> goals -> integrations -> toolkit` | initialize SDK with `{ data: window.convert.config, dataStore, ruleDataProvider: window.convert.ruleData }` |
+| **Hybrid migration** | Same as web-only where web rendering is needed; keep fullstack pages on legacy path | Use web mode only on pages that need web/visual behavior |
+
+#### Fullstack migration note
+
+If your current implementation already runs the fullstack path (`/v1/js/{account_id}-{project_id}.js`), that endpoint and behavior stay unchanged.
+
+### Browser Helper API Contracts
+
+### Run Variation
+
+Call `runVariation` on a `Context` created by the SDK after `runExperiences` / `runExperience` returns a bucketed variation.
+
+#### Signature
+
+```
+runVariation(
+  bucketedVariation: BucketedVariation,
+  options?: {experience?: ConfigExperience}
+): void
+```
+
+#### Behavior
+
+- Executes experience-level payload first, then change payloads:
+  - `experience.global_css`
+  - `experience.global_js`
+  - per-change `css`
+  - per-change `js`
+  - per-change `custom_js`
+- Skips unsupported change types:
+  - `defaultRedirect`
+  - `fullstack_feature`
+- Applies idempotent execution per variation/change in the active `Context`.
+- Fails silently with logger warnings when no target node / no DOM exists.
+
+#### Browser usage example
+
+```typescript
+const context: ContextInterface = convertSDK.createContext('visitor-id');
+const variation = context.runExperience('web-home-hero');
+
+if (variation && typeof variation !== 'string') {
+  context.runVariation(variation);
+}
+```
+
+### runGoals and runIntegrations
+
+Both APIs are added by companion bundles and exposed on `window.convert`.
+
+#### `window.convert.runGoals()`
+
+- Available only after loading `...-goals.js` (auto-registers globals).
+- Signature: `runGoals(): any`
+- Returns the goals processor returned by `Goals.run()`.
+- Installs and activates:
+  - command queue bridge on `window._conv_q`
+  - DOM listeners for active goals (`click`, `submit`, etc.)
+  - GA queue interception (`dataLayer`, `_gaq`, `ga.q`) for `ga_import` goals
+
+#### `window.convert.runIntegrations()`
+
+- Available only after loading `...-integrations.js`.
+- Signature: `runIntegrations(): IntegrationsProcessor`
+- Builds `window.convert.integrations` map from:
+  - project integrations (`project.settings.integrations`)
+  - experience integrations (from active configuration)
+- Ensures GA interception path is enabled through the shared goals processor.
+- Returns the processor so callers can inspect `convert.integrations`.
+
+#### Example sequence in browser
+
+```html
+<script src="https://cdn-4.convertexperiments.com/v1/js/{account_id}-{project_id}-visitor.js"></script>
+<script src="https://cdn-4.convertexperiments.com/v1/js/{account_id}-{project_id}-split.js"></script>
+<script src="https://cdn-4.convertexperiments.com/v1/js/{account_id}-{project_id}-goals.js"></script>
+<script src="https://cdn-4.convertexperiments.com/v1/js/{account_id}-{project_id}-integrations.js"></script>
+<script src="https://cdn-4.convertexperiments.com/static/toolkit.js"></script>
+<script src="https://unpkg.com/@convertcom/js-sdk/lib/index.umd.min.js"></script>
+
+<script>
+  const sdk = new ConvertSDK({
+    data: window.convert.config,
+    dataStore: new BrowserCookieDataStore(),
+    ruleDataProvider: window.convert.ruleData,
+    experienceTypes: ['a/b', 'mvt', 'split_url', 'multipage', 'deploy'],
+  });
+
+  sdk.onReady().then(() => {
+    const context = sdk.createContext('visitor-id');
+    const variation = context.runExperiences();
+
+    (variation || []).forEach((item) => {
+      if (typeof item === 'object') {
+        context.runVariation(item);
+      }
+    });
+
+    if (typeof window.convert.runGoals === 'function') {
+      window.convert.runGoals();
+    }
+    if (typeof window.convert.runIntegrations === 'function') {
+      window.convert.runIntegrations();
+    }
+  });
+</script>
+```
 
 ### SDK Configuration Options
 
@@ -961,7 +1100,7 @@ const convertSDK: ConvertInterface = new ConvertSDK({
 | Environment Variable | Description                                                                                    | Value                                                                     |
 | -------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | `LOG_LEVEL`          | Specifies the level of log statements to keep, while removing the rest from the bundle output. | `0` = ALL, `1` = DEBUG, `2` = INFO, `3` = WARN, `4` = ERROR, `5` = SILENT |
-| `BUNDLES`            | Comma-separated tokens for specifying which bundles to build. Defaults to include all bundles. | `cjs`, `cjs-legacy`, `esm`, `umd`                                         |
+| `BUNDLES`            | Comma-separated tokens for specifying which bundles to build. Defaults to include all base bundles plus standalone toolkit output. | `cjs`, `cjs-legacy`, `esm`, `umd`, `toolkit` |
 
 ---
 
@@ -971,6 +1110,8 @@ You can use a customized build in certain situations. For example:
 
 1. To reduce bundle size and remove all log statements: `LOG_LEVEL=5 yarn sdk:build`
 2. To build CommonJS bundles only: `BUNDLES=cjs,cjs-legacy yarn sdk:build`
+3. To build standalone client bundles only: `BUNDLES=visitor-entry,goals-entry,split-entry,integrations-entry,toolkit yarn sdk:build`
+4. To build toolkit artifact only: `BUNDLES=toolkit yarn sdk:build` (emits `lib/static/toolkit.js`)
 
 Additionally, you can even include this repository as part of your own `TypeScript` project:
 

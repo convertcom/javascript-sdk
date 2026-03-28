@@ -1,6 +1,7 @@
 // No SDK library imports here. A UMD script should be already loaded in browser by karma
 import {assert} from 'chai';
 import runTests from './index.tests';
+import './standalone.browser.tests';
 
 describe('Karma browser tests for UMD bundle', function () {
   it('Should have an SDK instance in namespace', function () {
