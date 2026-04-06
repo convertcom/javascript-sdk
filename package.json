@@ -12,7 +12,8 @@
     "types:lint": "cd packages/types && yarn lint",
     "utils:lint": "cd packages/utils && yarn lint",
     "sdk:lint": "cd packages/js-sdk && yarn lint",
-    "lint": "yarn enums:lint && yarn types:lint && yarn utils:lint && yarn event:lint && yarn bucketing:lint && yarn logger:lint && yarn rules:lint && yarn segments:lint && yarn api:lint && yarn data:lint && yarn experience:lint && yarn sdk:lint",
+    "cloudflare:lint": "cd packages/cloudflare && yarn lint",
+    "lint": "yarn enums:lint && yarn types:lint && yarn utils:lint && yarn event:lint && yarn bucketing:lint && yarn logger:lint && yarn rules:lint && yarn segments:lint && yarn api:lint && yarn data:lint && yarn experience:lint && yarn sdk:lint && yarn cloudflare:lint",
     "api:build": "cd packages/api && yarn build",
     "bucketing:build": "cd packages/bucketing && yarn build",
     "data:build": "cd packages/data && yarn build",
@@ -25,7 +26,8 @@
     "types:build": "cd packages/types && yarn build",
     "utils:build": "cd packages/utils && yarn build",
     "sdk:build": "cd packages/js-sdk && yarn build",
-    "build": "yarn enums:build && yarn types:build && yarn utils:build && yarn event:build && yarn bucketing:build && yarn logger:build && yarn rules:build && yarn segments:build && yarn api:build && yarn data:build && yarn experience:build && yarn sdk:build",
+    "cloudflare:build": "cd packages/cloudflare && yarn build",
+    "build": "yarn enums:build && yarn types:build && yarn utils:build && yarn event:build && yarn bucketing:build && yarn logger:build && yarn rules:build && yarn segments:build && yarn api:build && yarn data:build && yarn experience:build && yarn sdk:build && yarn cloudflare:build",
     "api:test": "cd packages/api && yarn test:mocha",
     "bucketing:test": "cd packages/bucketing && yarn test:mocha",
     "data:test": "cd packages/data && yarn test:mocha",
@@ -43,7 +45,8 @@
     "demo:nestjs:start": "cd demo/nestjs && yarn start",
     "demo:nextjs:start": "cd demo/nextjs && yarn start",
     "demo:remixjs:client:start": "cd demo/remixjs-client-side && yarn dev",
-    "demo:remixjs:server:start": "cd demo/remixjs-server-side && yarn dev"
+    "demo:remixjs:server:start": "cd demo/remixjs-server-side && yarn dev",
+    "demo:cloudflare:start": "cd demo/cloudflare-workers && yarn dev"
   },
   "private": true,
   "workspaces": [

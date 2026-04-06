@@ -88,6 +88,12 @@ jobs:
           (cd packages/experience && npm publish --access public)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-cloudflare-v') }}
+        run: |
+          yarn cloudflare:build
+          (cd packages/cloudflare && npm publish --access public)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-v') }}
         run: |
           yarn sdk:build

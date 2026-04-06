@@ -1,0 +1,24 @@
+name = "convert-edge-experiments"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[vars]
+# Your Convert SDK key (account_id/project_id)
+CONVERT_SDK_KEY = "10035569/10034190"
+# Origin server URL — the Worker proxies to this and modifies the response.
+# For local testing: "http://localhost:8888"
+# For production: "https://your-site.com"
+ORIGIN_URL = "http://localhost:8888"
+
+# ------------------------------------------------------------------
+# Optional: KV namespace for persisting visitor bucketing data.
+# Only needed if you use KVDataStore (see demo/index.ts comments).
+# Most setups do NOT need this — the SDK uses deterministic bucketing.
+#
+# Create with: wrangler kv namespace create CONVERT_KV
+# Then uncomment and replace the id below.
+# ------------------------------------------------------------------
+# [[kv_namespaces]]
+# binding = "CONVERT_KV"
+# id = "YOUR_KV_NAMESPACE_ID"
+# preview_id = "YOUR_PREVIEW_NAMESPACE_ID"

@@ -12,6 +12,7 @@ lib/
 dist/
 docs/
 coverage/
+test-results/
 packages/demo-*
 .next
 demo/remixjs-server-side/build
