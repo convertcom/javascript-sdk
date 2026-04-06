@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS SDK Browser Test</title>
+  <script src="/lib/index.umd.min.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    // Fetch test config and store as global for Playwright tests
+    fetch('/test-config.json')
+      .then(function(res) { return res.json(); })
+      .then(function(config) {
+        window.__TEST_CONFIG__ = config;
+        window.__CONFIG_LOADED__ = true;
+      })
+      .catch(function(err) {
+        console.error('Failed to load test config:', err);
+        window.__CONFIG_LOADED__ = true;
+        window.__CONFIG_ERROR__ = err.message;
+      });
+  </script>
+</body>
+</html>
