@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.3.4...js-sdk-v4.4.0) (2026-04-06)
+
+
+### Features
+
+* replace Karma with Playwright and add full-chain integration tests ([be7e235](https://github.com/convertcom/javascript-sdk/commit/be7e235828a00cec94d233c23463e1e8e224cd7a))
+
 ## [4.3.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.3.3...js-sdk-v4.3.4) (2025-11-26)
 
 
