@@ -17,29 +17,37 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [18]
+        node: [22]
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/setup-node@v1
-        with:
-          # The Node.js version to configure
-          node-version: ${{ matrix.node }}
-
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-      - name: Install needed libraries and packages
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Setup Yarn
         run: |
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
-          sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+          corepack enable
+          corepack prepare yarn@stable --activate
+
+      - name: Install Playwright browsers
+        run: |
+          cd packages/js-sdk
+          npx playwright install --with-deps chromium
 
       - name: Runs the SDK QA checks
+        env:
+          CONVERT_STAGING_SDK_KEY: ${{ secrets.CONVERT_STAGING_SDK_KEY }}
+          CONVERT_STAGING_SDK_KEY2: ${{ secrets.CONVERT_STAGING_SDK_KEY2 }}
+          CONVERT_STAGING_SDK_KEY2_SECRET: ${{ secrets.CONVERT_STAGING_SDK_KEY2_SECRET }}
         run: |
-          yarn set version berry
           yarn
           cd packages/js-sdk
           yarn lint
-          yarn test
+          yarn build
+          yarn test:mocha
+          yarn test:browser
