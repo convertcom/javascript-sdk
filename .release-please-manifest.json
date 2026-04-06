@@ -1,5 +1,5 @@
 {
-  "packages/js-sdk": "4.3.4",
+  "packages/js-sdk": "4.4.0",
   "packages/enums": "2.3.0",
   "packages/types": "3.11.0",
   "packages/utils": "2.2.3",
@@ -11,5 +11,5 @@
   "packages/api": "2.1.4",
   "packages/data": "3.3.3",
   "packages/experience": "2.3.2",
-  "packages/cloudflare": "1.0.0"
+  "packages/cloudflare": "1.1.0"
 }
