@@ -39,6 +39,22 @@ export const ConfigAudienceTypes = {
     TRANSIENT: 'transient'
 } as const;
 
+/**
+ * Account billing status
+ */
+export type PlanStatus = 'paid' | 'trial' | 'trialExpired' | 'canceled' | 'paused';
+
+/**
+ * Account billing status
+ */
+export const PlanStatus = {
+    PAID: 'paid',
+    TRIAL: 'trial',
+    TRIAL_EXPIRED: 'trialExpired',
+    CANCELED: 'canceled',
+    PAUSED: 'paused'
+} as const;
+
 export type PageNumber = {
     /**
      * The page number for paginated results. For example, if `results_per_page` is 30, `page: 2` will retrieve items 31-60.
@@ -2400,6 +2416,10 @@ export type ConfigProject = {
          * Custom domain to be used instead of standard Convert's one
          */
         domain?: string;
+        /**
+         * The version of the custom domain.
+         */
+        readonly version?: string;
     } | null;
     /**
      * List of domains allowed to be tracked under this project
@@ -2752,7 +2772,7 @@ export type VisitorSegments = {
     /**
      * Traffic source
      */
-    source?: 'campaign' | 'search' | 'referral' | 'direct';
+    source?: 'campaign' | 'search' | 'referral' | 'direct' | 'ai_tool';
     /**
      * Campaign string
      */
@@ -2805,7 +2825,7 @@ export const browser = {
 /**
  * Traffic source
  */
-export type source = 'campaign' | 'search' | 'referral' | 'direct';
+export type source = 'campaign' | 'search' | 'referral' | 'direct' | 'ai_tool';
 
 /**
  * Traffic source
@@ -2814,7 +2834,8 @@ export const source = {
     CAMPAIGN: 'campaign',
     SEARCH: 'search',
     REFERRAL: 'referral',
-    DIRECT: 'direct'
+    DIRECT: 'direct',
+    AI_TOOL: 'ai_tool'
 } as const;
 
 /**
