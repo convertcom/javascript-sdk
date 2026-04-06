@@ -43,16 +43,14 @@ interface Env {
 // The staging project's locations match on a "location" property, not URL path.
 // This mirrors the pattern used by the Node.js demo.
 
-const ROUTE_LOCATION_MAP: Record<string, string> = {
-  '/events': 'events',
-  '/statistics': 'statistics',
-  '/pricing': 'pricing'
+// Route configuration — maps URL paths to location properties and feature keys.
+// The staging project's locations match on a "location" property, not URL path.
+// This mirrors the pattern used by the Node.js demo. [ConvertSDK]
+const ROUTES: Record<string, {location: string; experienceKey?: string; featureKey?: string}> = {
+  '/events': {location: 'events', experienceKey: 'test-experience-ab-fullstack-1'},
+  '/statistics': {location: 'statistics', featureKey: 'feature-4'},
+  '/pricing': {location: 'pricing', featureKey: 'feature-5'}
 };
-
-// Experience and feature keys from the staging project [ConvertSDK]
-const EXPERIENCE_KEY = 'test-experience-ab-fullstack-1';
-const FEATURE_KEY_STATISTICS = 'feature-4'; // [ConvertSDK]
-const FEATURE_KEY_PRICING = 'feature-5'; // [ConvertSDK]
 
 // ---------------------------------------------------------------------------
 // Origin fetch helper
@@ -132,9 +130,9 @@ export default {
       return fetchOrigin(request, env);
     }
 
-    // Check if this route has a location mapping for experiments
-    const location = ROUTE_LOCATION_MAP[url.pathname];
-    if (!location) {
+    // Check if this route has experiment configuration
+    const route = ROUTES[url.pathname];
+    if (!route) {
       // Home page or unknown route — serve origin unmodified with visitor cookie
       const response = await fetchOrigin(request, env);
       const headers = new Headers(response.headers);
@@ -171,8 +169,7 @@ export default {
       context.setDefaultSegments({country: 'US'});
 
       // 4. Run experiments based on route
-      const locationProperties = {location};
-      const decisions = decideForRoute(context, url.pathname, locationProperties);
+      const decisions = decideForRoute(context, route);
 
       // 5. Fetch the origin page
       const originResponse = await fetchOrigin(request, env);
@@ -214,7 +211,6 @@ interface RouteDecisions {
   variation: BucketedVariation | null;
   variations: BucketedVariation[];
   feature: any;
-  route: string;
 }
 
 /**
@@ -223,65 +219,40 @@ interface RouteDecisions {
  */
 function decideForRoute(
   context: any,
-  pathname: string,
-  locationProperties: {location: string}
+  route: {location: string; experienceKey?: string; featureKey?: string}
 ): RouteDecisions {
   const decisions: RouteDecisions = {
     variation: null,
     variations: [],
-    feature: null,
-    route: pathname
+    feature: null
   };
+  const locationProperties = {location: route.location};
 
-  switch (pathname) {
-    case '/events': {
-      // Run a single experience (like Node.js events route)
-      const bucketed = context.runExperience(EXPERIENCE_KEY, {
-        locationProperties
-      });
-      console.log('bucketed variation:', bucketed);
-      if (bucketed && typeof bucketed !== 'string') {
-        decisions.variation = bucketed;
-      }
-      break;
+  if (route.experienceKey) {
+    // Single experience (like the Node.js events route)
+    const bucketed = context.runExperience(route.experienceKey, {
+      locationProperties
+    });
+    console.log('bucketed variation:', bucketed);
+    if (bucketed && typeof bucketed !== 'string') {
+      decisions.variation = bucketed;
     }
-
-    case '/statistics': {
-      // Run all matching experiences + feature-4 (like Node.js statistics route)
-      const bucketedAll = context.runExperiences({locationProperties});
-      console.log('bucketed variation(s):', bucketedAll);
-      if (Array.isArray(bucketedAll)) {
-        decisions.variations = bucketedAll.filter(
-          (v: any) => v && typeof v !== 'string'
-        );
-      }
-      const feature = context.runFeature(FEATURE_KEY_STATISTICS, {
-        locationProperties
-      });
-      console.log('bucketed feature:', feature);
-      if (feature && feature.status === 'enabled') {
-        decisions.feature = feature;
-      }
-      break;
+  } else {
+    // All matching experiences (like the Node.js statistics/pricing routes)
+    const bucketedAll = context.runExperiences({locationProperties});
+    console.log('bucketed variation(s):', bucketedAll);
+    if (Array.isArray(bucketedAll)) {
+      decisions.variations = bucketedAll.filter(
+        (v: any) => v && typeof v !== 'string'
+      );
     }
+  }
 
-    case '/pricing': {
-      // Run all matching experiences + feature-5 (like Node.js pricing route)
-      const bucketedAll = context.runExperiences({locationProperties});
-      console.log('bucketed variation(s):', bucketedAll);
-      if (Array.isArray(bucketedAll)) {
-        decisions.variations = bucketedAll.filter(
-          (v: any) => v && typeof v !== 'string'
-        );
-      }
-      const feature = context.runFeature(FEATURE_KEY_PRICING, {
-        locationProperties
-      });
-      console.log('bucketed feature:', feature);
-      if (feature && feature.status === 'enabled') {
-        decisions.feature = feature;
-      }
-      break;
+  if (route.featureKey) {
+    const feature = context.runFeature(route.featureKey, {locationProperties});
+    console.log('bucketed feature:', feature);
+    if (feature && feature.status === 'enabled') {
+      decisions.feature = feature;
     }
   }
 
