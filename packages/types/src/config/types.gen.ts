@@ -39,6 +39,44 @@ export const ConfigAudienceTypes = {
     TRANSIENT: 'transient'
 } as const;
 
+/**
+ * Account billing status
+ */
+export type PlanStatus = 'paid' | 'trial' | 'trialExpired' | 'canceled' | 'paused';
+
+/**
+ * Account billing status
+ */
+export const PlanStatus = {
+    PAID: 'paid',
+    TRIAL: 'trial',
+    TRIAL_EXPIRED: 'trialExpired',
+    CANCELED: 'canceled',
+    PAUSED: 'paused'
+} as const;
+
+/**
+ * The Convert product line this billing plan pertains to.
+ * - `experiences`: Relates to A/B testing, MVT, Split URL, and personalization features.
+ * - `deploy`: Relates to the "Deploy" feature for rolling out changes to specific audiences without A/B testing reports. Knowledge Base: "Deployments have the potential to contain small segments...and this could be interpreted by Privacy Authorities in Europe as identification of data subjects."
+ * - `addons`: Relates to add-on products that extend the core platform capabilities.
+ *
+ */
+export type Products = 'experiences' | 'deploy' | 'addons';
+
+/**
+ * The Convert product line this billing plan pertains to.
+ * - `experiences`: Relates to A/B testing, MVT, Split URL, and personalization features.
+ * - `deploy`: Relates to the "Deploy" feature for rolling out changes to specific audiences without A/B testing reports. Knowledge Base: "Deployments have the potential to contain small segments...and this could be interpreted by Privacy Authorities in Europe as identification of data subjects."
+ * - `addons`: Relates to add-on products that extend the core platform capabilities.
+ *
+ */
+export const Products = {
+    EXPERIENCES: 'experiences',
+    DEPLOY: 'deploy',
+    ADDONS: 'addons'
+} as const;
+
 export type PageNumber = {
     /**
      * The page number for paginated results. For example, if `results_per_page` is 30, `page: 2` will retrieve items 31-60.
@@ -933,7 +971,34 @@ export type VisitorInsightsBase = {
      *
      */
     obfuscate_text?: boolean;
+    /**
+     * The percentage of visitors included in sampling for Convert Signals session recordings and Heatmaps for this project.
+     * Higher values collect data from a larger share of traffic and consume allocation faster.
+     *
+     */
+    sampling_rate?: 5 | 10 | 20 | 30 | 40 | 50;
 };
+
+/**
+ * The percentage of visitors included in sampling for Convert Signals session recordings and Heatmaps for this project.
+ * Higher values collect data from a larger share of traffic and consume allocation faster.
+ *
+ */
+export type sampling_rate = 5 | 10 | 20 | 30 | 40 | 50;
+
+/**
+ * The percentage of visitors included in sampling for Convert Signals session recordings and Heatmaps for this project.
+ * Higher values collect data from a larger share of traffic and consume allocation faster.
+ *
+ */
+export const sampling_rate = {
+    '_5': 5,
+    '_10': 10,
+    '_20': 20,
+    '_30': 30,
+    '_40': 40,
+    '_50': 50
+} as const;
 
 /**
  * The method used for detecting and handling order outliers in revenue or product count tracking:
@@ -1597,7 +1662,7 @@ export type UpdateExperienceChangeRequestData = ExperienceChangeAdd;
  * Knowledge Base has many articles on integrations, e.g., "Integrate Convert Experiences with Google Analytics", "Hotjar Integration".
  *
  */
-export type IntegrationProvider = 'baidu' | 'clicktale' | 'clicky' | 'cnzz' | 'crazyegg' | 'econda' | 'eulerian' | 'google_analytics' | 'gosquared' | 'heapanalytics' | 'hotjar' | 'mixpanel' | 'mouseflow' | 'piwik' | 'segmentio' | 'sitecatalyst' | 'woopra' | 'ysance';
+export type IntegrationProvider = 'baidu' | 'clicktale' | 'clicky' | 'cnzz' | 'crazyegg' | 'econda' | 'eulerian' | 'google_analytics' | 'gosquared' | 'heapanalytics' | 'hotjar' | 'microsoft_clarity' | 'mixpanel' | 'mouseflow' | 'piwik' | 'segmentio' | 'sitecatalyst' | 'woopra' | 'ysance';
 
 /**
  * Identifies the third-party analytics, heatmap, or data platform with which Convert Experiences is integrated for this specific experience.
@@ -1617,6 +1682,7 @@ export const IntegrationProvider = {
     GOSQUARED: 'gosquared',
     HEAPANALYTICS: 'heapanalytics',
     HOTJAR: 'hotjar',
+    MICROSOFT_CLARITY: 'microsoft_clarity',
     MIXPANEL: 'mixpanel',
     MOUSEFLOW: 'mouseflow',
     PIWIK: 'piwik',
@@ -1691,6 +1757,13 @@ export type ExperienceIntegrationGosquared = ExperienceIntegrationBase;
 export type ExperienceIntegrationHeapanalytics = ExperienceIntegrationBase;
 
 export type ExperienceIntegrationHotjar = ExperienceIntegrationBase;
+
+/**
+ * Configuration for Microsoft Clarity. When enabled, experiment context can be sent for segmentation in Clarity recordings and heatmaps.
+ * No provider-specific settings beyond `enabled` are required; the Clarity project ID is configured in your site’s global JavaScript.
+ *
+ */
+export type ExperienceIntegrationMicrosoftClarity = ExperienceIntegrationBase;
 
 export type ExperienceIntegrationMixpanel = ExperienceIntegrationBase;
 
@@ -2400,6 +2473,10 @@ export type ConfigProject = {
          * Custom domain to be used instead of standard Convert's one
          */
         domain?: string;
+        /**
+         * The version of the custom domain.
+         */
+        readonly version?: string;
     } | null;
     /**
      * List of domains allowed to be tracked under this project
@@ -2752,7 +2829,7 @@ export type VisitorSegments = {
     /**
      * Traffic source
      */
-    source?: 'campaign' | 'search' | 'referral' | 'direct';
+    source?: 'campaign' | 'search' | 'referral' | 'direct' | 'ai_tool';
     /**
      * Campaign string
      */
@@ -2805,7 +2882,7 @@ export const browser = {
 /**
  * Traffic source
  */
-export type source = 'campaign' | 'search' | 'referral' | 'direct';
+export type source = 'campaign' | 'search' | 'referral' | 'direct' | 'ai_tool';
 
 /**
  * Traffic source
@@ -2814,7 +2891,8 @@ export const source = {
     CAMPAIGN: 'campaign',
     SEARCH: 'search',
     REFERRAL: 'referral',
-    DIRECT: 'direct'
+    DIRECT: 'direct',
+    AI_TOOL: 'ai_tool'
 } as const;
 
 /**
