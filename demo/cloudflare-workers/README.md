@@ -18,25 +18,16 @@ A complete example of running Convert A/B tests at the Cloudflare edge with zero
 yarn install
 ```
 
-### 2. Create a KV Namespace
-
-```bash
-wrangler kv namespace create CONVERT_KV
-```
-
-Copy the output `id` into `wrangler.toml`.
-
-### 3. Configure
+### 2. Configure
 
 Edit `wrangler.toml`:
-- Set your KV namespace ID
-- Set your Convert SDK key (`CONVERT_SDK_KEY`)
+- Set your Convert SDK key (`CONVERT_SDK_KEY`) in the format `ACCOUNT_ID/PROJECT_ID`
 
-### 4. Update Experiment Keys
+### 3. Update Experiment Keys
 
 In `src/index.ts`, replace `'your-experience-key'` with your actual experience key from the Convert dashboard.
 
-### 5. Run
+### 4. Run
 
 ```bash
 # Local development
@@ -53,18 +44,22 @@ yarn tail
 
 ```
 Visitor → Cloudflare Edge → Worker
-                              ├── Read config from KV (cached, ~1ms)
-                              ├── Read visitor data from KV (~1ms)
-                              ├── SDK: bucket visitor into variation
+                              ├── Fetch config (edge-cached via cf.cacheTtl, ~1-5ms)
+                              ├── SDK: bucket visitor into variation (MurmurHash)
                               ├── Fetch origin page
                               ├── HTMLRewriter: modify HTML per variation
                               ├── Set visitor cookie
                               └── Respond (total edge overhead: ~5-8ms)
 
                               └── Background (waitUntil):
-                                  ├── Save bucketing to KV
                                   └── Send tracking event to Convert
 ```
+
+No KV namespace is required. Config is cached using Cloudflare's native `cf.cacheTtl` fetch option (free, all plans). Visitor bucketing is deterministic — the same visitor ID always gets the same variation via a cookie.
+
+## Optional: KV-Backed Persistence
+
+If you need to preserve bucketing across experience config changes or store custom visitor attributes, you can optionally add KV support. See the commented section at the bottom of `src/index.ts` for setup instructions.
 
 ## Documentation
 
