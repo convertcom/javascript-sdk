@@ -4,15 +4,15 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  *
- * This Worker demonstrates four edge experimentation patterns:
+ * This Worker demonstrates edge experimentation using the Convert FullStack SDK.
+ * It proxies requests to an origin server and modifies HTML responses based on
+ * A/B test bucketing decisions — all at the Cloudflare edge with zero flicker.
  *
- *   1. Page-level A/B test   - HTMLRewriter modifies page content at the edge
- *   2. Asset / image swap    - Replace images or stylesheets per variation
- *   3. Split URL redirect    - Serve entirely different origin pages
- *   4. SPA injection         - Inject bucketing decisions as JSON for client-side SPAs
- *
- * All patterns are flicker-free because modifications happen server-side
- * before the response reaches the browser.
+ * Routes (matching the staging project's location rules):
+ *   /          - Home page (no experiments)
+ *   /events    - Runs experience "test-experience-ab-fullstack-1"
+ *   /statistics - Runs all matching experiences + feature "feature-4"
+ *   /pricing   - Runs all matching experiences + feature "feature-5"
  */
 
 import ConvertSDK, {BucketedVariation} from '@convertcom/js-sdk';
@@ -21,7 +21,6 @@ import {
   getVisitorId,
   setVisitorIdCookie,
   generateVisitorId,
-  buildCacheKey,
   setCacheHeaders
 } from '@convertcom/js-sdk-cloudflare';
 
@@ -31,20 +30,51 @@ import {
 
 interface Env {
   CONVERT_SDK_KEY: string;
+  // Origin server to proxy to. Set in wrangler.toml [vars].
+  ORIGIN_URL: string;
   // KV is optional — only needed if you enable the KVDataStore for
   // persisting visitor bucketing data across experience config changes.
   // CONVERT_KV: KVNamespace;
 }
 
 // ---------------------------------------------------------------------------
+// Route → Location mapping
+// ---------------------------------------------------------------------------
+// The staging project's locations match on a "location" property, not URL path.
+// This mirrors the pattern used by the Node.js demo.
+
+const ROUTE_LOCATION_MAP: Record<string, string> = {
+  '/events': 'events',
+  '/statistics': 'statistics',
+  '/pricing': 'pricing'
+};
+
+// Experience and feature keys from the staging project [ConvertSDK]
+const EXPERIENCE_KEY = 'test-experience-ab-fullstack-1';
+const FEATURE_KEY_STATISTICS = 'feature-4'; // [ConvertSDK]
+const FEATURE_KEY_PRICING = 'feature-5'; // [ConvertSDK]
+
+// ---------------------------------------------------------------------------
+// Origin fetch helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch from the origin server instead of the Worker's own URL.
+ * Without this, `fetch(request)` in local dev loops back to the Worker.
+ */
+function fetchOrigin(request: Request, env: Env): Promise<Response> {
+  const originUrl = new URL(request.url);
+  const origin = new URL(env.ORIGIN_URL);
+  originUrl.hostname = origin.hostname;
+  originUrl.port = origin.port;
+  originUrl.protocol = origin.protocol;
+  return fetch(new Request(originUrl.toString(), request));
+}
+
+// ---------------------------------------------------------------------------
 // SDK Singleton
 // ---------------------------------------------------------------------------
 
-// The SDK instance persists across requests within the same Worker isolate.
-// Config is fetched from the Convert CDN and cached at the Cloudflare edge
-// using the native `cf` fetch cache (no KV required).
-// The initialization promise is cached to prevent race conditions when
-// concurrent requests hit a cold Worker simultaneously.
 let sdk: InstanceType<typeof ConvertSDK> | null = null;
 let sdkReadyPromise: Promise<InstanceType<typeof ConvertSDK>> | null = null;
 
@@ -92,12 +122,30 @@ export default {
 
     // Only process HTML page requests (skip assets, API calls, etc.)
     const accept = request.headers.get('Accept') || '';
+    const wantsHtml =
+      accept.includes('text/html') || accept.includes('*/*') || accept === '';
     if (
-      !accept.includes('text/html') ||
+      !wantsHtml ||
       url.pathname.startsWith('/api/') ||
       url.pathname.match(/\.\w{2,4}$/)
     ) {
-      return fetch(request);
+      return fetchOrigin(request, env);
+    }
+
+    // Check if this route has a location mapping for experiments
+    const location = ROUTE_LOCATION_MAP[url.pathname];
+    if (!location) {
+      // Home page or unknown route — serve origin unmodified with visitor cookie
+      const response = await fetchOrigin(request, env);
+      const headers = new Headers(response.headers);
+      if (!getVisitorId(request)) {
+        setVisitorIdCookie(headers, generateVisitorId());
+      }
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers
+      });
     }
 
     try {
@@ -111,30 +159,26 @@ export default {
         visitorId = generateVisitorId();
       }
 
-      // 3. Create visitor context
-      //    No KV persistence needed — the SDK uses deterministic MurmurHash
-      //    bucketing, so the same visitorId always gets the same variation.
-      const context = convert.createContext(visitorId);
+      // 3. Create visitor context with audience properties
+      //    The staging project's "Adv Audience" requires mobile: true or desktop: true.
+      //    This mirrors the Node.js demo's createContext(userId, {mobile: true}).
+      const context = convert.createContext(visitorId, {mobile: true});
       if (!context) {
-        return fetch(request);
+        return fetchOrigin(request, env);
       }
 
-      // 4. Run experiments
-      //    Replace the experience key with your actual experience key from Convert.
-      const variation = context.runExperience('your-experience-key', {
-        locationProperties: {url: url.pathname}
-      });
+      // Set default segments (mirrors Node.js demo)
+      context.setDefaultSegments({country: 'US'});
 
-      // If no valid variation (rule error, bucketing error, or null), passthrough
-      if (!variation || typeof variation === 'string') {
-        return fetch(request);
-      }
+      // 4. Run experiments based on route
+      const locationProperties = {location};
+      const decisions = decideForRoute(context, url.pathname, locationProperties);
 
       // 5. Fetch the origin page
-      const originResponse = await fetch(request);
+      const originResponse = await fetchOrigin(request, env);
 
-      // 6. Apply the variation using HTMLRewriter
-      const modifiedResponse = applyVariation(originResponse, variation);
+      // 6. Apply variations via HTMLRewriter
+      const modifiedResponse = applyDecisions(originResponse, decisions);
 
       // 7. Build response headers (visitor cookie + cache control)
       const headers = new Headers(modifiedResponse.headers);
@@ -144,15 +188,9 @@ export default {
       setCacheHeaders(headers, 300);
 
       // 8. Release tracking events in the background
-      //
-      //    IMPORTANT: The SDK batches tracking events and releases them on a
-      //    timer (setTimeout). In Cloudflare Workers, the isolate may finish
-      //    before that timer fires, so events would be lost. You MUST call
-      //    releaseQueues() explicitly to flush all pending tracking events
-      //    before the Worker completes.
-      //
-      //    waitUntil() ensures the tracking POST completes even after the
-      //    response is already sent to the visitor — no added latency.
+      //    The SDK batches events with setTimeout which won't fire in Workers.
+      //    releaseQueues() flushes immediately; waitUntil() keeps the isolate
+      //    alive for the tracking POST without blocking the response.
       ctx.waitUntil(context.releaseQueues('edge-request-complete'));
 
       return new Response(modifiedResponse.body, {
@@ -163,146 +201,155 @@ export default {
     } catch (error) {
       // On any SDK error, serve the origin page unmodified
       console.error('Convert SDK error:', error);
-      return fetch(request);
+      return fetchOrigin(request, env);
     }
   }
 } satisfies ExportedHandler<Env>;
 
 // ---------------------------------------------------------------------------
-// Pattern 1: Page-Level A/B Test (HTMLRewriter)
+// Route-specific experiment logic
 // ---------------------------------------------------------------------------
 
+interface RouteDecisions {
+  variation: BucketedVariation | null;
+  variations: BucketedVariation[];
+  feature: any;
+  route: string;
+}
+
 /**
- * Modify the HTML response based on the bucketed variation.
- *
- * HTMLRewriter is Cloudflare's streaming HTML parser. It modifies the response
- * as it streams through the Worker -- no buffering, no DOM parsing overhead.
- * The visitor receives the final page with zero flicker.
+ * Run experiments and features for the current route.
+ * Mirrors the Node.js demo's per-route decide() functions.
  */
-function applyVariation(
-  response: Response,
-  variation: BucketedVariation
-): Response {
-  // Map variation keys to HTMLRewriter transformations.
-  // Customize these selectors and content for your experiments.
-  switch (variation.key) {
-    case 'variation-1':
-      return new HTMLRewriter()
-        .on('h1.hero-title', {
-          element(el) {
-            el.setInnerContent('Welcome to the New Experience');
-          }
-        })
-        .on('.cta-button', {
-          element(el) {
-            el.setInnerContent('Get Started Free');
-            el.setAttribute('class', 'cta-button cta-button--primary');
-          }
-        })
-        .transform(response);
+function decideForRoute(
+  context: any,
+  pathname: string,
+  locationProperties: {location: string}
+): RouteDecisions {
+  const decisions: RouteDecisions = {
+    variation: null,
+    variations: [],
+    feature: null,
+    route: pathname
+  };
 
-    case 'variation-2':
-      return new HTMLRewriter()
-        .on('h1.hero-title', {
-          element(el) {
-            el.setInnerContent('Discover What Works Best');
-          }
-        })
-        .on('img.hero-image', {
-          element(el) {
-            el.setAttribute('src', '/images/hero-v2.webp');
-            el.setAttribute('alt', 'Updated hero image');
-          }
-        })
-        .transform(response);
+  switch (pathname) {
+    case '/events': {
+      // Run a single experience (like Node.js events route)
+      const bucketed = context.runExperience(EXPERIENCE_KEY, {
+        locationProperties
+      });
+      console.log('bucketed variation:', bucketed);
+      if (bucketed && typeof bucketed !== 'string') {
+        decisions.variation = bucketed;
+      }
+      break;
+    }
 
-    default:
-      // Control / original -- return unmodified
-      return response;
+    case '/statistics': {
+      // Run all matching experiences + feature-4 (like Node.js statistics route)
+      const bucketedAll = context.runExperiences({locationProperties});
+      console.log('bucketed variation(s):', bucketedAll);
+      if (Array.isArray(bucketedAll)) {
+        decisions.variations = bucketedAll.filter(
+          (v: any) => v && typeof v !== 'string'
+        );
+      }
+      const feature = context.runFeature(FEATURE_KEY_STATISTICS, {
+        locationProperties
+      });
+      console.log('bucketed feature:', feature);
+      if (feature && feature.status === 'enabled') {
+        decisions.feature = feature;
+      }
+      break;
+    }
+
+    case '/pricing': {
+      // Run all matching experiences + feature-5 (like Node.js pricing route)
+      const bucketedAll = context.runExperiences({locationProperties});
+      console.log('bucketed variation(s):', bucketedAll);
+      if (Array.isArray(bucketedAll)) {
+        decisions.variations = bucketedAll.filter(
+          (v: any) => v && typeof v !== 'string'
+        );
+      }
+      const feature = context.runFeature(FEATURE_KEY_PRICING, {
+        locationProperties
+      });
+      console.log('bucketed feature:', feature);
+      if (feature && feature.status === 'enabled') {
+        decisions.feature = feature;
+      }
+      break;
+    }
   }
+
+  return decisions;
 }
 
 // ---------------------------------------------------------------------------
-// Pattern 2: Asset / Image Swap
+// HTMLRewriter transformations
 // ---------------------------------------------------------------------------
 
-// To swap assets for an entire variation, use HTMLRewriter on specific selectors:
-//
-// function swapAssets(response: Response): Response {
-//   return new HTMLRewriter()
-//     .on('link[rel="stylesheet"][href*="main.css"]', {
-//       element(el) {
-//         el.setAttribute('href', '/css/main-v2.css');
-//       }
-//     })
-//     .on('img[data-testable]', {
-//       element(el) {
-//         const src = el.getAttribute('src') || '';
-//         el.setAttribute('src', src.replace('/images/', '/images/v2/'));
-//       }
-//     })
-//     .transform(response);
-// }
+/**
+ * Apply experiment decisions to the origin HTML response.
+ * Uses HTMLRewriter to inject bucketing results into the page.
+ */
+function applyDecisions(
+  response: Response,
+  decisions: RouteDecisions
+): Response {
+  const {variation, variations, feature, route} = decisions;
 
-// ---------------------------------------------------------------------------
-// Pattern 3: Split URL Redirect
-// ---------------------------------------------------------------------------
+  // Build a summary of all decisions for this request
+  const allVariations =
+    variation ? [variation] : variations.length ? variations : [];
+  if (allVariations.length === 0 && !feature) {
+    return response; // No experiments matched — return unmodified
+  }
 
-// For split URL tests, serve a completely different origin page:
-//
-// if (variation.key === 'new-checkout') {
-//   const newUrl = new URL(request.url);
-//   newUrl.pathname = '/checkout-v2' + newUrl.pathname.replace('/checkout', '');
-//   return fetch(new Request(newUrl.toString(), request));
-// }
-
-// ---------------------------------------------------------------------------
-// Pattern 4: SPA Injection
-// ---------------------------------------------------------------------------
-
-// For SPAs, inject bucketing decisions as a global JS variable
-// so the client-side app can apply them without a second round-trip:
-//
-// function injectDecisions(response: Response, variations: any[]): Response {
-//   const decisions = JSON.stringify(
-//     variations.filter((v) => v && typeof v !== 'string')
-//   );
-//   return new HTMLRewriter()
-//     .on('head', {
-//       element(el) {
-//         el.append(
-//           `<script>window.__CONVERT_DECISIONS__=${decisions};</script>`,
-//           {html: true}
-//         );
-//       }
-//     })
-//     .transform(response);
-// }
-
-// ---------------------------------------------------------------------------
-// Pattern 5: Edge-Cached Responses Per Variation
-// ---------------------------------------------------------------------------
-
-// Use Cloudflare's Cache API to cache origin responses per variation.
-// This avoids hitting the origin for every request once a variation
-// has been fetched at least once.
-//
-// async function fetchWithEdgeCache(
-//   request: Request,
-//   variationKey: string
-// ): Promise<Response> {
-//   const cache = caches.default;
-//   const cacheKey = buildCacheKey(request, variationKey);
-//
-//   let response = await cache.match(cacheKey);
-//   if (response) return response;
-//
-//   response = await fetch(request);
-//   const cloned = new Response(response.body, response);
-//   cloned.headers.set('Cache-Control', 'public, max-age=300');
-//   ctx.waitUntil(cache.put(cacheKey, cloned.clone()));
-//   return cloned;
-// }
+  // Inject experiment results into the page
+  return new HTMLRewriter()
+    .on('#experiment-results', {
+      element(el) {
+        const items = allVariations
+          .map(
+            (v) =>
+              `<li><strong>${v.experienceName || v.experienceKey}</strong>: ${v.name || v.key}</li>`
+          )
+          .join('');
+        if (items) {
+          el.setInnerContent(`<ul>${items}</ul>`, {html: true});
+        }
+      }
+    })
+    .on('#feature-status', {
+      element(el) {
+        if (feature) {
+          el.setInnerContent(
+            `<span class="enabled">Feature enabled: ${feature.key || 'yes'}</span>`,
+            {html: true}
+          );
+        }
+      }
+    })
+    .on('#variation-caption', {
+      element(el) {
+        // Extract the "caption" variable from feature-1 (attached to the experience)
+        const v = allVariations[0];
+        if (
+          v &&
+          Array.isArray(v.changes) &&
+          v.changes.length &&
+          v.changes[0].data?.variables_data?.caption
+        ) {
+          el.setInnerContent(v.changes[0].data.variables_data.caption);
+        }
+      }
+    })
+    .transform(response);
+}
 
 // ---------------------------------------------------------------------------
 // Optional: KV-Backed Visitor Persistence
