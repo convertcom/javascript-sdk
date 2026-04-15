@@ -319,5 +319,28 @@ describe('Comparison Processor utils tests', function () {
     );
     expect(result).to.equal(false);
   });
+  // Existence operator tests — 'exists' expects true when value is present,
+  // 'not_exists' and 'doesNotExist' expect the inverse.
+  const existenceCases: {input: any; label: string; negation?: boolean}[] = [
+    {input: 'cookieValue', label: 'a non-empty string value'},
+    {input: 123, label: 'a numeric value'},
+    {input: undefined, label: 'undefined'},
+    {input: null, label: 'null'},
+    {input: '', label: 'empty string'},
+    {input: 'cookieValue', label: 'non-empty string with negation', negation: true},
+    {input: undefined, label: 'undefined with negation', negation: true}
+  ];
+  for (const method of ['exists', 'not_exists', 'doesNotExist'] as const) {
+    for (const {input, label, negation} of existenceCases) {
+      const valuePresent = input !== undefined && input !== null && input !== '';
+      const isExistsMethod = method === 'exists';
+      const baseResult = isExistsMethod ? valuePresent : !valuePresent;
+      const expected = negation ? !baseResult : baseResult;
+      it(`${method} should return ${expected} for ${label}`, function () {
+        const result = Comparisons[method](input, null, negation);
+        expect(result).to.equal(expected);
+      });
+    }
+  }
   /* eslint-enable */
 });

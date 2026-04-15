@@ -534,6 +534,124 @@ describe('RuleManager tests', function () {
         expect(ruleManager.isRuleMatched(data32, testRuleSet3)).to.equal(true);
       }
     );
+    it('isValidRule should return true for exists rule without value', function () {
+      expect(
+        ruleManager.isValidRule({
+          key: 'myCookie',
+          matching: {
+            match_type: 'exists',
+            negated: false
+          }
+        })
+      ).to.equal(true);
+    });
+    it('isValidRule should return true for doesNotExist rule without value', function () {
+      expect(
+        ruleManager.isValidRule({
+          key: 'myCookie',
+          matching: {
+            match_type: 'doesNotExist',
+            negated: false
+          }
+        })
+      ).to.equal(true);
+    });
+    it('isRuleMatched should return true for exists when key is present', function () {
+      const data = {myCookie: 'someValue'};
+      const ruleSet = {
+        OR: [
+          {
+            AND: [
+              {
+                OR_WHEN: [
+                  {
+                    key: 'myCookie',
+                    matching: {
+                      match_type: 'exists',
+                      negated: false
+                    },
+                    value: ''
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      };
+      expect(ruleManager.isRuleMatched(data, ruleSet)).to.equal(true);
+    });
+    it('isRuleMatched should return false for exists when key is not present', function () {
+      const data = {otherCookie: 'someValue'};
+      const ruleSet = {
+        OR: [
+          {
+            AND: [
+              {
+                OR_WHEN: [
+                  {
+                    key: 'myCookie',
+                    matching: {
+                      match_type: 'exists',
+                      negated: false
+                    },
+                    value: ''
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      };
+      expect(ruleManager.isRuleMatched(data, ruleSet)).to.equal(false);
+    });
+    it('isRuleMatched should return true for doesNotExist when key is not present', function () {
+      const data = {otherCookie: 'someValue'};
+      const ruleSet = {
+        OR: [
+          {
+            AND: [
+              {
+                OR_WHEN: [
+                  {
+                    key: 'myCookie',
+                    matching: {
+                      match_type: 'doesNotExist',
+                      negated: false
+                    },
+                    value: ''
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      };
+      expect(ruleManager.isRuleMatched(data, ruleSet)).to.equal(true);
+    });
+    it('isRuleMatched should return false for doesNotExist when key is present', function () {
+      const data = {myCookie: 'someValue'};
+      const ruleSet = {
+        OR: [
+          {
+            AND: [
+              {
+                OR_WHEN: [
+                  {
+                    key: 'myCookie',
+                    matching: {
+                      match_type: 'doesNotExist',
+                      negated: false
+                    },
+                    value: ''
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      };
+      expect(ruleManager.isRuleMatched(data, ruleSet)).to.equal(false);
+    });
     it('Should allow to change comparison processor on fly', function () {
       const customComparisonProcessor = {
         isTypeOf: function (

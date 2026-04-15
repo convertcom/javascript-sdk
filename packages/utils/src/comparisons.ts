@@ -151,6 +151,26 @@ export class Comparisons {
     return this._returnNegationCheck(regExp.test(value), negation);
   }
 
+  static exists(
+    value: string | number | undefined | null,
+    testAgainst?: any,
+    negation?: boolean
+  ): boolean {
+    const valueExists = value !== undefined && value !== null && value !== '';
+    return this._returnNegationCheck(valueExists, negation);
+  }
+
+  static not_exists(
+    value: string | number | undefined | null,
+    testAgainst?: any,
+    negation?: boolean
+  ): boolean {
+    const valueNotExists = value === undefined || value === null || value === '';
+    return this._returnNegationCheck(valueNotExists, negation);
+  }
+
+  static doesNotExist = this.not_exists;
+
   private static _returnNegationCheck(
     value: boolean,
     negation = false
