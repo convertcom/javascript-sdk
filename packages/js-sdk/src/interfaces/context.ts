@@ -12,6 +12,7 @@ import {
   ConversionAttributes,
   Entity,
   SegmentsAttributes,
+  ConfigExperience,
   StoreData,
   VisitorSegments
 } from '@convertcom/js-sdk-types';
@@ -22,6 +23,13 @@ export interface ContextInterface {
     experienceKey: string,
     attributes?: BucketingAttributes
   ): BucketedVariation | RuleError | BucketingError;
+
+  runVariation(
+    bucketedVariation: BucketedVariation,
+    options?: {
+      experience?: ConfigExperience;
+    }
+  ): void;
 
   runExperiences(
     attributes?: BucketingAttributes

@@ -83,6 +83,7 @@ export class DataManager implements DataManagerInterface {
   private _asyncStorage: boolean;
   private _environment: string;
   private _mapper: (...args: any) => any;
+  private _ruleDataProvider?: Record<string, any>;
   /**
    * @param {Config} config
    * @param {Object} dependencies
@@ -124,6 +125,7 @@ export class DataManager implements DataManagerInterface {
     this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
+    this._ruleDataProvider = config?.ruleDataProvider;
     this.dataStoreManager = config?.dataStore;
     this._loggerManager?.trace?.(
       'DataManager()',
@@ -143,6 +145,15 @@ export class DataManager implements DataManagerInterface {
         ERROR_MESSAGES.CONFIG_DATA_NOT_VALID
       );
     }
+  }
+
+  private _getRuleData(
+    properties?: Record<string, any>
+  ): Record<string, any> {
+    if (this._ruleManager.isUsingCustomInterface(this._ruleDataProvider)) {
+      return this._ruleDataProvider;
+    }
+    return properties;
   }
 
   /**
@@ -291,7 +302,8 @@ export class DataManager implements DataManagerInterface {
     // Check location rules against locationProperties
     let locationMatched: boolean | RuleError =
       ignoreLocationProperties === true;
-    if (!locationMatched && locationProperties) {
+    const ruleData = this._getRuleData(locationProperties);
+    if (!locationMatched && (locationProperties || this._ruleDataProvider)) {
       if (Array.isArray(experience?.locations) && experience.locations.length) {
         let matchedLocations = [];
         // Get attached locations
@@ -303,7 +315,7 @@ export class DataManager implements DataManagerInterface {
           // Validate locationProperties against locations rules
           // and trigger activated/deactivated events
           matchedLocations = this.selectLocations(visitorId, locations, {
-            locationProperties,
+            locationProperties: ruleData,
             identityField
           });
           // Return rule errors if present
@@ -317,7 +329,7 @@ export class DataManager implements DataManagerInterface {
       } else if (experience?.site_area) {
         // Validate locationProperties against site area rules
         locationMatched = this._ruleManager.isRuleMatched(
-          locationProperties,
+          ruleData,
           experience.site_area,
           'SiteArea'
         );
@@ -355,7 +367,8 @@ export class DataManager implements DataManagerInterface {
       audiencesToCheck: Array<ConfigAudience> = [],
       audiencesMatched = false,
       segmentsMatched = false;
-    if (visitorProperties) {
+    const visitorRuleData = this._getRuleData(visitorProperties);
+    if (visitorRuleData) {
       if (Array.isArray(experience?.audiences) && experience.audiences.length) {
         // Get attached transient and/or permnent audiences
         audiences = this.getItemsByIds(
@@ -372,7 +385,7 @@ export class DataManager implements DataManagerInterface {
           // Validate visitorProperties against audiences rules
           matchedAudiences = this.filterMatchedRecordsWithRule(
             audiencesToCheck,
-            visitorProperties,
+            visitorRuleData,
             'audience',
             identityField
           );
@@ -704,17 +717,17 @@ export class DataManager implements DataManagerInterface {
     }
 
     // Build the response as bucketed variation object
-    if (variation) {
-      bucketedVariation = {
-        ...{
-          experienceId: experience?.id,
-          experienceName: experience?.name,
-          experienceKey: experience?.key
-        },
-        bucketingAllocation,
-        ...variation
-      };
-    }
+      if (variation) {
+        bucketedVariation = {
+          ...{
+            experienceId: experience?.id,
+            experienceName: experience?.name,
+            experienceKey: experience?.key
+          },
+          bucketingAllocation,
+          ...variation
+        };
+      }
 
     return bucketedVariation as BucketedVariation;
   }
@@ -850,13 +863,14 @@ export class DataManager implements DataManagerInterface {
     );
     // Get locations from DataStore
     const {locations = []} = this.getData(visitorId) || {};
+    const ruleData = this._getRuleData(locationProperties);
     const matchedRecords = [];
     let match;
     if (arrayNotEmpty(items)) {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
-          locationProperties,
+          ruleData,
           items[i].rules,
           `ConfigLocation #${items[i][identityField]}`
         );
@@ -1107,12 +1121,13 @@ export class DataManager implements DataManagerInterface {
       })
     );
     const matchedRecords = [];
+    const ruleData = this._getRuleData(visitorProperties);
     let match;
     if (arrayNotEmpty(items)) {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
-          visitorProperties,
+          ruleData,
           items[i].rules,
           `${camelCase(entityType)} #${items[i][field]}`
         );

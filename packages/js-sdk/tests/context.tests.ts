@@ -504,4 +504,141 @@ describe('Context tests', function () {
       expect(output).to.be.undefined;
     });
   });
+
+  describe('runVariation script injection lifecycle', function () {
+    let testContext;
+    const createDomContainer = () => {
+      const children: any[] = [];
+      return {
+        children,
+        appendChild(node: any) {
+          this.children.push(node);
+          node.parentNode = this;
+          return node;
+        }
+      };
+    };
+    const setupBrowserDom = () => {
+      const head = createDomContainer();
+      const body = createDomContainer();
+      const documentElement = createDomContainer();
+
+      return {
+        head,
+        body,
+        documentElement,
+        createElement: (tagName: string) => {
+          const node: any = {
+            tagName,
+            type: '',
+            childNodes: [],
+            appendChild(child: any) {
+              if (child?.textContent !== undefined) {
+                this.text = child.textContent;
+              }
+              this.childNodes.push(child);
+              return child;
+            },
+            remove() {
+              this.removed = true;
+            },
+            textContent: ''
+          };
+          return node;
+        },
+        createTextNode(text: string) {
+          return {
+            textContent: text
+          };
+        }
+      };
+    };
+
+    const getAllScripts = (dom: any) => [
+      ...dom.head.children,
+      ...dom.body.children,
+      ...dom.documentElement.children
+    ].filter((node) => node?.tagName === 'script');
+
+    beforeEach(function () {
+      const dataManager = new dm(configuration, {
+        bucketingManager,
+        ruleManager,
+        eventManager,
+        apiManager
+      });
+      const experienceManager = new exm(configuration, {dataManager});
+      const featureManager = new fm(configuration, {dataManager});
+      const segmentsManager = new sm(configuration, {dataManager, ruleManager});
+      testContext = new c(
+        configuration,
+        visitorId,
+        {
+          eventManager,
+          experienceManager,
+          featureManager,
+          segmentsManager,
+          dataManager,
+          apiManager
+        },
+        {browser: 'chrome', country: 'US'}
+      );
+    });
+
+    afterEach(function () {
+      const globalAny = globalThis as any;
+      delete globalAny.window;
+      delete globalAny.document;
+    });
+
+    it('keeps script elements in DOM to preserve runtime-defined globals', function () {
+      const globalAny = globalThis as any;
+      const dom = setupBrowserDom();
+      globalAny.window = {};
+      globalAny.document = dom;
+
+      const variation: any = {
+        id: '100299461',
+        key: '100299461-variation-1',
+        experienceKey: 'test-experience-script',
+        name: 'Variation with scripts',
+        status: 'running',
+        is_baseline: false,
+        traffic_allocation: 50,
+        changes: [
+          {
+            id: 'change-1',
+            type: 'ab_variation',
+            data: {
+              js: 'window.__runVariationJs = true;',
+              custom_js: 'window.__runVariationCustomJs = true;'
+            }
+          }
+        ]
+      };
+
+      const experience: any = {
+        id: '100218246',
+        key: 'test-experience-script',
+        global_js: 'window.__runVariationGlobalJs = true;'
+      };
+
+      testContext.runVariation(variation, {experience});
+      const scriptsAfterFirstRun = getAllScripts(dom);
+      expect(scriptsAfterFirstRun.length).to.equal(3);
+      expect(scriptsAfterFirstRun.every((script) => !script.removed)).to.equal(
+        true
+      );
+      expect(
+        scriptsAfterFirstRun.map((script: any) => script.text)
+      ).to.deep.equal([
+        'window.__runVariationGlobalJs = true;',
+        'window.__runVariationJs = true;',
+        'window.__runVariationCustomJs = true;'
+      ]);
+
+      testContext.runVariation(variation, {experience});
+      expect(getAllScripts(dom).length).to.equal(3);
+    });
+  });
 });

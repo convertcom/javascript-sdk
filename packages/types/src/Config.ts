@@ -34,6 +34,7 @@ type ConfigBase = {
     negation?: string;
     keys_case_sensitive?: boolean;
   };
+  ruleDataProvider?: Record<string, any>;
   logger?: {
     logLevel?: LogLevel;
     file?: {
