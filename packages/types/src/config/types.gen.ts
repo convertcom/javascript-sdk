@@ -619,7 +619,7 @@ export type VisitorDataExistsMatchRule = BaseRuleWithBooleanValue & {
 export type CookieMatchRule = BaseRuleWithStringValue & {
     rule_type: CookieMatchRulesTypes;
     matching?: (BaseMatch & {
-    match_type?: TextMatchingOptions;
+    match_type?: CookieMatchingOptions;
 });
     /**
      * The name of the cookie which value is compared to the given rule value
@@ -732,6 +732,18 @@ export const TextMatchingOptions = {
     CONTAINS: 'contains',
     ENDS_WITH: 'endsWith',
     STARTS_WITH: 'startsWith'
+} as const;
+
+export type CookieMatchingOptions = 'matches' | 'regexMatches' | 'contains' | 'endsWith' | 'startsWith' | 'exists' | 'doesNotExist';
+
+export const CookieMatchingOptions = {
+    MATCHES: 'matches',
+    REGEX_MATCHES: 'regexMatches',
+    CONTAINS: 'contains',
+    ENDS_WITH: 'endsWith',
+    STARTS_WITH: 'startsWith',
+    EXISTS: 'exists',
+    DOES_NOT_EXIST: 'doesNotExist'
 } as const;
 
 export type NumericMatchingOptions = 'equalsNumber' | 'less' | 'lessEqual';

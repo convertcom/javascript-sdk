@@ -15,6 +15,7 @@ import {RuleManagerInterface} from './interfaces/rule-manager';
 
 import {
   Config,
+  CookieMatchingOptions,
   RuleElement,
   RuleAnd,
   RuleOrWhen,
@@ -165,15 +166,19 @@ export class RuleManager implements RuleManagerInterface {
         rule: rule
       })
     );
-    return (
+    const hasMatching =
       Object.prototype.hasOwnProperty.call(rule, 'matching') &&
       typeof rule.matching === 'object' &&
       Object.prototype.hasOwnProperty.call(rule.matching, 'match_type') &&
       typeof rule.matching.match_type === 'string' &&
       Object.prototype.hasOwnProperty.call(rule.matching, 'negated') &&
-      typeof rule.matching.negated === 'boolean' &&
-      Object.prototype.hasOwnProperty.call(rule, 'value')
-    );
+      typeof rule.matching.negated === 'boolean';
+    if (!hasMatching) return false;
+    const matchType = rule.matching.match_type as string;
+    if (matchType === CookieMatchingOptions.EXISTS || matchType === CookieMatchingOptions.DOES_NOT_EXIST) {
+      return true;
+    }
+    return Object.prototype.hasOwnProperty.call(rule, 'value');
   }
 
   /**
@@ -263,7 +268,7 @@ export class RuleManager implements RuleManagerInterface {
     if (this.isValidRule(rule)) {
       try {
         const negation = rule.matching.negated || false;
-        const matching = rule.matching.match_type;
+        const matching = rule.matching.match_type as string;
         if (this.getComparisonProcessorMethods().indexOf(matching) !== -1) {
           if (data && typeof data === 'object') {
             // Validate data key-value set.
@@ -314,7 +319,19 @@ export class RuleManager implements RuleManagerInterface {
                   );
                 }
               }
-            } else {
+            }
+            // Key not found or data empty — for existence operators, evaluate with undefined
+            if (
+              matching === CookieMatchingOptions.EXISTS ||
+              matching === CookieMatchingOptions.DOES_NOT_EXIST
+            ) {
+              return this._comparisonProcessor[matching](
+                undefined,
+                rule.value,
+                negation
+              );
+            }
+            if (!objectNotEmpty(data) && !this.isUsingCustomInterface(data)) {
               this._loggerManager?.trace?.('RuleManager._processRuleItem()', {
                 warn: ERROR_MESSAGES.RULE_DATA_NOT_VALID,
                 data
