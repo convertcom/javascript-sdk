@@ -430,10 +430,6 @@ describe('DataManager tests', function () {
     beforeEach(function () {
       receivedRuleData = undefined;
     });
-    it('Should store ruleDataProvider on the DataManager instance', function () {
-      // private field — assert by behavior
-      assert.isDefined(dataManager);
-    });
     it('Should pass ruleDataProvider to RuleManager.isRuleMatched for audiences when set', function (done) {
       this.timeout(test_timeout);
       const experienceKey = 'test-experience-ab-fullstack-2';
@@ -489,6 +485,95 @@ describe('DataManager tests', function () {
             expect(receivedRuleData).to.be.an('object');
             expect(receivedRuleData).to.not.have.property('name', 'RuleData');
             expect(receivedRuleData).to.have.property('varName3', 'plain-value');
+            done();
+          });
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end('{}');
+      });
+    });
+    it('Should warn and ignore a misconfigured ruleDataProvider (missing name)', function () {
+      // A provider that doesn't satisfy isUsingCustomInterface (no
+      // `name: 'RuleData'`) would otherwise fall through RuleManager's
+      // flat-key branch and silently return false for every rule. The
+      // DataManager constructor must surface the misconfiguration as a
+      // warn and ignore the provider so the SDK falls back to plain
+      // visitor/location properties.
+      const warns: Array<Array<any>> = [];
+      const capturingLogger: any = {
+        warn: (...args: any[]) => warns.push(args),
+        error: () => {},
+        info: () => {},
+        debug: () => {},
+        trace: () => {}
+      };
+      const badProvider = {country: 'CA'}; // missing name: 'RuleData'
+      const badConfig = objectDeepMerge(configuration, {
+        ruleDataProvider: badProvider,
+        dataStore: undefined
+      }) as unknown as ConfigType;
+      const localDataManager = new dm(badConfig, {
+        bucketingManager,
+        ruleManager,
+        eventManager,
+        apiManager,
+        loggerManager: capturingLogger
+      });
+      assert.isDefined(localDataManager);
+      const warned = warns.some((entry) =>
+        entry.some(
+          (a) =>
+            typeof a === 'string' &&
+            a.includes('Config.ruleDataProvider is set')
+        )
+      );
+      expect(warned).to.equal(true);
+    });
+    it('Should fire conversion for a rule-less goal even when ruleDataProvider is configured', function (done) {
+      // Regression guard: if convert() always enters the rule-evaluation
+      // branch when a global ruleDataProvider is set, it would hit
+      // `if (!goal?.rules) return;` and silently drop every conversion for
+      // goals that have no rules. The fix gates on `goal.rules` first.
+      this.timeout(test_timeout);
+      const ruleLessGoal = {
+        id: '90000001',
+        name: 'Rule-less goal',
+        key: 'rule-less-goal',
+        type: 'event'
+        // intentionally no `rules` field
+      };
+      const configWithProvider = objectDeepMerge(
+        configuration,
+        {
+          ruleDataProvider: {
+            name: 'RuleData',
+            getUrl: () => 'https://convert.com/'
+          },
+          dataStore: undefined,
+          data: {
+            ...configuration.data,
+            goals: [...configuration.data.goals, ruleLessGoal]
+          }
+        }
+      ) as unknown as ConfigType;
+      const localDataManager = new dm(configWithProvider, {
+        bucketingManager,
+        ruleManager,
+        eventManager,
+        apiManager
+      });
+      const triggered = localDataManager.convert(
+        visitorId,
+        ruleLessGoal.key,
+        undefined, // no goalRule passed
+        undefined,
+        {}
+      );
+      server.on('request', (request, res) => {
+        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
+          request.on('end', () => {
+            // convert() returns `true` when the conversion fires
+            expect(triggered).to.equal(true);
             done();
           });
         }

@@ -123,6 +123,22 @@ export class DataManager implements DataManagerInterface {
     this._mapper = config?.mapper || ((value: any) => value);
     this._asyncStorage = asyncStorage;
     this._ruleDataProvider = config?.ruleDataProvider || null;
+    // Guard: a misconfigured provider (missing the `name: 'RuleData'`
+    // discriminator) falls through RuleManager's "flat-key" branch and
+    // silently returns false for every rule — i.e. no audiences match,
+    // no experiences run, no errors thrown. Warn loudly at construction
+    // so the misconfiguration surfaces immediately instead of as silent
+    // data loss across the entire visitor population.
+    if (
+      this._ruleDataProvider &&
+      !this._ruleManager.isUsingCustomInterface(this._ruleDataProvider)
+    ) {
+      this._loggerManager?.warn?.(
+        'DataManager()',
+        ERROR_MESSAGES.RULE_DATA_PROVIDER_INVALID
+      );
+      this._ruleDataProvider = null;
+    }
     this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
@@ -1000,8 +1016,17 @@ export class DataManager implements DataManagerInterface {
       return;
     }
 
-    if (goalRule || this._ruleDataProvider) {
-      if (!goal?.rules) return;
+    // Two separate concerns:
+    //   1. Pre-PR contract: if the caller explicitly passes `goalRule` to a
+    //      goal that itself has no rules, the conversion is a no-op. This
+    //      surfaces the call-site misunderstanding instead of firing
+    //      silently. Preserved here.
+    //   2. PR addition: a globally-configured `ruleDataProvider` should
+    //      ONLY participate in rule evaluation when the goal actually has
+    //      rules. Otherwise rule-less goals would be silently dropped on
+    //      every visitor when a provider is set.
+    if (goalRule && !goal?.rules) return;
+    if (goal?.rules && (goalRule || this._ruleDataProvider)) {
       const ruleMatched = this._ruleManager.isRuleMatched(
         this._ruleDataProvider || goalRule,
         goal.rules,

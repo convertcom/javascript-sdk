@@ -454,6 +454,12 @@ export class Context implements ContextInterface {
       );
     }
 
+    // Per-change marker IDs are scoped by experience + variation + change.
+    // change.id is system-assigned and currently globally unique, but
+    // scoping defensively guards against future ID-semantics changes and
+    // against the case where two distinct configs are merged into one
+    // page (e.g. previewing one experience while another is live).
+    const variationId = bucketedVariation.id;
     for (const change of bucketedVariation.changes ?? []) {
       if (!change) continue;
 
@@ -472,17 +478,32 @@ export class Context implements ContextInterface {
         continue;
       }
 
-      const data = (change as any).data;
+      // After skipping fullStackFeature + defaultRedirect, the remaining
+      // change variants (defaultCode, customCode, richStructure,
+      // defaultCodeMultipage) all share `data.{css?, js?, custom_js?}`.
+      // ExperienceChangeServing is a discriminated union and TypeScript
+      // can't narrow it via a negative `continue` above, so we restate
+      // the relevant subset structurally here.
+      const data = (
+        change as {
+          data?: {
+            css?: string | null;
+            js?: string | null;
+            custom_js?: string | null;
+          };
+        }
+      ).data;
       if (!data) continue;
 
+      const markerPrefix = `conv-chg-${experienceId}-${variationId}-${change.id}`;
       if (data.css) {
-        this._injectStyle(`conv-chg-${change.id}-css`, data.css);
+        this._injectStyle(`${markerPrefix}-css`, data.css);
       }
       if (data.js) {
-        this._executeScript(`conv-chg-${change.id}-js`, data.js);
+        this._executeScript(`${markerPrefix}-js`, data.js);
       }
       if (data.custom_js) {
-        this._executeScript(`conv-chg-${change.id}-custom-js`, data.custom_js);
+        this._executeScript(`${markerPrefix}-custom-js`, data.custom_js);
       }
     }
   }

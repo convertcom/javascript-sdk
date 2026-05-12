@@ -20,7 +20,9 @@ export const ERROR_MESSAGES = {
   GOAL_DATA_NOT_VALID: 'GoalData object is not valid',
   UNABLE_TO_SELECT_BUCKET_FOR_VISITOR: 'Unable to bucket visitor',
   UNABLE_TO_PERFORM_NETWORK_REQUEST: 'Unable to perform network request',
-  UNSUPPORTED_RESPONSE_TYPE: 'Unsupported response type'
+  UNSUPPORTED_RESPONSE_TYPE: 'Unsupported response type',
+  RULE_DATA_PROVIDER_INVALID:
+    'Config.ruleDataProvider is set but does not satisfy the RuleData custom-interface contract (requires name: RuleData and rule-type getter methods on its constructor prototype). Provider has been ignored — falling back to plain visitor/location properties. See @convertcom/js-sdk-types#RuleDataProvider for the expected shape.'
 };
 export const MESSAGES = {
   CONFIG_DATA_UPDATED: 'Config Data updated',

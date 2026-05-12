@@ -6,6 +6,7 @@
  */
 
 import {ConfigResponseData} from './config/index';
+import {RuleDataProvider} from './RuleDataProvider';
 import {LogLevel} from '@convertcom/js-sdk-enums';
 
 export * from './config/index';
@@ -24,10 +25,15 @@ type ConfigBase = {
     excludeExperienceIdHash?: boolean;
   };
   dataStore?: object | null;
-  // Optional custom RuleData provider for evaluating web rule types (URL, cookie, geo, device, etc.).
-  // When set, DataManager passes it to RuleManager instead of plain visitor/location properties.
-  // Provider must have name === 'RuleData' (RuleManager detects custom interface via this field).
-  ruleDataProvider?: Record<string, any>;
+  /**
+   * Optional custom RuleData provider for evaluating web rule types
+   * (URL, cookie, geo, device, etc.). When set, DataManager passes it
+   * to RuleManager instead of the plain visitor/location properties.
+   * The provider's `name` MUST be the literal string `'RuleData'`;
+   * RuleManager uses that discriminator to switch from key lookup to
+   * method dispatch.
+   */
+  ruleDataProvider?: RuleDataProvider;
   dataRefreshInterval?: number;
   events?: {
     batch_size?: number;

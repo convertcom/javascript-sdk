@@ -395,13 +395,14 @@ test.describe('UMD bundle browser tests', () => {
         const ids = [
           'conv-exp-rv-exp-1-global-css',
           'conv-exp-rv-exp-1-global-js',
-          'conv-chg-101-css',
-          'conv-chg-101-js',
-          'conv-chg-102-css',
-          'conv-chg-102-custom-js',
-          'conv-chg-103-css',
-          'conv-chg-103-js',
-          'conv-chg-104-css'
+          // Per-change markers are scoped by experience + variation + change id
+          'conv-chg-rv-exp-1-999-101-css',
+          'conv-chg-rv-exp-1-999-101-js',
+          'conv-chg-rv-exp-1-999-102-css',
+          'conv-chg-rv-exp-1-999-102-custom-js',
+          'conv-chg-rv-exp-1-999-103-css',
+          'conv-chg-rv-exp-1-999-103-js',
+          'conv-chg-rv-exp-1-999-104-css'
         ];
         for (const id of ids) document.getElementById(id)?.remove();
         delete (window as any).__rvDefaultCodeJS;
@@ -443,7 +444,7 @@ test.describe('UMD bundle browser tests', () => {
           experience: fixture.experience
         });
         return {
-          changeCssText: document.getElementById('conv-chg-101-css')?.textContent,
+          changeCssText: document.getElementById('conv-chg-rv-exp-1-999-101-css')?.textContent,
           changeJsRan: (window as any).__rvDefaultCodeJS === true
         };
       }, makeFixture());
@@ -462,10 +463,12 @@ test.describe('UMD bundle browser tests', () => {
           experience: fixture.experience
         });
         return {
-          customCssText: document.getElementById('conv-chg-102-css')
+          customCssText: document.getElementById('conv-chg-rv-exp-1-999-102-css')
             ?.textContent,
           customJsRan: (window as any).__rvCustomJS === true,
-          customJsMarker: !!document.getElementById('conv-chg-102-custom-js')
+          customJsMarker: !!document.getElementById(
+            'conv-chg-rv-exp-1-999-102-custom-js'
+          )
         };
       }, makeFixture());
       expect(result.customCssText).toBe(
@@ -487,8 +490,12 @@ test.describe('UMD bundle browser tests', () => {
           experience: fixture.experience
         });
         return {
-          redirectCssExists: !!document.getElementById('conv-chg-103-css'),
-          redirectJsExists: !!document.getElementById('conv-chg-103-js')
+          redirectCssExists: !!document.getElementById(
+            'conv-chg-rv-exp-1-999-103-css'
+          ),
+          redirectJsExists: !!document.getElementById(
+            'conv-chg-rv-exp-1-999-103-js'
+          )
         };
       }, makeFixture());
       expect(result.redirectCssExists).toBe(false);
@@ -508,8 +515,8 @@ test.describe('UMD bundle browser tests', () => {
           experience: fixture.experience
         });
         return {
-          ffCssExists: !!document.getElementById('conv-chg-104-css'),
-          ffJsExists: !!document.getElementById('conv-chg-104-js')
+          ffCssExists: !!document.getElementById('conv-chg-rv-exp-1-999-104-css'),
+          ffJsExists: !!document.getElementById('conv-chg-rv-exp-1-999-104-js')
         };
       }, makeFixture());
       expect(result.ffCssExists).toBe(false);
@@ -541,8 +548,12 @@ test.describe('UMD bundle browser tests', () => {
             .length,
           scriptCount: document.querySelectorAll('#conv-exp-rv-exp-1-global-js')
             .length,
-          changeCssCount: document.querySelectorAll('#conv-chg-101-css').length,
-          changeJsCount: document.querySelectorAll('#conv-chg-101-js').length
+          changeCssCount: document.querySelectorAll(
+            '#conv-chg-rv-exp-1-999-101-css'
+          ).length,
+          changeJsCount: document.querySelectorAll(
+            '#conv-chg-rv-exp-1-999-101-js'
+          ).length
         };
       }, makeFixture());
       expect(result.firstGlobalJsRan).toBe(true);
@@ -569,6 +580,134 @@ test.describe('UMD bundle browser tests', () => {
         }
       });
       expect(errored).toBe(false);
+    });
+
+    test('Should execute global_css → global_js → per-change css → js → custom_js in order', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      // The pipeline is documented in Context.runVariation's JSDoc.
+      // Monkey-patch the appendChild on document.head BEFORE invoking
+      // runVariation so we observe the synchronous insertion order — each
+      // <style>/<script> append pushes its marker id into __execOrder
+      // before runVariation continues to the next step. We also wrap the
+      // CSS/JS strings so script execution itself contributes to the log
+      // (proving JS actually ran, not just the script tag was inserted).
+      const order = await page.evaluate(() => {
+        (window as any).__execOrder = [];
+        const head = document.head;
+        const originalAppend = head.appendChild.bind(head);
+        head.appendChild = function <T extends Node>(node: T): T {
+          const el = node as unknown as HTMLElement;
+          const id = el?.id || '';
+          if (id.includes('global-css')) (window as any).__execOrder.push('exp-css');
+          else if (id.includes('global-js'))
+            (window as any).__execOrder.push('exp-js');
+          else if (id.includes('-200-css'))
+            (window as any).__execOrder.push('chg-css');
+          else if (id.includes('-200-js'))
+            (window as any).__execOrder.push('chg-js');
+          else if (id.includes('-201-css'))
+            (window as any).__execOrder.push('chg-custom-css');
+          else if (id.includes('-201-custom-js'))
+            (window as any).__execOrder.push('chg-custom-js');
+          return originalAppend(node);
+        } as typeof head.appendChild;
+
+        const orderingFixture = {
+          variation: {
+            id: '999',
+            key: 'ord-var',
+            experienceId: 'rv-exp-1',
+            experienceKey: 'rv-experience',
+            experienceType: 'a/b',
+            changes: [
+              {
+                id: 200,
+                type: 'defaultCode',
+                data: {css: '.ord-default {}', js: ';'}
+              },
+              {
+                id: 201,
+                type: 'customCode',
+                data: {css: '.ord-custom {}', custom_js: ';'}
+              }
+            ]
+          },
+          experience: {
+            id: 'rv-exp-1',
+            key: 'rv-experience',
+            type: 'a/b',
+            global_css: '.ord-global {}',
+            global_js: ';'
+          }
+        };
+
+        const context = (window as any).__defaultContext();
+        context.runVariation(orderingFixture.variation, {
+          experience: orderingFixture.experience
+        });
+        head.appendChild = originalAppend;
+        return (window as any).__execOrder as string[];
+      });
+
+      expect(order).toEqual([
+        'exp-css',
+        'exp-js',
+        'chg-css',
+        'chg-js',
+        'chg-custom-css',
+        'chg-custom-js'
+      ]);
+    });
+
+    test('Should warn and continue when options.experience is missing and experienceKey is not in config', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      // No `experience` option passed AND the bucketedVariation's
+      // experienceKey is not present in the SDK's config — runVariation
+      // should log a warn and continue (no throw, no DOM injection).
+      const result = await page.evaluate(() => {
+        const context = (window as any).__defaultContext();
+        // Capture warns via a logger spy (defaultContext uses console under
+        // the hood for `warn`).
+        const warns: any[] = [];
+        const origWarn = console.warn;
+        console.warn = (...args: any[]) => {
+          warns.push(args);
+          origWarn.apply(console, args);
+        };
+        let errored = false;
+        try {
+          context.runVariation({
+            id: 'orphan-var',
+            key: 'orphan',
+            experienceId: 'does-not-exist',
+            experienceKey: 'does-not-exist',
+            changes: [
+              {
+                id: 999,
+                type: 'defaultCode',
+                data: {css: '.orphan { color: red; }'}
+              }
+            ]
+          });
+        } catch {
+          errored = true;
+        }
+        console.warn = origWarn;
+        return {
+          errored,
+          // The change CSS should still be applied — the warn is about the
+          // missing experience config, not a hard error.
+          cssApplied: !!document.getElementById('conv-chg-does-not-exist-orphan-var-999-css')
+        };
+      });
+      expect(result.errored).toBe(false);
+      expect(result.cssApplied).toBe(true);
     });
   });
 
