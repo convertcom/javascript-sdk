@@ -72,7 +72,7 @@ const LOCATION_PROPS = {
 const cmp = (a: string, b: string) => a.localeCompare(b);
 const VARIATION_KEYS = [
   'bucketingAllocation', 'changes', 'experienceId', 'experienceKey',
-  'experienceName', 'id', 'is_baseline', 'key', 'name', 'status',
+  'experienceName', 'experienceType', 'id', 'is_baseline', 'key', 'name', 'status',
   'traffic_allocation'
 ].sort(cmp);
 const FEATURE_KEYS = [
@@ -334,6 +334,241 @@ test.describe('UMD bundle browser tests', () => {
       });
       expect((result as any).hasCustomSegments).toBe(true);
       expect((result as any).customSegments).toEqual(['200299434']);
+    });
+  });
+
+  test.describe('runVariation — web variation change rendering', () => {
+    // Helper: build a synthetic BucketedVariation with the requested change list
+    const makeFixture = () => ({
+      variation: {
+        id: '999',
+        key: 'test-var',
+        experienceId: 'rv-exp-1',
+        experienceKey: 'rv-experience',
+        experienceType: 'a/b',
+        traffic_allocation: 10000,
+        status: 'running',
+        changes: [
+          {
+            id: 101,
+            type: 'defaultCode',
+            data: {
+              css: '.rv-default-code { color: rgb(11, 22, 33); }',
+              js: 'window.__rvDefaultCodeJS = true;'
+            }
+          },
+          {
+            id: 102,
+            type: 'customCode',
+            data: {
+              css: '.rv-custom-code { color: rgb(44, 55, 66); }',
+              custom_js: 'window.__rvCustomJS = true;'
+            }
+          },
+          {
+            id: 103,
+            type: 'defaultRedirect',
+            data: {
+              original_pattern: 'foo',
+              variation_pattern: 'bar'
+            }
+          },
+          {
+            id: 104,
+            type: 'fullStackFeature',
+            data: {feature_id: 42, variables_data: {x: 1}}
+          }
+        ]
+      },
+      experience: {
+        id: 'rv-exp-1',
+        key: 'rv-experience',
+        type: 'a/b',
+        global_css: '.rv-global { color: rgb(77, 88, 99); }',
+        global_js: 'window.__rvGlobalJS = true;'
+      }
+    });
+
+    // Reset DOM markers + window flags between tests
+    const resetDomMarkers = async (page: Page) => {
+      await page.evaluate(() => {
+        const ids = [
+          'conv-exp-rv-exp-1-global-css',
+          'conv-exp-rv-exp-1-global-js',
+          'conv-chg-101-css',
+          'conv-chg-101-js',
+          'conv-chg-102-css',
+          'conv-chg-102-custom-js',
+          'conv-chg-103-css',
+          'conv-chg-103-js',
+          'conv-chg-104-css'
+        ];
+        for (const id of ids) document.getElementById(id)?.remove();
+        delete (window as any).__rvDefaultCodeJS;
+        delete (window as any).__rvCustomJS;
+        delete (window as any).__rvGlobalJS;
+      });
+    };
+
+    test('Should inject experience global_css and global_js once', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          globalCssText: document.getElementById('conv-exp-rv-exp-1-global-css')
+            ?.textContent,
+          globalJsRan: (window as any).__rvGlobalJS === true,
+          globalJsExists: !!document.getElementById('conv-exp-rv-exp-1-global-js')
+        };
+      }, makeFixture());
+      expect(result.globalCssText).toBe(
+        '.rv-global { color: rgb(77, 88, 99); }'
+      );
+      expect(result.globalJsRan).toBe(true);
+      expect(result.globalJsExists).toBe(true);
+    });
+
+    test('Should apply defaultCode change CSS and JS', async ({page}) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          changeCssText: document.getElementById('conv-chg-101-css')?.textContent,
+          changeJsRan: (window as any).__rvDefaultCodeJS === true
+        };
+      }, makeFixture());
+      expect(result.changeCssText).toBe(
+        '.rv-default-code { color: rgb(11, 22, 33); }'
+      );
+      expect(result.changeJsRan).toBe(true);
+    });
+
+    test('Should apply customCode change CSS and custom_js', async ({page}) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          customCssText: document.getElementById('conv-chg-102-css')
+            ?.textContent,
+          customJsRan: (window as any).__rvCustomJS === true,
+          customJsMarker: !!document.getElementById('conv-chg-102-custom-js')
+        };
+      }, makeFixture());
+      expect(result.customCssText).toBe(
+        '.rv-custom-code { color: rgb(44, 55, 66); }'
+      );
+      expect(result.customJsRan).toBe(true);
+      expect(result.customJsMarker).toBe(true);
+    });
+
+    test('Should skip defaultRedirect change (no redirect attempted, no marker)', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const startUrl = page.url();
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          redirectCssExists: !!document.getElementById('conv-chg-103-css'),
+          redirectJsExists: !!document.getElementById('conv-chg-103-js')
+        };
+      }, makeFixture());
+      expect(result.redirectCssExists).toBe(false);
+      expect(result.redirectJsExists).toBe(false);
+      // Page didn't navigate
+      expect(page.url()).toBe(startUrl);
+    });
+
+    test('Should skip fullStackFeature change (no DOM injection)', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          ffCssExists: !!document.getElementById('conv-chg-104-css'),
+          ffJsExists: !!document.getElementById('conv-chg-104-js')
+        };
+      }, makeFixture());
+      expect(result.ffCssExists).toBe(false);
+      expect(result.ffJsExists).toBe(false);
+    });
+
+    test('Should be idempotent — calling twice does not duplicate styles/scripts', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        // First call
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        const firstGlobalJsRanAt = (window as any).__rvGlobalJS;
+        // Reset the marker flag to detect a re-run
+        (window as any).__rvGlobalJS = false;
+        // Second call — should be a no-op (script element with same id already in DOM)
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          firstGlobalJsRan: firstGlobalJsRanAt === true,
+          secondGlobalJsRan: (window as any).__rvGlobalJS === true,
+          styleCount: document.querySelectorAll('#conv-exp-rv-exp-1-global-css')
+            .length,
+          scriptCount: document.querySelectorAll('#conv-exp-rv-exp-1-global-js')
+            .length,
+          changeCssCount: document.querySelectorAll('#conv-chg-101-css').length,
+          changeJsCount: document.querySelectorAll('#conv-chg-101-js').length
+        };
+      }, makeFixture());
+      expect(result.firstGlobalJsRan).toBe(true);
+      expect(result.secondGlobalJsRan).toBe(false);
+      expect(result.styleCount).toBe(1);
+      expect(result.scriptCount).toBe(1);
+      expect(result.changeCssCount).toBe(1);
+      expect(result.changeJsCount).toBe(1);
+    });
+
+    test('Should no-op safely when bucketedVariation is null', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const errored = await page.evaluate(() => {
+        const context = (window as any).__defaultContext();
+        try {
+          context.runVariation(null as any);
+          context.runVariation(undefined as any);
+          return false;
+        } catch {
+          return true;
+        }
+      });
+      expect(errored).toBe(false);
     });
   });
 

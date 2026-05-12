@@ -220,4 +220,87 @@ describe('ExperienceManager tests', function () {
         .to.equal(variationKey);
     });
   });
+  describe('Test experienceType field on BucketedVariation', function () {
+    it('Should populate experienceType from the source experience config', function (done) {
+      this.timeout(test_timeout);
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      const variation = experienceManager.selectVariation(
+        visitorId,
+        experienceKey,
+        {
+          visitorProperties: {varName3: 'something'},
+          locationProperties: {url: 'https://convert.com/'}
+        }
+      );
+      server.on('request', (request, res) => {
+        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
+          request.on('end', () => {
+            expect(variation)
+              .to.be.an('object')
+              .that.has.property('experienceType');
+            expect(variation.experienceType).to.equal('a/b_fullstack');
+            done();
+          });
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end('{}');
+      });
+    });
+  });
+  describe('Test experienceTypes filter on selectVariations', function () {
+    it('Should return all experiences when no type filter is set', function (done) {
+      this.timeout(test_timeout);
+      const variations = experienceManager.selectVariations(visitorId, {
+        visitorProperties: {varName3: 'something'},
+        locationProperties: {url: 'https://convert.com/'}
+      });
+      server.on('request', (request, res) => {
+        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
+          request.on('end', () => {
+            expect(variations).to.be.an('array').that.has.length(2);
+            done();
+          });
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end('{}');
+      });
+    });
+    it('Should keep all fullstack experiences when experienceTypes=["a/b_fullstack"]', function (done) {
+      this.timeout(test_timeout);
+      const variations = experienceManager.selectVariations(visitorId, {
+        visitorProperties: {varName3: 'something'},
+        locationProperties: {url: 'https://convert.com/'},
+        experienceTypes: ['a/b_fullstack']
+      });
+      server.on('request', (request, res) => {
+        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
+          request.on('end', () => {
+            expect(variations).to.be.an('array').that.has.length(2);
+            variations.forEach((v) => {
+              expect(v.experienceType).to.equal('a/b_fullstack');
+            });
+            done();
+          });
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end('{}');
+      });
+    });
+    it('Should return empty when filtering by a type with no matching experiences', function () {
+      const variations = experienceManager.selectVariations(visitorId, {
+        visitorProperties: {varName3: 'something'},
+        locationProperties: {url: 'https://convert.com/'},
+        experienceTypes: ['feature_rollout']
+      });
+      expect(variations).to.be.an('array').that.has.length(0);
+    });
+    it('Should return empty when filtering by web type (no web experiences in config)', function () {
+      const variations = experienceManager.selectVariations(visitorId, {
+        visitorProperties: {varName3: 'something'},
+        locationProperties: {url: 'https://convert.com/'},
+        experienceTypes: ['a/b']
+      });
+      expect(variations).to.be.an('array').that.has.length(0);
+    });
+  });
 });

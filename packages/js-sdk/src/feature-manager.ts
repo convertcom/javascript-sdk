@@ -329,7 +329,7 @@ export class FeatureManager implements FeatureManagerInterface {
     attributes: BucketingAttributes,
     filter?: Record<string, Array<string>>
   ): Array<BucketedFeature | RuleError> {
-    const {typeCasting = true} = attributes;
+    const {typeCasting = true, experienceTypes} = attributes;
     // Get list of declared features grouped by id
     const declaredFeatures = this.getListAsObject('id');
 
@@ -337,10 +337,13 @@ export class FeatureManager implements FeatureManagerInterface {
 
     // Retrieve all or filtered experiences
     const experiences = (
-      filter && arrayNotEmpty(filter?.experiences)
+      (filter && arrayNotEmpty(filter?.experiences)
         ? this._dataManager.getEntities(filter.experiences, 'experiences')
-        : this._dataManager.getEntitiesList('experiences')
-    ) as Array<ConfigExperience>;
+        : this._dataManager.getEntitiesList('experiences')) as Array<ConfigExperience>
+    ).filter((experience) => {
+      if (!experienceTypes?.length) return true;
+      return experienceTypes.includes(experience?.type);
+    });
 
     // Retrieve bucketed variations across the experiences
     const bucketedVariations = experiences

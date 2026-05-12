@@ -150,6 +150,7 @@ describe('Context tests', function () {
                 'experienceId',
                 'experienceKey',
                 'experienceName',
+                'experienceType',
                 'bucketingAllocation',
                 'id',
                 'key',

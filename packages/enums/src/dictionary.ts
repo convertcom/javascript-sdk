@@ -69,5 +69,15 @@ export const MESSAGES = {
   CUSTOM_SEGMENTS_KEY_FOUND: 'Custom segments key already set',
   SEND_BEACON_SUCCESS:
     'The user agent successfully queued the data for transfer',
-  RELEASING_QUEUE: 'Releasing event queue...'
+  RELEASING_QUEUE: 'Releasing event queue...',
+  RUN_VARIATION_BROWSER_ONLY: 'runVariation requires a browser environment',
+  RUN_VARIATION_EXPERIENCE_NOT_FOUND:
+    'runVariation: experience # not found in config',
+  RUN_VARIATION_REDIRECT_SKIPPED:
+    'runVariation: skipping defaultRedirect change (handled by Split Bundle)',
+  RUN_VARIATION_FULLSTACK_SKIPPED:
+    'runVariation: skipping fullStackFeature change (use runFeature)',
+  RUN_VARIATION_TOOLKIT_MISSING:
+    'runVariation: window.convert.T (Convert Toolkit) is not loaded; Visual Editor changes may fail',
+  RUN_VARIATION_SCRIPT_ERROR: 'runVariation: error executing change script #'
 };

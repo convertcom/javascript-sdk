@@ -9,6 +9,7 @@ import {
   BucketedFeature,
   BucketedVariation,
   BucketingAttributes,
+  ConfigExperience,
   ConversionAttributes,
   Entity,
   SegmentsAttributes,
@@ -35,6 +36,11 @@ export interface ContextInterface {
   runFeatures(
     attributes?: BucketingAttributes
   ): Array<BucketedFeature | RuleError>;
+
+  runVariation(
+    bucketedVariation: BucketedVariation,
+    options?: {experience?: ConfigExperience}
+  ): void;
 
   trackConversion(
     goalKey: string,

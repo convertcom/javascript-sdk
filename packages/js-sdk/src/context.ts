@@ -29,8 +29,10 @@ import {
   BucketingError,
   ERROR_MESSAGES,
   EntityType,
+  MESSAGES,
   RuleError,
-  SystemEvents
+  SystemEvents,
+  VariationChangeType
 } from '@convertcom/js-sdk-enums';
 import {objectDeepMerge, objectNotEmpty} from '@convertcom/js-sdk-utils';
 import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
@@ -193,6 +195,7 @@ export class Context implements ContextInterface {
         visitorProperties, // represents audiences
         locationProperties: attributes?.locationProperties, // represents site_area/locations
         updateVisitorProperties: attributes?.updateVisitorProperties,
+        experienceTypes: attributes?.experienceTypes,
         environment: attributes?.environment || this._environment
       }
     );
@@ -258,6 +261,7 @@ export class Context implements ContextInterface {
         visitorProperties,
         locationProperties: attributes?.locationProperties,
         updateVisitorProperties: attributes?.updateVisitorProperties,
+        experienceTypes: attributes?.experienceTypes,
         typeCasting: Object.prototype.hasOwnProperty.call(
           attributes || {},
           'typeCasting'
@@ -338,6 +342,7 @@ export class Context implements ContextInterface {
       visitorProperties,
       locationProperties: attributes?.locationProperties,
       updateVisitorProperties: attributes?.updateVisitorProperties,
+      experienceTypes: attributes?.experienceTypes,
       typeCasting: Object.prototype.hasOwnProperty.call(
         attributes || {},
         'typeCasting'
@@ -368,6 +373,161 @@ export class Context implements ContextInterface {
       }
     );
     return bucketedFeatures as Array<BucketedFeature>;
+  }
+
+  /**
+   * Apply web variation changes (CSS, JS, custom JS) to the DOM.
+   *
+   * Execution order, matching the tracking script monolith:
+   *   1. experience.global_css → <style>
+   *   2. experience.global_js  → <script>
+   *   3. For each change in variation.changes[]:
+   *      a. change.data.css        → <style>
+   *      b. change.data.js         → <script>  (Visual Editor generated, calls convert.T.*)
+   *      c. change.data.custom_js  → <script>  (user-written)
+   *
+   * Skips `fullStackFeature` (handled by runFeature) and `defaultRedirect`
+   * (handled by the Split Bundle, which must run before this method).
+   *
+   * Idempotent: tracks applied CSS/JS via DOM marker IDs, so re-calling with
+   * the same variation is a no-op.
+   *
+   * Browser-only. No-ops with a logged warning in server environments.
+   *
+   * @param {BucketedVariation} bucketedVariation A variation returned from runExperience()
+   * @param {Object=} options
+   * @param {ConfigExperience=} options.experience Optional experience override (otherwise looked up by experienceKey)
+   */
+  runVariation(
+    bucketedVariation: BucketedVariation,
+    options?: {experience?: ConfigExperience}
+  ): void {
+    if (typeof document === 'undefined' || typeof window === 'undefined') {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_BROWSER_ONLY
+      );
+      return;
+    }
+    if (!bucketedVariation) return;
+
+    const experience =
+      options?.experience ||
+      (this.getConfigEntity(
+        bucketedVariation.experienceKey,
+        EntityType.EXPERIENCE
+      ) as ConfigExperience);
+
+    if (!experience) {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_EXPERIENCE_NOT_FOUND.replace(
+          '#',
+          String(bucketedVariation.experienceKey)
+        )
+      );
+    }
+
+    const experienceId = experience?.id ?? bucketedVariation.experienceId;
+
+    if (
+      !(window as any).convert?.T &&
+      Array.isArray(bucketedVariation.changes) &&
+      bucketedVariation.changes.some((c) => c?.data?.['js'])
+    ) {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_TOOLKIT_MISSING
+      );
+    }
+
+    if (experience?.global_css) {
+      this._injectStyle(
+        `conv-exp-${experienceId}-global-css`,
+        experience.global_css
+      );
+    }
+    if (experience?.global_js) {
+      this._executeScript(
+        `conv-exp-${experienceId}-global-js`,
+        experience.global_js
+      );
+    }
+
+    for (const change of bucketedVariation.changes ?? []) {
+      if (!change) continue;
+
+      if (change.type === VariationChangeType.FULLSTACK_FEATURE) {
+        this._loggerManager?.debug?.(
+          'Context.runVariation()',
+          MESSAGES.RUN_VARIATION_FULLSTACK_SKIPPED
+        );
+        continue;
+      }
+      if (change.type === VariationChangeType.DEFAULT_REDIRECT) {
+        this._loggerManager?.warn?.(
+          'Context.runVariation()',
+          MESSAGES.RUN_VARIATION_REDIRECT_SKIPPED
+        );
+        continue;
+      }
+
+      const data = (change as any).data;
+      if (!data) continue;
+
+      if (data.css) {
+        this._injectStyle(`conv-chg-${change.id}-css`, data.css);
+      }
+      if (data.js) {
+        this._executeScript(`conv-chg-${change.id}-js`, data.js);
+      }
+      if (data.custom_js) {
+        this._executeScript(`conv-chg-${change.id}-custom-js`, data.custom_js);
+      }
+    }
+  }
+
+  /**
+   * Inject a <style> tag identified by markerId. No-op if already injected.
+   * @private
+   */
+  private _injectStyle(markerId: string, css: string): void {
+    try {
+      if (document.getElementById(markerId)) return;
+      const style = document.createElement('style');
+      style.id = markerId;
+      style.setAttribute('type', 'text/css');
+      style.appendChild(document.createTextNode(css));
+      (document.head || document.documentElement).appendChild(style);
+    } catch (error) {
+      this._loggerManager?.error?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_SCRIPT_ERROR.replace('#', markerId),
+        {message: (error as Error)?.message}
+      );
+    }
+  }
+
+  /**
+   * Inject a <script> tag identified by markerId. No-op if already injected
+   * (the script element with this id already exists in the DOM).
+   * @private
+   */
+  private _executeScript(markerId: string, code: string): void {
+    try {
+      if (document.getElementById(markerId)) return;
+      const script = document.createElement('script');
+      script.id = markerId;
+      script.setAttribute('type', 'text/javascript');
+      script.appendChild(document.createTextNode(code));
+      (document.head || document.documentElement).appendChild(script);
+    } catch (error) {
+      this._loggerManager?.error?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_SCRIPT_ERROR.replace('#', markerId),
+        {message: (error as Error)?.message}
+      );
+    }
   }
 
   /**

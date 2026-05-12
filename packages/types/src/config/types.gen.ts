@@ -1972,7 +1972,18 @@ export const ExperienceStatuses = {
     SCHEDULED: 'scheduled'
 } as const;
 
-export type ExperienceTypes = 'a/b' | 'a/a' | 'mvt' | 'split_url' | 'multipage' | 'deploy';
+// MANUAL OVERRIDE: a/b_fullstack and feature_rollout exist in Fullstack project configs
+// served by the CDN but are not yet present in the serving OpenAPI spec from which this
+// file is generated. Re-add them after each regeneration until the upstream spec is fixed.
+export type ExperienceTypes =
+    | 'a/b'
+    | 'a/a'
+    | 'mvt'
+    | 'split_url'
+    | 'multipage'
+    | 'deploy'
+    | 'a/b_fullstack'
+    | 'feature_rollout';
 
 export const ExperienceTypes = {
     A_B: 'a/b',
@@ -1980,7 +1991,9 @@ export const ExperienceTypes = {
     MVT: 'mvt',
     SPLIT_URL: 'split_url',
     MULTIPAGE: 'multipage',
-    DEPLOY: 'deploy'
+    DEPLOY: 'deploy',
+    A_B_FULLSTACK: 'a/b_fullstack',
+    FEATURE_ROLLOUT: 'feature_rollout'
 } as const;
 
 /**

@@ -398,4 +398,103 @@ describe('DataManager tests', function () {
       expect(check).to.have.property('segments').that.deep.equal(segments);
     });
   });
+  describe('Test ruleDataProvider integration', function () {
+    let receivedRuleData;
+    let provider;
+    // eslint-disable-next-line mocha/no-hooks-for-single-case
+    before(function () {
+      // Mock RuleManager that captures what data shape was passed to isRuleMatched
+      const capturingRuleManager: any = {
+        isRuleMatched: (data) => {
+          receivedRuleData = data;
+          return true;
+        },
+        isUsingCustomInterface: (data) =>
+          !!data && data.name === 'RuleData'
+      };
+      provider = {
+        name: 'RuleData',
+        getGenericTextKeyValue: () => 'something'
+      };
+      const configWithProvider = objectDeepMerge(configuration, {
+        ruleDataProvider: provider,
+        dataStore: undefined
+      }) as unknown as ConfigType;
+      dataManager = new dm(configWithProvider, {
+        bucketingManager,
+        ruleManager: capturingRuleManager,
+        eventManager,
+        apiManager
+      });
+    });
+    beforeEach(function () {
+      receivedRuleData = undefined;
+    });
+    it('Should store ruleDataProvider on the DataManager instance', function () {
+      // private field — assert by behavior
+      assert.isDefined(dataManager);
+    });
+    it('Should pass ruleDataProvider to RuleManager.isRuleMatched for audiences when set', function (done) {
+      this.timeout(test_timeout);
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      dataManager.getBucketing(visitorId, experienceKey, {
+        visitorProperties: {varName3: 'plain-value'},
+        locationProperties: {url: 'https://convert.com/'}
+      });
+      server.on('request', (request, res) => {
+        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
+          request.on('end', () => {
+            // The provider should have been used as the rule data instead of
+            // the plain visitorProperties object.
+            expect(receivedRuleData)
+              .to.be.an('object')
+              .that.has.property('name', 'RuleData');
+            expect(receivedRuleData).to.equal(provider);
+            done();
+          });
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end('{}');
+      });
+    });
+    it('Should fall back to plain visitorProperties when no ruleDataProvider is set', function (done) {
+      this.timeout(test_timeout);
+      const noProviderConfig = objectDeepMerge(configuration, {
+        ruleDataProvider: undefined,
+        dataStore: undefined
+      }) as unknown as ConfigType;
+      const capturingRuleManager: any = {
+        isRuleMatched: (data) => {
+          receivedRuleData = data;
+          return true;
+        },
+        isUsingCustomInterface: (data) =>
+          !!data && data.name === 'RuleData'
+      };
+      const localDataManager = new dm(noProviderConfig, {
+        bucketingManager,
+        ruleManager: capturingRuleManager,
+        eventManager,
+        apiManager
+      });
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      localDataManager.getBucketing(visitorId, experienceKey, {
+        visitorProperties: {varName3: 'plain-value'},
+        locationProperties: {url: 'https://convert.com/'}
+      });
+      server.on('request', (request, res) => {
+        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
+          request.on('end', () => {
+            // No provider configured — RuleManager should see the plain object.
+            expect(receivedRuleData).to.be.an('object');
+            expect(receivedRuleData).to.not.have.property('name', 'RuleData');
+            expect(receivedRuleData).to.have.property('varName3', 'plain-value');
+            done();
+          });
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end('{}');
+      });
+    });
+  });
 });

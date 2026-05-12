@@ -83,6 +83,7 @@ export class DataManager implements DataManagerInterface {
   private _asyncStorage: boolean;
   private _environment: string;
   private _mapper: (...args: any) => any;
+  private _ruleDataProvider: Record<string, any> | null;
   /**
    * @param {Config} config
    * @param {Object} dependencies
@@ -121,6 +122,7 @@ export class DataManager implements DataManagerInterface {
     this._config = config;
     this._mapper = config?.mapper || ((value: any) => value);
     this._asyncStorage = asyncStorage;
+    this._ruleDataProvider = config?.ruleDataProvider || null;
     this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
@@ -317,7 +319,7 @@ export class DataManager implements DataManagerInterface {
       } else if (experience?.site_area) {
         // Validate locationProperties against site area rules
         locationMatched = this._ruleManager.isRuleMatched(
-          locationProperties,
+          this._ruleDataProvider || locationProperties,
           experience.site_area,
           'SiteArea'
         );
@@ -709,7 +711,8 @@ export class DataManager implements DataManagerInterface {
         ...{
           experienceId: experience?.id,
           experienceName: experience?.name,
-          experienceKey: experience?.key
+          experienceKey: experience?.key,
+          experienceType: experience?.type
         },
         bucketingAllocation,
         ...variation
@@ -856,7 +859,7 @@ export class DataManager implements DataManagerInterface {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
-          locationProperties,
+          this._ruleDataProvider || locationProperties,
           items[i].rules,
           `ConfigLocation #${items[i][identityField]}`
         );
@@ -997,10 +1000,10 @@ export class DataManager implements DataManagerInterface {
       return;
     }
 
-    if (goalRule) {
+    if (goalRule || this._ruleDataProvider) {
       if (!goal?.rules) return;
       const ruleMatched = this._ruleManager.isRuleMatched(
-        goalRule,
+        this._ruleDataProvider || goalRule,
         goal.rules,
         `ConfigGoal #${goalId}`
       );
@@ -1112,7 +1115,7 @@ export class DataManager implements DataManagerInterface {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
-          visitorProperties,
+          this._ruleDataProvider || visitorProperties,
           items[i].rules,
           `${camelCase(entityType)} #${items[i][field]}`
         );

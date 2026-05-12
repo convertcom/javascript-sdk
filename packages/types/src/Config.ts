@@ -24,6 +24,10 @@ type ConfigBase = {
     excludeExperienceIdHash?: boolean;
   };
   dataStore?: object | null;
+  // Optional custom RuleData provider for evaluating web rule types (URL, cookie, geo, device, etc.).
+  // When set, DataManager passes it to RuleManager instead of plain visitor/location properties.
+  // Provider must have name === 'RuleData' (RuleManager detects custom interface via this field).
+  ruleDataProvider?: Record<string, any>;
   dataRefreshInterval?: number;
   events?: {
     batch_size?: number;
