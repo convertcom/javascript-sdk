@@ -22,6 +22,14 @@ import {RuleElement} from './config/index';
  *
  * The `name: 'RuleData'` discriminator is mandatory — RuleManager uses
  * it to switch from plain-object key lookup to method-dispatch.
+ *
+ * Precedence: **per-call arguments beat the global provider.** If a
+ * caller supplies `visitorProperties`, `locationProperties`, or
+ * `ruleData` (on `trackConversion`), those values are used and the
+ * provider is bypassed for that call. The provider only kicks in when
+ * the corresponding per-call arg is absent. This mirrors standard
+ * config-vs-args layering and lets a caller temporarily override
+ * provider-supplied data for a specific evaluation.
  */
 export interface RuleDataProvider {
   /**

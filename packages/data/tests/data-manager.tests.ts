@@ -430,7 +430,32 @@ describe('DataManager tests', function () {
     beforeEach(function () {
       receivedRuleData = undefined;
     });
-    it('Should pass ruleDataProvider to RuleManager.isRuleMatched for audiences when set', function (done) {
+    it('Should use ruleDataProvider when no per-call visitorProperties is supplied', function (done) {
+      // Per-call wins, so when the caller omits visitorProperties the
+      // global provider supplies the rule data.
+      this.timeout(test_timeout);
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      dataManager.getBucketing(visitorId, experienceKey, {
+        locationProperties: {url: 'https://convert.com/'}
+      });
+      server.on('request', (request, res) => {
+        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
+          request.on('end', () => {
+            expect(receivedRuleData)
+              .to.be.an('object')
+              .that.has.property('name', 'RuleData');
+            expect(receivedRuleData).to.equal(provider);
+            done();
+          });
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end('{}');
+      });
+    });
+    it('Should let per-call visitorProperties win over a configured ruleDataProvider', function (done) {
+      // Precedence guard: a caller who explicitly supplies
+      // visitorProperties is opting out of the provider for that call,
+      // matching standard config-vs-args layering.
       this.timeout(test_timeout);
       const experienceKey = 'test-experience-ab-fullstack-2';
       dataManager.getBucketing(visitorId, experienceKey, {
@@ -440,12 +465,9 @@ describe('DataManager tests', function () {
       server.on('request', (request, res) => {
         if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
           request.on('end', () => {
-            // The provider should have been used as the rule data instead of
-            // the plain visitorProperties object.
-            expect(receivedRuleData)
-              .to.be.an('object')
-              .that.has.property('name', 'RuleData');
-            expect(receivedRuleData).to.equal(provider);
+            expect(receivedRuleData).to.be.an('object');
+            expect(receivedRuleData).to.not.have.property('name', 'RuleData');
+            expect(receivedRuleData).to.have.property('varName3', 'plain-value');
             done();
           });
         }

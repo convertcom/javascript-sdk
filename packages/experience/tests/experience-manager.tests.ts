@@ -302,5 +302,52 @@ describe('ExperienceManager tests', function () {
       });
       expect(variations).to.be.an('array').that.has.length(0);
     });
+    it('Should return empty when experienceTypes is an empty array', function () {
+      // [] means "zero types allowed" → no matches. Differs from
+      // undefined which means "no filter applied".
+      const variations = experienceManager.selectVariations(visitorId, {
+        visitorProperties: {varName3: 'something'},
+        locationProperties: {url: 'https://convert.com/'},
+        experienceTypes: []
+      });
+      expect(variations).to.be.an('array').that.has.length(0);
+    });
+  });
+  describe('Test experienceTypes filter on selectVariation (singular)', function () {
+    it('Should return null when the experience type is not in the filter', function () {
+      const result = experienceManager.selectVariation(
+        visitorId,
+        'test-experience-ab-fullstack-2',
+        {
+          visitorProperties: {varName3: 'something'},
+          locationProperties: {url: 'https://convert.com/'},
+          experienceTypes: ['a/b'] // experience is a/b_fullstack
+        }
+      );
+      expect(result).to.equal(null);
+    });
+    it('Should bucket normally when the experience type IS in the filter', function (done) {
+      this.timeout(test_timeout);
+      const variation = experienceManager.selectVariation(
+        visitorId,
+        'test-experience-ab-fullstack-2',
+        {
+          visitorProperties: {varName3: 'something'},
+          locationProperties: {url: 'https://convert.com/'},
+          experienceTypes: ['a/b_fullstack']
+        }
+      );
+      server.on('request', (request, res) => {
+        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
+          request.on('end', () => {
+            expect(variation).to.be.an('object');
+            expect(variation).to.have.property('experienceType', 'a/b_fullstack');
+            done();
+          });
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end('{}');
+      });
+    });
   });
 });

@@ -28,10 +28,16 @@ type ConfigBase = {
   /**
    * Optional custom RuleData provider for evaluating web rule types
    * (URL, cookie, geo, device, etc.). When set, DataManager passes it
-   * to RuleManager instead of the plain visitor/location properties.
-   * The provider's `name` MUST be the literal string `'RuleData'`;
-   * RuleManager uses that discriminator to switch from key lookup to
-   * method dispatch.
+   * to RuleManager when no per-call visitor/location/goal-rule
+   * arguments are supplied. The provider's `name` MUST be the literal
+   * string `'RuleData'`; RuleManager uses that discriminator to switch
+   * from key lookup to method dispatch.
+   *
+   * **Precedence: per-call arguments win.** Passing
+   * `visitorProperties`, `locationProperties`, or `trackConversion`'s
+   * `ruleData` on a specific call bypasses the provider for that call.
+   * See `@convertcom/js-sdk-types#RuleDataProvider` for the full
+   * contract.
    */
   ruleDataProvider?: RuleDataProvider;
   dataRefreshInterval?: number;

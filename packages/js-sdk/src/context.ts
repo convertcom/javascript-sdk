@@ -141,6 +141,7 @@ export class Context implements ContextInterface {
         visitorProperties, // represents audiences
         locationProperties: attributes?.locationProperties, // represents site_area/locations
         updateVisitorProperties: attributes?.updateVisitorProperties,
+        experienceTypes: attributes?.experienceTypes,
         environment: attributes?.environment || this._environment
       }
     );

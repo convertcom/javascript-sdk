@@ -306,10 +306,13 @@ export class DataManager implements DataManagerInterface {
       isBucketed = true;
     }
 
-    // Check location rules against locationProperties
+    // Check location rules against locationProperties.
+    // Enter the eval block if EITHER a per-call locationProperties OR a
+    // globally-configured ruleDataProvider is available — the outer gate
+    // would otherwise skip the eval when only the provider is set.
     let locationMatched: boolean | RuleError =
       ignoreLocationProperties === true;
-    if (!locationMatched && locationProperties) {
+    if (!locationMatched && (locationProperties || this._ruleDataProvider)) {
       if (Array.isArray(experience?.locations) && experience.locations.length) {
         let matchedLocations = [];
         // Get attached locations
@@ -335,7 +338,7 @@ export class DataManager implements DataManagerInterface {
       } else if (experience?.site_area) {
         // Validate locationProperties against site area rules
         locationMatched = this._ruleManager.isRuleMatched(
-          this._ruleDataProvider || locationProperties,
+          locationProperties || this._ruleDataProvider,
           experience.site_area,
           'SiteArea'
         );
@@ -365,7 +368,10 @@ export class DataManager implements DataManagerInterface {
       return null;
     }
 
-    // Check audience rules against visitorProperties
+    // Check audience rules against visitorProperties.
+    // Same gate-broadening as above: enter the eval block if either a
+    // per-call visitorProperties OR a global ruleDataProvider exists,
+    // otherwise the provider is unreachable from the audience path.
     let audiences = [],
       segments = [],
       matchedAudiences = [],
@@ -373,7 +379,7 @@ export class DataManager implements DataManagerInterface {
       audiencesToCheck: Array<ConfigAudience> = [],
       audiencesMatched = false,
       segmentsMatched = false;
-    if (visitorProperties) {
+    if (visitorProperties || this._ruleDataProvider) {
       if (Array.isArray(experience?.audiences) && experience.audiences.length) {
         // Get attached transient and/or permnent audiences
         audiences = this.getItemsByIds(
@@ -875,7 +881,7 @@ export class DataManager implements DataManagerInterface {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
-          this._ruleDataProvider || locationProperties,
+          locationProperties || this._ruleDataProvider,
           items[i].rules,
           `ConfigLocation #${items[i][identityField]}`
         );
@@ -1028,7 +1034,7 @@ export class DataManager implements DataManagerInterface {
     if (goalRule && !goal?.rules) return;
     if (goal?.rules && (goalRule || this._ruleDataProvider)) {
       const ruleMatched = this._ruleManager.isRuleMatched(
-        this._ruleDataProvider || goalRule,
+        goalRule || this._ruleDataProvider,
         goal.rules,
         `ConfigGoal #${goalId}`
       );
@@ -1140,7 +1146,7 @@ export class DataManager implements DataManagerInterface {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
-          this._ruleDataProvider || visitorProperties,
+          visitorProperties || this._ruleDataProvider,
           items[i].rules,
           `${camelCase(entityType)} #${items[i][field]}`
         );

@@ -341,10 +341,19 @@ export class FeatureManager implements FeatureManagerInterface {
         ? this._dataManager.getEntities(filter.experiences, 'experiences')
         : this._dataManager.getEntitiesList('experiences')
     ) as Array<ConfigExperience>;
-    const experiences = allExperiences.filter((experience) => {
-      if (!experienceTypes?.length) return true;
-      return experienceTypes.includes(experience?.type);
-    });
+    // `experienceTypes` semantics (see BucketingAttributes JSDoc):
+    //   undefined → no filter, [] → zero allowed (no matches),
+    //   [...] → only experiences whose type is in the list.
+    let experiences: Array<ConfigExperience>;
+    if (experienceTypes && experienceTypes.length === 0) {
+      experiences = [];
+    } else if (experienceTypes) {
+      experiences = allExperiences.filter((experience) =>
+        experienceTypes.includes(experience?.type)
+      );
+    } else {
+      experiences = allExperiences;
+    }
 
     // Retrieve bucketed variations across the experiences
     const bucketedVariations = experiences
