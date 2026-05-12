@@ -175,7 +175,10 @@ export class RuleManager implements RuleManagerInterface {
       typeof rule.matching.negated === 'boolean';
     if (!hasMatching) return false;
     const matchType = rule.matching.match_type as string;
-    if (matchType === CookieMatchingOptions.EXISTS || matchType === CookieMatchingOptions.DOES_NOT_EXIST) {
+    if (
+      matchType === CookieMatchingOptions.EXISTS ||
+      matchType === CookieMatchingOptions.DOES_NOT_EXIST
+    ) {
       return true;
     }
     return Object.prototype.hasOwnProperty.call(rule, 'value');

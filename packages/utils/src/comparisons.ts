@@ -165,7 +165,8 @@ export class Comparisons {
     testAgainst?: any,
     negation?: boolean
   ): boolean {
-    const valueNotExists = value === undefined || value === null || value === '';
+    const valueNotExists =
+      value === undefined || value === null || value === '';
     return this._returnNegationCheck(valueNotExists, negation);
   }
 
