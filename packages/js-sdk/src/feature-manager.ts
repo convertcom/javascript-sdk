@@ -336,11 +336,12 @@ export class FeatureManager implements FeatureManagerInterface {
     const bucketedFeatures: Array<BucketedFeature> = [];
 
     // Retrieve all or filtered experiences
-    const experiences = (
-      (filter && arrayNotEmpty(filter?.experiences)
+    const allExperiences = (
+      filter && arrayNotEmpty(filter?.experiences)
         ? this._dataManager.getEntities(filter.experiences, 'experiences')
-        : this._dataManager.getEntitiesList('experiences')) as Array<ConfigExperience>
-    ).filter((experience) => {
+        : this._dataManager.getEntitiesList('experiences')
+    ) as Array<ConfigExperience>;
+    const experiences = allExperiences.filter((experience) => {
       if (!experienceTypes?.length) return true;
       return experienceTypes.includes(experience?.type);
     });

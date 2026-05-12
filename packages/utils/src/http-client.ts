@@ -136,13 +136,25 @@ const determineRuntime = (): RuntimeResult => {
     return {runtime: 'server-with-fetch'};
   }
 
-  // if node.js builtins are available, we're on nodejs
+  // if node.js builtins are available, we're on nodejs.
+  // Access `require` via globalThis property lookup rather than calling
+  // the bare `require(...)` identifier so this stays parseable in browsers
+  // and ES-module bundlers — and so it doesn't trip
+  // `@typescript-eslint/no-require-imports`. Plain ESM `import` can't be
+  // used here because this runtime-detection path is synchronous and must
+  // not throw on environments where Node builtins are absent.
   try {
-    // Gracefully attempt to NodeJS builtins, to prevent throwing exceptions in browsers
-    const url = require('url') as typeof import('url');
-    const http = require('http') as typeof import('http');
-    const https = require('https') as typeof import('https');
-    const queryString = require('querystring') as typeof import('querystring');
+    const nodeRequire = (globalThis as {require?: (id: string) => unknown})
+      .require;
+    if (typeof nodeRequire !== 'function') {
+      throw new Error('require is not available');
+    }
+    const url = nodeRequire('url') as typeof import('url');
+    const http = nodeRequire('http') as typeof import('http');
+    const https = nodeRequire('https') as typeof import('https');
+    const queryString = nodeRequire(
+      'querystring'
+    ) as typeof import('querystring');
     return {runtime: 'old-nodejs', url, http, https, queryString};
   } catch (err) {
     // not nodejs
