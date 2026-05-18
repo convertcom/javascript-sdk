@@ -523,6 +523,116 @@ test.describe('UMD bundle browser tests', () => {
       expect(result.ffJsExists).toBe(false);
     });
 
+    test('Should skip richStructure change (selector-scoped DOM mutations are not supported by this renderer)', async ({
+      page
+    }) => {
+      // richStructure changes carry a `selector` in their data and are
+      // intended to be selector-scoped DOM mutations (see the tracking
+      // script's queue + querySelectorAll machinery in
+      // backend.wiki/TrackingScriptExperienceDeliveryRendering.md). The
+      // SDK renderer doesn't implement that yet, so the safe behavior is
+      // to skip — applying just the embedded `data.js` blob in isolation
+      // would lose the selector context and could mutate the wrong
+      // elements.
+      await setup(page);
+      // No reset needed: this fixture has unique change IDs (501).
+      const result = await page.evaluate(() => {
+        document.getElementById('conv-chg-rv-exp-1-999-501-css')?.remove();
+        document.getElementById('conv-chg-rv-exp-1-999-501-js')?.remove();
+        delete (window as any).__rvRichStructureJS;
+        const variation = {
+          id: '999',
+          key: 'rs-var',
+          experienceId: 'rv-exp-1',
+          experienceKey: 'rv-experience',
+          experienceType: 'a/b',
+          traffic_allocation: 10000,
+          status: 'running',
+          changes: [
+            {
+              id: 501,
+              type: 'richStructure',
+              data: {
+                js: 'window.__rvRichStructureJS = true;',
+                selector: '.target-element',
+                css: '.rs-leak { display: none; }'
+              }
+            }
+          ]
+        };
+        const experience = {
+          id: 'rv-exp-1',
+          key: 'rv-experience',
+          type: 'a/b'
+        };
+        const context = (window as any).__defaultContext();
+        context.runVariation(variation, {experience});
+        return {
+          jsRan: (window as any).__rvRichStructureJS === true,
+          jsMarker: !!document.getElementById('conv-chg-rv-exp-1-999-501-js'),
+          cssMarker: !!document.getElementById('conv-chg-rv-exp-1-999-501-css')
+        };
+      });
+      expect(result.jsRan).toBe(false);
+      expect(result.jsMarker).toBe(false);
+      expect(result.cssMarker).toBe(false);
+    });
+
+    test('Should not warn about missing convert.T when only customCode change carries data.js', async ({
+      page
+    }) => {
+      // Toolkit warning fires for `defaultCode.data.js` (Visual Editor
+      // output that calls convert.T.*), not for `customCode.data.js`
+      // (user-written code). A variation that only carries customCode
+      // shouldn't trigger the warning even when convert.T is absent.
+      await setup(page);
+      const warnFired = await page.evaluate(() => {
+        // Make sure convert.T is absent for this assertion.
+        const savedT = (window as any).convert?.T;
+        if ((window as any).convert) delete (window as any).convert.T;
+        const warns: string[] = [];
+        const origWarn = console.warn;
+        console.warn = (...args: unknown[]) => {
+          warns.push(args.map((a) => String(a)).join(' '));
+        };
+        try {
+          const variation = {
+            id: '999',
+            key: 'cc-only',
+            experienceId: 'rv-exp-1',
+            experienceKey: 'rv-experience',
+            experienceType: 'a/b',
+            traffic_allocation: 10000,
+            status: 'running',
+            changes: [
+              {
+                id: 601,
+                type: 'customCode',
+                data: {
+                  css: '.cc-only { color: red; }',
+                  js: 'window.__rvCustomCodeJS = true;'
+                }
+              }
+            ]
+          };
+          const experience = {
+            id: 'rv-exp-1',
+            key: 'rv-experience',
+            type: 'a/b'
+          };
+          const context = (window as any).__defaultContext();
+          context.runVariation(variation, {experience});
+        } finally {
+          console.warn = origWarn;
+          if (savedT !== undefined) (window as any).convert.T = savedT;
+        }
+        return warns.some((line) =>
+          line.includes('Convert Toolkit) is not loaded')
+        );
+      });
+      expect(warnFired).toBe(false);
+    });
+
     test('Should be idempotent — calling twice does not duplicate styles/scripts', async ({
       page
     }) => {

@@ -43,7 +43,8 @@ import {
   ConfigAudienceTypes,
   VariationStatuses,
   eventType,
-  GenericListMatchingOptions
+  GenericListMatchingOptions,
+  RuleDataProvider
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -83,7 +84,7 @@ export class DataManager implements DataManagerInterface {
   private _asyncStorage: boolean;
   private _environment: string;
   private _mapper: (...args: any) => any;
-  private _ruleDataProvider: Record<string, any> | null;
+  private _ruleDataProvider: RuleDataProvider | null;
   /**
    * @param {Config} config
    * @param {Object} dependencies

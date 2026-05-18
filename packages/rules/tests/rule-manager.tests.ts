@@ -652,6 +652,80 @@ describe('RuleManager tests', function () {
       };
       expect(ruleManager.isRuleMatched(data, ruleSet)).to.equal(false);
     });
+    // Custom-interface (RuleData) provider with an unimplemented getter
+    // for the rule's rule_type. Per RuleDataProvider's documented
+    // contract, the rule must evaluate to false (no match) — both for
+    // existence and non-existence operators. Before the fix the
+    // existence-operator fallback at the end of _processRuleItem fired
+    // with `undefined`, so `doesNotExist` evaluated to true and silently
+    // matched every rule whose getter the caller hadn't implemented.
+    class PartialRuleData {
+      name = 'RuleData';
+      // Intentionally only implements getCountry — getCookie is missing.
+      getCountry() {
+        return 'US';
+      }
+    }
+    const buildCookieRule = (matchType: 'exists' | 'doesNotExist') => ({
+      OR: [
+        {
+          AND: [
+            {
+              OR_WHEN: [
+                {
+                  rule_type: 'cookie',
+                  matching: {
+                    match_type: matchType,
+                    negated: false
+                  },
+                  value: ''
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+    it('isRuleMatched should return false for exists when custom-interface getter is unimplemented', function () {
+      const data = new PartialRuleData();
+      expect(ruleManager.isRuleMatched(data, buildCookieRule('exists'))).to.equal(
+        false
+      );
+    });
+    it('isRuleMatched should return false for doesNotExist when custom-interface getter is unimplemented', function () {
+      // Regression guard for the documented "unimplemented getters
+      // cause the rule to evaluate as false" contract.
+      const data = new PartialRuleData();
+      expect(
+        ruleManager.isRuleMatched(data, buildCookieRule('doesNotExist'))
+      ).to.equal(false);
+    });
+    it('isRuleMatched should still evaluate the implemented getter for a rule whose getter exists', function () {
+      // Sanity check: the short-circuit only fires when the getter is
+      // missing, not when it's present and returns a real value.
+      const data = new PartialRuleData();
+      const ruleSet = {
+        OR: [
+          {
+            AND: [
+              {
+                OR_WHEN: [
+                  {
+                    rule_type: 'country',
+                    matching: {
+                      match_type: 'matches',
+                      negated: false
+                    },
+                    value: 'US'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      };
+      expect(ruleManager.isRuleMatched(data, ruleSet)).to.equal(true);
+    });
     it('Should allow to change comparison processor on fly', function () {
       const customComparisonProcessor = {
         isTypeOf: function (

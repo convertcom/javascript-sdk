@@ -186,6 +186,12 @@ export class ExperienceManager implements ExperienceManagerInterface {
         return typeFilter.includes(experience?.type);
       })
       .map((experience) => {
+        // Defense-in-depth: selectVariation re-applies the same
+        // experienceTypes filter on its singular path. The list above
+        // has already been filtered, so the inner check is redundant
+        // here — left intact so callers of selectVariation directly
+        // get the same semantics. The Array.includes() per experience
+        // is negligible.
         return this.selectVariation(visitorId, experience?.key, attributes);
       })
       .filter(

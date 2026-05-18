@@ -79,7 +79,12 @@ export const MESSAGES = {
     'runVariation: skipping defaultRedirect change (handled by Split Bundle)',
   RUN_VARIATION_FULLSTACK_SKIPPED:
     'runVariation: skipping fullStackFeature change (use runFeature)',
+  RUN_VARIATION_RICH_STRUCTURE_SKIPPED:
+    'runVariation: skipping richStructure change # (selector-scoped DOM mutations not supported by this renderer)',
+  RUN_VARIATION_MULTIPAGE_PAGE:
+    'runVariation: applying defaultCodeMultipage change # for page_id=# (caller is responsible for funnel-step matching)',
   RUN_VARIATION_TOOLKIT_MISSING:
     'runVariation: window.convert.T (Convert Toolkit) is not loaded; Visual Editor changes may fail',
+  RUN_VARIATION_STYLE_ERROR: 'runVariation: error injecting style #',
   RUN_VARIATION_SCRIPT_ERROR: 'runVariation: error executing change script #'
 };

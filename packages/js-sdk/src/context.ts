@@ -389,11 +389,27 @@ export class Context implements ContextInterface {
    *   2. experience.global_js  → <script>
    *   3. For each change in variation.changes[]:
    *      a. change.data.css        → <style>
-   *      b. change.data.js         → <script>  (Visual Editor generated, calls convert.T.*)
-   *      c. change.data.custom_js  → <script>  (user-written)
+   *      b. change.data.js         → <script>  (defaultCode: Visual Editor
+   *                                              generated, calls convert.T.*;
+   *                                              customCode: user-written)
+   *      c. change.data.custom_js  → <script>  (defaultCode only)
    *
-   * Skips `fullStackFeature` (handled by runFeature) and `defaultRedirect`
-   * (handled by the Split Bundle, which must run before this method).
+   * Supported change types: `defaultCode`, `customCode`, `defaultCodeMultipage`.
+   *
+   * Skipped change types:
+   *   - `fullStackFeature` — handled by `runFeature`.
+   *   - `defaultRedirect`  — handled by the Split Bundle, which must run
+   *     before this method.
+   *   - `richStructure`    — selector-scoped DOM mutations not yet
+   *     supported by this renderer; logged at debug level. Authors using
+   *     richStructure should rely on the tracking-script monolith for
+   *     application until the SDK gains a selector-aware queue.
+   *
+   * **Multipage caveat:** `defaultCodeMultipage.data.page_id` identifies
+   * which funnel step the change targets. This method applies the change
+   * unconditionally — it is the caller's responsibility to invoke
+   * `runVariation` only on the matching page. A debug log records the
+   * page_id so the caller can correlate.
    *
    * Idempotent: tracks applied CSS/JS via DOM marker IDs, so re-calling with
    * the same variation is a no-op.
@@ -440,11 +456,17 @@ export class Context implements ContextInterface {
     const experienceId =
       experience?.id ?? bucketedVariation.experienceId ?? 'unknown';
 
+    // Toolkit warning only fires for `defaultCode.data.js` — that field is
+    // Visual Editor output that calls `convert.T.*`. `customCode.data.js`
+    // is user-written and doesn't need the Toolkit; `richStructure.data.js`
+    // is skipped entirely below.
     if (
       !(window as any).convert?.T &&
       Array.isArray(bucketedVariation.changes) &&
       bucketedVariation.changes.some(
-        (c) => (c as {data?: {js?: string}})?.data?.js
+        (c) =>
+          c?.type === VariationChangeType.DEFAULT_CODE &&
+          (c as {data?: {js?: string}})?.data?.js
       )
     ) {
       this._loggerManager?.warn?.(
@@ -489,23 +511,56 @@ export class Context implements ContextInterface {
         );
         continue;
       }
+      if (change.type === VariationChangeType.RICH_STRUCTURE) {
+        // richStructure changes are selector-scoped DOM mutations whose
+        // `data` is a polymorphic key-value map (see
+        // ExperienceChangeRichStructureDataBase in types.gen.ts).
+        // Applying the embedded `data.js` blob in isolation would skip
+        // the selector targeting the change depends on and could mutate
+        // the wrong elements. Skip until the SDK supports a
+        // selector-aware queue.
+        this._loggerManager?.debug?.(
+          'Context.runVariation()',
+          MESSAGES.RUN_VARIATION_RICH_STRUCTURE_SKIPPED.replace(
+            '#',
+            String((change as {id?: string | number})?.id ?? '?')
+          )
+        );
+        continue;
+      }
 
-      // After skipping fullStackFeature + defaultRedirect, the remaining
-      // change variants (defaultCode, customCode, richStructure,
-      // defaultCodeMultipage) all share `data.{css?, js?, custom_js?}`.
+      // Remaining supported change types: defaultCode, customCode,
+      // defaultCodeMultipage — all share `data.{css?, js?, custom_js?}`.
       // ExperienceChangeServing is a discriminated union and TypeScript
-      // can't narrow it via a negative `continue` above, so we restate
-      // the relevant subset structurally here.
+      // can't narrow it via the negative `continue`s above, so we
+      // restate the relevant subset structurally here.
       const data = (
         change as {
           data?: {
             css?: string | null;
             js?: string | null;
             custom_js?: string | null;
+            page_id?: string;
           };
         }
       ).data;
       if (!data) continue;
+
+      if (
+        change.type === VariationChangeType.DEFAULT_CODE_MULTIPAGE &&
+        data.page_id
+      ) {
+        // Caller is responsible for invoking runVariation only on the
+        // matching funnel step (the SDK doesn't know the current URL
+        // / page context). Log so the caller can correlate.
+        this._loggerManager?.debug?.(
+          'Context.runVariation()',
+          MESSAGES.RUN_VARIATION_MULTIPAGE_PAGE.replace(
+            '#',
+            String((change as {id?: string | number})?.id ?? '?')
+          ).replace('#', String(data.page_id))
+        );
+      }
 
       const markerPrefix = `conv-chg-${experienceId}-${variationId}-${change.id}`;
       if (data.css) {
@@ -526,13 +581,17 @@ export class Context implements ContextInterface {
    * (workflow.ts in the backend repo):
    *   1. Prefer the explicit `Config.contentSecurityPolicyNonce` value
    *      captured at construction.
-   *   2. Otherwise scan the live DOM for any element carrying a `nonce`
-   *      attribute — read the IDL property first (it persists after the
-   *      browser hides the HTML attribute post-connection), fall back to
-   *      `getAttribute('nonce')` for non-script/style elements where the
-   *      attribute is still visible.
+   *   2. Otherwise scan the live DOM for `<script>`/`<style>` elements
+   *      carrying a nonce — read the IDL `.nonce` property because the
+   *      browser blanks the HTML `nonce` attribute on these elements
+   *      after they're connected (per the CSP spec). Fall back to
+   *      `getAttribute('nonce')` only for non-script/style elements
+   *      where the attribute is still visible.
    * Cached after first call so the DOM scan happens at most once per
-   * Context instance.
+   * Context instance. Skips empty-string nonces so an `<el nonce="">` on
+   * the page doesn't poison the cache and cause every subsequent
+   * injection to be tagged with an empty nonce (which the browser
+   * would reject under a strict CSP).
    * @private
    */
   private _getCspNonce(): string | undefined {
@@ -543,12 +602,25 @@ export class Context implements ContextInterface {
     }
     if (typeof document === 'undefined') return undefined;
     try {
-      const nonceElement = document.querySelector('[nonce]');
-      if (nonceElement) {
-        this._contentSecurityPolicyNonce =
-          (nonceElement as HTMLElement & {nonce?: string}).nonce ||
-          nonceElement.getAttribute('nonce') ||
-          undefined;
+      // Include `script` / `style` even without a `[nonce]` attribute:
+      // once connected, the browser blanks the HTML nonce attribute on
+      // these elements (per CSP spec) but preserves the IDL `.nonce`
+      // property, so a plain `[nonce]` selector misses them. `[nonce]`
+      // still catches nonces on arbitrary other elements where the
+      // attribute is visible. querySelectorAll returns matches in
+      // document-order and deduplicates, so the selector list reduces
+      // to roughly `script, style, [nonce]` at runtime.
+      const candidates = document.querySelectorAll('script, style, [nonce]');
+      for (let i = 0; i < candidates.length; i++) {
+        const el = candidates[i] as HTMLElement & {nonce?: string};
+        const candidate =
+          (typeof el.nonce === 'string' ? el.nonce : '') ||
+          el.getAttribute('nonce') ||
+          '';
+        if (candidate) {
+          this._contentSecurityPolicyNonce = candidate;
+          return this._contentSecurityPolicyNonce;
+        }
       }
     } catch (error) {
       this._loggerManager?.error?.(
@@ -576,7 +648,7 @@ export class Context implements ContextInterface {
     } catch (error) {
       this._loggerManager?.error?.(
         'Context.runVariation()',
-        MESSAGES.RUN_VARIATION_SCRIPT_ERROR.replace('#', markerId),
+        MESSAGES.RUN_VARIATION_STYLE_ERROR.replace('#', markerId),
         {message: (error as Error)?.message}
       );
     }
