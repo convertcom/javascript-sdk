@@ -14,6 +14,7 @@ import testConfig from './test-config.json';
 import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {defaultConfig} from '../../js-sdk/src/config/default';
+import {awaitTrackRequest} from '../../js-sdk/tests/setup/track-request';
 
 class DataStore {
   data = {};
@@ -71,7 +72,7 @@ describe('DataManager tests', function () {
       customSegments: ['seg1', 'seg2']
     };
   let dataManager, accountId, projectId, storeKey, server;
-  // eslint-disable-next-line mocha/no-hooks-for-single-case
+
   before(function () {
     accountId = configuration?.data?.account_id;
     projectId = configuration?.data?.project?.id;
@@ -83,12 +84,12 @@ describe('DataManager tests', function () {
       apiManager
     });
   });
-  // eslint-disable-next-line mocha/no-hooks-for-single-case
+
   beforeEach(function () {
     server = http.createServer();
     server.listen(port);
   });
-  // eslint-disable-next-line mocha/no-hooks-for-single-case
+
   afterEach(function () {
     dataManager.reset();
     server.closeAllConnections();
@@ -307,7 +308,6 @@ describe('DataManager tests', function () {
     });
   });
   describe('Persistent Data Store enqueue tests', function () {
-    // eslint-disable-next-line mocha/no-hooks-for-single-case
     before(function () {
       configuration.dataStore = dataStore;
       dataManager = new dm(
@@ -357,7 +357,6 @@ describe('DataManager tests', function () {
     });
   });
   describe('Persistent Data Store tests (set immediately)', function () {
-    // eslint-disable-next-line mocha/no-hooks-for-single-case
     before(function () {
       dataStore.data = {};
       delete configuration.dataStore;
@@ -401,7 +400,7 @@ describe('DataManager tests', function () {
   describe('Test ruleDataProvider integration', function () {
     let receivedRuleData;
     let provider;
-    // eslint-disable-next-line mocha/no-hooks-for-single-case
+
     before(function () {
       // Mock RuleManager that captures what data shape was passed to isRuleMatched
       const capturingRuleManager: any = {
@@ -409,8 +408,7 @@ describe('DataManager tests', function () {
           receivedRuleData = data;
           return true;
         },
-        isUsingCustomInterface: (data) =>
-          !!data && data.name === 'RuleData'
+        isUsingCustomInterface: (data) => !!data && data.name === 'RuleData'
       };
       provider = {
         name: 'RuleData',
@@ -430,7 +428,7 @@ describe('DataManager tests', function () {
     beforeEach(function () {
       receivedRuleData = undefined;
     });
-    it('Should use ruleDataProvider when no per-call visitorProperties is supplied', function (done) {
+    it('Should use ruleDataProvider when no per-call visitorProperties is supplied', async function () {
       // Per-call wins, so when the caller omits visitorProperties the
       // global provider supplies the rule data.
       this.timeout(test_timeout);
@@ -438,21 +436,13 @@ describe('DataManager tests', function () {
       dataManager.getBucketing(visitorId, experienceKey, {
         locationProperties: {url: 'https://convert.com/'}
       });
-      server.on('request', (request, res) => {
-        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
-            expect(receivedRuleData)
-              .to.be.an('object')
-              .that.has.property('name', 'RuleData');
-            expect(receivedRuleData).to.equal(provider);
-            done();
-          });
-        }
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end('{}');
-      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      expect(receivedRuleData)
+        .to.be.an('object')
+        .that.has.property('name', 'RuleData');
+      expect(receivedRuleData).to.equal(provider);
     });
-    it('Should let per-call visitorProperties win over a configured ruleDataProvider', function (done) {
+    it('Should let per-call visitorProperties win over a configured ruleDataProvider', async function () {
       // Precedence guard: a caller who explicitly supplies
       // visitorProperties is opting out of the provider for that call,
       // matching standard config-vs-args layering.
@@ -462,20 +452,12 @@ describe('DataManager tests', function () {
         visitorProperties: {varName3: 'plain-value'},
         locationProperties: {url: 'https://convert.com/'}
       });
-      server.on('request', (request, res) => {
-        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
-            expect(receivedRuleData).to.be.an('object');
-            expect(receivedRuleData).to.not.have.property('name', 'RuleData');
-            expect(receivedRuleData).to.have.property('varName3', 'plain-value');
-            done();
-          });
-        }
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end('{}');
-      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      expect(receivedRuleData).to.be.an('object');
+      expect(receivedRuleData).to.not.have.property('name', 'RuleData');
+      expect(receivedRuleData).to.have.property('varName3', 'plain-value');
     });
-    it('Should fall back to plain visitorProperties when no ruleDataProvider is set', function (done) {
+    it('Should fall back to plain visitorProperties when no ruleDataProvider is set', async function () {
       this.timeout(test_timeout);
       const noProviderConfig = objectDeepMerge(configuration, {
         ruleDataProvider: undefined,
@@ -486,8 +468,7 @@ describe('DataManager tests', function () {
           receivedRuleData = data;
           return true;
         },
-        isUsingCustomInterface: (data) =>
-          !!data && data.name === 'RuleData'
+        isUsingCustomInterface: (data) => !!data && data.name === 'RuleData'
       };
       const localDataManager = new dm(noProviderConfig, {
         bucketingManager,
@@ -500,19 +481,11 @@ describe('DataManager tests', function () {
         visitorProperties: {varName3: 'plain-value'},
         locationProperties: {url: 'https://convert.com/'}
       });
-      server.on('request', (request, res) => {
-        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
-            // No provider configured — RuleManager should see the plain object.
-            expect(receivedRuleData).to.be.an('object');
-            expect(receivedRuleData).to.not.have.property('name', 'RuleData');
-            expect(receivedRuleData).to.have.property('varName3', 'plain-value');
-            done();
-          });
-        }
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end('{}');
-      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      // No provider configured — RuleManager should see the plain object.
+      expect(receivedRuleData).to.be.an('object');
+      expect(receivedRuleData).to.not.have.property('name', 'RuleData');
+      expect(receivedRuleData).to.have.property('varName3', 'plain-value');
     });
     it('Should warn and ignore a misconfigured ruleDataProvider (missing name)', function () {
       // A provider that doesn't satisfy isUsingCustomInterface (no
@@ -551,7 +524,7 @@ describe('DataManager tests', function () {
       );
       expect(warned).to.equal(true);
     });
-    it('Should fire conversion for a rule-less goal even when ruleDataProvider is configured', function (done) {
+    it('Should fire conversion for a rule-less goal even when ruleDataProvider is configured', async function () {
       // Regression guard: if convert() always enters the rule-evaluation
       // branch when a global ruleDataProvider is set, it would hit
       // `if (!goal?.rules) return;` and silently drop every conversion for
@@ -564,20 +537,17 @@ describe('DataManager tests', function () {
         type: 'event'
         // intentionally no `rules` field
       };
-      const configWithProvider = objectDeepMerge(
-        configuration,
-        {
-          ruleDataProvider: {
-            name: 'RuleData',
-            getUrl: () => 'https://convert.com/'
-          },
-          dataStore: undefined,
-          data: {
-            ...configuration.data,
-            goals: [...configuration.data.goals, ruleLessGoal]
-          }
+      const configWithProvider = objectDeepMerge(configuration, {
+        ruleDataProvider: {
+          name: 'RuleData',
+          getUrl: () => 'https://convert.com/'
+        },
+        dataStore: undefined,
+        data: {
+          ...configuration.data,
+          goals: [...configuration.data.goals, ruleLessGoal]
         }
-      ) as unknown as ConfigType;
+      }) as unknown as ConfigType;
       const localDataManager = new dm(configWithProvider, {
         bucketingManager,
         ruleManager,
@@ -591,17 +561,9 @@ describe('DataManager tests', function () {
         undefined,
         {}
       );
-      server.on('request', (request, res) => {
-        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
-            // convert() returns `true` when the conversion fires
-            expect(triggered).to.equal(true);
-            done();
-          });
-        }
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end('{}');
-      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      // convert() returns `true` when the conversion fires
+      expect(triggered).to.equal(true);
     });
   });
 });

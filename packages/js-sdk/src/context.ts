@@ -429,12 +429,18 @@ export class Context implements ContextInterface {
       );
     }
 
-    const experienceId = experience?.id ?? bucketedVariation.experienceId;
+    // Fallback to 'unknown' if both ids are missing so marker IDs never
+    // interpolate `undefined` (which would collide with any other change
+    // that also produced an undefined id).
+    const experienceId =
+      experience?.id ?? bucketedVariation.experienceId ?? 'unknown';
 
     if (
       !(window as any).convert?.T &&
       Array.isArray(bucketedVariation.changes) &&
-      bucketedVariation.changes.some((c) => c?.data?.['js'])
+      bucketedVariation.changes.some(
+        (c) => (c as {data?: {js?: string}})?.data?.js
+      )
     ) {
       this._loggerManager?.warn?.(
         'Context.runVariation()',

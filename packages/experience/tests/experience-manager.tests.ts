@@ -14,6 +14,7 @@ import testConfig from './test-config.json';
 import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {defaultConfig} from '../../js-sdk/src/config/default';
+import {awaitTrackRequest} from '../../js-sdk/tests/setup/track-request';
 
 const host = 'http://localhost';
 const port = 8090;
@@ -41,7 +42,7 @@ const apiManager = new am(configuration, {eventManager});
 describe('ExperienceManager tests', function () {
   const visitorId = 'XXX';
   let dataManager, experienceManager, accountId, projectId, server;
-  // eslint-disable-next-line mocha/no-hooks-for-single-case
+
   before(function () {
     accountId = configuration?.data?.account_id;
     projectId = configuration?.data?.project?.id;
@@ -53,12 +54,12 @@ describe('ExperienceManager tests', function () {
     });
     experienceManager = new exm(configuration, {dataManager});
   });
-  // eslint-disable-next-line mocha/no-hooks-for-single-case
+
   beforeEach(function () {
     server = http.createServer();
     server.listen(port);
   });
-  // eslint-disable-next-line mocha/no-hooks-for-single-case
+
   afterEach(function () {
     dataManager.reset();
     server.closeAllConnections();
@@ -221,7 +222,7 @@ describe('ExperienceManager tests', function () {
     });
   });
   describe('Test experienceType field on BucketedVariation', function () {
-    it('Should populate experienceType from the source experience config', function (done) {
+    it('Should populate experienceType from the source experience config', async function () {
       this.timeout(test_timeout);
       const experienceKey = 'test-experience-ab-fullstack-2';
       const variation = experienceManager.selectVariation(
@@ -232,58 +233,32 @@ describe('ExperienceManager tests', function () {
           locationProperties: {url: 'https://convert.com/'}
         }
       );
-      server.on('request', (request, res) => {
-        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
-            expect(variation)
-              .to.be.an('object')
-              .that.has.property('experienceType');
-            expect(variation.experienceType).to.equal('a/b_fullstack');
-            done();
-          });
-        }
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end('{}');
-      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      expect(variation).to.be.an('object').that.has.property('experienceType');
+      expect(variation.experienceType).to.equal('a/b_fullstack');
     });
   });
   describe('Test experienceTypes filter on selectVariations', function () {
-    it('Should return all experiences when no type filter is set', function (done) {
+    it('Should return all experiences when no type filter is set', async function () {
       this.timeout(test_timeout);
       const variations = experienceManager.selectVariations(visitorId, {
         visitorProperties: {varName3: 'something'},
         locationProperties: {url: 'https://convert.com/'}
       });
-      server.on('request', (request, res) => {
-        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
-            expect(variations).to.be.an('array').that.has.length(2);
-            done();
-          });
-        }
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end('{}');
-      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      expect(variations).to.be.an('array').that.has.length(2);
     });
-    it('Should keep all fullstack experiences when experienceTypes=["a/b_fullstack"]', function (done) {
+    it('Should keep all fullstack experiences when experienceTypes=["a/b_fullstack"]', async function () {
       this.timeout(test_timeout);
       const variations = experienceManager.selectVariations(visitorId, {
         visitorProperties: {varName3: 'something'},
         locationProperties: {url: 'https://convert.com/'},
         experienceTypes: ['a/b_fullstack']
       });
-      server.on('request', (request, res) => {
-        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
-            expect(variations).to.be.an('array').that.has.length(2);
-            variations.forEach((v) => {
-              expect(v.experienceType).to.equal('a/b_fullstack');
-            });
-            done();
-          });
-        }
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end('{}');
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      expect(variations).to.be.an('array').that.has.length(2);
+      variations.forEach((v) => {
+        expect(v.experienceType).to.equal('a/b_fullstack');
       });
     });
     it('Should return empty when filtering by a type with no matching experiences', function () {
@@ -326,7 +301,7 @@ describe('ExperienceManager tests', function () {
       );
       expect(result).to.equal(null);
     });
-    it('Should bucket normally when the experience type IS in the filter', function (done) {
+    it('Should bucket normally when the experience type IS in the filter', async function () {
       this.timeout(test_timeout);
       const variation = experienceManager.selectVariation(
         visitorId,
@@ -337,17 +312,9 @@ describe('ExperienceManager tests', function () {
           experienceTypes: ['a/b_fullstack']
         }
       );
-      server.on('request', (request, res) => {
-        if (request.url.startsWith(`/track/${accountId}/${projectId}`)) {
-          request.on('end', () => {
-            expect(variation).to.be.an('object');
-            expect(variation).to.have.property('experienceType', 'a/b_fullstack');
-            done();
-          });
-        }
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end('{}');
-      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      expect(variation).to.be.an('object');
+      expect(variation).to.have.property('experienceType', 'a/b_fullstack');
     });
   });
 });
