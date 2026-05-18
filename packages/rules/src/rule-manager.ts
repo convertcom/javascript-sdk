@@ -175,7 +175,10 @@ export class RuleManager implements RuleManagerInterface {
       typeof rule.matching.negated === 'boolean';
     if (!hasMatching) return false;
     const matchType = rule.matching.match_type as string;
-    if (matchType === CookieMatchingOptions.EXISTS || matchType === CookieMatchingOptions.DOES_NOT_EXIST) {
+    if (
+      matchType === CookieMatchingOptions.EXISTS ||
+      matchType === CookieMatchingOptions.DOES_NOT_EXIST
+    ) {
       return true;
     }
     return Object.prototype.hasOwnProperty.call(rule, 'value');
@@ -304,6 +307,14 @@ export class RuleManager implements RuleManagerInterface {
                   }
                 }
               }
+              // Custom-interface (RuleData) provider with no matching
+              // getter. Per RuleDataProvider's contract: "unimplemented
+              // getters cause the rule to evaluate as `false` (no
+              // match)". Short-circuit here so existence operators below
+              // don't see `undefined` and evaluate `doesNotExist` as
+              // true (which would silently fire rules the caller never
+              // implemented).
+              return false;
             } else if (objectNotEmpty(data)) {
               // only handle RuleElement with a `key` field
               for (const key of Object.keys(data)) {
@@ -320,7 +331,11 @@ export class RuleManager implements RuleManagerInterface {
                 }
               }
             }
-            // Key not found or data empty — for existence operators, evaluate with undefined
+            // Plain-object data: key not present (or data empty). For
+            // existence operators this is a true negative ("the key
+            // genuinely doesn't exist on this data"), so evaluate with
+            // undefined. Custom-interface data is handled above and
+            // never reaches this branch.
             if (
               matching === CookieMatchingOptions.EXISTS ||
               matching === CookieMatchingOptions.DOES_NOT_EXIST
@@ -331,7 +346,7 @@ export class RuleManager implements RuleManagerInterface {
                 negation
               );
             }
-            if (!objectNotEmpty(data) && !this.isUsingCustomInterface(data)) {
+            if (!objectNotEmpty(data)) {
               this._loggerManager?.trace?.('RuleManager._processRuleItem()', {
                 warn: ERROR_MESSAGES.RULE_DATA_NOT_VALID,
                 data

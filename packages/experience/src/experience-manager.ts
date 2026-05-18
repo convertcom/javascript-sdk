@@ -112,6 +112,16 @@ export class ExperienceManager implements ExperienceManagerInterface {
     experienceKey: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError | BucketingError {
+    // Honor `experienceTypes` filter — keep parity with selectVariations
+    // and FeatureManager.runFeatures. Without this gate, the singular
+    // path silently ignores the filter even though it's advertised on
+    // BucketingAttributes. See semantics note in selectVariations().
+    const typeFilter = attributes?.experienceTypes;
+    if (typeFilter) {
+      if (typeFilter.length === 0) return null;
+      const experience = this.getExperience(experienceKey);
+      if (experience && !typeFilter.includes(experience.type)) return null;
+    }
     return this._dataManager.getBucketing(visitorId, experienceKey, attributes);
   }
 
@@ -133,6 +143,12 @@ export class ExperienceManager implements ExperienceManagerInterface {
     experienceId: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError | BucketingError {
+    const typeFilter = attributes?.experienceTypes;
+    if (typeFilter) {
+      if (typeFilter.length === 0) return null;
+      const experience = this.getExperienceById(experienceId);
+      if (experience && !typeFilter.includes(experience.type)) return null;
+    }
     return this._dataManager.getBucketingById(
       visitorId,
       experienceId,
@@ -156,8 +172,26 @@ export class ExperienceManager implements ExperienceManagerInterface {
     visitorId: string,
     attributes: BucketingAttributes
   ): Array<BucketedVariation | RuleError | BucketingError> {
+    const typeFilter = attributes?.experienceTypes;
+    // `experienceTypes` semantics:
+    //   - undefined → no filter applied (all experience types match)
+    //   - []        → zero types allowed (no experiences match) — matches
+    //                 standard array-filter intuition. Callers who want
+    //                 "all" must pass undefined or omit the option.
+    //   - [...]     → only experiences whose `type` is in the array
+    if (typeFilter && typeFilter.length === 0) return [];
     return this.getList()
+      .filter((experience) => {
+        if (!typeFilter) return true;
+        return typeFilter.includes(experience?.type);
+      })
       .map((experience) => {
+        // Defense-in-depth: selectVariation re-applies the same
+        // experienceTypes filter on its singular path. The list above
+        // has already been filtered, so the inner check is redundant
+        // here — left intact so callers of selectVariation directly
+        // get the same semantics. The Array.includes() per experience
+        // is negligible.
         return this.selectVariation(visitorId, experience?.key, attributes);
       })
       .filter(

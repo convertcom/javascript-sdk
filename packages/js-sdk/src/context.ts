@@ -29,8 +29,10 @@ import {
   BucketingError,
   ERROR_MESSAGES,
   EntityType,
+  MESSAGES,
   RuleError,
-  SystemEvents
+  SystemEvents,
+  VariationChangeType
 } from '@convertcom/js-sdk-enums';
 import {objectDeepMerge, objectNotEmpty} from '@convertcom/js-sdk-utils';
 import {SegmentsManagerInterface} from '@convertcom/js-sdk-segments';
@@ -54,6 +56,10 @@ export class Context implements ContextInterface {
   private _visitorId: string;
   private _visitorProperties: Record<string, any>;
   private _environment: string;
+  private _contentSecurityPolicyNonce?: string;
+  // `undefined` = not yet resolved; once resolved (either from config or
+  // DOM auto-detect) we cache to avoid re-querying the DOM on every change.
+  private _cspNonceResolved: boolean = false;
 
   /**
    * @param {Config} config
@@ -92,6 +98,7 @@ export class Context implements ContextInterface {
     this._visitorId = visitorId;
 
     this._config = config;
+    this._contentSecurityPolicyNonce = config?.contentSecurityPolicyNonce;
     this._eventManager = eventManager;
     this._experienceManager = experienceManager;
     this._featureManager = featureManager;
@@ -139,6 +146,7 @@ export class Context implements ContextInterface {
         visitorProperties, // represents audiences
         locationProperties: attributes?.locationProperties, // represents site_area/locations
         updateVisitorProperties: attributes?.updateVisitorProperties,
+        experienceTypes: attributes?.experienceTypes,
         environment: attributes?.environment || this._environment
       }
     );
@@ -193,6 +201,7 @@ export class Context implements ContextInterface {
         visitorProperties, // represents audiences
         locationProperties: attributes?.locationProperties, // represents site_area/locations
         updateVisitorProperties: attributes?.updateVisitorProperties,
+        experienceTypes: attributes?.experienceTypes,
         environment: attributes?.environment || this._environment
       }
     );
@@ -258,6 +267,7 @@ export class Context implements ContextInterface {
         visitorProperties,
         locationProperties: attributes?.locationProperties,
         updateVisitorProperties: attributes?.updateVisitorProperties,
+        experienceTypes: attributes?.experienceTypes,
         typeCasting: Object.prototype.hasOwnProperty.call(
           attributes || {},
           'typeCasting'
@@ -338,6 +348,7 @@ export class Context implements ContextInterface {
       visitorProperties,
       locationProperties: attributes?.locationProperties,
       updateVisitorProperties: attributes?.updateVisitorProperties,
+      experienceTypes: attributes?.experienceTypes,
       typeCasting: Object.prototype.hasOwnProperty.call(
         attributes || {},
         'typeCasting'
@@ -368,6 +379,303 @@ export class Context implements ContextInterface {
       }
     );
     return bucketedFeatures as Array<BucketedFeature>;
+  }
+
+  /**
+   * Apply web variation changes (CSS, JS, custom JS) to the DOM.
+   *
+   * Execution order, matching the tracking script monolith:
+   *   1. experience.global_css → <style>
+   *   2. experience.global_js  → <script>
+   *   3. For each change in variation.changes[]:
+   *      a. change.data.css        → <style>
+   *      b. change.data.js         → <script>  (defaultCode: Visual Editor
+   *                                              generated, calls convert.T.*;
+   *                                              customCode: user-written)
+   *      c. change.data.custom_js  → <script>  (defaultCode only)
+   *
+   * Supported change types: `defaultCode`, `customCode`, `defaultCodeMultipage`.
+   *
+   * Skipped change types:
+   *   - `fullStackFeature` — handled by `runFeature`.
+   *   - `defaultRedirect`  — handled by the Split Bundle, which must run
+   *     before this method.
+   *   - `richStructure`    — selector-scoped DOM mutations not yet
+   *     supported by this renderer; logged at debug level. Authors using
+   *     richStructure should rely on the tracking-script monolith for
+   *     application until the SDK gains a selector-aware queue.
+   *
+   * **Multipage caveat:** `defaultCodeMultipage.data.page_id` identifies
+   * which funnel step the change targets. This method applies the change
+   * unconditionally — it is the caller's responsibility to invoke
+   * `runVariation` only on the matching page. A debug log records the
+   * page_id so the caller can correlate.
+   *
+   * Idempotent: tracks applied CSS/JS via DOM marker IDs, so re-calling with
+   * the same variation is a no-op.
+   *
+   * Browser-only. No-ops with a logged warning in server environments.
+   *
+   * @param {BucketedVariation} bucketedVariation A variation returned from runExperience()
+   * @param {Object=} options
+   * @param {ConfigExperience=} options.experience Optional experience override (otherwise looked up by experienceKey)
+   */
+  runVariation(
+    bucketedVariation: BucketedVariation,
+    options?: {experience?: ConfigExperience}
+  ): void {
+    if (typeof document === 'undefined' || typeof window === 'undefined') {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_BROWSER_ONLY
+      );
+      return;
+    }
+    if (!bucketedVariation) return;
+
+    const experience =
+      options?.experience ||
+      (this.getConfigEntity(
+        bucketedVariation.experienceKey,
+        EntityType.EXPERIENCE
+      ) as ConfigExperience);
+
+    if (!experience) {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_EXPERIENCE_NOT_FOUND.replace(
+          '#',
+          String(bucketedVariation.experienceKey)
+        )
+      );
+    }
+
+    // Fallback to 'unknown' if both ids are missing so marker IDs never
+    // interpolate `undefined` (which would collide with any other change
+    // that also produced an undefined id).
+    const experienceId =
+      experience?.id ?? bucketedVariation.experienceId ?? 'unknown';
+
+    // Toolkit warning only fires for `defaultCode.data.js` — that field is
+    // Visual Editor output that calls `convert.T.*`. `customCode.data.js`
+    // is user-written and doesn't need the Toolkit; `richStructure.data.js`
+    // is skipped entirely below.
+    if (
+      !(window as any).convert?.T &&
+      Array.isArray(bucketedVariation.changes) &&
+      bucketedVariation.changes.some(
+        (c) =>
+          c?.type === VariationChangeType.DEFAULT_CODE &&
+          (c as {data?: {js?: string}})?.data?.js
+      )
+    ) {
+      this._loggerManager?.warn?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_TOOLKIT_MISSING
+      );
+    }
+
+    if (experience?.global_css) {
+      this._injectStyle(
+        `conv-exp-${experienceId}-global-css`,
+        experience.global_css
+      );
+    }
+    if (experience?.global_js) {
+      this._executeScript(
+        `conv-exp-${experienceId}-global-js`,
+        experience.global_js
+      );
+    }
+
+    // Per-change marker IDs are scoped by experience + variation + change.
+    // change.id is system-assigned and currently globally unique, but
+    // scoping defensively guards against future ID-semantics changes and
+    // against the case where two distinct configs are merged into one
+    // page (e.g. previewing one experience while another is live).
+    const variationId = bucketedVariation.id;
+    for (const change of bucketedVariation.changes ?? []) {
+      if (!change) continue;
+
+      if (change.type === VariationChangeType.FULLSTACK_FEATURE) {
+        this._loggerManager?.debug?.(
+          'Context.runVariation()',
+          MESSAGES.RUN_VARIATION_FULLSTACK_SKIPPED
+        );
+        continue;
+      }
+      if (change.type === VariationChangeType.DEFAULT_REDIRECT) {
+        this._loggerManager?.warn?.(
+          'Context.runVariation()',
+          MESSAGES.RUN_VARIATION_REDIRECT_SKIPPED
+        );
+        continue;
+      }
+      if (change.type === VariationChangeType.RICH_STRUCTURE) {
+        // richStructure changes are selector-scoped DOM mutations whose
+        // `data` is a polymorphic key-value map (see
+        // ExperienceChangeRichStructureDataBase in types.gen.ts).
+        // Applying the embedded `data.js` blob in isolation would skip
+        // the selector targeting the change depends on and could mutate
+        // the wrong elements. Skip until the SDK supports a
+        // selector-aware queue.
+        this._loggerManager?.debug?.(
+          'Context.runVariation()',
+          MESSAGES.RUN_VARIATION_RICH_STRUCTURE_SKIPPED.replace(
+            '#',
+            String((change as {id?: string | number})?.id ?? '?')
+          )
+        );
+        continue;
+      }
+
+      // Remaining supported change types: defaultCode, customCode,
+      // defaultCodeMultipage — all share `data.{css?, js?, custom_js?}`.
+      // ExperienceChangeServing is a discriminated union and TypeScript
+      // can't narrow it via the negative `continue`s above, so we
+      // restate the relevant subset structurally here.
+      const data = (
+        change as {
+          data?: {
+            css?: string | null;
+            js?: string | null;
+            custom_js?: string | null;
+            page_id?: string;
+          };
+        }
+      ).data;
+      if (!data) continue;
+
+      if (
+        change.type === VariationChangeType.DEFAULT_CODE_MULTIPAGE &&
+        data.page_id
+      ) {
+        // Caller is responsible for invoking runVariation only on the
+        // matching funnel step (the SDK doesn't know the current URL
+        // / page context). Log so the caller can correlate.
+        this._loggerManager?.debug?.(
+          'Context.runVariation()',
+          MESSAGES.RUN_VARIATION_MULTIPAGE_PAGE.replace(
+            '#',
+            String((change as {id?: string | number})?.id ?? '?')
+          ).replace('#', String(data.page_id))
+        );
+      }
+
+      const markerPrefix = `conv-chg-${experienceId}-${variationId}-${change.id}`;
+      if (data.css) {
+        this._injectStyle(`${markerPrefix}-css`, data.css);
+      }
+      if (data.js) {
+        this._executeScript(`${markerPrefix}-js`, data.js);
+      }
+      if (data.custom_js) {
+        this._executeScript(`${markerPrefix}-custom-js`, data.custom_js);
+      }
+    }
+  }
+
+  /**
+   * Resolve the CSP nonce to stamp on injected <style>/<script> elements.
+   * Mirrors the tracking-script monolith's `getContentSecurityPolicyNonce()`
+   * (workflow.ts in the backend repo):
+   *   1. Prefer the explicit `Config.contentSecurityPolicyNonce` value
+   *      captured at construction.
+   *   2. Otherwise scan the live DOM for `<script>`/`<style>` elements
+   *      carrying a nonce — read the IDL `.nonce` property because the
+   *      browser blanks the HTML `nonce` attribute on these elements
+   *      after they're connected (per the CSP spec). Fall back to
+   *      `getAttribute('nonce')` only for non-script/style elements
+   *      where the attribute is still visible.
+   * Cached after first call so the DOM scan happens at most once per
+   * Context instance. Skips empty-string nonces so an `<el nonce="">` on
+   * the page doesn't poison the cache and cause every subsequent
+   * injection to be tagged with an empty nonce (which the browser
+   * would reject under a strict CSP).
+   * @private
+   */
+  private _getCspNonce(): string | undefined {
+    if (this._cspNonceResolved) return this._contentSecurityPolicyNonce;
+    this._cspNonceResolved = true;
+    if (this._contentSecurityPolicyNonce) {
+      return this._contentSecurityPolicyNonce;
+    }
+    if (typeof document === 'undefined') return undefined;
+    try {
+      // Include `script` / `style` even without a `[nonce]` attribute:
+      // once connected, the browser blanks the HTML nonce attribute on
+      // these elements (per CSP spec) but preserves the IDL `.nonce`
+      // property, so a plain `[nonce]` selector misses them. `[nonce]`
+      // still catches nonces on arbitrary other elements where the
+      // attribute is visible. querySelectorAll returns matches in
+      // document-order and deduplicates, so the selector list reduces
+      // to roughly `script, style, [nonce]` at runtime.
+      const candidates = document.querySelectorAll('script, style, [nonce]');
+      for (let i = 0; i < candidates.length; i++) {
+        const el = candidates[i] as HTMLElement & {nonce?: string};
+        const candidate =
+          (typeof el.nonce === 'string' ? el.nonce : '') ||
+          el.getAttribute('nonce') ||
+          '';
+        if (candidate) {
+          this._contentSecurityPolicyNonce = candidate;
+          return this._contentSecurityPolicyNonce;
+        }
+      }
+    } catch (error) {
+      this._loggerManager?.error?.(
+        'Context.runVariation()',
+        `Error reading nonce from DOM: ${(error as Error)?.message}`
+      );
+    }
+    return this._contentSecurityPolicyNonce;
+  }
+
+  /**
+   * Inject a <style> tag identified by markerId. No-op if already injected.
+   * @private
+   */
+  private _injectStyle(markerId: string, css: string): void {
+    try {
+      if (document.getElementById(markerId)) return;
+      const style = document.createElement('style');
+      style.id = markerId;
+      style.setAttribute('type', 'text/css');
+      const nonce = this._getCspNonce();
+      if (nonce) style.setAttribute('nonce', nonce);
+      style.appendChild(document.createTextNode(css));
+      (document.head || document.documentElement).appendChild(style);
+    } catch (error) {
+      this._loggerManager?.error?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_STYLE_ERROR.replace('#', markerId),
+        {message: (error as Error)?.message}
+      );
+    }
+  }
+
+  /**
+   * Inject a <script> tag identified by markerId. No-op if already injected
+   * (the script element with this id already exists in the DOM).
+   * @private
+   */
+  private _executeScript(markerId: string, code: string): void {
+    try {
+      if (document.getElementById(markerId)) return;
+      const script = document.createElement('script');
+      script.id = markerId;
+      script.setAttribute('type', 'text/javascript');
+      const nonce = this._getCspNonce();
+      if (nonce) script.setAttribute('nonce', nonce);
+      script.appendChild(document.createTextNode(code));
+      (document.head || document.documentElement).appendChild(script);
+    } catch (error) {
+      this._loggerManager?.error?.(
+        'Context.runVariation()',
+        MESSAGES.RUN_VARIATION_SCRIPT_ERROR.replace('#', markerId),
+        {message: (error as Error)?.message}
+      );
+    }
   }
 
   /**

@@ -43,7 +43,8 @@ import {
   ConfigAudienceTypes,
   VariationStatuses,
   eventType,
-  GenericListMatchingOptions
+  GenericListMatchingOptions,
+  RuleDataProvider
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -83,6 +84,7 @@ export class DataManager implements DataManagerInterface {
   private _asyncStorage: boolean;
   private _environment: string;
   private _mapper: (...args: any) => any;
+  private _ruleDataProvider: RuleDataProvider | null;
   /**
    * @param {Config} config
    * @param {Object} dependencies
@@ -121,6 +123,23 @@ export class DataManager implements DataManagerInterface {
     this._config = config;
     this._mapper = config?.mapper || ((value: any) => value);
     this._asyncStorage = asyncStorage;
+    this._ruleDataProvider = config?.ruleDataProvider || null;
+    // Guard: a misconfigured provider (missing the `name: 'RuleData'`
+    // discriminator) falls through RuleManager's "flat-key" branch and
+    // silently returns false for every rule — i.e. no audiences match,
+    // no experiences run, no errors thrown. Warn loudly at construction
+    // so the misconfiguration surfaces immediately instead of as silent
+    // data loss across the entire visitor population.
+    if (
+      this._ruleDataProvider &&
+      !this._ruleManager.isUsingCustomInterface(this._ruleDataProvider)
+    ) {
+      this._loggerManager?.warn?.(
+        'DataManager()',
+        ERROR_MESSAGES.RULE_DATA_PROVIDER_INVALID
+      );
+      this._ruleDataProvider = null;
+    }
     this._data = objectDeepValue(config, 'data');
     this._accountId = this._data?.account_id;
     this._projectId = this._data?.project?.id;
@@ -288,10 +307,13 @@ export class DataManager implements DataManagerInterface {
       isBucketed = true;
     }
 
-    // Check location rules against locationProperties
+    // Check location rules against locationProperties.
+    // Enter the eval block if EITHER a per-call locationProperties OR a
+    // globally-configured ruleDataProvider is available — the outer gate
+    // would otherwise skip the eval when only the provider is set.
     let locationMatched: boolean | RuleError =
       ignoreLocationProperties === true;
-    if (!locationMatched && locationProperties) {
+    if (!locationMatched && (locationProperties || this._ruleDataProvider)) {
       if (Array.isArray(experience?.locations) && experience.locations.length) {
         let matchedLocations = [];
         // Get attached locations
@@ -317,7 +339,7 @@ export class DataManager implements DataManagerInterface {
       } else if (experience?.site_area) {
         // Validate locationProperties against site area rules
         locationMatched = this._ruleManager.isRuleMatched(
-          locationProperties,
+          locationProperties || this._ruleDataProvider,
           experience.site_area,
           'SiteArea'
         );
@@ -347,7 +369,10 @@ export class DataManager implements DataManagerInterface {
       return null;
     }
 
-    // Check audience rules against visitorProperties
+    // Check audience rules against visitorProperties.
+    // Same gate-broadening as above: enter the eval block if either a
+    // per-call visitorProperties OR a global ruleDataProvider exists,
+    // otherwise the provider is unreachable from the audience path.
     let audiences = [],
       segments = [],
       matchedAudiences = [],
@@ -355,7 +380,7 @@ export class DataManager implements DataManagerInterface {
       audiencesToCheck: Array<ConfigAudience> = [],
       audiencesMatched = false,
       segmentsMatched = false;
-    if (visitorProperties) {
+    if (visitorProperties || this._ruleDataProvider) {
       if (Array.isArray(experience?.audiences) && experience.audiences.length) {
         // Get attached transient and/or permnent audiences
         audiences = this.getItemsByIds(
@@ -709,7 +734,8 @@ export class DataManager implements DataManagerInterface {
         ...{
           experienceId: experience?.id,
           experienceName: experience?.name,
-          experienceKey: experience?.key
+          experienceKey: experience?.key,
+          experienceType: experience?.type
         },
         bucketingAllocation,
         ...variation
@@ -856,7 +882,7 @@ export class DataManager implements DataManagerInterface {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
-          locationProperties,
+          locationProperties || this._ruleDataProvider,
           items[i].rules,
           `ConfigLocation #${items[i][identityField]}`
         );
@@ -997,10 +1023,19 @@ export class DataManager implements DataManagerInterface {
       return;
     }
 
-    if (goalRule) {
-      if (!goal?.rules) return;
+    // Two separate concerns:
+    //   1. Pre-PR contract: if the caller explicitly passes `goalRule` to a
+    //      goal that itself has no rules, the conversion is a no-op. This
+    //      surfaces the call-site misunderstanding instead of firing
+    //      silently. Preserved here.
+    //   2. PR addition: a globally-configured `ruleDataProvider` should
+    //      ONLY participate in rule evaluation when the goal actually has
+    //      rules. Otherwise rule-less goals would be silently dropped on
+    //      every visitor when a provider is set.
+    if (goalRule && !goal?.rules) return;
+    if (goal?.rules && (goalRule || this._ruleDataProvider)) {
       const ruleMatched = this._ruleManager.isRuleMatched(
-        goalRule,
+        goalRule || this._ruleDataProvider,
         goal.rules,
         `ConfigGoal #${goalId}`
       );
@@ -1112,7 +1147,7 @@ export class DataManager implements DataManagerInterface {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
         match = this._ruleManager.isRuleMatched(
-          visitorProperties,
+          visitorProperties || this._ruleDataProvider,
           items[i].rules,
           `${camelCase(entityType)} #${items[i][field]}`
         );

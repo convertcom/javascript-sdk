@@ -14,6 +14,7 @@ import testConfig from './test-config.json';
 import {Config as ConfigType} from '@convertcom/js-sdk-types';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {defaultConfig} from '../../js-sdk/src/config/default';
+import {awaitTrackRequest} from '../../js-sdk/tests/setup/track-request';
 
 class DataStore {
   data = {};
@@ -71,7 +72,7 @@ describe('DataManager tests', function () {
       customSegments: ['seg1', 'seg2']
     };
   let dataManager, accountId, projectId, storeKey, server;
-  // eslint-disable-next-line mocha/no-hooks-for-single-case
+
   before(function () {
     accountId = configuration?.data?.account_id;
     projectId = configuration?.data?.project?.id;
@@ -83,12 +84,12 @@ describe('DataManager tests', function () {
       apiManager
     });
   });
-  // eslint-disable-next-line mocha/no-hooks-for-single-case
+
   beforeEach(function () {
     server = http.createServer();
     server.listen(port);
   });
-  // eslint-disable-next-line mocha/no-hooks-for-single-case
+
   afterEach(function () {
     dataManager.reset();
     server.closeAllConnections();
@@ -307,7 +308,6 @@ describe('DataManager tests', function () {
     });
   });
   describe('Persistent Data Store enqueue tests', function () {
-    // eslint-disable-next-line mocha/no-hooks-for-single-case
     before(function () {
       configuration.dataStore = dataStore;
       dataManager = new dm(
@@ -357,7 +357,6 @@ describe('DataManager tests', function () {
     });
   });
   describe('Persistent Data Store tests (set immediately)', function () {
-    // eslint-disable-next-line mocha/no-hooks-for-single-case
     before(function () {
       dataStore.data = {};
       delete configuration.dataStore;
@@ -396,6 +395,175 @@ describe('DataManager tests', function () {
       expect(check).to.have.property('bucketing').that.deep.equal(bucketing);
       expect(check).to.have.property('goals').that.deep.equal(goals);
       expect(check).to.have.property('segments').that.deep.equal(segments);
+    });
+  });
+  describe('Test ruleDataProvider integration', function () {
+    let receivedRuleData;
+    let provider;
+
+    before(function () {
+      // Mock RuleManager that captures what data shape was passed to isRuleMatched
+      const capturingRuleManager: any = {
+        isRuleMatched: (data) => {
+          receivedRuleData = data;
+          return true;
+        },
+        isUsingCustomInterface: (data) => !!data && data.name === 'RuleData'
+      };
+      provider = {
+        name: 'RuleData',
+        getGenericTextKeyValue: () => 'something'
+      };
+      const configWithProvider = objectDeepMerge(configuration, {
+        ruleDataProvider: provider,
+        dataStore: undefined
+      }) as unknown as ConfigType;
+      dataManager = new dm(configWithProvider, {
+        bucketingManager,
+        ruleManager: capturingRuleManager,
+        eventManager,
+        apiManager
+      });
+    });
+    beforeEach(function () {
+      receivedRuleData = undefined;
+    });
+    it('Should use ruleDataProvider when no per-call visitorProperties is supplied', async function () {
+      // Per-call wins, so when the caller omits visitorProperties the
+      // global provider supplies the rule data.
+      this.timeout(test_timeout);
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      dataManager.getBucketing(visitorId, experienceKey, {
+        locationProperties: {url: 'https://convert.com/'}
+      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      expect(receivedRuleData)
+        .to.be.an('object')
+        .that.has.property('name', 'RuleData');
+      expect(receivedRuleData).to.equal(provider);
+    });
+    it('Should let per-call visitorProperties win over a configured ruleDataProvider', async function () {
+      // Precedence guard: a caller who explicitly supplies
+      // visitorProperties is opting out of the provider for that call,
+      // matching standard config-vs-args layering.
+      this.timeout(test_timeout);
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      dataManager.getBucketing(visitorId, experienceKey, {
+        visitorProperties: {varName3: 'plain-value'},
+        locationProperties: {url: 'https://convert.com/'}
+      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      expect(receivedRuleData).to.be.an('object');
+      expect(receivedRuleData).to.not.have.property('name', 'RuleData');
+      expect(receivedRuleData).to.have.property('varName3', 'plain-value');
+    });
+    it('Should fall back to plain visitorProperties when no ruleDataProvider is set', async function () {
+      this.timeout(test_timeout);
+      const noProviderConfig = objectDeepMerge(configuration, {
+        ruleDataProvider: undefined,
+        dataStore: undefined
+      }) as unknown as ConfigType;
+      const capturingRuleManager: any = {
+        isRuleMatched: (data) => {
+          receivedRuleData = data;
+          return true;
+        },
+        isUsingCustomInterface: (data) => !!data && data.name === 'RuleData'
+      };
+      const localDataManager = new dm(noProviderConfig, {
+        bucketingManager,
+        ruleManager: capturingRuleManager,
+        eventManager,
+        apiManager
+      });
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      localDataManager.getBucketing(visitorId, experienceKey, {
+        visitorProperties: {varName3: 'plain-value'},
+        locationProperties: {url: 'https://convert.com/'}
+      });
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      // No provider configured — RuleManager should see the plain object.
+      expect(receivedRuleData).to.be.an('object');
+      expect(receivedRuleData).to.not.have.property('name', 'RuleData');
+      expect(receivedRuleData).to.have.property('varName3', 'plain-value');
+    });
+    it('Should warn and ignore a misconfigured ruleDataProvider (missing name)', function () {
+      // A provider that doesn't satisfy isUsingCustomInterface (no
+      // `name: 'RuleData'`) would otherwise fall through RuleManager's
+      // flat-key branch and silently return false for every rule. The
+      // DataManager constructor must surface the misconfiguration as a
+      // warn and ignore the provider so the SDK falls back to plain
+      // visitor/location properties.
+      const warns: Array<Array<any>> = [];
+      const capturingLogger: any = {
+        warn: (...args: any[]) => warns.push(args),
+        error: () => {},
+        info: () => {},
+        debug: () => {},
+        trace: () => {}
+      };
+      const badProvider = {country: 'CA'}; // missing name: 'RuleData'
+      const badConfig = objectDeepMerge(configuration, {
+        ruleDataProvider: badProvider,
+        dataStore: undefined
+      }) as unknown as ConfigType;
+      const localDataManager = new dm(badConfig, {
+        bucketingManager,
+        ruleManager,
+        eventManager,
+        apiManager,
+        loggerManager: capturingLogger
+      });
+      assert.isDefined(localDataManager);
+      const warned = warns.some((entry) =>
+        entry.some(
+          (a) =>
+            typeof a === 'string' &&
+            a.includes('Config.ruleDataProvider is set')
+        )
+      );
+      expect(warned).to.equal(true);
+    });
+    it('Should fire conversion for a rule-less goal even when ruleDataProvider is configured', async function () {
+      // Regression guard: if convert() always enters the rule-evaluation
+      // branch when a global ruleDataProvider is set, it would hit
+      // `if (!goal?.rules) return;` and silently drop every conversion for
+      // goals that have no rules. The fix gates on `goal.rules` first.
+      this.timeout(test_timeout);
+      const ruleLessGoal = {
+        id: '90000001',
+        name: 'Rule-less goal',
+        key: 'rule-less-goal',
+        type: 'event'
+        // intentionally no `rules` field
+      };
+      const configWithProvider = objectDeepMerge(configuration, {
+        ruleDataProvider: {
+          name: 'RuleData',
+          getUrl: () => 'https://convert.com/'
+        },
+        dataStore: undefined,
+        data: {
+          ...configuration.data,
+          goals: [...configuration.data.goals, ruleLessGoal]
+        }
+      }) as unknown as ConfigType;
+      const localDataManager = new dm(configWithProvider, {
+        bucketingManager,
+        ruleManager,
+        eventManager,
+        apiManager
+      });
+      const triggered = localDataManager.convert(
+        visitorId,
+        ruleLessGoal.key,
+        undefined, // no goalRule passed
+        undefined,
+        {}
+      );
+      await awaitTrackRequest(server, `/track/${accountId}/${projectId}`);
+      // convert() returns `true` when the conversion fires
+      expect(triggered).to.equal(true);
     });
   });
 });

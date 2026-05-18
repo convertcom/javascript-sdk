@@ -19,7 +19,7 @@
     "pretest": "rm -rf coverage",
     "test": "nyc yarn test:all && yarn coverage",
     "test:all": "yarn test:mocha && yarn test:browser",
-    "test:browser": "playwright test --config playwright.config.ts --project chromium",
+    "test:browser": "playwright install chromium && playwright test --config playwright.config.ts --project chromium",
     "test:server": "nyc yarn test:mocha",
     "test:mocha": "mocha -r ts-node/register --recursive \"tests/**/*.tests.ts\" --exit",
     "clean": "rm -rf lib",

@@ -20,7 +20,9 @@ export const ERROR_MESSAGES = {
   GOAL_DATA_NOT_VALID: 'GoalData object is not valid',
   UNABLE_TO_SELECT_BUCKET_FOR_VISITOR: 'Unable to bucket visitor',
   UNABLE_TO_PERFORM_NETWORK_REQUEST: 'Unable to perform network request',
-  UNSUPPORTED_RESPONSE_TYPE: 'Unsupported response type'
+  UNSUPPORTED_RESPONSE_TYPE: 'Unsupported response type',
+  RULE_DATA_PROVIDER_INVALID:
+    'Config.ruleDataProvider is set but does not satisfy the RuleData custom-interface contract (requires name: RuleData and rule-type getter methods on its constructor prototype). Provider has been ignored — falling back to plain visitor/location properties. See @convertcom/js-sdk-types#RuleDataProvider for the expected shape.'
 };
 export const MESSAGES = {
   CONFIG_DATA_UPDATED: 'Config Data updated',
@@ -69,5 +71,20 @@ export const MESSAGES = {
   CUSTOM_SEGMENTS_KEY_FOUND: 'Custom segments key already set',
   SEND_BEACON_SUCCESS:
     'The user agent successfully queued the data for transfer',
-  RELEASING_QUEUE: 'Releasing event queue...'
+  RELEASING_QUEUE: 'Releasing event queue...',
+  RUN_VARIATION_BROWSER_ONLY: 'runVariation requires a browser environment',
+  RUN_VARIATION_EXPERIENCE_NOT_FOUND:
+    'runVariation: experience # not found in config',
+  RUN_VARIATION_REDIRECT_SKIPPED:
+    'runVariation: skipping defaultRedirect change (handled by Split Bundle)',
+  RUN_VARIATION_FULLSTACK_SKIPPED:
+    'runVariation: skipping fullStackFeature change (use runFeature)',
+  RUN_VARIATION_RICH_STRUCTURE_SKIPPED:
+    'runVariation: skipping richStructure change # (selector-scoped DOM mutations not supported by this renderer)',
+  RUN_VARIATION_MULTIPAGE_PAGE:
+    'runVariation: applying defaultCodeMultipage change # for page_id=# (caller is responsible for funnel-step matching)',
+  RUN_VARIATION_TOOLKIT_MISSING:
+    'runVariation: window.convert.T (Convert Toolkit) is not loaded; Visual Editor changes may fail',
+  RUN_VARIATION_STYLE_ERROR: 'runVariation: error injecting style #',
+  RUN_VARIATION_SCRIPT_ERROR: 'runVariation: error executing change script #'
 };

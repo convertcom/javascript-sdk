@@ -72,7 +72,7 @@ const LOCATION_PROPS = {
 const cmp = (a: string, b: string) => a.localeCompare(b);
 const VARIATION_KEYS = [
   'bucketingAllocation', 'changes', 'experienceId', 'experienceKey',
-  'experienceName', 'id', 'is_baseline', 'key', 'name', 'status',
+  'experienceName', 'experienceType', 'id', 'is_baseline', 'key', 'name', 'status',
   'traffic_allocation'
 ].sort(cmp);
 const FEATURE_KEYS = [
@@ -334,6 +334,598 @@ test.describe('UMD bundle browser tests', () => {
       });
       expect((result as any).hasCustomSegments).toBe(true);
       expect((result as any).customSegments).toEqual(['200299434']);
+    });
+  });
+
+  test.describe('runVariation — web variation change rendering', () => {
+    // Helper: build a synthetic BucketedVariation with the requested change list
+    const makeFixture = () => ({
+      variation: {
+        id: '999',
+        key: 'test-var',
+        experienceId: 'rv-exp-1',
+        experienceKey: 'rv-experience',
+        experienceType: 'a/b',
+        traffic_allocation: 10000,
+        status: 'running',
+        changes: [
+          {
+            id: 101,
+            type: 'defaultCode',
+            data: {
+              css: '.rv-default-code { color: rgb(11, 22, 33); }',
+              js: 'window.__rvDefaultCodeJS = true;'
+            }
+          },
+          {
+            id: 102,
+            type: 'customCode',
+            data: {
+              css: '.rv-custom-code { color: rgb(44, 55, 66); }',
+              custom_js: 'window.__rvCustomJS = true;'
+            }
+          },
+          {
+            id: 103,
+            type: 'defaultRedirect',
+            data: {
+              original_pattern: 'foo',
+              variation_pattern: 'bar'
+            }
+          },
+          {
+            id: 104,
+            type: 'fullStackFeature',
+            data: {feature_id: 42, variables_data: {x: 1}}
+          }
+        ]
+      },
+      experience: {
+        id: 'rv-exp-1',
+        key: 'rv-experience',
+        type: 'a/b',
+        global_css: '.rv-global { color: rgb(77, 88, 99); }',
+        global_js: 'window.__rvGlobalJS = true;'
+      }
+    });
+
+    // Reset DOM markers + window flags between tests
+    const resetDomMarkers = async (page: Page) => {
+      await page.evaluate(() => {
+        const ids = [
+          'conv-exp-rv-exp-1-global-css',
+          'conv-exp-rv-exp-1-global-js',
+          // Per-change markers are scoped by experience + variation + change id
+          'conv-chg-rv-exp-1-999-101-css',
+          'conv-chg-rv-exp-1-999-101-js',
+          'conv-chg-rv-exp-1-999-102-css',
+          'conv-chg-rv-exp-1-999-102-custom-js',
+          'conv-chg-rv-exp-1-999-103-css',
+          'conv-chg-rv-exp-1-999-103-js',
+          'conv-chg-rv-exp-1-999-104-css'
+        ];
+        for (const id of ids) document.getElementById(id)?.remove();
+        delete (window as any).__rvDefaultCodeJS;
+        delete (window as any).__rvCustomJS;
+        delete (window as any).__rvGlobalJS;
+      });
+    };
+
+    test('Should inject experience global_css and global_js once', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          globalCssText: document.getElementById('conv-exp-rv-exp-1-global-css')
+            ?.textContent,
+          globalJsRan: (window as any).__rvGlobalJS === true,
+          globalJsExists: !!document.getElementById('conv-exp-rv-exp-1-global-js')
+        };
+      }, makeFixture());
+      expect(result.globalCssText).toBe(
+        '.rv-global { color: rgb(77, 88, 99); }'
+      );
+      expect(result.globalJsRan).toBe(true);
+      expect(result.globalJsExists).toBe(true);
+    });
+
+    test('Should apply defaultCode change CSS and JS', async ({page}) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          changeCssText: document.getElementById('conv-chg-rv-exp-1-999-101-css')?.textContent,
+          changeJsRan: (window as any).__rvDefaultCodeJS === true
+        };
+      }, makeFixture());
+      expect(result.changeCssText).toBe(
+        '.rv-default-code { color: rgb(11, 22, 33); }'
+      );
+      expect(result.changeJsRan).toBe(true);
+    });
+
+    test('Should apply customCode change CSS and custom_js', async ({page}) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          customCssText: document.getElementById('conv-chg-rv-exp-1-999-102-css')
+            ?.textContent,
+          customJsRan: (window as any).__rvCustomJS === true,
+          customJsMarker: !!document.getElementById(
+            'conv-chg-rv-exp-1-999-102-custom-js'
+          )
+        };
+      }, makeFixture());
+      expect(result.customCssText).toBe(
+        '.rv-custom-code { color: rgb(44, 55, 66); }'
+      );
+      expect(result.customJsRan).toBe(true);
+      expect(result.customJsMarker).toBe(true);
+    });
+
+    test('Should skip defaultRedirect change (no redirect attempted, no marker)', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const startUrl = page.url();
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          redirectCssExists: !!document.getElementById(
+            'conv-chg-rv-exp-1-999-103-css'
+          ),
+          redirectJsExists: !!document.getElementById(
+            'conv-chg-rv-exp-1-999-103-js'
+          )
+        };
+      }, makeFixture());
+      expect(result.redirectCssExists).toBe(false);
+      expect(result.redirectJsExists).toBe(false);
+      // Page didn't navigate
+      expect(page.url()).toBe(startUrl);
+    });
+
+    test('Should skip fullStackFeature change (no DOM injection)', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          ffCssExists: !!document.getElementById('conv-chg-rv-exp-1-999-104-css'),
+          ffJsExists: !!document.getElementById('conv-chg-rv-exp-1-999-104-js')
+        };
+      }, makeFixture());
+      expect(result.ffCssExists).toBe(false);
+      expect(result.ffJsExists).toBe(false);
+    });
+
+    test('Should skip richStructure change (selector-scoped DOM mutations are not supported by this renderer)', async ({
+      page
+    }) => {
+      // richStructure changes carry a `selector` in their data and are
+      // intended to be selector-scoped DOM mutations (see the tracking
+      // script's queue + querySelectorAll machinery in
+      // backend.wiki/TrackingScriptExperienceDeliveryRendering.md). The
+      // SDK renderer doesn't implement that yet, so the safe behavior is
+      // to skip — applying just the embedded `data.js` blob in isolation
+      // would lose the selector context and could mutate the wrong
+      // elements.
+      await setup(page);
+      // No reset needed: this fixture has unique change IDs (501).
+      const result = await page.evaluate(() => {
+        document.getElementById('conv-chg-rv-exp-1-999-501-css')?.remove();
+        document.getElementById('conv-chg-rv-exp-1-999-501-js')?.remove();
+        delete (window as any).__rvRichStructureJS;
+        const variation = {
+          id: '999',
+          key: 'rs-var',
+          experienceId: 'rv-exp-1',
+          experienceKey: 'rv-experience',
+          experienceType: 'a/b',
+          traffic_allocation: 10000,
+          status: 'running',
+          changes: [
+            {
+              id: 501,
+              type: 'richStructure',
+              data: {
+                js: 'window.__rvRichStructureJS = true;',
+                selector: '.target-element',
+                css: '.rs-leak { display: none; }'
+              }
+            }
+          ]
+        };
+        const experience = {
+          id: 'rv-exp-1',
+          key: 'rv-experience',
+          type: 'a/b'
+        };
+        const context = (window as any).__defaultContext();
+        context.runVariation(variation, {experience});
+        return {
+          jsRan: (window as any).__rvRichStructureJS === true,
+          jsMarker: !!document.getElementById('conv-chg-rv-exp-1-999-501-js'),
+          cssMarker: !!document.getElementById('conv-chg-rv-exp-1-999-501-css')
+        };
+      });
+      expect(result.jsRan).toBe(false);
+      expect(result.jsMarker).toBe(false);
+      expect(result.cssMarker).toBe(false);
+    });
+
+    test('Should not warn about missing convert.T when only customCode change carries data.js', async ({
+      page
+    }) => {
+      // Toolkit warning fires for `defaultCode.data.js` (Visual Editor
+      // output that calls convert.T.*), not for `customCode.data.js`
+      // (user-written code). A variation that only carries customCode
+      // shouldn't trigger the warning even when convert.T is absent.
+      await setup(page);
+      const warnFired = await page.evaluate(() => {
+        // Make sure convert.T is absent for this assertion.
+        const savedT = (window as any).convert?.T;
+        if ((window as any).convert) delete (window as any).convert.T;
+        const warns: string[] = [];
+        const origWarn = console.warn;
+        console.warn = (...args: unknown[]) => {
+          warns.push(args.map((a) => String(a)).join(' '));
+        };
+        try {
+          const variation = {
+            id: '999',
+            key: 'cc-only',
+            experienceId: 'rv-exp-1',
+            experienceKey: 'rv-experience',
+            experienceType: 'a/b',
+            traffic_allocation: 10000,
+            status: 'running',
+            changes: [
+              {
+                id: 601,
+                type: 'customCode',
+                data: {
+                  css: '.cc-only { color: red; }',
+                  js: 'window.__rvCustomCodeJS = true;'
+                }
+              }
+            ]
+          };
+          const experience = {
+            id: 'rv-exp-1',
+            key: 'rv-experience',
+            type: 'a/b'
+          };
+          const context = (window as any).__defaultContext();
+          context.runVariation(variation, {experience});
+        } finally {
+          console.warn = origWarn;
+          if (savedT !== undefined) (window as any).convert.T = savedT;
+        }
+        return warns.some((line) =>
+          line.includes('Convert Toolkit) is not loaded')
+        );
+      });
+      expect(warnFired).toBe(false);
+    });
+
+    test('Should be idempotent — calling twice does not duplicate styles/scripts', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext();
+        // First call
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        const firstGlobalJsRanAt = (window as any).__rvGlobalJS;
+        // Reset the marker flag to detect a re-run
+        (window as any).__rvGlobalJS = false;
+        // Second call — should be a no-op (script element with same id already in DOM)
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        return {
+          firstGlobalJsRan: firstGlobalJsRanAt === true,
+          secondGlobalJsRan: (window as any).__rvGlobalJS === true,
+          styleCount: document.querySelectorAll('#conv-exp-rv-exp-1-global-css')
+            .length,
+          scriptCount: document.querySelectorAll('#conv-exp-rv-exp-1-global-js')
+            .length,
+          changeCssCount: document.querySelectorAll(
+            '#conv-chg-rv-exp-1-999-101-css'
+          ).length,
+          changeJsCount: document.querySelectorAll(
+            '#conv-chg-rv-exp-1-999-101-js'
+          ).length
+        };
+      }, makeFixture());
+      expect(result.firstGlobalJsRan).toBe(true);
+      expect(result.secondGlobalJsRan).toBe(false);
+      expect(result.styleCount).toBe(1);
+      expect(result.scriptCount).toBe(1);
+      expect(result.changeCssCount).toBe(1);
+      expect(result.changeJsCount).toBe(1);
+    });
+
+    test('Should no-op safely when bucketedVariation is null', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      const errored = await page.evaluate(() => {
+        const context = (window as any).__defaultContext();
+        try {
+          context.runVariation(null as any);
+          context.runVariation(undefined as any);
+          return false;
+        } catch {
+          return true;
+        }
+      });
+      expect(errored).toBe(false);
+    });
+
+    test('Should execute global_css → global_js → per-change css → js → custom_js in order', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      // The pipeline is documented in Context.runVariation's JSDoc.
+      // Monkey-patch the appendChild on document.head BEFORE invoking
+      // runVariation so we observe the synchronous insertion order — each
+      // <style>/<script> append pushes its marker id into __execOrder
+      // before runVariation continues to the next step. We also wrap the
+      // CSS/JS strings so script execution itself contributes to the log
+      // (proving JS actually ran, not just the script tag was inserted).
+      const order = await page.evaluate(() => {
+        (window as any).__execOrder = [];
+        const head = document.head;
+        const originalAppend = head.appendChild.bind(head);
+        head.appendChild = function <T extends Node>(node: T): T {
+          const el = node as unknown as HTMLElement;
+          const id = el?.id || '';
+          if (id.includes('global-css')) (window as any).__execOrder.push('exp-css');
+          else if (id.includes('global-js'))
+            (window as any).__execOrder.push('exp-js');
+          else if (id.includes('-200-css'))
+            (window as any).__execOrder.push('chg-css');
+          else if (id.includes('-200-js'))
+            (window as any).__execOrder.push('chg-js');
+          else if (id.includes('-201-css'))
+            (window as any).__execOrder.push('chg-custom-css');
+          else if (id.includes('-201-custom-js'))
+            (window as any).__execOrder.push('chg-custom-js');
+          return originalAppend(node);
+        } as typeof head.appendChild;
+
+        const orderingFixture = {
+          variation: {
+            id: '999',
+            key: 'ord-var',
+            experienceId: 'rv-exp-1',
+            experienceKey: 'rv-experience',
+            experienceType: 'a/b',
+            changes: [
+              {
+                id: 200,
+                type: 'defaultCode',
+                data: {css: '.ord-default {}', js: ';'}
+              },
+              {
+                id: 201,
+                type: 'customCode',
+                data: {css: '.ord-custom {}', custom_js: ';'}
+              }
+            ]
+          },
+          experience: {
+            id: 'rv-exp-1',
+            key: 'rv-experience',
+            type: 'a/b',
+            global_css: '.ord-global {}',
+            global_js: ';'
+          }
+        };
+
+        const context = (window as any).__defaultContext();
+        context.runVariation(orderingFixture.variation, {
+          experience: orderingFixture.experience
+        });
+        head.appendChild = originalAppend;
+        return (window as any).__execOrder as string[];
+      });
+
+      expect(order).toEqual([
+        'exp-css',
+        'exp-js',
+        'chg-css',
+        'chg-js',
+        'chg-custom-css',
+        'chg-custom-js'
+      ]);
+    });
+
+    test('Should warn and continue when options.experience is missing and experienceKey is not in config', async ({
+      page
+    }) => {
+      await setup(page);
+      await resetDomMarkers(page);
+      // No `experience` option passed AND the bucketedVariation's
+      // experienceKey is not present in the SDK's config — runVariation
+      // should log a warn and continue (no throw, no DOM injection).
+      const result = await page.evaluate(() => {
+        const context = (window as any).__defaultContext();
+        // Capture warns via a logger spy (defaultContext uses console under
+        // the hood for `warn`).
+        const warns: any[] = [];
+        const origWarn = console.warn;
+        console.warn = (...args: any[]) => {
+          warns.push(args);
+          origWarn.apply(console, args);
+        };
+        let errored = false;
+        try {
+          context.runVariation({
+            id: 'orphan-var',
+            key: 'orphan',
+            experienceId: 'does-not-exist',
+            experienceKey: 'does-not-exist',
+            changes: [
+              {
+                id: 999,
+                type: 'defaultCode',
+                data: {css: '.orphan { color: red; }'}
+              }
+            ]
+          });
+        } catch {
+          errored = true;
+        }
+        console.warn = origWarn;
+        return {
+          errored,
+          // The change CSS should still be applied — the warn is about the
+          // missing experience config, not a hard error.
+          cssApplied: !!document.getElementById('conv-chg-does-not-exist-orphan-var-999-css')
+        };
+      });
+      expect(result.errored).toBe(false);
+      expect(result.cssApplied).toBe(true);
+    });
+
+    test('Should stamp Config.contentSecurityPolicyNonce on injected style and script', async ({
+      page
+    }) => {
+      // CSP parity with the tracking-script monolith: every injected
+      // <style> / <script> must carry the configured nonce so customer
+      // sites enforcing `style-src 'nonce-…'; script-src 'nonce-…'` accept
+      // the elements instead of blocking them as CSP violations.
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext({
+          contentSecurityPolicyNonce: 'unit-test-nonce-abc'
+        });
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        const read = (id: string) =>
+          document.getElementById(id)?.getAttribute('nonce');
+        return {
+          globalCssNonce: read('conv-exp-rv-exp-1-global-css'),
+          globalJsNonce: read('conv-exp-rv-exp-1-global-js'),
+          changeCssNonce: read('conv-chg-rv-exp-1-999-101-css'),
+          changeJsNonce: read('conv-chg-rv-exp-1-999-101-js'),
+          customCssNonce: read('conv-chg-rv-exp-1-999-102-css'),
+          customJsNonce: read('conv-chg-rv-exp-1-999-102-custom-js')
+        };
+      }, makeFixture());
+      expect(result.globalCssNonce).toBe('unit-test-nonce-abc');
+      expect(result.globalJsNonce).toBe('unit-test-nonce-abc');
+      expect(result.changeCssNonce).toBe('unit-test-nonce-abc');
+      expect(result.changeJsNonce).toBe('unit-test-nonce-abc');
+      expect(result.customCssNonce).toBe('unit-test-nonce-abc');
+      expect(result.customJsNonce).toBe('unit-test-nonce-abc');
+    });
+
+    test('Should auto-detect CSP nonce from the DOM when not configured', async ({
+      page
+    }) => {
+      // Mirrors the tracking-script's getContentSecurityPolicyNonce():
+      // when Config.contentSecurityPolicyNonce is absent, scan the DOM for
+      // any element carrying a `nonce` attribute and reuse that value.
+      // Most server-rendered pages with a real CSP already have one such
+      // element (typically the bootstrap inline <script>), so the SDK
+      // works on CSP-strict sites without explicit configuration.
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        // Stamp a nonce on an existing inline element so the DOM scan
+        // picks it up. Reading via IDL first matches the tracking
+        // script's `nonceElement['nonce'] || getAttribute('nonce')`.
+        const seedScript = document.createElement('script');
+        seedScript.id = 'csp-seed-script';
+        seedScript.setAttribute('nonce', 'dom-detected-nonce-xyz');
+        document.head.appendChild(seedScript);
+
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+
+        const read = (id: string) =>
+          document.getElementById(id)?.getAttribute('nonce');
+        const out = {
+          globalCssNonce: read('conv-exp-rv-exp-1-global-css'),
+          changeCssNonce: read('conv-chg-rv-exp-1-999-101-css'),
+          customJsNonce: read('conv-chg-rv-exp-1-999-102-custom-js')
+        };
+        seedScript.remove();
+        return out;
+      }, makeFixture());
+      expect(result.globalCssNonce).toBe('dom-detected-nonce-xyz');
+      expect(result.changeCssNonce).toBe('dom-detected-nonce-xyz');
+      expect(result.customJsNonce).toBe('dom-detected-nonce-xyz');
+    });
+
+    test('Should not stamp a nonce attribute when none is configured or in DOM', async ({
+      page
+    }) => {
+      // Preserves the previous behavior (no nonce attribute at all) for
+      // sites without a CSP — adding an empty `nonce=""` would invalidate
+      // some strict CSPs that require a specific nonce value.
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        // Defensive: drop any pre-existing nonced elements so the DOM
+        // auto-detect doesn't pick up something the test page injected.
+        document
+          .querySelectorAll('[nonce]')
+          .forEach((el) => el.removeAttribute('nonce'));
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        const hasNonce = (id: string) =>
+          document.getElementById(id)?.hasAttribute('nonce') ?? null;
+        return {
+          globalCss: hasNonce('conv-exp-rv-exp-1-global-css'),
+          globalJs: hasNonce('conv-exp-rv-exp-1-global-js'),
+          changeCss: hasNonce('conv-chg-rv-exp-1-999-101-css'),
+          changeJs: hasNonce('conv-chg-rv-exp-1-999-101-js')
+        };
+      }, makeFixture());
+      expect(result.globalCss).toBe(false);
+      expect(result.globalJs).toBe(false);
+      expect(result.changeCss).toBe(false);
+      expect(result.changeJs).toBe(false);
     });
   });
 

@@ -23,6 +23,7 @@ export function getVariationsAcrossAllExperiences(
                 'experienceId',
                 'experienceKey',
                 'experienceName',
+                'experienceType',
                 'bucketingAllocation',
                 'id',
                 'key',

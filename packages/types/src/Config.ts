@@ -6,6 +6,7 @@
  */
 
 import {ConfigResponseData} from './config/index';
+import {RuleDataProvider} from './RuleDataProvider';
 import {LogLevel} from '@convertcom/js-sdk-enums';
 
 export * from './config/index';
@@ -24,6 +25,38 @@ type ConfigBase = {
     excludeExperienceIdHash?: boolean;
   };
   dataStore?: object | null;
+  /**
+   * Optional custom RuleData provider for evaluating web rule types
+   * (URL, cookie, geo, device, etc.). When set, DataManager passes it
+   * to RuleManager when no per-call visitor/location/goal-rule
+   * arguments are supplied. The provider's `name` MUST be the literal
+   * string `'RuleData'`; RuleManager uses that discriminator to switch
+   * from key lookup to method dispatch.
+   *
+   * **Precedence: per-call arguments win.** Passing
+   * `visitorProperties`, `locationProperties`, or `trackConversion`'s
+   * `ruleData` on a specific call bypasses the provider for that call.
+   * See `@convertcom/js-sdk-types#RuleDataProvider` for the full
+   * contract.
+   */
+  ruleDataProvider?: RuleDataProvider;
+  /**
+   * Optional CSP nonce stamped on `<style>` and `<script>` elements
+   * injected by `Context.runVariation` (web variation rendering).
+   * Mirrors the tracking-script monolith's `state.contentSecurityPolicyNonce`
+   * (see `public/js/tracking/src/render.ts` and `workflow.ts` in the
+   * backend repo) so customer sites that enforce
+   * `script-src 'nonce-…'; style-src 'nonce-…'` accept the injected
+   * elements instead of blocking them as CSP violations.
+   *
+   * When omitted, `runVariation` falls back to reading the nonce from
+   * the live DOM (`document.querySelector('[nonce]')`) at first use,
+   * matching the tracking script's `getContentSecurityPolicyNonce()`
+   * heuristic — most server-rendered pages already carry a nonce on at
+   * least one inline `<script>` or `<style>`, so auto-detection covers
+   * the common case without requiring explicit configuration.
+   */
+  contentSecurityPolicyNonce?: string;
   dataRefreshInterval?: number;
   events?: {
     batch_size?: number;

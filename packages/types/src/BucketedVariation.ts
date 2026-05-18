@@ -5,11 +5,12 @@
  * License Apache-2.0
  */
 
-import {ExperienceVariationConfig} from './config/index';
+import {ExperienceVariationConfig, ExperienceTypes} from './config/index';
 
 export type BucketedVariation = ExperienceVariationConfig & {
   experienceId?: string;
   experienceKey?: string;
   experienceName?: string;
+  experienceType?: ExperienceTypes;
   bucketingAllocation?: number;
 };
