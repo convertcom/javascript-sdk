@@ -73,7 +73,7 @@
   "peerDependencies": {
     "@convertcom/js-sdk-enums": ">=2.3.0",
     "@convertcom/js-sdk-logger": ">=2.1.2",
-    "@convertcom/js-sdk-types": ">=3.9.0",
+    "@convertcom/js-sdk-types": ">=3.11.0",
     "@convertcom/js-sdk-utils": ">=2.2.3"
   }
 }
