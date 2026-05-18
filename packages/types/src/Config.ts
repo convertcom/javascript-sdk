@@ -40,6 +40,23 @@ type ConfigBase = {
    * contract.
    */
   ruleDataProvider?: RuleDataProvider;
+  /**
+   * Optional CSP nonce stamped on `<style>` and `<script>` elements
+   * injected by `Context.runVariation` (web variation rendering).
+   * Mirrors the tracking-script monolith's `state.contentSecurityPolicyNonce`
+   * (see `public/js/tracking/src/render.ts` and `workflow.ts` in the
+   * backend repo) so customer sites that enforce
+   * `script-src 'nonce-…'; style-src 'nonce-…'` accept the injected
+   * elements instead of blocking them as CSP violations.
+   *
+   * When omitted, `runVariation` falls back to reading the nonce from
+   * the live DOM (`document.querySelector('[nonce]')`) at first use,
+   * matching the tracking script's `getContentSecurityPolicyNonce()`
+   * heuristic — most server-rendered pages already carry a nonce on at
+   * least one inline `<script>` or `<style>`, so auto-detection covers
+   * the common case without requiring explicit configuration.
+   */
+  contentSecurityPolicyNonce?: string;
   dataRefreshInterval?: number;
   events?: {
     batch_size?: number;

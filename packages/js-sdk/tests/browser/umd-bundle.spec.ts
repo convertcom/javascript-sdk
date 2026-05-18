@@ -709,6 +709,114 @@ test.describe('UMD bundle browser tests', () => {
       expect(result.errored).toBe(false);
       expect(result.cssApplied).toBe(true);
     });
+
+    test('Should stamp Config.contentSecurityPolicyNonce on injected style and script', async ({
+      page
+    }) => {
+      // CSP parity with the tracking-script monolith: every injected
+      // <style> / <script> must carry the configured nonce so customer
+      // sites enforcing `style-src 'nonce-…'; script-src 'nonce-…'` accept
+      // the elements instead of blocking them as CSP violations.
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        const context = (window as any).__defaultContext({
+          contentSecurityPolicyNonce: 'unit-test-nonce-abc'
+        });
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        const read = (id: string) =>
+          document.getElementById(id)?.getAttribute('nonce');
+        return {
+          globalCssNonce: read('conv-exp-rv-exp-1-global-css'),
+          globalJsNonce: read('conv-exp-rv-exp-1-global-js'),
+          changeCssNonce: read('conv-chg-rv-exp-1-999-101-css'),
+          changeJsNonce: read('conv-chg-rv-exp-1-999-101-js'),
+          customCssNonce: read('conv-chg-rv-exp-1-999-102-css'),
+          customJsNonce: read('conv-chg-rv-exp-1-999-102-custom-js')
+        };
+      }, makeFixture());
+      expect(result.globalCssNonce).toBe('unit-test-nonce-abc');
+      expect(result.globalJsNonce).toBe('unit-test-nonce-abc');
+      expect(result.changeCssNonce).toBe('unit-test-nonce-abc');
+      expect(result.changeJsNonce).toBe('unit-test-nonce-abc');
+      expect(result.customCssNonce).toBe('unit-test-nonce-abc');
+      expect(result.customJsNonce).toBe('unit-test-nonce-abc');
+    });
+
+    test('Should auto-detect CSP nonce from the DOM when not configured', async ({
+      page
+    }) => {
+      // Mirrors the tracking-script's getContentSecurityPolicyNonce():
+      // when Config.contentSecurityPolicyNonce is absent, scan the DOM for
+      // any element carrying a `nonce` attribute and reuse that value.
+      // Most server-rendered pages with a real CSP already have one such
+      // element (typically the bootstrap inline <script>), so the SDK
+      // works on CSP-strict sites without explicit configuration.
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        // Stamp a nonce on an existing inline element so the DOM scan
+        // picks it up. Reading via IDL first matches the tracking
+        // script's `nonceElement['nonce'] || getAttribute('nonce')`.
+        const seedScript = document.createElement('script');
+        seedScript.id = 'csp-seed-script';
+        seedScript.setAttribute('nonce', 'dom-detected-nonce-xyz');
+        document.head.appendChild(seedScript);
+
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+
+        const read = (id: string) =>
+          document.getElementById(id)?.getAttribute('nonce');
+        const out = {
+          globalCssNonce: read('conv-exp-rv-exp-1-global-css'),
+          changeCssNonce: read('conv-chg-rv-exp-1-999-101-css'),
+          customJsNonce: read('conv-chg-rv-exp-1-999-102-custom-js')
+        };
+        seedScript.remove();
+        return out;
+      }, makeFixture());
+      expect(result.globalCssNonce).toBe('dom-detected-nonce-xyz');
+      expect(result.changeCssNonce).toBe('dom-detected-nonce-xyz');
+      expect(result.customJsNonce).toBe('dom-detected-nonce-xyz');
+    });
+
+    test('Should not stamp a nonce attribute when none is configured or in DOM', async ({
+      page
+    }) => {
+      // Preserves the previous behavior (no nonce attribute at all) for
+      // sites without a CSP — adding an empty `nonce=""` would invalidate
+      // some strict CSPs that require a specific nonce value.
+      await setup(page);
+      await resetDomMarkers(page);
+      const result = await page.evaluate((fixture) => {
+        // Defensive: drop any pre-existing nonced elements so the DOM
+        // auto-detect doesn't pick up something the test page injected.
+        document
+          .querySelectorAll('[nonce]')
+          .forEach((el) => el.removeAttribute('nonce'));
+        const context = (window as any).__defaultContext();
+        context.runVariation(fixture.variation, {
+          experience: fixture.experience
+        });
+        const hasNonce = (id: string) =>
+          document.getElementById(id)?.hasAttribute('nonce') ?? null;
+        return {
+          globalCss: hasNonce('conv-exp-rv-exp-1-global-css'),
+          globalJs: hasNonce('conv-exp-rv-exp-1-global-js'),
+          changeCss: hasNonce('conv-chg-rv-exp-1-999-101-css'),
+          changeJs: hasNonce('conv-chg-rv-exp-1-999-101-js')
+        };
+      }, makeFixture());
+      expect(result.globalCss).toBe(false);
+      expect(result.globalJs).toBe(false);
+      expect(result.changeCss).toBe(false);
+      expect(result.changeJs).toBe(false);
+    });
   });
 
   test.describe('Test invalid visitor', () => {

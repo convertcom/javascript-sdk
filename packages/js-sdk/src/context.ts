@@ -56,6 +56,10 @@ export class Context implements ContextInterface {
   private _visitorId: string;
   private _visitorProperties: Record<string, any>;
   private _environment: string;
+  private _contentSecurityPolicyNonce?: string;
+  // `undefined` = not yet resolved; once resolved (either from config or
+  // DOM auto-detect) we cache to avoid re-querying the DOM on every change.
+  private _cspNonceResolved: boolean = false;
 
   /**
    * @param {Config} config
@@ -94,6 +98,7 @@ export class Context implements ContextInterface {
     this._visitorId = visitorId;
 
     this._config = config;
+    this._contentSecurityPolicyNonce = config?.contentSecurityPolicyNonce;
     this._eventManager = eventManager;
     this._experienceManager = experienceManager;
     this._featureManager = featureManager;
@@ -516,6 +521,45 @@ export class Context implements ContextInterface {
   }
 
   /**
+   * Resolve the CSP nonce to stamp on injected <style>/<script> elements.
+   * Mirrors the tracking-script monolith's `getContentSecurityPolicyNonce()`
+   * (workflow.ts in the backend repo):
+   *   1. Prefer the explicit `Config.contentSecurityPolicyNonce` value
+   *      captured at construction.
+   *   2. Otherwise scan the live DOM for any element carrying a `nonce`
+   *      attribute — read the IDL property first (it persists after the
+   *      browser hides the HTML attribute post-connection), fall back to
+   *      `getAttribute('nonce')` for non-script/style elements where the
+   *      attribute is still visible.
+   * Cached after first call so the DOM scan happens at most once per
+   * Context instance.
+   * @private
+   */
+  private _getCspNonce(): string | undefined {
+    if (this._cspNonceResolved) return this._contentSecurityPolicyNonce;
+    this._cspNonceResolved = true;
+    if (this._contentSecurityPolicyNonce) {
+      return this._contentSecurityPolicyNonce;
+    }
+    if (typeof document === 'undefined') return undefined;
+    try {
+      const nonceElement = document.querySelector('[nonce]');
+      if (nonceElement) {
+        this._contentSecurityPolicyNonce =
+          (nonceElement as HTMLElement & {nonce?: string}).nonce ||
+          nonceElement.getAttribute('nonce') ||
+          undefined;
+      }
+    } catch (error) {
+      this._loggerManager?.error?.(
+        'Context.runVariation()',
+        `Error reading nonce from DOM: ${(error as Error)?.message}`
+      );
+    }
+    return this._contentSecurityPolicyNonce;
+  }
+
+  /**
    * Inject a <style> tag identified by markerId. No-op if already injected.
    * @private
    */
@@ -525,6 +569,8 @@ export class Context implements ContextInterface {
       const style = document.createElement('style');
       style.id = markerId;
       style.setAttribute('type', 'text/css');
+      const nonce = this._getCspNonce();
+      if (nonce) style.setAttribute('nonce', nonce);
       style.appendChild(document.createTextNode(css));
       (document.head || document.documentElement).appendChild(style);
     } catch (error) {
@@ -547,6 +593,8 @@ export class Context implements ContextInterface {
       const script = document.createElement('script');
       script.id = markerId;
       script.setAttribute('type', 'text/javascript');
+      const nonce = this._getCspNonce();
+      if (nonce) script.setAttribute('nonce', nonce);
       script.appendChild(document.createTextNode(code));
       (document.head || document.documentElement).appendChild(script);
     } catch (error) {
