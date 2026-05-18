@@ -94,9 +94,9 @@
     "@convertcom/js-sdk-event": ">=2.1.3",
     "@convertcom/js-sdk-experience": ">=2.3.2",
     "@convertcom/js-sdk-logger": ">=2.1.2",
-    "@convertcom/js-sdk-rules": ">=2.1.3",
+    "@convertcom/js-sdk-rules": ">=2.1.4",
     "@convertcom/js-sdk-segments": ">=2.1.2",
-    "@convertcom/js-sdk-types": ">=3.9.0",
+    "@convertcom/js-sdk-types": ">=3.11.0",
     "@convertcom/js-sdk-utils": ">=2.2.3"
   }
 }
