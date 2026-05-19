@@ -26,18 +26,10 @@ export type ConfigAudience = {
  * * **transient** - A transient audience is one that is checked every time the user is being bucketed into the experience
  *
  */
-export type ConfigAudienceTypes = 'permanent' | 'transient';
-
-/**
- * Type of the Audience. Can be one of the following: `permanent`, `transient`. For full-stack projects, `transient` is the only valid option, the rest will be ignored.
- * * **permanent** - A permanent audience is one that is checked only at the time the user is being bucketed into the experience
- * * **transient** - A transient audience is one that is checked every time the user is being bucketed into the experience
- *
- */
-export const ConfigAudienceTypes = {
-    PERMANENT: 'permanent',
-    TRANSIENT: 'transient'
-} as const;
+export enum ConfigAudienceTypes {
+    PERMANENT = 'permanent',
+    TRANSIENT = 'transient'
+}
 
 /**
  * Account billing status
@@ -132,19 +124,10 @@ export type SortDirection = {
  * Defaults to `desc` (newest/highest first) if not specified.
  *
  */
-export type sort_direction = 'asc' | 'desc';
-
-/**
- * The direction for sorting the list results, based on the `sort_by` field.
- * - `asc`: Ascending order (e.g., A-Z, 1-10, oldest to newest).
- * - `desc`: Descending order (e.g., Z-A, 10-1, newest to oldest).
- * Defaults to `desc` (newest/highest first) if not specified.
- *
- */
-export const sort_direction = {
-    ASC: 'asc',
-    DESC: 'desc'
-} as const;
+export enum sort_direction {
+    ASC = 'asc',
+    DESC = 'desc'
+}
 
 export type OnlyCount = {
     /**
@@ -230,15 +213,10 @@ export type BaseRuleWithVisitorTypeValue = BaseRule & {
 /**
  * Type of the visitors
  */
-export type value = 'new' | 'returning';
-
-/**
- * Type of the visitors
- */
-export const value = {
-    NEW: 'new',
-    RETURNING: 'returning'
-} as const;
+export enum value {
+    NEW = 'new',
+    RETURNING = 'returning'
+}
 
 export type BaseRuleWithExperienceBucketedValue = BaseRule & {
     /**
@@ -285,20 +263,15 @@ export type BaseRuleWithBrowserNameValue = BaseRule & {
 /**
  * Browser name used for matching
  */
-export type value2 = 'chrome' | 'microsoft_ie' | 'firefox' | 'microsoft_edge' | 'mozilla' | 'opera' | 'safari';
-
-/**
- * Browser name used for matching
- */
-export const value2 = {
-    CHROME: 'chrome',
-    MICROSOFT_IE: 'microsoft_ie',
-    FIREFOX: 'firefox',
-    MICROSOFT_EDGE: 'microsoft_edge',
-    MOZILLA: 'mozilla',
-    OPERA: 'opera',
-    SAFARI: 'safari'
-} as const;
+export enum value2 {
+    CHROME = 'chrome',
+    MICROSOFT_IE = 'microsoft_ie',
+    FIREFOX = 'firefox',
+    MICROSOFT_EDGE = 'microsoft_edge',
+    MOZILLA = 'mozilla',
+    OPERA = 'opera',
+    SAFARI = 'safari'
+}
 
 export type BaseRuleWithOsValue = BaseRule & {
     /**
@@ -310,20 +283,15 @@ export type BaseRuleWithOsValue = BaseRule & {
 /**
  * Operating System name used for matching
  */
-export type value3 = 'android' | 'iphone' | 'ipod' | 'ipad' | 'windows' | 'macos' | 'linux';
-
-/**
- * Operating System name used for matching
- */
-export const value3 = {
-    ANDROID: 'android',
-    IPHONE: 'iphone',
-    IPOD: 'ipod',
-    IPAD: 'ipad',
-    WINDOWS: 'windows',
-    MACOS: 'macos',
-    LINUX: 'linux'
-} as const;
+export enum value3 {
+    ANDROID = 'android',
+    IPHONE = 'iphone',
+    IPOD = 'ipod',
+    IPAD = 'ipad',
+    WINDOWS = 'windows',
+    MACOS = 'macos',
+    LINUX = 'linux'
+}
 
 export type BaseRuleWithWeatherConditionValue = BaseRule & {
     /**
@@ -355,38 +323,33 @@ export type BaseRuleWithWeatherConditionValue = BaseRule & {
 /**
  * Standardized weather condition strings used for targeting.
  */
-export type WeatherConditions = 'Blizzard' | 'Blowing snow' | 'Cloudy' | 'Fog' | 'Freezing drizzle' | 'Freezing fog' | 'Heavy freezing drizzle' | 'Heavy rain' | 'Heavy rain at times' | 'Light drizzle' | 'Light freezing rain' | 'Light rain' | 'Mist' | 'Moderate rain' | 'Moderate rain at times' | 'Overcast' | 'Partly cloudy' | 'Patchy freezing drizzle possible' | 'Patchy light drizzle' | 'Patchy light rain' | 'Patchy rain possible' | 'Patchy sleet possible' | 'Patchy snow possible' | 'Sunny' | 'Thundery outbreaks possible';
-
-/**
- * Standardized weather condition strings used for targeting.
- */
-export const WeatherConditions = {
-    BLIZZARD: 'Blizzard',
-    BLOWING_SNOW: 'Blowing snow',
-    CLOUDY: 'Cloudy',
-    FOG: 'Fog',
-    FREEZING_DRIZZLE: 'Freezing drizzle',
-    FREEZING_FOG: 'Freezing fog',
-    HEAVY_FREEZING_DRIZZLE: 'Heavy freezing drizzle',
-    HEAVY_RAIN: 'Heavy rain',
-    HEAVY_RAIN_AT_TIMES: 'Heavy rain at times',
-    LIGHT_DRIZZLE: 'Light drizzle',
-    LIGHT_FREEZING_RAIN: 'Light freezing rain',
-    LIGHT_RAIN: 'Light rain',
-    MIST: 'Mist',
-    MODERATE_RAIN: 'Moderate rain',
-    MODERATE_RAIN_AT_TIMES: 'Moderate rain at times',
-    OVERCAST: 'Overcast',
-    PARTLY_CLOUDY: 'Partly cloudy',
-    PATCHY_FREEZING_DRIZZLE_POSSIBLE: 'Patchy freezing drizzle possible',
-    PATCHY_LIGHT_DRIZZLE: 'Patchy light drizzle',
-    PATCHY_LIGHT_RAIN: 'Patchy light rain',
-    PATCHY_RAIN_POSSIBLE: 'Patchy rain possible',
-    PATCHY_SLEET_POSSIBLE: 'Patchy sleet possible',
-    PATCHY_SNOW_POSSIBLE: 'Patchy snow possible',
-    SUNNY: 'Sunny',
-    THUNDERY_OUTBREAKS_POSSIBLE: 'Thundery outbreaks possible'
-} as const;
+export enum WeatherConditions {
+    BLIZZARD = 'Blizzard',
+    BLOWING_SNOW = 'Blowing snow',
+    CLOUDY = 'Cloudy',
+    FOG = 'Fog',
+    FREEZING_DRIZZLE = 'Freezing drizzle',
+    FREEZING_FOG = 'Freezing fog',
+    HEAVY_FREEZING_DRIZZLE = 'Heavy freezing drizzle',
+    HEAVY_RAIN = 'Heavy rain',
+    HEAVY_RAIN_AT_TIMES = 'Heavy rain at times',
+    LIGHT_DRIZZLE = 'Light drizzle',
+    LIGHT_FREEZING_RAIN = 'Light freezing rain',
+    LIGHT_RAIN = 'Light rain',
+    MIST = 'Mist',
+    MODERATE_RAIN = 'Moderate rain',
+    MODERATE_RAIN_AT_TIMES = 'Moderate rain at times',
+    OVERCAST = 'Overcast',
+    PARTLY_CLOUDY = 'Partly cloudy',
+    PATCHY_FREEZING_DRIZZLE_POSSIBLE = 'Patchy freezing drizzle possible',
+    PATCHY_LIGHT_DRIZZLE = 'Patchy light drizzle',
+    PATCHY_LIGHT_RAIN = 'Patchy light rain',
+    PATCHY_RAIN_POSSIBLE = 'Patchy rain possible',
+    PATCHY_SLEET_POSSIBLE = 'Patchy sleet possible',
+    PATCHY_SNOW_POSSIBLE = 'Patchy snow possible',
+    SUNNY = 'Sunny',
+    THUNDERY_OUTBREAKS_POSSIBLE = 'Thundery outbreaks possible'
+}
 
 export type BaseMatch = {
     /**
@@ -397,159 +360,119 @@ export type BaseMatch = {
     negated?: boolean;
 };
 
-export type TextMatchRulesTypes = 'url' | 'url_with_query' | 'query_string' | 'campaign' | 'keyword' | 'medium' | 'source_name' | 'city' | 'region' | 'browser_version' | 'user_agent' | 'page_tag_page_type' | 'page_tag_category_id' | 'page_tag_category_name' | 'page_tag_product_sku' | 'page_tag_product_name' | 'page_tag_customer_id' | 'page_tag_custom_1' | 'page_tag_custom_2' | 'page_tag_custom_3' | 'page_tag_custom_4' | 'visitor_id';
+export enum TextMatchRulesTypes {
+    URL = 'url',
+    URL_WITH_QUERY = 'url_with_query',
+    QUERY_STRING = 'query_string',
+    CAMPAIGN = 'campaign',
+    KEYWORD = 'keyword',
+    MEDIUM = 'medium',
+    SOURCE_NAME = 'source_name',
+    CITY = 'city',
+    REGION = 'region',
+    BROWSER_VERSION = 'browser_version',
+    USER_AGENT = 'user_agent',
+    PAGE_TAG_PAGE_TYPE = 'page_tag_page_type',
+    PAGE_TAG_CATEGORY_ID = 'page_tag_category_id',
+    PAGE_TAG_CATEGORY_NAME = 'page_tag_category_name',
+    PAGE_TAG_PRODUCT_SKU = 'page_tag_product_sku',
+    PAGE_TAG_PRODUCT_NAME = 'page_tag_product_name',
+    PAGE_TAG_CUSTOMER_ID = 'page_tag_customer_id',
+    PAGE_TAG_CUSTOM_1 = 'page_tag_custom_1',
+    PAGE_TAG_CUSTOM_2 = 'page_tag_custom_2',
+    PAGE_TAG_CUSTOM_3 = 'page_tag_custom_3',
+    PAGE_TAG_CUSTOM_4 = 'page_tag_custom_4',
+    VISITOR_ID = 'visitor_id'
+}
 
-export const TextMatchRulesTypes = {
-    URL: 'url',
-    URL_WITH_QUERY: 'url_with_query',
-    QUERY_STRING: 'query_string',
-    CAMPAIGN: 'campaign',
-    KEYWORD: 'keyword',
-    MEDIUM: 'medium',
-    SOURCE_NAME: 'source_name',
-    CITY: 'city',
-    REGION: 'region',
-    BROWSER_VERSION: 'browser_version',
-    USER_AGENT: 'user_agent',
-    PAGE_TAG_PAGE_TYPE: 'page_tag_page_type',
-    PAGE_TAG_CATEGORY_ID: 'page_tag_category_id',
-    PAGE_TAG_CATEGORY_NAME: 'page_tag_category_name',
-    PAGE_TAG_PRODUCT_SKU: 'page_tag_product_sku',
-    PAGE_TAG_PRODUCT_NAME: 'page_tag_product_name',
-    PAGE_TAG_CUSTOMER_ID: 'page_tag_customer_id',
-    PAGE_TAG_CUSTOM_1: 'page_tag_custom_1',
-    PAGE_TAG_CUSTOM_2: 'page_tag_custom_2',
-    PAGE_TAG_CUSTOM_3: 'page_tag_custom_3',
-    PAGE_TAG_CUSTOM_4: 'page_tag_custom_4',
-    VISITOR_ID: 'visitor_id'
-} as const;
+export enum NumericMatchRulesTypes {
+    AVG_TIME_PAGE = 'avg_time_page',
+    DAYS_SINCE_LAST_VISIT = 'days_since_last_visit',
+    PAGES_VISITED_COUNT = 'pages_visited_count',
+    VISIT_DURATION = 'visit_duration',
+    VISITS_COUNT = 'visits_count',
+    PAGE_TAG_PRODUCT_PRICE = 'page_tag_product_price'
+}
 
-export type NumericMatchRulesTypes = 'avg_time_page' | 'days_since_last_visit' | 'pages_visited_count' | 'visit_duration' | 'visits_count' | 'page_tag_product_price';
+export enum BoolMatchRulesTypes {
+    BUCKETED_INTO_EXPERIENCE = 'bucketed_into_experience',
+    IS_DESKTOP = 'is_desktop',
+    IS_MOBILE = 'is_mobile',
+    IS_TABLET = 'is_tablet'
+}
 
-export const NumericMatchRulesTypes = {
-    AVG_TIME_PAGE: 'avg_time_page',
-    DAYS_SINCE_LAST_VISIT: 'days_since_last_visit',
-    PAGES_VISITED_COUNT: 'pages_visited_count',
-    VISIT_DURATION: 'visit_duration',
-    VISITS_COUNT: 'visits_count',
-    PAGE_TAG_PRODUCT_PRICE: 'page_tag_product_price'
-} as const;
+export enum GenericTextKeyValueMatchRulesTypes {
+    GENERIC_TEXT_KEY_VALUE = 'generic_text_key_value'
+}
 
-export type BoolMatchRulesTypes = 'bucketed_into_experience' | 'is_desktop' | 'is_mobile' | 'is_tablet';
+export enum GenericNumericKeyValueMatchRulesTypes {
+    GENERIC_NUMERIC_KEY_VALUE = 'generic_numeric_key_value'
+}
 
-export const BoolMatchRulesTypes = {
-    BUCKETED_INTO_EXPERIENCE: 'bucketed_into_experience',
-    IS_DESKTOP: 'is_desktop',
-    IS_MOBILE: 'is_mobile',
-    IS_TABLET: 'is_tablet'
-} as const;
+export enum GenericBoolKeyValueMatchRulesTypes {
+    GENERIC_BOOL_KEY_VALUE = 'generic_bool_key_value'
+}
 
-export type GenericTextKeyValueMatchRulesTypes = 'generic_text_key_value';
+export enum VisitorDataExistsMatchRulesTypes {
+    VISITOR_DATA_EXISTS = 'visitor_data_exists'
+}
 
-export const GenericTextKeyValueMatchRulesTypes = {
-    GENERIC_TEXT_KEY_VALUE: 'generic_text_key_value'
-} as const;
-
-export type GenericNumericKeyValueMatchRulesTypes = 'generic_numeric_key_value';
-
-export const GenericNumericKeyValueMatchRulesTypes = {
-    GENERIC_NUMERIC_KEY_VALUE: 'generic_numeric_key_value'
-} as const;
-
-export type GenericBoolKeyValueMatchRulesTypes = 'generic_bool_key_value';
-
-export const GenericBoolKeyValueMatchRulesTypes = {
-    GENERIC_BOOL_KEY_VALUE: 'generic_bool_key_value'
-} as const;
-
-export type VisitorDataExistsMatchRulesTypes = 'visitor_data_exists';
-
-export const VisitorDataExistsMatchRulesTypes = {
-    VISITOR_DATA_EXISTS: 'visitor_data_exists'
-} as const;
-
-export type JsConditionMatchRulesTypes = 'js_condition';
-
-export const JsConditionMatchRulesTypes = {
-    JS_CONDITION: 'js_condition'
-} as const;
+export enum JsConditionMatchRulesTypes {
+    JS_CONDITION = 'js_condition'
+}
 
 export type KeyValueMatchRulesTypes = GenericTextKeyValueMatchRulesTypes & GenericNumericKeyValueMatchRulesTypes & GenericBoolKeyValueMatchRulesTypes;
 
-export type CookieMatchRulesTypes = 'cookie';
+export enum CookieMatchRulesTypes {
+    COOKIE = 'cookie'
+}
 
-export const CookieMatchRulesTypes = {
-    COOKIE: 'cookie'
-} as const;
+export enum CountryMatchRulesTypes {
+    COUNTRY = 'country'
+}
 
-export type CountryMatchRulesTypes = 'country';
+export enum VisitorTypeMatchRulesTypes {
+    VISITOR_TYPE = 'visitor_type'
+}
 
-export const CountryMatchRulesTypes = {
-    COUNTRY: 'country'
-} as const;
+export enum LanguageMatchRulesTypes {
+    LANGUAGE = 'language'
+}
 
-export type VisitorTypeMatchRulesTypes = 'visitor_type';
+export enum GoalTriggeredMatchRulesTypes {
+    GOAL_TRIGGERED = 'goal_triggered'
+}
 
-export const VisitorTypeMatchRulesTypes = {
-    VISITOR_TYPE: 'visitor_type'
-} as const;
+export enum SegmentBucketedMatchRulesTypes {
+    BUCKETED_INTO_SEGMENT = 'bucketed_into_segment'
+}
 
-export type LanguageMatchRulesTypes = 'language';
+export enum DayOfWeekMatchRulesTypes {
+    LOCAL_TIME_DAY_OF_WEEK = 'local_time_day_of_week',
+    PROJECT_TIME_DAY_OF_WEEK = 'project_time_day_of_week'
+}
 
-export const LanguageMatchRulesTypes = {
-    LANGUAGE: 'language'
-} as const;
+export enum HourOfDayMatchRulesTypes {
+    LOCAL_TIME_HOUR_OF_DAY = 'local_time_hour_of_day',
+    PROJECT_TIME_HOUR_OF_DAY = 'project_time_hour_of_day'
+}
 
-export type GoalTriggeredMatchRulesTypes = 'goal_triggered';
+export enum MinuteOfHourMatchRulesTypes {
+    LOCAL_TIME_MINUTE_OF_HOUR = 'local_time_minute_of_hour',
+    PROJECT_TIME_MINUTE_OF_HOUR = 'project_time_minute_of_hour'
+}
 
-export const GoalTriggeredMatchRulesTypes = {
-    GOAL_TRIGGERED: 'goal_triggered'
-} as const;
+export enum BrowserNameMatchRulesTypes {
+    BROWSER_NAME = 'browser_name'
+}
 
-export type SegmentBucketedMatchRulesTypes = 'bucketed_into_segment';
+export enum OsMatchRulesTypes {
+    OS = 'os'
+}
 
-export const SegmentBucketedMatchRulesTypes = {
-    BUCKETED_INTO_SEGMENT: 'bucketed_into_segment'
-} as const;
-
-export type DayOfWeekMatchRulesTypes = 'local_time_day_of_week' | 'project_time_day_of_week';
-
-export const DayOfWeekMatchRulesTypes = {
-    LOCAL_TIME_DAY_OF_WEEK: 'local_time_day_of_week',
-    PROJECT_TIME_DAY_OF_WEEK: 'project_time_day_of_week'
-} as const;
-
-export type HourOfDayMatchRulesTypes = 'local_time_hour_of_day' | 'project_time_hour_of_day';
-
-export const HourOfDayMatchRulesTypes = {
-    LOCAL_TIME_HOUR_OF_DAY: 'local_time_hour_of_day',
-    PROJECT_TIME_HOUR_OF_DAY: 'project_time_hour_of_day'
-} as const;
-
-export type MinuteOfHourMatchRulesTypes = 'local_time_minute_of_hour' | 'project_time_minute_of_hour';
-
-export const MinuteOfHourMatchRulesTypes = {
-    LOCAL_TIME_MINUTE_OF_HOUR: 'local_time_minute_of_hour',
-    PROJECT_TIME_MINUTE_OF_HOUR: 'project_time_minute_of_hour'
-} as const;
-
-export type BrowserNameMatchRulesTypes = 'browser_name';
-
-export const BrowserNameMatchRulesTypes = {
-    BROWSER_NAME: 'browser_name'
-} as const;
-
-export type OsMatchRulesTypes = 'os';
-
-export const OsMatchRulesTypes = {
-    OS: 'os'
-} as const;
-
-export type WeatherConditionMatchRulesTypes = 'weather_condition';
-
-export const WeatherConditionMatchRulesTypes = {
-    WEATHER_CONDITION: 'weather_condition'
-} as const;
+export enum WeatherConditionMatchRulesTypes {
+    WEATHER_CONDITION = 'weather_condition'
+}
 
 export type RulesTypes = TextMatchRulesTypes & NumericMatchRulesTypes & BoolMatchRulesTypes & KeyValueMatchRulesTypes & VisitorDataExistsMatchRulesTypes & CookieMatchRulesTypes & CountryMatchRulesTypes & VisitorTypeMatchRulesTypes & LanguageMatchRulesTypes & GoalTriggeredMatchRulesTypes & SegmentBucketedMatchRulesTypes & DayOfWeekMatchRulesTypes & HourOfDayMatchRulesTypes & MinuteOfHourMatchRulesTypes & BrowserNameMatchRulesTypes & OsMatchRulesTypes & WeatherConditionMatchRulesTypes;
 
@@ -724,53 +647,41 @@ export type RuleElement = GenericTextMatchRule | GenericNumericMatchRule | Gener
 
 export type RuleElementAudience = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CookieMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule | VisitorDataExistsMatchRule;
 
-export type TextMatchingOptions = 'matches' | 'regexMatches' | 'contains' | 'endsWith' | 'startsWith';
+export enum TextMatchingOptions {
+    MATCHES = 'matches',
+    REGEX_MATCHES = 'regexMatches',
+    CONTAINS = 'contains',
+    ENDS_WITH = 'endsWith',
+    STARTS_WITH = 'startsWith'
+}
 
-export const TextMatchingOptions = {
-    MATCHES: 'matches',
-    REGEX_MATCHES: 'regexMatches',
-    CONTAINS: 'contains',
-    ENDS_WITH: 'endsWith',
-    STARTS_WITH: 'startsWith'
-} as const;
+export enum CookieMatchingOptions {
+    MATCHES = 'matches',
+    REGEX_MATCHES = 'regexMatches',
+    CONTAINS = 'contains',
+    ENDS_WITH = 'endsWith',
+    STARTS_WITH = 'startsWith',
+    EXISTS = 'exists',
+    DOES_NOT_EXIST = 'doesNotExist'
+}
 
-export type CookieMatchingOptions = 'matches' | 'regexMatches' | 'contains' | 'endsWith' | 'startsWith' | 'exists' | 'doesNotExist';
+export enum NumericMatchingOptions {
+    EQUALS_NUMBER = 'equalsNumber',
+    LESS = 'less',
+    LESS_EQUAL = 'lessEqual'
+}
 
-export const CookieMatchingOptions = {
-    MATCHES: 'matches',
-    REGEX_MATCHES: 'regexMatches',
-    CONTAINS: 'contains',
-    ENDS_WITH: 'endsWith',
-    STARTS_WITH: 'startsWith',
-    EXISTS: 'exists',
-    DOES_NOT_EXIST: 'doesNotExist'
-} as const;
+export enum ChoiceMatchingOptions {
+    EQUALS = 'equals'
+}
 
-export type NumericMatchingOptions = 'equalsNumber' | 'less' | 'lessEqual';
+export enum ChoiceContainsOptions {
+    CONTAINS = 'contains'
+}
 
-export const NumericMatchingOptions = {
-    EQUALS_NUMBER: 'equalsNumber',
-    LESS: 'less',
-    LESS_EQUAL: 'lessEqual'
-} as const;
-
-export type ChoiceMatchingOptions = 'equals';
-
-export const ChoiceMatchingOptions = {
-    EQUALS: 'equals'
-} as const;
-
-export type ChoiceContainsOptions = 'contains';
-
-export const ChoiceContainsOptions = {
-    CONTAINS: 'contains'
-} as const;
-
-export type SetMatchingOptions = 'isIn';
-
-export const SetMatchingOptions = {
-    IS_IN: 'isIn'
-} as const;
+export enum SetMatchingOptions {
+    IS_IN = 'isIn'
+}
 
 /**
  * Defines the logical structure for combining multiple rule conditions. It uses a nested OR -> AND -> OR_WHEN structure.
@@ -924,11 +835,9 @@ export type IntegrationGA3 = {
     property_UA?: (string) | null;
 };
 
-export type type = 'ga3';
-
-export const type = {
-    GA3: 'ga3'
-} as const;
+export enum type {
+    GA3 = 'ga3'
+}
 
 export type IntegrationGA4Base = {
     type?: 'ga4';
@@ -938,11 +847,9 @@ export type IntegrationGA4Base = {
     measurementId?: string;
 };
 
-export type type2 = 'ga4';
-
-export const type2 = {
-    GA4: 'ga4'
-} as const;
+export enum type2 {
+    GA4 = 'ga4'
+}
 
 export type IntegrationGA4 = IntegrationGA4Base & {
     /**
@@ -958,19 +865,10 @@ export type IntegrationGA4 = IntegrationGA4Base & {
  * Default is typically 'any' (OR).
  *
  */
-export type GenericListMatchingOptions = 'any' | 'all';
-
-/**
- * Defines how multiple conditions within a list (e.g., multiple audiences or locations linked to an experience) are logically combined:
- * - `any`: The overall condition is met if *at least one* item in the list matches (logical OR).
- * - `all`: The overall condition is met only if *all* items in the list match (logical AND).
- * Default is typically 'any' (OR).
- *
- */
-export const GenericListMatchingOptions = {
-    ANY: 'any',
-    ALL: 'all'
-} as const;
+export enum GenericListMatchingOptions {
+    ANY = 'any',
+    ALL = 'all'
+}
 
 export type VisitorInsightsBase = {
     /**
@@ -996,21 +894,14 @@ export type VisitorInsightsBase = {
  * Higher values collect data from a larger share of traffic and consume allocation faster.
  *
  */
-export type sampling_rate = 5 | 10 | 20 | 30 | 40 | 50;
-
-/**
- * The percentage of visitors included in sampling for Convert Signals session recordings and Heatmaps for this project.
- * Higher values collect data from a larger share of traffic and consume allocation faster.
- *
- */
-export const sampling_rate = {
-    '_5': 5,
-    '_10': 10,
-    '_20': 20,
-    '_30': 30,
-    '_40': 40,
-    '_50': 50
-} as const;
+export enum sampling_rate {
+    '_5' = 5,
+    '_10' = 10,
+    '_20' = 20,
+    '_30' = 30,
+    '_40' = 40,
+    '_50' = 50
+}
 
 /**
  * The method used for detecting and handling order outliers in revenue or product count tracking:
@@ -1019,20 +910,11 @@ export const sampling_rate = {
  * - `percentile`: Orders falling below a lower percentile or above an upper percentile are capped at the values corresponding to those percentiles.
  *
  */
-export type NumericOutlierTypes = 'none' | 'min_max' | 'percentile';
-
-/**
- * The method used for detecting and handling order outliers in revenue or product count tracking:
- * - `none`: No outlier detection is applied.
- * - `min_max`: Orders with values below a specified minimum or above a specified maximum are capped at those boundaries.
- * - `percentile`: Orders falling below a lower percentile or above an upper percentile are capped at the values corresponding to those percentiles.
- *
- */
-export const NumericOutlierTypes = {
-    NONE: 'none',
-    MIN_MAX: 'min_max',
-    PERCENTILE: 'percentile'
-} as const;
+export enum NumericOutlierTypes {
+    NONE = 'none',
+    MIN_MAX = 'min_max',
+    PERCENTILE = 'percentile'
+}
 
 export type NumericOutlierBase = {
     detection_type: NumericOutlierTypes;
@@ -1042,11 +924,9 @@ export type NumericOutlierNone = NumericOutlierBase & {
     detection_type?: 'none';
 };
 
-export type detection_type = 'none';
-
-export const detection_type = {
-    NONE: 'none'
-} as const;
+export enum detection_type {
+    NONE = 'none'
+}
 
 export type NumericOutlierMinMax = NumericOutlierBase & {
     detection_type?: 'min_max';
@@ -1060,11 +940,9 @@ export type NumericOutlierMinMax = NumericOutlierBase & {
     max?: number;
 };
 
-export type detection_type2 = 'min_max';
-
-export const detection_type2 = {
-    MIN_MAX: 'min_max'
-} as const;
+export enum detection_type2 {
+    MIN_MAX = 'min_max'
+}
 
 export type NumericOutlierPercentile = NumericOutlierBase & {
     detection_type?: 'percentile';
@@ -1072,11 +950,9 @@ export type NumericOutlierPercentile = NumericOutlierBase & {
     max?: (unknown & Percentiles);
 };
 
-export type detection_type3 = 'percentile';
-
-export const detection_type3 = {
-    PERCENTILE: 'percentile'
-} as const;
+export enum detection_type3 {
+    PERCENTILE = 'percentile'
+}
 
 export type NumericOutlier = NumericOutlierNone | NumericOutlierMinMax | NumericOutlierPercentile;
 
@@ -1085,24 +961,17 @@ export type NumericOutlier = NumericOutlierNone | NumericOutlierMinMax | Numeric
  * For example, a `min` of 5 and `max` of 95 means orders in the bottom 5% and top 5% of values are considered outliers and capped.
  *
  */
-export type Percentiles = 1 | 5 | 10 | 25 | 50 | 75 | 90 | 95 | 99;
-
-/**
- * Standard percentile values used for outlier detection thresholds.
- * For example, a `min` of 5 and `max` of 95 means orders in the bottom 5% and top 5% of values are considered outliers and capped.
- *
- */
-export const Percentiles = {
-    '_1': 1,
-    '_5': 5,
-    '_10': 10,
-    '_25': 25,
-    '_50': 50,
-    '_75': 75,
-    '_90': 90,
-    '_95': 95,
-    '_99': 99
-} as const;
+export enum Percentiles {
+    '_1' = 1,
+    '_5' = 5,
+    '_10' = 10,
+    '_25' = 25,
+    '_50' = 50,
+    '_75' = 75,
+    '_90' = 90,
+    '_95' = 95,
+    '_99' = 99
+}
 
 export type TimeRange = {
     /**
@@ -1226,16 +1095,14 @@ export type ExperienceChangeBase = {
     };
 };
 
-export type type3 = 'richStructure' | 'customCode' | 'defaultCode' | 'defaultCodeMultipage' | 'defaultRedirect' | 'fullStackFeature';
-
-export const type3 = {
-    RICH_STRUCTURE: 'richStructure',
-    CUSTOM_CODE: 'customCode',
-    DEFAULT_CODE: 'defaultCode',
-    DEFAULT_CODE_MULTIPAGE: 'defaultCodeMultipage',
-    DEFAULT_REDIRECT: 'defaultRedirect',
-    FULL_STACK_FEATURE: 'fullStackFeature'
-} as const;
+export enum type3 {
+    RICH_STRUCTURE = 'richStructure',
+    CUSTOM_CODE = 'customCode',
+    DEFAULT_CODE = 'defaultCode',
+    DEFAULT_CODE_MULTIPAGE = 'defaultCodeMultipage',
+    DEFAULT_REDIRECT = 'defaultRedirect',
+    FULL_STACK_FEATURE = 'fullStackFeature'
+}
 
 /**
  * Represents the unique identifier of an existing change within an experience variation. Used when updating or referencing a specific change.
@@ -1306,11 +1173,9 @@ export type ExperienceChangeDefaultCodeDataBase = ExperienceChangeBase & {
     };
 };
 
-export type type4 = 'defaultCode';
-
-export const type4 = {
-    DEFAULT_CODE: 'defaultCode'
-} as const;
+export enum type4 {
+    DEFAULT_CODE = 'defaultCode'
+}
 
 /**
  * Represents a 'defaultCode' type change, including its system-assigned ID.
@@ -1369,11 +1234,9 @@ export type ExperienceChangeDefaultRedirectDataBase = ExperienceChangeBase & {
     };
 };
 
-export type type5 = 'defaultRedirect';
-
-export const type5 = {
-    DEFAULT_REDIRECT: 'defaultRedirect'
-} as const;
+export enum type5 {
+    DEFAULT_REDIRECT = 'defaultRedirect'
+}
 
 /**
  * Represents a 'defaultRedirect' type change, including its system-assigned ID.
@@ -1436,11 +1299,9 @@ export type ExperienceChangeDefaultCodeMultipageDataBase = ExperienceChangeBase 
     };
 };
 
-export type type6 = 'defaultCodeMultipage';
-
-export const type6 = {
-    DEFAULT_CODE_MULTIPAGE: 'defaultCodeMultipage'
-} as const;
+export enum type6 {
+    DEFAULT_CODE_MULTIPAGE = 'defaultCodeMultipage'
+}
 
 /**
  * Represents a 'defaultCodeMultipage' type change, including its system-assigned ID.
@@ -1503,11 +1364,9 @@ export type ExperienceChangeRichStructureDataBase = ExperienceChangeBase & {
     };
 };
 
-export type type7 = 'richStructure';
-
-export const type7 = {
-    RICH_STRUCTURE: 'richStructure'
-} as const;
+export enum type7 {
+    RICH_STRUCTURE = 'richStructure'
+}
 
 /**
  * Represents a 'richStructure' type change, including its system-assigned ID.
@@ -1566,11 +1425,9 @@ export type ExperienceChangeCustomCodeDataBase = ExperienceChangeBase & {
     };
 };
 
-export type type8 = 'customCode';
-
-export const type8 = {
-    CUSTOM_CODE: 'customCode'
-} as const;
+export enum type8 {
+    CUSTOM_CODE = 'customCode'
+}
 
 /**
  * Represents a 'customCode' type change, including its system-assigned ID.
@@ -1627,11 +1484,9 @@ export type ExperienceChangeFullStackFeatureBase = ExperienceChangeBase & {
     };
 };
 
-export type type9 = 'fullStackFeature';
-
-export const type9 = {
-    FULL_STACK_FEATURE: 'fullStackFeature'
-} as const;
+export enum type9 {
+    FULL_STACK_FEATURE = 'fullStackFeature'
+}
 
 /**
  * Represents a 'fullStackFeature' type change, including its system-assigned ID.
@@ -1674,35 +1529,27 @@ export type UpdateExperienceChangeRequestData = ExperienceChangeAdd;
  * Knowledge Base has many articles on integrations, e.g., "Integrate Convert Experiences with Google Analytics", "Hotjar Integration".
  *
  */
-export type IntegrationProvider = 'baidu' | 'clicktale' | 'clicky' | 'cnzz' | 'crazyegg' | 'econda' | 'eulerian' | 'google_analytics' | 'gosquared' | 'heapanalytics' | 'hotjar' | 'microsoft_clarity' | 'mixpanel' | 'mouseflow' | 'piwik' | 'segmentio' | 'sitecatalyst' | 'woopra' | 'ysance';
-
-/**
- * Identifies the third-party analytics, heatmap, or data platform with which Convert Experiences is integrated for this specific experience.
- * This allows experiment data (like experience ID and variation ID/name) to be sent to the selected provider.
- * Knowledge Base has many articles on integrations, e.g., "Integrate Convert Experiences with Google Analytics", "Hotjar Integration".
- *
- */
-export const IntegrationProvider = {
-    BAIDU: 'baidu',
-    CLICKTALE: 'clicktale',
-    CLICKY: 'clicky',
-    CNZZ: 'cnzz',
-    CRAZYEGG: 'crazyegg',
-    ECONDA: 'econda',
-    EULERIAN: 'eulerian',
-    GOOGLE_ANALYTICS: 'google_analytics',
-    GOSQUARED: 'gosquared',
-    HEAPANALYTICS: 'heapanalytics',
-    HOTJAR: 'hotjar',
-    MICROSOFT_CLARITY: 'microsoft_clarity',
-    MIXPANEL: 'mixpanel',
-    MOUSEFLOW: 'mouseflow',
-    PIWIK: 'piwik',
-    SEGMENTIO: 'segmentio',
-    SITECATALYST: 'sitecatalyst',
-    WOOPRA: 'woopra',
-    YSANCE: 'ysance'
-} as const;
+export enum IntegrationProvider {
+    BAIDU = 'baidu',
+    CLICKTALE = 'clicktale',
+    CLICKY = 'clicky',
+    CNZZ = 'cnzz',
+    CRAZYEGG = 'crazyegg',
+    ECONDA = 'econda',
+    EULERIAN = 'eulerian',
+    GOOGLE_ANALYTICS = 'google_analytics',
+    GOSQUARED = 'gosquared',
+    HEAPANALYTICS = 'heapanalytics',
+    HOTJAR = 'hotjar',
+    MICROSOFT_CLARITY = 'microsoft_clarity',
+    MIXPANEL = 'mixpanel',
+    MOUSEFLOW = 'mouseflow',
+    PIWIK = 'piwik',
+    SEGMENTIO = 'segmentio',
+    SITECATALYST = 'sitecatalyst',
+    WOOPRA = 'woopra',
+    YSANCE = 'ysance'
+}
 
 export type ExperienceIntegrationBase = {
     provider: IntegrationProvider;
@@ -1974,39 +1821,32 @@ export type ExperienceVariationConfig = {
     changes?: Array<ExperienceChangeServing>;
 };
 
-export type ExperienceStatuses = 'draft' | 'active' | 'paused' | 'completed' | 'scheduled';
+export enum ExperienceStatuses {
+    DRAFT = 'draft',
+    ACTIVE = 'active',
+    PAUSED = 'paused',
+    COMPLETED = 'completed',
+    SCHEDULED = 'scheduled'
+}
 
-export const ExperienceStatuses = {
-    DRAFT: 'draft',
-    ACTIVE: 'active',
-    PAUSED: 'paused',
-    COMPLETED: 'completed',
-    SCHEDULED: 'scheduled'
-} as const;
-
-export type ExperienceTypes = 'a/b' | 'a/a' | 'mvt' | 'split_url' | 'multipage' | 'deploy';
-
-export const ExperienceTypes = {
-    A_B: 'a/b',
-    A_A: 'a/a',
-    MVT: 'mvt',
-    SPLIT_URL: 'split_url',
-    MULTIPAGE: 'multipage',
-    DEPLOY: 'deploy'
-} as const;
+export enum ExperienceTypes {
+    A_B = 'a/b',
+    A_A = 'a/a',
+    MVT = 'mvt',
+    SPLIT_URL = 'split_url',
+    MULTIPAGE = 'multipage',
+    DEPLOY = 'deploy',
+    A_B_FULLSTACK = 'a/b_fullstack',
+    FEATURE_ROLLOUT = 'feature_rollout'
+}
 
 /**
  * Variation status
  */
-export type VariationStatuses = 'stopped' | 'running';
-
-/**
- * Variation status
- */
-export const VariationStatuses = {
-    STOPPED: 'stopped',
-    RUNNING: 'running'
-} as const;
+export enum VariationStatuses {
+    STOPPED = 'stopped',
+    RUNNING = 'running'
+}
 
 export type ExperienceIntegrationGAServing = ExperienceIntegrationGA3 | ExperienceIntegrationGA4Base;
 
@@ -2049,18 +1889,13 @@ export type FeatureVariableItemData = {
 /**
  * A variable's type
  */
-export type type10 = 'boolean' | 'float' | 'json' | 'integer' | 'string';
-
-/**
- * A variable's type
- */
-export const type10 = {
-    BOOLEAN: 'boolean',
-    FLOAT: 'float',
-    JSON: 'json',
-    INTEGER: 'integer',
-    STRING: 'string'
-} as const;
+export enum type10 {
+    BOOLEAN = 'boolean',
+    FLOAT = 'float',
+    JSON = 'json',
+    INTEGER = 'integer',
+    STRING = 'string'
+}
 
 /**
  * Goal item to be tracked  inside a project
@@ -2092,89 +1927,73 @@ export type DomInteractionGoal = ConfigGoalBase & {
     settings?: DomInteractionGoalSettings;
 };
 
-export type type11 = 'dom_interaction';
-
-export const type11 = {
-    DOM_INTERACTION: 'dom_interaction'
-} as const;
+export enum type11 {
+    DOM_INTERACTION = 'dom_interaction'
+}
 
 export type ScrollPercentageGoal = ConfigGoalBase & {
     type?: 'scroll_percentage';
     settings?: ScrollPercentageGoalSettings;
 };
 
-export type type12 = 'scroll_percentage';
-
-export const type12 = {
-    SCROLL_PERCENTAGE: 'scroll_percentage'
-} as const;
+export enum type12 {
+    SCROLL_PERCENTAGE = 'scroll_percentage'
+}
 
 export type RevenueGoal = ConfigGoalBase & {
     type?: 'revenue';
     settings?: RevenueGoalSettings;
 };
 
-export type type13 = 'revenue';
-
-export const type13 = {
-    REVENUE: 'revenue'
-} as const;
+export enum type13 {
+    REVENUE = 'revenue'
+}
 
 export type NoSettingsGoal = ConfigGoalBase & {
     type?: 'advanced' | 'visits_page' | 'code_trigger';
 };
 
-export type type14 = 'advanced' | 'visits_page' | 'code_trigger';
-
-export const type14 = {
-    ADVANCED: 'advanced',
-    VISITS_PAGE: 'visits_page',
-    CODE_TRIGGER: 'code_trigger'
-} as const;
+export enum type14 {
+    ADVANCED = 'advanced',
+    VISITS_PAGE = 'visits_page',
+    CODE_TRIGGER = 'code_trigger'
+}
 
 export type GaGoal = ConfigGoalBase & {
     type?: 'ga_import';
     settings?: GaGoalSettings;
 };
 
-export type type15 = 'ga_import';
-
-export const type15 = {
-    GA_IMPORT: 'ga_import'
-} as const;
+export enum type15 {
+    GA_IMPORT = 'ga_import'
+}
 
 export type SubmitsFormGoal = ConfigGoalBase & {
     type?: 'submits_form';
     settings?: SubmitsFormGoalSettings;
 };
 
-export type type16 = 'submits_form';
-
-export const type16 = {
-    SUBMITS_FORM: 'submits_form'
-} as const;
+export enum type16 {
+    SUBMITS_FORM = 'submits_form'
+}
 
 export type ClicksLinkGoal = ConfigGoalBase & {
     type?: 'clicks_link';
     settings?: ClicksLinkGoalSettings;
 };
 
-export type type17 = 'clicks_link';
-
-export const type17 = {
-    CLICKS_LINK: 'clicks_link'
-} as const;
+export enum type17 {
+    CLICKS_LINK = 'clicks_link'
+}
 
 export type ClicksElementGoal = ConfigGoalBase & {
     type?: 'clicks_element';
     settings?: ClicksElementGoalSettings;
 };
 
-export type type18 = 'clicks_element';
-
-export const type18 = {
-    CLICKS_ELEMENT: 'clicks_element'
-} as const;
+export enum type18 {
+    CLICKS_ELEMENT = 'clicks_element'
+}
 
 export type DomInteractionGoalSettings = {
     /**
@@ -2226,20 +2045,10 @@ export type RevenueGoalSettings = {
  * when on page where this goal is triggered via "triggering_rule"
  *
  */
-export type triggering_type = 'manual' | 'ga';
-
-/**
- * Type of the revenue goal tracking, one of the below.
- * * "manual" - goal will be triggered through the given revenue tracking code;
- * An empty **triggering_rule** has to be provided as that takes priority over manual triggering
- * * "ga" - Convert will attempt to pick revenue from GA revenue tracking code and attach it to this goal,
- * when on page where this goal is triggered via "triggering_rule"
- *
- */
-export const triggering_type = {
-    MANUAL: 'manual',
-    GA: 'ga'
-} as const;
+export enum triggering_type {
+    MANUAL = 'manual',
+    GA = 'ga'
+}
 
 export type SubmitsFormGoalSettings = {
     /**
@@ -2269,18 +2078,13 @@ export type ClicksElementGoalSettings = {
 /**
  * Goals type, one of below.
  */
-export type GoalTypes = 'advanced' | 'dom_interaction' | 'scroll_percentage' | 'code_trigger' | 'revenue';
-
-/**
- * Goals type, one of below.
- */
-export const GoalTypes = {
-    ADVANCED: 'advanced',
-    DOM_INTERACTION: 'dom_interaction',
-    SCROLL_PERCENTAGE: 'scroll_percentage',
-    CODE_TRIGGER: 'code_trigger',
-    REVENUE: 'revenue'
-} as const;
+export enum GoalTypes {
+    ADVANCED = 'advanced',
+    DOM_INTERACTION = 'dom_interaction',
+    SCROLL_PERCENTAGE = 'scroll_percentage',
+    CODE_TRIGGER = 'code_trigger',
+    REVENUE = 'revenue'
+}
 
 /**
  * Defines how and when an experience associated with this location should be activated for a visitor who matches the location's rules.
@@ -2299,23 +2103,12 @@ export type LocationTrigger = LocationTriggerDomElement | LocationTriggerCallbac
  * Note: For Full Stack projects, `upon_run` is effectively the only mode, as activation is handled by the SDK.
  *
  */
-export type LocationTriggerTypes = 'upon_run' | 'manual' | 'dom_element' | 'callback';
-
-/**
- * Specifies the mechanism that activates an experience when its location rules are met:
- * - `upon_run`: (Default) The experience activates as soon as the Convert tracking script loads and evaluates that the visitor matches the location's rules (e.g., URL match). This is the standard behavior for most A/B tests.
- * - `manual`: The experience only activates when explicitly triggered by a JavaScript call (`window._conv_q.push({ what: 'triggerLocation', params: { locationId: '...' } })`). Gives precise programmatic control over activation.
- * - `dom_element`: The experience activates upon a specific user interaction (e.g., 'click', 'hover', 'in_view', 'change') with a defined DOM element (identified by a CSS `selector`). Useful for testing changes related to interactive elements.
- * - `callback`: The experience activates when a custom JavaScript `callback` function (provided in `js`) calls the `activate()` function passed to it. Allows for complex asynchronous activation logic, e.g., after an API response or a specific SPA state change.
- * Note: For Full Stack projects, `upon_run` is effectively the only mode, as activation is handled by the SDK.
- *
- */
-export const LocationTriggerTypes = {
-    UPON_RUN: 'upon_run',
-    MANUAL: 'manual',
-    DOM_ELEMENT: 'dom_element',
-    CALLBACK: 'callback'
-} as const;
+export enum LocationTriggerTypes {
+    UPON_RUN = 'upon_run',
+    MANUAL = 'manual',
+    DOM_ELEMENT = 'dom_element',
+    CALLBACK = 'callback'
+}
 
 export type LocationTriggerBase = {
     type: LocationTriggerTypes;
@@ -2325,21 +2118,17 @@ export type LocationTriggerUponRun = LocationTriggerBase & {
     type?: 'upon_run';
 };
 
-export type type19 = 'upon_run';
-
-export const type19 = {
-    UPON_RUN: 'upon_run'
-} as const;
+export enum type19 {
+    UPON_RUN = 'upon_run'
+}
 
 export type LocationTriggerManual = LocationTriggerBase & {
     type?: 'manual';
 };
 
-export type type20 = 'manual';
-
-export const type20 = {
-    MANUAL: 'manual'
-} as const;
+export enum type20 {
+    MANUAL = 'manual'
+}
 
 /**
  * The type of user interaction with a DOM element that will trigger the experience:
@@ -2349,22 +2138,12 @@ export const type20 = {
  * - `change`: Activates when the value of a form element (like input, select, textarea) changes.
  *
  */
-export type LocationDomTriggerEvents = 'click' | 'hover' | 'in_view' | 'change';
-
-/**
- * The type of user interaction with a DOM element that will trigger the experience:
- * - `click`: Activates when the element is clicked.
- * - `hover`: Activates when the mouse pointer hovers over the element (mouseenter).
- * - `in_view`: Activates when the element becomes visible in the browser's viewport (e.g., user scrolls to it). KB: "Launch Experiments Using Custom JavaScript When Elements Appear in DOM".
- * - `change`: Activates when the value of a form element (like input, select, textarea) changes.
- *
- */
-export const LocationDomTriggerEvents = {
-    CLICK: 'click',
-    HOVER: 'hover',
-    IN_VIEW: 'in_view',
-    CHANGE: 'change'
-} as const;
+export enum LocationDomTriggerEvents {
+    CLICK = 'click',
+    HOVER = 'hover',
+    IN_VIEW = 'in_view',
+    CHANGE = 'change'
+}
 
 export type LocationTriggerDomElement = LocationTriggerBase & {
     type?: 'dom_element';
@@ -2378,11 +2157,9 @@ export type LocationTriggerDomElement = LocationTriggerBase & {
     events: Array<LocationDomTriggerEvents>;
 };
 
-export type type21 = 'dom_element';
-
-export const type21 = {
-    DOM_ELEMENT: 'dom_element'
-} as const;
+export enum type21 {
+    DOM_ELEMENT = 'dom_element'
+}
 
 export type LocationTriggerCallback = LocationTriggerBase & {
     type?: 'callback';
@@ -2411,11 +2188,9 @@ export type LocationTriggerCallback = LocationTriggerBase & {
     js: string;
 };
 
-export type type22 = 'callback';
-
-export const type22 = {
-    CALLBACK: 'callback'
-} as const;
+export enum type22 {
+    CALLBACK = 'callback'
+}
 
 /**
  * Base Location object
@@ -2592,30 +2367,20 @@ export type ConfigProject = {
 /**
  * Value which describes project product type
  */
-export type type23 = 'fullstack' | 'web';
-
-/**
- * Value which describes project product type
- */
-export const type23 = {
-    FULLSTACK: 'fullstack',
-    WEB: 'web'
-} as const;
+export enum type23 {
+    FULLSTACK = 'fullstack',
+    WEB = 'web'
+}
 
 /**
  * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
  */
-export type do_not_track = 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
-
-/**
- * Follow the 'Do not track' browser settings for users in the mentioned area of the world.
- */
-export const do_not_track = {
-    OFF: 'OFF',
-    EU_ONLY: 'EU ONLY',
-    EEA_ONLY: 'EEA ONLY',
-    WORLDWIDE: 'Worldwide'
-} as const;
+export enum do_not_track {
+    OFF = 'OFF',
+    EU_ONLY = 'EU ONLY',
+    EEA_ONLY = 'EEA ONLY',
+    WORLDWIDE = 'Worldwide'
+}
 
 /**
  * Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
@@ -2625,22 +2390,12 @@ export const do_not_track = {
  * - Worldwide: Follow GPC signals for users worldwide.
  *
  */
-export type global_privacy_control = 'OFF' | 'EU ONLY' | 'EEA ONLY' | 'Worldwide';
-
-/**
- * Follow Global Privacy Control (GPC) signals for users in the mentioned area of the world.
- * - OFF: Do not follow GPC signals.
- * - EU ONLY: Follow GPC signals for users in the European Union only.
- * - EEA ONLY: Follow GPC signals for users in the European Economic Area only.
- * - Worldwide: Follow GPC signals for users worldwide.
- *
- */
-export const global_privacy_control = {
-    OFF: 'OFF',
-    EU_ONLY: 'EU ONLY',
-    EEA_ONLY: 'EEA ONLY',
-    WORLDWIDE: 'Worldwide'
-} as const;
+export enum global_privacy_control {
+    OFF = 'OFF',
+    EU_ONLY = 'EU ONLY',
+    EEA_ONLY = 'EEA ONLY',
+    WORLDWIDE = 'Worldwide'
+}
 
 /**
  * Settings to identify which tracking script version will be applied to the project.
@@ -2758,15 +2513,10 @@ export type VisitorTrackingEvents = {
 /**
  * Type of the event. It can be a bucketing or a conversion event
  */
-export type eventType = 'bucketing' | 'conversion';
-
-/**
- * Type of the event. It can be a bucketing or a conversion event
- */
-export const eventType = {
-    BUCKETING: 'bucketing',
-    CONVERSION: 'conversion'
-} as const;
+export enum eventType {
+    BUCKETING = 'bucketing',
+    CONVERSION = 'conversion'
+}
 
 /**
  * Bucketing event data
@@ -2870,55 +2620,33 @@ export type VisitorSegments = {
  * OTH - Other
  *
  */
-export type browser = 'IE' | 'CH' | 'FF' | 'OP' | 'SF' | 'OTH';
-
-/**
- * Browser used:
- * IE - Internet Explorer
- * CH - Chrome
- * FF - Firefox
- * OP - Opera
- * SF - Safari
- * OTH - Other
- *
- */
-export const browser = {
-    IE: 'IE',
-    CH: 'CH',
-    FF: 'FF',
-    OP: 'OP',
-    SF: 'SF',
-    OTH: 'OTH'
-} as const;
+export enum browser {
+    IE = 'IE',
+    CH = 'CH',
+    FF = 'FF',
+    OP = 'OP',
+    SF = 'SF',
+    OTH = 'OTH'
+}
 
 /**
  * Traffic source
  */
-export type source = 'campaign' | 'search' | 'referral' | 'direct' | 'ai_tool';
-
-/**
- * Traffic source
- */
-export const source = {
-    CAMPAIGN: 'campaign',
-    SEARCH: 'search',
-    REFERRAL: 'referral',
-    DIRECT: 'direct',
-    AI_TOOL: 'ai_tool'
-} as const;
+export enum source {
+    CAMPAIGN = 'campaign',
+    SEARCH = 'search',
+    REFERRAL = 'referral',
+    DIRECT = 'direct',
+    AI_TOOL = 'ai_tool'
+}
 
 /**
  * Type of the visitor
  */
-export type visitorType = 'new' | 'returning';
-
-/**
- * Type of the visitor
- */
-export const visitorType = {
-    NEW: 'new',
-    RETURNING: 'returning'
-} as const;
+export enum visitorType {
+    NEW = 'new',
+    RETURNING = 'returning'
+}
 
 /**
  * Response containing project's visitor data
