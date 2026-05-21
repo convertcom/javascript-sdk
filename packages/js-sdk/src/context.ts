@@ -136,9 +136,8 @@ export class Context implements ContextInterface {
       this._visitorId,
       experienceKey,
       {
+        ...attributes,
         visitorProperties, // represents audiences
-        locationProperties: attributes?.locationProperties, // represents site_area/locations
-        updateVisitorProperties: attributes?.updateVisitorProperties,
         environment: attributes?.environment || this._environment
       }
     );
@@ -190,9 +189,8 @@ export class Context implements ContextInterface {
     const bucketedVariations = this._experienceManager.selectVariations(
       this._visitorId,
       {
+        ...attributes,
         visitorProperties, // represents audiences
-        locationProperties: attributes?.locationProperties, // represents site_area/locations
-        updateVisitorProperties: attributes?.updateVisitorProperties,
         environment: attributes?.environment || this._environment
       }
     );
