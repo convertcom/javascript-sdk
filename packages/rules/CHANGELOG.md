@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.1.4...js-sdk-rules-v2.2.0) (2026-05-21)
+
+
+### Features
+
+* adding cookie (exist , not exist) conditions ([f5529c3](https://github.com/convertcom/javascript-sdk/commit/f5529c3d82988ff5896082d14e1404db85f401cb))
+* adding cookie (exist , not exist) conditions ([8183b67](https://github.com/convertcom/javascript-sdk/commit/8183b67d4aeb22a2627f07b60313cc3dc8b844d7))
+
 ## [2.1.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.1.3...js-sdk-rules-v2.1.4) (2025-11-26)
 
 
