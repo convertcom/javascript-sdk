@@ -34,10 +34,13 @@ jobs:
           corepack enable
           corepack prepare yarn@stable --activate
 
+      - name: Install dependencies
+        run: yarn
+
       - name: Install Playwright browsers
         run: |
           cd packages/js-sdk
-          npx playwright install --with-deps chromium
+          yarn playwright install --with-deps chromium
 
       - name: Runs the SDK QA checks
         env:
@@ -45,7 +48,6 @@ jobs:
           CONVERT_STAGING_SDK_KEY2: ${{ secrets.CONVERT_STAGING_SDK_KEY2 }}
           CONVERT_STAGING_SDK_KEY2_SECRET: ${{ secrets.CONVERT_STAGING_SDK_KEY2_SECRET }}
         run: |
-          yarn
           cd packages/js-sdk
           yarn lint
           yarn build

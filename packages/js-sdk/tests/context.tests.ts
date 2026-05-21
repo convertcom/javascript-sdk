@@ -179,6 +179,78 @@ describe('Context tests', function () {
         done
       );
     });
+    it('Should forward BucketingAttributes (enableTracking, forceVariationId, ignoreLocationProperties) through runExperience', function () {
+      const experienceKey = 'test-experience-ab-fullstack-2';
+      const originalSelectVariation =
+        experienceManager.selectVariation.bind(experienceManager);
+      let capturedAttributes;
+      experienceManager.selectVariation = function (
+        capturedVisitorId,
+        capturedExperienceKey,
+        attributes
+      ) {
+        capturedAttributes = attributes;
+        return originalSelectVariation(
+          capturedVisitorId,
+          capturedExperienceKey,
+          attributes
+        );
+      };
+      try {
+        context.runExperience(experienceKey, {
+          locationProperties: {url: 'https://convert.com/'},
+          visitorProperties: {varName3: 'something'},
+          enableTracking: false,
+          forceVariationId: '100299461',
+          ignoreLocationProperties: true,
+          updateVisitorProperties: true
+        });
+        expect(capturedAttributes).to.include({
+          enableTracking: false,
+          forceVariationId: '100299461',
+          ignoreLocationProperties: true,
+          updateVisitorProperties: true
+        });
+        expect(capturedAttributes.locationProperties).to.deep.equal({
+          url: 'https://convert.com/'
+        });
+      } finally {
+        experienceManager.selectVariation = originalSelectVariation;
+      }
+    });
+    it('Should forward BucketingAttributes (enableTracking, forceVariationId, ignoreLocationProperties) through runExperiences', function () {
+      const originalSelectVariations =
+        experienceManager.selectVariations.bind(experienceManager);
+      let capturedAttributes;
+      experienceManager.selectVariations = function (
+        capturedVisitorId,
+        attributes
+      ) {
+        capturedAttributes = attributes;
+        return originalSelectVariations(capturedVisitorId, attributes);
+      };
+      try {
+        context.runExperiences({
+          locationProperties: {url: 'https://convert.com/'},
+          visitorProperties: {varName3: 'something'},
+          enableTracking: false,
+          forceVariationId: '100299461',
+          ignoreLocationProperties: true,
+          updateVisitorProperties: true
+        });
+        expect(capturedAttributes).to.include({
+          enableTracking: false,
+          forceVariationId: '100299461',
+          ignoreLocationProperties: true,
+          updateVisitorProperties: true
+        });
+        expect(capturedAttributes.locationProperties).to.deep.equal({
+          url: 'https://convert.com/'
+        });
+      } finally {
+        experienceManager.selectVariations = originalSelectVariations;
+      }
+    });
     it('Shoud successfully get a single feature and its status', function (done) {
       this.timeout(test_timeout);
       getSingleFeatureWithStatus(
