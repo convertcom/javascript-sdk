@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.2.3...js-sdk-utils-v2.3.0) (2026-05-21)
+
+
+### Features
+
+* adding cookie (exist , not exist) conditions ([f5529c3](https://github.com/convertcom/javascript-sdk/commit/f5529c3d82988ff5896082d14e1404db85f401cb))
+* adding cookie (exist , not exist) conditions ([8183b67](https://github.com/convertcom/javascript-sdk/commit/8183b67d4aeb22a2627f07b60313cc3dc8b844d7))
+
 ## [2.2.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.2.2...js-sdk-utils-v2.2.3) (2025-09-05)
 
 
