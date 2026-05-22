@@ -9,6 +9,12 @@ import {ERROR_MESSAGES, MESSAGES} from '@convertcom/js-sdk-enums';
 import type {RequestOptions} from 'https';
 import {objectNotEmpty} from './object-utils';
 
+/**
+ * Server-side User-Agent advertised by the SDK so the metrics-endpoint
+ * bot filter recognises Convert traffic via its `isConvertAgentUA` bypass.
+ */
+const CONVERT_AGENT_USER_AGENT = 'ConvertAgent/1.0';
+
 export type HttpMethod =
   | 'GET'
   | 'DELETE'
@@ -212,7 +218,7 @@ export const HttpClient = {
         if (runtimeResult.runtime !== 'browser') {
           if (!options.headers) options.headers = {};
           (options.headers as Record<string, string>)['User-Agent'] =
-            'ConvertAgent/1.0';
+            CONVERT_AGENT_USER_AGENT;
         }
         if (config?.data && supportsRequestBody(method)) {
           options.body = JSON.stringify(config.data);
@@ -330,7 +336,7 @@ export const HttpClient = {
         // See note in the fetch branch above. old-nodejs is always
         // server-side, so the UA announcement always applies.
         if (!options.headers) options.headers = {};
-        options.headers['User-Agent'] = 'ConvertAgent/1.0';
+        options.headers['User-Agent'] = CONVERT_AGENT_USER_AGENT;
         if (postData) {
           options.headers['Content-Length'] = Buffer.byteLength(postData);
         }
