@@ -31,44 +31,6 @@ export enum ConfigAudienceTypes {
     TRANSIENT = 'transient'
 }
 
-/**
- * Account billing status
- */
-export type PlanStatus = 'paid' | 'trial' | 'trialExpired' | 'canceled' | 'paused';
-
-/**
- * Account billing status
- */
-export const PlanStatus = {
-    PAID: 'paid',
-    TRIAL: 'trial',
-    TRIAL_EXPIRED: 'trialExpired',
-    CANCELED: 'canceled',
-    PAUSED: 'paused'
-} as const;
-
-/**
- * The Convert product line this billing plan pertains to.
- * - `experiences`: Relates to A/B testing, MVT, Split URL, and personalization features.
- * - `deploy`: Relates to the "Deploy" feature for rolling out changes to specific audiences without A/B testing reports. Knowledge Base: "Deployments have the potential to contain small segments...and this could be interpreted by Privacy Authorities in Europe as identification of data subjects."
- * - `addons`: Relates to add-on products that extend the core platform capabilities.
- *
- */
-export type Products = 'experiences' | 'deploy' | 'addons';
-
-/**
- * The Convert product line this billing plan pertains to.
- * - `experiences`: Relates to A/B testing, MVT, Split URL, and personalization features.
- * - `deploy`: Relates to the "Deploy" feature for rolling out changes to specific audiences without A/B testing reports. Knowledge Base: "Deployments have the potential to contain small segments...and this could be interpreted by Privacy Authorities in Europe as identification of data subjects."
- * - `addons`: Relates to add-on products that extend the core platform capabilities.
- *
- */
-export const Products = {
-    EXPERIENCES: 'experiences',
-    DEPLOY: 'deploy',
-    ADDONS: 'addons'
-} as const;
-
 export type PageNumber = {
     /**
      * The page number for paginated results. For example, if `results_per_page` is 30, `page: 2` will retrieve items 31-60.
@@ -1916,14 +1878,14 @@ export type ConfigGoalBase = {
     /**
      * List of goal types to be returned
      */
-    type?: Array<GoalTypes>;
+    type?: GoalTypes;
     rules?: ((RuleObject) | null);
 };
 
 export type ConfigGoal = DomInteractionGoal | ScrollPercentageGoal | RevenueGoal | NoSettingsGoal | GaGoal | SubmitsFormGoal | ClicksLinkGoal | ClicksElementGoal;
 
 export type DomInteractionGoal = ConfigGoalBase & {
-    type?: 'dom_interaction';
+    type?: GoalTypes.DOM_INTERACTION;
     settings?: DomInteractionGoalSettings;
 };
 
@@ -1932,7 +1894,7 @@ export enum type11 {
 }
 
 export type ScrollPercentageGoal = ConfigGoalBase & {
-    type?: 'scroll_percentage';
+    type?: GoalTypes.SCROLL_PERCENTAGE;
     settings?: ScrollPercentageGoalSettings;
 };
 
@@ -1941,7 +1903,7 @@ export enum type12 {
 }
 
 export type RevenueGoal = ConfigGoalBase & {
-    type?: 'revenue';
+    type?: GoalTypes.REVENUE;
     settings?: RevenueGoalSettings;
 };
 
@@ -1950,7 +1912,7 @@ export enum type13 {
 }
 
 export type NoSettingsGoal = ConfigGoalBase & {
-    type?: 'advanced' | 'visits_page' | 'code_trigger';
+    type?: GoalTypes.ADVANCED | 'visits_page' | GoalTypes.CODE_TRIGGER;
 };
 
 export enum type14 {
@@ -2115,7 +2077,7 @@ export type LocationTriggerBase = {
 };
 
 export type LocationTriggerUponRun = LocationTriggerBase & {
-    type?: 'upon_run';
+    type?: LocationTriggerTypes.UPON_RUN;
 };
 
 export enum type19 {
@@ -2123,7 +2085,7 @@ export enum type19 {
 }
 
 export type LocationTriggerManual = LocationTriggerBase & {
-    type?: 'manual';
+    type?: LocationTriggerTypes.MANUAL;
 };
 
 export enum type20 {
@@ -2146,7 +2108,7 @@ export enum LocationDomTriggerEvents {
 }
 
 export type LocationTriggerDomElement = LocationTriggerBase & {
-    type?: 'dom_element';
+    type?: LocationTriggerTypes.DOM_ELEMENT;
     /**
      * Describes html selector
      */
@@ -2162,7 +2124,7 @@ export enum type21 {
 }
 
 export type LocationTriggerCallback = LocationTriggerBase & {
-    type?: 'callback';
+    type?: LocationTriggerTypes.CALLBACK;
     /**
      * Describes the js callback that will be executed in order to fire the experience.
      *
