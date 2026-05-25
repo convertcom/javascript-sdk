@@ -3,6 +3,11 @@
  * Version 1.0.0
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
+ *
+ * Server-side HTTP requests issued through this SDK announce themselves as
+ * `User-Agent: ConvertAgent/1.0` (see packages/utils/src/http-client.ts). This
+ * is an SDK invariant relied on by the metrics endpoint's isbot bypass and is
+ * not customer- or env-configurable.
  */
 import {ApiManagerInterface} from '@convertcom/js-sdk-api';
 import {ContextInterface} from './interfaces/context';
