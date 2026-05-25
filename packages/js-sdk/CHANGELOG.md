@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.4.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.4.0...js-sdk-v4.4.1) (2026-05-21)
+
+
+### Bug Fixes
+
+* **context:** forward all BucketingAttributes to ExperienceManager ([b215167](https://github.com/convertcom/javascript-sdk/commit/b21516727381ce7620bd15e6fac66fc5dd2785c4))
+* **context:** forward all BucketingAttributes to ExperienceManager ([90e4730](https://github.com/convertcom/javascript-sdk/commit/90e4730386a4cceb9ce35e484654f84f3c33709c))
+
 ## [4.4.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.3.4...js-sdk-v4.4.0) (2026-04-06)
 
 
