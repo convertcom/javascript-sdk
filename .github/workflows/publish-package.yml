@@ -23,7 +23,8 @@ jobs:
         run: |
           corepack enable
           corepack prepare yarn@4.10.3 --activate
-      - run: yarn
+      - name: Install deps
+        run: yarn install --immutable
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-enums-v') }}
         run: |
           yarn enums:build

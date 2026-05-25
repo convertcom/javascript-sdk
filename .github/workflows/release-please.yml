@@ -39,7 +39,7 @@ jobs:
           corepack enable
           corepack prepare yarn@4.10.3 --activate
       - name: Install deps
-        run: yarn
+        run: yarn install --immutable
       - name: Build & publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
