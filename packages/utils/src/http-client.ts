@@ -9,6 +9,12 @@ import {ERROR_MESSAGES, MESSAGES} from '@convertcom/js-sdk-enums';
 import type {RequestOptions} from 'https';
 import {objectNotEmpty} from './object-utils';
 
+/**
+ * Server-side User-Agent advertised by the SDK so the metrics-endpoint
+ * bot filter recognises Convert traffic via its `isConvertAgentUA` bypass.
+ */
+const CONVERT_AGENT_USER_AGENT = 'ConvertAgent/1.0';
+
 export type HttpMethod =
   | 'GET'
   | 'DELETE'
@@ -204,6 +210,16 @@ export const HttpClient = {
           keepalive: true // to allow the request to complete even if the page unloads
         };
         if (config?.headers) options.headers = config.headers;
+        // Always announce as Convert SDK traffic on server-side so the
+        // metrics-endpoint bot filter recognises us via its
+        // `isConvertAgentUA` bypass. Skip in browser — browsers strip
+        // User-Agent per the W3C forbidden-header list, and a browser's
+        // natural UA does not trigger isbot.
+        if (runtimeResult.runtime !== 'browser') {
+          if (!options.headers) options.headers = {};
+          (options.headers as Record<string, string>)['User-Agent'] =
+            CONVERT_AGENT_USER_AGENT;
+        }
         if (config?.data && supportsRequestBody(method)) {
           options.body = JSON.stringify(config.data);
         }
@@ -317,8 +333,11 @@ export const HttpClient = {
             ? JSON.stringify(config.data)
             : null;
         if (config?.headers) options.headers = config.headers;
+        // See note in the fetch branch above. old-nodejs is always
+        // server-side, so the UA announcement always applies.
+        if (!options.headers) options.headers = {};
+        options.headers['User-Agent'] = CONVERT_AGENT_USER_AGENT;
         if (postData) {
-          if (!options.headers) options.headers = {};
           options.headers['Content-Length'] = Buffer.byteLength(postData);
         }
         const req = client.request(options, (res) => {
