@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.4.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.3.0...js-sdk-utils-v2.4.0) (2026-05-25)
+
+
+### Features
+
+* **utils:** always announce as Convert SDK via ConvertAgent User-Agent ([0c68a45](https://github.com/convertcom/javascript-sdk/commit/0c68a45bba928c206474a0c569eb654c9f5a53ee))
+* **utils:** always announce as Convert SDK via ConvertAgent User-Agent ([fa7e6f9](https://github.com/convertcom/javascript-sdk/commit/fa7e6f9726fa612fe1cca56c60dcc6e38e54d0a5))
+
 ## [2.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.2.3...js-sdk-utils-v2.3.0) (2026-05-21)
 
 

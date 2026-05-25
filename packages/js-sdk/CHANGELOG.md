@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.4.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.4.1...js-sdk-v4.4.2) (2026-05-25)
+
+
+### Bug Fixes
+
+* **js-sdk:** document ConvertAgent UA invariant (trigger js-sdk release) ([c4d1224](https://github.com/convertcom/javascript-sdk/commit/c4d12247a02da4572dc54fe55586c9752d8ff236))
+* **js-sdk:** document ConvertAgent User-Agent invariant on server-side HTTP ([7244fc8](https://github.com/convertcom/javascript-sdk/commit/7244fc8e8e87fecc7f9ed236319dc9e5a5184a0a)), closes [#387](https://github.com/convertcom/javascript-sdk/issues/387)
+
 ## [4.4.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.4.0...js-sdk-v4.4.1) (2026-05-21)
 
 
