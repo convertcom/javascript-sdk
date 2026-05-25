@@ -35,11 +35,16 @@ jobs:
       - name: Installing npm packages
         run: yarn install --immutable
 
+      - name: Install Playwright browsers
+        run: |
+          cd packages/js-sdk
+          yarn playwright install --with-deps chromium
+
       - name: Generating coverage and docs
         run: |
           cd packages/js-sdk
-          yarn test
           yarn build
+          yarn test
 
       - name: Checkout gh-pages
         uses: actions/checkout@v3
