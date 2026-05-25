@@ -19,9 +19,12 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Resolve tag
         run: echo "RELEASE_TAG=${{ github.event.release.tag_name || inputs.tag }}" >> $GITHUB_ENV
-      - run: |
-          yarn set version berry
-          yarn
+      - name: Setup Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@4.10.3 --activate
+      - name: Install deps
+        run: yarn install --immutable
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-enums-v') }}
         run: |
           yarn enums:build
