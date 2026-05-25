@@ -34,10 +34,12 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
-      - name: Install deps
+      - name: Setup Yarn
         run: |
-          yarn set version berry
-          yarn
+          corepack enable
+          corepack prepare yarn@4.10.3 --activate
+      - name: Install deps
+        run: yarn
       - name: Build & publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
