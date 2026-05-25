@@ -10,13 +10,20 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
+      - name: Ensure npm >= 11.5.1 (required for Trusted Publisher OIDC)
+        run: npm install -g npm@latest
       - name: Resolve tag
         run: echo "RELEASE_TAG=${{ github.event.release.tag_name || inputs.tag }}" >> $GITHUB_ENV
       - name: Setup Yarn
@@ -29,77 +36,51 @@ jobs:
         run: |
           yarn enums:build
           (cd packages/enums && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-types-v') }}
         run: |
           yarn types:build
           (cd packages/types && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-utils-v') }}
         run: |
           yarn utils:build
           (cd packages/utils && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-event-v') }}
         run: |
           yarn event:build
           (cd packages/event && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-bucketing-v') }}
         run: |
           yarn bucketing:build
           (cd packages/bucketing && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-logger-v') }}
         run: |
           yarn logger:build
           (cd packages/logger && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-rules-v') }}
         run: |
           yarn rules:build
           (cd packages/rules && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-segments-v') }}
         run: |
           yarn segments:build
           (cd packages/segments && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-api-v') }}
         run: |
           yarn api:build
           (cd packages/api && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-data-v') }}
         run: |
           yarn data:build
           (cd packages/data && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-experience-v') }}
         run: |
           yarn experience:build
           (cd packages/experience && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-cloudflare-v') }}
         run: |
           yarn cloudflare:build
           (cd packages/cloudflare && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - if: ${{ startsWith(env.RELEASE_TAG, 'js-sdk-v') }}
         run: |
           yarn sdk:build
           (cd packages/js-sdk && npm publish --access public)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
