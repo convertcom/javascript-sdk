@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v2.3.0...js-sdk-enums-v2.3.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **js-sdk:** pick up Web Worker runtime detection fix from js-sdk-utils ([7d47d87](https://github.com/convertcom/javascript-sdk/commit/7d47d87a82b6797e7683205a26a5f60589d3c06e))
+
 ## [2.3.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-enums-v2.2.1...js-sdk-enums-v2.3.0) (2025-09-05)
 
 

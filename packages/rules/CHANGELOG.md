@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.2.0...js-sdk-rules-v2.2.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **js-sdk:** pick up Web Worker runtime detection fix from js-sdk-utils ([7d47d87](https://github.com/convertcom/javascript-sdk/commit/7d47d87a82b6797e7683205a26a5f60589d3c06e))
+
 ## [2.2.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.1.4...js-sdk-rules-v2.2.0) (2026-05-21)
 
 
