@@ -146,7 +146,7 @@ const determineRuntime = (): RuntimeResult => {
   // endpoint rejected, breaking every signals worker upload).
   if (
     typeof self !== 'undefined' &&
-    typeof (self as {importScripts?: unknown}).importScripts === 'function'
+    typeof (self as {importScripts?: unknown})?.importScripts === 'function'
   ) {
     return {runtime: 'browser'};
   }
