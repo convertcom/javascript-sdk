@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.4.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.4.0...js-sdk-utils-v2.4.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **js-sdk:** pick up Web Worker runtime detection fix from js-sdk-utils ([7d47d87](https://github.com/convertcom/javascript-sdk/commit/7d47d87a82b6797e7683205a26a5f60589d3c06e))
+* **utils:** classify browser Web Workers as browser runtime in HttpClient ([e17f06e](https://github.com/convertcom/javascript-sdk/commit/e17f06edc9cb7885ee428ae68a66dffe6c634002))
+* **utils:** classify browser Web Workers as browser runtime in HttpClient ([49b2af0](https://github.com/convertcom/javascript-sdk/commit/49b2af0e2a5ce444c2bec57a474324fff2bf5a4b))
+* **utils:** tolerate null self in worker runtime detection ([d852dc3](https://github.com/convertcom/javascript-sdk/commit/d852dc370653581abe3d656eb3c35cd2f0edd587))
+
 ## [2.4.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-utils-v2.3.0...js-sdk-utils-v2.4.0) (2026-05-25)
 
 

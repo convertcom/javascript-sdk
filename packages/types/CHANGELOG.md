@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.13.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.13.0...js-sdk-types-v3.13.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **js-sdk:** pick up Web Worker runtime detection fix from js-sdk-utils ([7d47d87](https://github.com/convertcom/javascript-sdk/commit/7d47d87a82b6797e7683205a26a5f60589d3c06e))
+
 ## [3.13.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.12.0...js-sdk-types-v3.13.0) (2026-05-25)
 
 
