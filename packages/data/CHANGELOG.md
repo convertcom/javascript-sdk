@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.3.3...js-sdk-data-v3.3.4) (2026-06-05)
+
+
+### Bug Fixes
+
+* **js-sdk:** pick up Web Worker runtime detection fix from js-sdk-utils ([7d47d87](https://github.com/convertcom/javascript-sdk/commit/7d47d87a82b6797e7683205a26a5f60589d3c06e))
+
 ## [3.3.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.3.2...js-sdk-data-v3.3.3) (2025-09-05)
 
 

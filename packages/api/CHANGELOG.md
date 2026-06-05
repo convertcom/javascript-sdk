@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.5](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.1.4...js-sdk-api-v2.1.5) (2026-06-05)
+
+
+### Bug Fixes
+
+* **js-sdk:** pick up Web Worker runtime detection fix from js-sdk-utils ([7d47d87](https://github.com/convertcom/javascript-sdk/commit/7d47d87a82b6797e7683205a26a5f60589d3c06e))
+
 ## [2.1.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.1.3...js-sdk-api-v2.1.4) (2025-09-05)
 
 
