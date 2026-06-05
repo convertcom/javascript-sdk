@@ -137,6 +137,20 @@ const determineRuntime = (): RuntimeResult => {
     return {runtime: 'browser'};
   }
 
+  // Browser Web Workers have no `window` but are still browser runtimes.
+  // `importScripts` exists only in browser worker scopes — server runtimes
+  // (Node.js) and edge runtimes (e.g. Cloudflare Workers) do not expose it.
+  // Without this check a Web Worker falls through to 'server-with-fetch' and
+  // server-side-only behavior leaks into real browsers (the ConvertAgent
+  // User-Agent announcement below forced a CORS preflight the signals
+  // endpoint rejected, breaking every signals worker upload).
+  if (
+    typeof self !== 'undefined' &&
+    typeof (self as {importScripts?: unknown}).importScripts === 'function'
+  ) {
+    return {runtime: 'browser'};
+  }
+
   // if window is not available, but fetch is, then we're on a server that has the fetch API available
   if (typeof fetch === 'function') {
     return {runtime: 'server-with-fetch'};
