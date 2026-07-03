@@ -13,12 +13,15 @@
  * AC1, AC4, AC8, AC9.
  *
  * These tests lock the shipped gate in DataManager._retrieveBucketing's fresh-bucketing
- * branch (packages/data/src/data-manager.ts:685): `Number(experience.version) > 8` routes
+ * branch (packages/data/src/data-manager.ts:685): `Number(experience.version) > 11` routes
  * fresh bucketing through the anchored layout (built by `_buildVariationAllocations`,
  * data-manager.ts:586, and resolved via `BucketingManager.getBucketForVisitorAnchored`);
- * version <= 8, missing/undefined, or non-numeric version keeps the existing packed
+ * version <= 11, missing/undefined, or non-numeric version keeps the existing packed
  * cumulative walk unchanged (built by `_buildPackedBuckets`, data-manager.ts:556, and
- * resolved via `BucketingManager.getBucketForVisitor`). AC1 asserts the gate actually
+ * resolved via `BucketingManager.getBucketForVisitor`). Version 11 is the version stamped
+ * on every experience currently served in production today (backend
+ * `CURRENT_EXPERIENCE_VERSION`); the anchored contract only activates once the backend
+ * separately bumps that constant to 12. AC1 asserts the gate actually
  * branches by exploiting a real packed-vs-anchored disagreement on the same fixture (see
  * below). AC4 asserts stops only zero their own width under the anchored path and never
  * move neighboring arms' anchors. AC8/AC9 protect existing behavior that runs entirely
@@ -191,20 +194,22 @@ describe('DataManager anchored-vs-packed GATE tests (qs-01 / DATA-1)', function 
   }> = [
     {
       label:
-        'version 9 (> 8) routes fresh bucketing through the anchored layout',
-      version: 9,
+        'version 12 (> 11) routes fresh bucketing through the anchored layout',
+      version: 12,
       expectedVariationId: ANCHORED_EXPECTED_VARIATION_ID
     },
     {
       label:
-        'version 42 (> 8) routes fresh bucketing through the anchored layout',
+        'version 42 (> 11) routes fresh bucketing through the anchored layout',
       version: 42,
       expectedVariationId: ANCHORED_EXPECTED_VARIATION_ID
     },
     {
       label:
-        'version 8 (not > 8) routes fresh bucketing through the packed layout',
-      version: 8,
+        'version 11 (not > 11; the exact version stamp every currently-served production ' +
+        'experience carries today -- CURRENT_EXPERIENCE_VERSION) routes fresh bucketing ' +
+        'through the packed layout',
+      version: 11,
       expectedVariationId: PACKED_EXPECTED_VARIATION_ID
     },
     {
@@ -215,13 +220,13 @@ describe('DataManager anchored-vs-packed GATE tests (qs-01 / DATA-1)', function 
     },
     {
       label:
-        'non-numeric version (Number(v) -> NaN, NaN > 8 === false) routes fresh bucketing through the packed layout',
+        'non-numeric version (Number(v) -> NaN, NaN > 11 === false) routes fresh bucketing through the packed layout',
       version: 'not-a-number',
       expectedVariationId: PACKED_EXPECTED_VARIATION_ID
     }
   ];
 
-  describe('AC1 -- gate branching (Number(experience.version) > 8)', function () {
+  describe('AC1 -- gate branching (Number(experience.version) > 11); exact boundary: 11 is packed, 12 is anchored', function () {
     // eslint-disable-next-line mocha/no-setup-in-describe
     GATE_CASES.forEach(({label, version, expectedVariationId}) => {
       it(label, function () {
@@ -271,10 +276,10 @@ describe('DataManager anchored-vs-packed GATE tests (qs-01 / DATA-1)', function 
         makeVariation('V2', 10, 'running')
       ];
       const dataManagerRunning = makeDataManager([
-        makeExperience(experienceIdRunning, 9, runningVariations)
+        makeExperience(experienceIdRunning, 12, runningVariations)
       ]);
       const dataManagerStopped = makeDataManager([
-        makeExperience(experienceIdStopped, 9, stoppedVariations)
+        makeExperience(experienceIdStopped, 12, stoppedVariations)
       ]);
 
       // O witness (value 102, O's own band [0,1000) is always first -> always unaffected).
@@ -288,7 +293,7 @@ describe('DataManager anchored-vs-packed GATE tests (qs-01 / DATA-1)', function 
 
       // V2 witness (value 9807, V2's anchored band [9000,10000) must stay identical once V1
       // stops; packed's cumulative walk reshuffles V2 down to [1000,2000) once V1 is excluded,
-      // so this is the assertion that fails today (pre-gate, still packed for version 9).
+      // so this is the assertion that fails today (pre-gate, still packed for version 12).
       const v2Visitor = 'anchor-gate-visitor-162';
       expect(bucketFor(dataManagerRunning, v2Visitor, experienceIdRunning))
         .to.be.an('object')
@@ -325,7 +330,7 @@ describe('DataManager anchored-vs-packed GATE tests (qs-01 / DATA-1)', function 
         makeVariation('V2', 1, 'running')
       ];
       const dataManager = makeDataManager([
-        makeExperience(GATE_EXPERIENCE_ID, 9, variationsWithZero)
+        makeExperience(GATE_EXPERIENCE_ID, 12, variationsWithZero)
       ]);
 
       const v1Visitor = GATE_VISITOR_ID; // value 4957 -> anchored V1's band
@@ -351,9 +356,9 @@ describe('DataManager anchored-vs-packed GATE tests (qs-01 / DATA-1)', function 
 
   // --- AC8: guard precedence ---
   describe('AC8 -- a stored decision wins over the anchored path', function () {
-    it('returns the previously stored variation for a version-9 experience even though the anchored path would pick a different arm', function () {
+    it('returns the previously stored variation for a version-12 experience even though the anchored path would pick a different arm', function () {
       const dataManager = makeDataManager([
-        makeExperience(GATE_EXPERIENCE_ID, 9, GATE_VARIATIONS)
+        makeExperience(GATE_EXPERIENCE_ID, 12, GATE_VARIATIONS)
       ]);
       // Seed a stored decision ('O') that disagrees with what the anchored path would
       // naturally compute for this visitor (ANCHORED_EXPECTED_VARIATION_ID === 'V1').
@@ -374,34 +379,34 @@ describe('DataManager anchored-vs-packed GATE tests (qs-01 / DATA-1)', function 
   });
 
   // --- AC9: no event/schema drift ---
-  describe('AC9 -- BucketedVariation shape is unchanged between version 8 and version 9', function () {
+  describe('AC9 -- BucketedVariation shape is unchanged between version 11 and version 12', function () {
     it('returns structurally identical keys for a single-arm, 100%-allocation experience regardless of version', function () {
       const singleArmVariations = [makeVariation('A', 100, 'running')];
-      const dataManagerV8 = makeDataManager([
-        makeExperience('gate-exp-schema-v8', 8, singleArmVariations)
+      const dataManagerV11 = makeDataManager([
+        makeExperience('gate-exp-schema-v11', 11, singleArmVariations)
       ]);
-      const dataManagerV9 = makeDataManager([
-        makeExperience('gate-exp-schema-v9', 9, singleArmVariations)
+      const dataManagerV12 = makeDataManager([
+        makeExperience('gate-exp-schema-v12', 12, singleArmVariations)
       ]);
       const visitorId = 'anchor-gate-visitor-schema';
 
-      const resultV8 = bucketFor(
-        dataManagerV8,
+      const resultV11 = bucketFor(
+        dataManagerV11,
         visitorId,
-        'gate-exp-schema-v8'
+        'gate-exp-schema-v11'
       );
-      const resultV9 = bucketFor(
-        dataManagerV9,
+      const resultV12 = bucketFor(
+        dataManagerV12,
         visitorId,
-        'gate-exp-schema-v9'
+        'gate-exp-schema-v12'
       );
 
-      expect(resultV8).to.be.an('object');
-      expect(resultV9).to.be.an('object');
+      expect(resultV11).to.be.an('object');
+      expect(resultV12).to.be.an('object');
       expect(
-        Object.keys(resultV9 as object).sort((a, b) => a.localeCompare(b))
+        Object.keys(resultV12 as object).sort((a, b) => a.localeCompare(b))
       ).to.deep.equal(
-        Object.keys(resultV8 as object).sort((a, b) => a.localeCompare(b))
+        Object.keys(resultV11 as object).sort((a, b) => a.localeCompare(b))
       );
     });
   });

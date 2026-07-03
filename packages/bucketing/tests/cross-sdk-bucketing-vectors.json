@@ -1,9 +1,9 @@
 [
   {
-    "description": "[packed-regression] v8 thirds 15% (5/5/5): value 293 (visitor thirds-core-O-1) lands in O's band [0,500) -> O",
+    "description": "[packed-regression] v11 thirds 15% (5/5/5): value 293 (visitor thirds-core-O-1) lands in O's band [0,500) -> O",
     "experienceId": "900000001",
     "visitorId": "thirds-core-O-1",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -12,10 +12,10 @@
     "expected": "O"
   },
   {
-    "description": "[packed-regression] v8 thirds 15% (5/5/5): value 601 (visitor thirds-flip-V1-to-O-66) lands in V1's band [500,1000) -> V1",
+    "description": "[packed-regression] v11 thirds 15% (5/5/5): value 601 (visitor thirds-flip-V1-to-O-66) lands in V1's band [500,1000) -> V1",
     "experienceId": "900000001",
     "visitorId": "thirds-flip-V1-to-O-66",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -24,10 +24,10 @@
     "expected": "V1"
   },
   {
-    "description": "[packed-regression][incident-flip] v8 thirds 25% (8.333.../each): SAME visitor as above (value 601) now lands in O's RELOCATED band [0,833.33) -> reassigned to O. Documents the Distilled.ie incident: raising total allocation FLIPPED this visitor from V1 to O under the packed cumulative walk",
+    "description": "[packed-regression][incident-flip] v11 thirds 25% (8.333.../each): SAME visitor as above (value 601) now lands in O's RELOCATED band [0,833.33) -> reassigned to O. Documents the Distilled.ie incident: raising total allocation FLIPPED this visitor from V1 to O under the packed cumulative walk",
     "experienceId": "900000001",
     "visitorId": "thirds-flip-V1-to-O-66",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -36,10 +36,10 @@
     "expected": "O"
   },
   {
-    "description": "[packed-regression] v8 thirds 15% (5/5/5): value 1213 (visitor thirds-flip-V2-to-V1-5) lands in V2's band [1000,1500) -> V2",
+    "description": "[packed-regression] v11 thirds 15% (5/5/5): value 1213 (visitor thirds-flip-V2-to-V1-5) lands in V2's band [1000,1500) -> V2",
     "experienceId": "900000001",
     "visitorId": "thirds-flip-V2-to-V1-5",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -48,10 +48,10 @@
     "expected": "V2"
   },
   {
-    "description": "[packed-regression][incident-flip] v8 thirds 25% (8.333.../each): SAME visitor as above (value 1213) now lands in V1's RELOCATED band [833.33,1666.67) -> reassigned to V1. Second flip from the same incident (V2 -> V1)",
+    "description": "[packed-regression][incident-flip] v11 thirds 25% (8.333.../each): SAME visitor as above (value 1213) now lands in V1's RELOCATED band [833.33,1666.67) -> reassigned to V1. Second flip from the same incident (V2 -> V1)",
     "experienceId": "900000001",
     "visitorId": "thirds-flip-V2-to-V1-5",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -60,10 +60,10 @@
     "expected": "V1"
   },
   {
-    "description": "[packed-regression] v8 thirds 15% (5/5/5): value 877 (visitor thirds-stable-V1-77) lands in V1's band [500,1000) -> V1",
+    "description": "[packed-regression] v11 thirds 15% (5/5/5): value 877 (visitor thirds-stable-V1-77) lands in V1's band [500,1000) -> V1",
     "experienceId": "900000001",
     "visitorId": "thirds-stable-V1-77",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -72,10 +72,10 @@
     "expected": "V1"
   },
   {
-    "description": "[packed-regression] v8 thirds 25% (8.333.../each): SAME visitor as above (value 877) still lands in V1's band [833.33,1666.67) -> V1 unaffected. Contrast vector: not every visitor flips on a packed raise, only those whose value falls inside a relocated sub-range",
+    "description": "[packed-regression] v11 thirds 25% (8.333.../each): SAME visitor as above (value 877) still lands in V1's band [833.33,1666.67) -> V1 unaffected. Contrast vector: not every visitor flips on a packed raise, only those whose value falls inside a relocated sub-range",
     "experienceId": "900000001",
     "visitorId": "thirds-stable-V1-77",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -84,10 +84,10 @@
     "expected": "V1"
   },
   {
-    "description": "[packed-regression][sub-100%-exhaustion] v8 thirds 15% (5/5/5): value 1547 (visitor thirds-null-to-V1-25pct-48) exceeds the 15% total allocation -> not bucketed",
+    "description": "[packed-regression][sub-100%-exhaustion] v11 thirds 15% (5/5/5): value 1547 (visitor thirds-null-to-V1-25pct-48) exceeds the 15% total allocation -> not bucketed",
     "experienceId": "900000001",
     "visitorId": "thirds-null-to-V1-25pct-48",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -96,10 +96,10 @@
     "expected": null
   },
   {
-    "description": "[packed-regression][lower-ejection-contrast] v8 thirds 25% (8.333.../each): SAME visitor as above (value 1547) is newly admitted into V1's band [833.33,1666.67) at 25%. Read in reverse (25% -> 15%), this is AC3's packed lower-skew contrast vector: lowering coverage EJECTS this visitor to null, it is never reassigned to a different arm",
+    "description": "[packed-regression][lower-ejection-contrast] v11 thirds 25% (8.333.../each): SAME visitor as above (value 1547) is newly admitted into V1's band [833.33,1666.67) at 25%. Read in reverse (25% -> 15%), this is AC3's packed lower-skew contrast vector: lowering coverage EJECTS this visitor to null, it is never reassigned to a different arm",
     "experienceId": "900000001",
     "visitorId": "thirds-null-to-V1-25pct-48",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -108,10 +108,10 @@
     "expected": "V1"
   },
   {
-    "description": "[packed-regression][sub-100%-exhaustion] v8 thirds 15% (5/5/5): value 1733 (visitor thirds-null-to-V2-25pct-majority-6) exceeds the 15% total allocation -> not bucketed",
+    "description": "[packed-regression][sub-100%-exhaustion] v11 thirds 15% (5/5/5): value 1733 (visitor thirds-null-to-V2-25pct-majority-6) exceeds the 15% total allocation -> not bucketed",
     "experienceId": "900000001",
     "visitorId": "thirds-null-to-V2-25pct-majority-6",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -120,10 +120,10 @@
     "expected": null
   },
   {
-    "description": "[packed-regression][incident-skew] v8 thirds 25% (8.333.../each): SAME visitor as above (value 1733) is newly admitted into V2's band [1666.67,2500) at 25%. Documents the incident's uneven skew: the newly opened packed band overwhelmingly favors the LAST arm (V2), not an even 3-way split",
+    "description": "[packed-regression][incident-skew] v11 thirds 25% (8.333.../each): SAME visitor as above (value 1733) is newly admitted into V2's band [1666.67,2500) at 25%. Documents the incident's uneven skew: the newly opened packed band overwhelmingly favors the LAST arm (V2), not an even 3-way split",
     "experienceId": "900000001",
     "visitorId": "thirds-null-to-V2-25pct-majority-6",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -132,10 +132,10 @@
     "expected": "V2"
   },
   {
-    "description": "[packed-regression] v8 thirds 15% (5/5/5): value 3134 (visitor thirds-idle-both-packed-3) exceeds the 15% total allocation -> not bucketed",
+    "description": "[packed-regression] v11 thirds 15% (5/5/5): value 3134 (visitor thirds-idle-both-packed-3) exceeds the 15% total allocation -> not bucketed",
     "experienceId": "900000001",
     "visitorId": "thirds-idle-both-packed-3",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -144,10 +144,10 @@
     "expected": null
   },
   {
-    "description": "[packed-regression] v8 thirds 25% (8.333.../each): SAME visitor as above (value 3134) ALSO exceeds the 25% total allocation -> not bucketed at either coverage",
+    "description": "[packed-regression] v11 thirds 25% (8.333.../each): SAME visitor as above (value 3134) ALSO exceeds the 25% total allocation -> not bucketed at either coverage",
     "experienceId": "900000001",
     "visitorId": "thirds-idle-both-packed-3",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -156,10 +156,10 @@
     "expected": null
   },
   {
-    "description": "[anchored-basic-thirds][raise-superset-core] v9 thirds 15% (5/5/5): value 293 (visitor thirds-core-O-1) lands in O's band [0,500) -> O",
+    "description": "[anchored-basic-thirds][raise-superset-core] v12 thirds 15% (5/5/5): value 293 (visitor thirds-core-O-1) lands in O's band [0,500) -> O",
     "experienceId": "900000001",
     "visitorId": "thirds-core-O-1",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -168,10 +168,10 @@
     "expected": "O"
   },
   {
-    "description": "[anchored-basic-thirds][raise-superset-core] v9 thirds 25% (8.333.../each): SAME visitor as above (value 293) stays in O's SUPERSET band [0,833.33) -> O. No flip (AC2)",
+    "description": "[anchored-basic-thirds][raise-superset-core] v12 thirds 25% (8.333.../each): SAME visitor as above (value 293) stays in O's SUPERSET band [0,833.33) -> O. No flip (AC2)",
     "experienceId": "900000001",
     "visitorId": "thirds-core-O-1",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -180,10 +180,10 @@
     "expected": "O"
   },
   {
-    "description": "[anchored-basic-thirds][raise-superset-core] v9 thirds 15% (5/5/5): value 3617 (visitor thirds-anchored-V1-core-1) lands in V1's band [3333.33,3833.33) -> V1",
+    "description": "[anchored-basic-thirds][raise-superset-core] v12 thirds 15% (5/5/5): value 3617 (visitor thirds-anchored-V1-core-1) lands in V1's band [3333.33,3833.33) -> V1",
     "experienceId": "900000001",
     "visitorId": "thirds-anchored-V1-core-1",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -192,10 +192,10 @@
     "expected": "V1"
   },
   {
-    "description": "[anchored-basic-thirds][raise-superset-core] v9 thirds 25% (8.333.../each): SAME visitor as above (value 3617) stays in V1's SUPERSET band [3333.33,4166.67) -> V1. No flip (AC2)",
+    "description": "[anchored-basic-thirds][raise-superset-core] v12 thirds 25% (8.333.../each): SAME visitor as above (value 3617) stays in V1's SUPERSET band [3333.33,4166.67) -> V1. No flip (AC2)",
     "experienceId": "900000001",
     "visitorId": "thirds-anchored-V1-core-1",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -204,10 +204,10 @@
     "expected": "V1"
   },
   {
-    "description": "[anchored-basic-thirds][raise-superset-core] v9 thirds 15% (5/5/5): value 6871 (visitor thirds-anchored-V2-core-24) lands in V2's band [6666.67,7166.67) -> V2",
+    "description": "[anchored-basic-thirds][raise-superset-core] v12 thirds 15% (5/5/5): value 6871 (visitor thirds-anchored-V2-core-24) lands in V2's band [6666.67,7166.67) -> V2",
     "experienceId": "900000001",
     "visitorId": "thirds-anchored-V2-core-24",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -216,10 +216,10 @@
     "expected": "V2"
   },
   {
-    "description": "[anchored-basic-thirds][raise-superset-core] v9 thirds 25% (8.333.../each): SAME visitor as above (value 6871) stays in V2's SUPERSET band [6666.67,7500) -> V2. No flip (AC2)",
+    "description": "[anchored-basic-thirds][raise-superset-core] v12 thirds 25% (8.333.../each): SAME visitor as above (value 6871) stays in V2's SUPERSET band [6666.67,7500) -> V2. No flip (AC2)",
     "experienceId": "900000001",
     "visitorId": "thirds-anchored-V2-core-24",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -228,10 +228,10 @@
     "expected": "V2"
   },
   {
-    "description": "[per-sliver-admission][lower-ejection] v9 thirds 15% (5/5/5): value 601 (visitor thirds-flip-V1-to-O-66) is NOT bucketed (falls between O's band [0,500) and V1's band [3333.33,3833.33))",
+    "description": "[per-sliver-admission][lower-ejection] v12 thirds 15% (5/5/5): value 601 (visitor thirds-flip-V1-to-O-66) is NOT bucketed (falls between O's band [0,500) and V1's band [3333.33,3833.33))",
     "experienceId": "900000001",
     "visitorId": "thirds-flip-V1-to-O-66",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -240,10 +240,10 @@
     "expected": null
   },
   {
-    "description": "[per-sliver-admission] v9 thirds 25% (8.333.../each): SAME visitor as above (value 601) is newly admitted into O's growth sliver [500,833.33) at 25%. Contrast with the packed vector for this same value (V1 -> O flip): anchored never reassigns an already-bucketed visitor, it only ever admits from null",
+    "description": "[per-sliver-admission] v12 thirds 25% (8.333.../each): SAME visitor as above (value 601) is newly admitted into O's growth sliver [500,833.33) at 25%. Contrast with the packed vector for this same value (V1 -> O flip): anchored never reassigns an already-bucketed visitor, it only ever admits from null",
     "experienceId": "900000001",
     "visitorId": "thirds-flip-V1-to-O-66",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -252,10 +252,10 @@
     "expected": "O"
   },
   {
-    "description": "[per-sliver-admission][lower-ejection] v9 thirds 15% (5/5/5): value 3899 (visitor thirds-anchored-V1-sliver-15) is NOT bucketed (exceeds V1's band [3333.33,3833.33))",
+    "description": "[per-sliver-admission][lower-ejection] v12 thirds 15% (5/5/5): value 3899 (visitor thirds-anchored-V1-sliver-15) is NOT bucketed (exceeds V1's band [3333.33,3833.33))",
     "experienceId": "900000001",
     "visitorId": "thirds-anchored-V1-sliver-15",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -264,10 +264,10 @@
     "expected": null
   },
   {
-    "description": "[per-sliver-admission] v9 thirds 25% (8.333.../each): SAME visitor as above (value 3899) is newly admitted into V1's growth sliver (3833.33,4166.67) at 25%",
+    "description": "[per-sliver-admission] v12 thirds 25% (8.333.../each): SAME visitor as above (value 3899) is newly admitted into V1's growth sliver (3833.33,4166.67) at 25%",
     "experienceId": "900000001",
     "visitorId": "thirds-anchored-V1-sliver-15",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -276,10 +276,10 @@
     "expected": "V1"
   },
   {
-    "description": "[per-sliver-admission][lower-ejection] v9 thirds 15% (5/5/5): value 7353 (visitor thirds-anchored-V2-sliver-14) is NOT bucketed (exceeds V2's band [6666.67,7166.67))",
+    "description": "[per-sliver-admission][lower-ejection] v12 thirds 15% (5/5/5): value 7353 (visitor thirds-anchored-V2-sliver-14) is NOT bucketed (exceeds V2's band [6666.67,7166.67))",
     "experienceId": "900000001",
     "visitorId": "thirds-anchored-V2-sliver-14",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -288,10 +288,10 @@
     "expected": null
   },
   {
-    "description": "[per-sliver-admission] v9 thirds 25% (8.333.../each): SAME visitor as above (value 7353) is newly admitted into V2's growth sliver (7166.67,7500) at 25%",
+    "description": "[per-sliver-admission] v12 thirds 25% (8.333.../each): SAME visitor as above (value 7353) is newly admitted into V2's growth sliver (7166.67,7500) at 25%",
     "experienceId": "900000001",
     "visitorId": "thirds-anchored-V2-sliver-14",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -300,10 +300,10 @@
     "expected": "V2"
   },
   {
-    "description": "[anchored-idle][incident-fix-contrast] v9 thirds 15% (5/5/5): value 1213 (visitor thirds-flip-V2-to-V1-5) is NOT bucketed under anchored. Contrast with the packed vectors for this same value (V2 -> V1 flip): anchored has no arm assignment at all here at either coverage, so there is no reassignment risk",
+    "description": "[anchored-idle][incident-fix-contrast] v12 thirds 15% (5/5/5): value 1213 (visitor thirds-flip-V2-to-V1-5) is NOT bucketed under anchored. Contrast with the packed vectors for this same value (V2 -> V1 flip): anchored has no arm assignment at all here at either coverage, so there is no reassignment risk",
     "experienceId": "900000001",
     "visitorId": "thirds-flip-V2-to-V1-5",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -312,10 +312,10 @@
     "expected": null
   },
   {
-    "description": "[anchored-idle][incident-fix-contrast] v9 thirds 25% (8.333.../each): SAME visitor as above (value 1213) is STILL NOT bucketed under anchored at the higher coverage either",
+    "description": "[anchored-idle][incident-fix-contrast] v12 thirds 25% (8.333.../each): SAME visitor as above (value 1213) is STILL NOT bucketed under anchored at the higher coverage either",
     "experienceId": "900000001",
     "visitorId": "thirds-flip-V2-to-V1-5",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -324,10 +324,10 @@
     "expected": null
   },
   {
-    "description": "[anchored-idle] v9 thirds 15% (5/5/5): value 5848 (visitor thirds-idle-both-anchored-mid-2) is idle (falls between V1's and V2's bands)",
+    "description": "[anchored-idle] v12 thirds 15% (5/5/5): value 5848 (visitor thirds-idle-both-anchored-mid-2) is idle (falls between V1's and V2's bands)",
     "experienceId": "900000001",
     "visitorId": "thirds-idle-both-anchored-mid-2",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -336,10 +336,10 @@
     "expected": null
   },
   {
-    "description": "[anchored-idle] v9 thirds 25% (8.333.../each): SAME visitor as above (value 5848) is STILL idle at the higher coverage (still between V1's and V2's bands)",
+    "description": "[anchored-idle] v12 thirds 25% (8.333.../each): SAME visitor as above (value 5848) is STILL idle at the higher coverage (still between V1's and V2's bands)",
     "experienceId": "900000001",
     "visitorId": "thirds-idle-both-anchored-mid-2",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -348,10 +348,10 @@
     "expected": null
   },
   {
-    "description": "[anchored-idle] v9 thirds 15% (5/5/5): value 8455 (visitor thirds-idle-both-high-0) exceeds V2's band -> idle",
+    "description": "[anchored-idle] v12 thirds 15% (5/5/5): value 8455 (visitor thirds-idle-both-high-0) exceeds V2's band -> idle",
     "experienceId": "900000001",
     "visitorId": "thirds-idle-both-high-0",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 5, "status": "running"},
       {"id": "V1", "traffic_allocation": 5, "status": "running"},
@@ -360,10 +360,10 @@
     "expected": null
   },
   {
-    "description": "[anchored-idle] v9 thirds 25% (8.333.../each): SAME visitor as above (value 8455) STILL exceeds V2's band -> idle",
+    "description": "[anchored-idle] v12 thirds 25% (8.333.../each): SAME visitor as above (value 8455) STILL exceeds V2's band -> idle",
     "experienceId": "900000001",
     "visitorId": "thirds-idle-both-high-0",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 8.333333333333334, "status": "running"},
       {"id": "V1", "traffic_allocation": 8.333333333333334, "status": "running"},
@@ -372,10 +372,10 @@
     "expected": null
   },
   {
-    "description": "[stopped-arm-stability] v9, O=10/V1=80/V2=10 all RUNNING: value 102 (visitor anchor-gate-visitor-106) -> O",
+    "description": "[stopped-arm-stability] v12, O=10/V1=80/V2=10 all RUNNING: value 102 (visitor anchor-gate-visitor-106) -> O",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-106",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -384,10 +384,10 @@
     "expected": "O"
   },
   {
-    "description": "[stopped-arm-stability] v9, O=10/V1=80 STOPPED/V2=10: SAME visitor as above (value 102) -> O, unaffected by V1's stop (AC4 anchor stability)",
+    "description": "[stopped-arm-stability] v12, O=10/V1=80 STOPPED/V2=10: SAME visitor as above (value 102) -> O, unaffected by V1's stop (AC4 anchor stability)",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-106",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "stopped"},
@@ -396,10 +396,10 @@
     "expected": "O"
   },
   {
-    "description": "[stopped-arm-stability] v9, O=10/V1=80/V2=10 all RUNNING: value 9807 (visitor anchor-gate-visitor-162) -> V2",
+    "description": "[stopped-arm-stability] v12, O=10/V1=80/V2=10 all RUNNING: value 9807 (visitor anchor-gate-visitor-162) -> V2",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-162",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -408,10 +408,10 @@
     "expected": "V2"
   },
   {
-    "description": "[stopped-arm-stability] v9, O=10/V1=80 STOPPED/V2=10: SAME visitor as above (value 9807) -> V2's anchor (9000) is byte-identical whether V1 runs or is stopped (AC4)",
+    "description": "[stopped-arm-stability] v12, O=10/V1=80 STOPPED/V2=10: SAME visitor as above (value 9807) -> V2's anchor (9000) is byte-identical whether V1 runs or is stopped (AC4)",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-162",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "stopped"},
@@ -420,10 +420,10 @@
     "expected": "V2"
   },
   {
-    "description": "[stopped-arm-stability] v9, O=10/V1=80/V2=10 all RUNNING: value 4957 (visitor anchor-gate-visitor-17) -> V1",
+    "description": "[stopped-arm-stability] v12, O=10/V1=80/V2=10 all RUNNING: value 4957 (visitor anchor-gate-visitor-17) -> V1",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-17",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -432,10 +432,10 @@
     "expected": "V1"
   },
   {
-    "description": "[stopped-arm-stability] v9, O=10/V1=80 STOPPED/V2=10: SAME visitor as above (value 4957) -> stopped V1 keeps its weight (anchor stable at 1000) but has zero width, so it is never selected -> not bucketed",
+    "description": "[stopped-arm-stability] v12, O=10/V1=80 STOPPED/V2=10: SAME visitor as above (value 4957) -> stopped V1 keeps its weight (anchor stable at 1000) but has zero width, so it is never selected -> not bucketed",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-17",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "stopped"},
@@ -444,10 +444,10 @@
     "expected": null
   },
   {
-    "description": "[ta-zero-width] v9, O=2/V1=47/Z=0(explicit)/V2=1: value 102 (visitor anchor-gate-visitor-106) -> O",
+    "description": "[ta-zero-width] v12, O=2/V1=47/Z=0(explicit)/V2=1: value 102 (visitor anchor-gate-visitor-106) -> O",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-106",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 2, "status": "running"},
       {"id": "V1", "traffic_allocation": 47, "status": "running"},
@@ -457,10 +457,10 @@
     "expected": "O"
   },
   {
-    "description": "[ta-zero-width] v9, O=2/V1=47/Z=0(explicit)/V2=1: value 4957 (visitor anchor-gate-visitor-17) -> V1. Z's explicit zero allocation is never defaulted to 100 and never perturbs V1's anchor; Z is never selected",
+    "description": "[ta-zero-width] v12, O=2/V1=47/Z=0(explicit)/V2=1: value 4957 (visitor anchor-gate-visitor-17) -> V1. Z's explicit zero allocation is never defaulted to 100 and never perturbs V1's anchor; Z is never selected",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-17",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 2, "status": "running"},
       {"id": "V1", "traffic_allocation": 47, "status": "running"},
@@ -470,10 +470,10 @@
     "expected": "V1"
   },
   {
-    "description": "[ta-zero-width] v9, O=2/V1=47/Z=0(explicit)/V2=1: value 9807 (visitor anchor-gate-visitor-162) -> V2. Z's zero-width entry does not shift V2's anchor since it contributes zero weight",
+    "description": "[ta-zero-width] v12, O=2/V1=47/Z=0(explicit)/V2=1: value 9807 (visitor anchor-gate-visitor-162) -> V2. Z's zero-width entry does not shift V2's anchor since it contributes zero weight",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-162",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 2, "status": "running"},
       {"id": "V1", "traffic_allocation": 47, "status": "running"},
@@ -483,30 +483,30 @@
     "expected": "V2"
   },
   {
-    "description": "[nan-default] v9, single arm DEFAULT with traffic_allocation OMITTED (isNaN(ta) -> 100.0 default, full traffic space): any visitor is bucketed into DEFAULT",
+    "description": "[nan-default] v12, single arm DEFAULT with traffic_allocation OMITTED (isNaN(ta) -> 100.0 default, full traffic space): any visitor is bucketed into DEFAULT",
     "experienceId": "900000001",
     "visitorId": "nan-default-visitor",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "DEFAULT", "status": "running"}
     ],
     "expected": "DEFAULT"
   },
   {
-    "description": "[nan-default] v8, SAME single arm DEFAULT with traffic_allocation OMITTED: packed path also defaults to 100.0 -> DEFAULT (v8 === v9 for the NaN-default single-arm case)",
+    "description": "[nan-default] v11, SAME single arm DEFAULT with traffic_allocation OMITTED: packed path also defaults to 100.0 -> DEFAULT (v11 === v12 for the NaN-default single-arm case)",
     "experienceId": "900000001",
     "visitorId": "nan-default-visitor",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "DEFAULT", "status": "running"}
     ],
     "expected": "DEFAULT"
   },
   {
-    "description": "[nan-default] v9, two arms B(traffic_allocation=5) and A(traffic_allocation OMITTED -> defaults to 100): value 102 (visitor anchor-gate-visitor-106) falls in B's own band [0,500) -> B (isNaN default on A does not swallow values clearly inside B's own range; config order wins ties)",
+    "description": "[nan-default] v12, two arms B(traffic_allocation=5) and A(traffic_allocation OMITTED -> defaults to 100): value 102 (visitor anchor-gate-visitor-106) falls in B's own band [0,500) -> B (isNaN default on A does not swallow values clearly inside B's own range; config order wins ties)",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-106",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "B", "traffic_allocation": 5, "status": "running"},
       {"id": "A", "status": "running"}
@@ -514,10 +514,10 @@
     "expected": "B"
   },
   {
-    "description": "[nan-default] v9, two arms B(traffic_allocation=5) and A(traffic_allocation OMITTED -> defaults to 100): value 9807 (visitor anchor-gate-visitor-162) falls well inside A's defaulted 100-weight band -> A",
+    "description": "[nan-default] v12, two arms B(traffic_allocation=5) and A(traffic_allocation OMITTED -> defaults to 100): value 9807 (visitor anchor-gate-visitor-162) falls well inside A's defaulted 100-weight band -> A",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-162",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "B", "traffic_allocation": 5, "status": "running"},
       {"id": "A", "status": "running"}
@@ -525,30 +525,30 @@
     "expected": "A"
   },
   {
-    "description": "[single-arm-v8-eq-v9] v8, single arm ONLY at traffic_allocation=100: any visitor -> ONLY",
+    "description": "[single-arm-v11-eq-v12] v11, single arm ONLY at traffic_allocation=100: any visitor -> ONLY",
     "experienceId": "900000001",
     "visitorId": "single-arm-visitor",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "ONLY", "traffic_allocation": 100, "status": "running"}
     ],
     "expected": "ONLY"
   },
   {
-    "description": "[single-arm-v8-eq-v9] v9, SAME single arm ONLY at traffic_allocation=100: anchored path -> ONLY (v8 === v9 for a single full-allocation arm)",
+    "description": "[single-arm-v11-eq-v12] v12, SAME single arm ONLY at traffic_allocation=100: anchored path -> ONLY (v11 === v12 for a single full-allocation arm)",
     "experienceId": "900000001",
     "visitorId": "single-arm-visitor",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "ONLY", "traffic_allocation": 100, "status": "running"}
     ],
     "expected": "ONLY"
   },
   {
-    "description": "[100pct-total-v8-eq-v9] v8, O=10/V1=80/V2=10 (total 100%, all running): value 102 (visitor anchor-gate-visitor-106) -> O",
+    "description": "[100pct-total-v11-eq-v12] v11, O=10/V1=80/V2=10 (total 100%, all running): value 102 (visitor anchor-gate-visitor-106) -> O",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-106",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -557,10 +557,10 @@
     "expected": "O"
   },
   {
-    "description": "[100pct-total-v8-eq-v9] v9, SAME O=10/V1=80/V2=10 config: SAME visitor (value 102) -> O. Packed and anchored coincide exactly at 100% total allocation",
+    "description": "[100pct-total-v11-eq-v12] v12, SAME O=10/V1=80/V2=10 config: SAME visitor (value 102) -> O. Packed and anchored coincide exactly at 100% total allocation",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-106",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -569,10 +569,10 @@
     "expected": "O"
   },
   {
-    "description": "[100pct-total-v8-eq-v9] v8, O=10/V1=80/V2=10 (total 100%, all running): value 4957 (visitor anchor-gate-visitor-17) -> V1",
+    "description": "[100pct-total-v11-eq-v12] v11, O=10/V1=80/V2=10 (total 100%, all running): value 4957 (visitor anchor-gate-visitor-17) -> V1",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-17",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -581,10 +581,10 @@
     "expected": "V1"
   },
   {
-    "description": "[100pct-total-v8-eq-v9] v9, SAME O=10/V1=80/V2=10 config: SAME visitor (value 4957) -> V1. Packed and anchored coincide exactly at 100% total allocation",
+    "description": "[100pct-total-v11-eq-v12] v12, SAME O=10/V1=80/V2=10 config: SAME visitor (value 4957) -> V1. Packed and anchored coincide exactly at 100% total allocation",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-17",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -593,10 +593,10 @@
     "expected": "V1"
   },
   {
-    "description": "[100pct-total-v8-eq-v9] v8, O=10/V1=80/V2=10 (total 100%, all running): value 9807 (visitor anchor-gate-visitor-162) -> V2",
+    "description": "[100pct-total-v11-eq-v12] v11, O=10/V1=80/V2=10 (total 100%, all running): value 9807 (visitor anchor-gate-visitor-162) -> V2",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-162",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -605,10 +605,10 @@
     "expected": "V2"
   },
   {
-    "description": "[100pct-total-v8-eq-v9] v9, SAME O=10/V1=80/V2=10 config: SAME visitor (value 9807) -> V2. Packed and anchored coincide exactly at 100% total allocation",
+    "description": "[100pct-total-v11-eq-v12] v12, SAME O=10/V1=80/V2=10 config: SAME visitor (value 9807) -> V2. Packed and anchored coincide exactly at 100% total allocation",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-162",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -617,10 +617,10 @@
     "expected": "V2"
   },
   {
-    "description": "[boundary-hit] v9, O=10/V1=80/V2=10: value 999 (visitor boundary-999-25207) is just below V1's anchor (1000) -> O (upper edge of O's half-open range)",
+    "description": "[boundary-hit] v12, O=10/V1=80/V2=10: value 999 (visitor boundary-999-25207) is just below V1's anchor (1000) -> O (upper edge of O's half-open range)",
     "experienceId": "900000001",
     "visitorId": "boundary-999-25207",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -629,10 +629,10 @@
     "expected": "O"
   },
   {
-    "description": "[boundary-hit] v9, O=10/V1=80/V2=10: value 1000 (visitor boundary-1000-1145) EQUALS V1's anchor exactly -> V1 (anchor is inclusive: anchor <= value)",
+    "description": "[boundary-hit] v12, O=10/V1=80/V2=10: value 1000 (visitor boundary-1000-1145) EQUALS V1's anchor exactly -> V1 (anchor is inclusive: anchor <= value)",
     "experienceId": "900000001",
     "visitorId": "boundary-1000-1145",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -641,10 +641,10 @@
     "expected": "V1"
   },
   {
-    "description": "[boundary-hit] v9, O=10/V1=80/V2=10: value 8999 (visitor boundary-8999-359) is just below V2's anchor (9000) -> V1 (upper edge of V1's half-open range)",
+    "description": "[boundary-hit] v12, O=10/V1=80/V2=10: value 8999 (visitor boundary-8999-359) is just below V2's anchor (9000) -> V1 (upper edge of V1's half-open range)",
     "experienceId": "900000001",
     "visitorId": "boundary-8999-359",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -653,10 +653,10 @@
     "expected": "V1"
   },
   {
-    "description": "[boundary-hit] v9, O=10/V1=80/V2=10: value 9000 (visitor boundary-9000-9598) EQUALS V2's anchor exactly -> V2 (anchor is inclusive)",
+    "description": "[boundary-hit] v12, O=10/V1=80/V2=10: value 9000 (visitor boundary-9000-9598) EQUALS V2's anchor exactly -> V2 (anchor is inclusive)",
     "experienceId": "900000001",
     "visitorId": "boundary-9000-9598",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -665,10 +665,10 @@
     "expected": "V2"
   },
   {
-    "description": "[boundary-hit] v9, O=10/V1=80/V2=10: value 9999 (visitor boundary-9999-5699) is the maximum representable traffic value, still inside V2's range -> V2",
+    "description": "[boundary-hit] v12, O=10/V1=80/V2=10: value 9999 (visitor boundary-9999-5699) is the maximum representable traffic value, still inside V2's range -> V2",
     "experienceId": "900000001",
     "visitorId": "boundary-9999-5699",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "O", "traffic_allocation": 10, "status": "running"},
       {"id": "V1", "traffic_allocation": 80, "status": "running"},
@@ -677,10 +677,10 @@
     "expected": "V2"
   },
   {
-    "description": "[total-weight-zero] v9, two arms both traffic_allocation=0 (one running, one stopped): totalWeight is 0 -> not bucketed regardless of visitor",
+    "description": "[total-weight-zero] v12, two arms both traffic_allocation=0 (one running, one stopped): totalWeight is 0 -> not bucketed regardless of visitor",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-106",
-    "version": 9,
+    "version": 12,
     "variations": [
       {"id": "A", "traffic_allocation": 0, "status": "running"},
       {"id": "B", "traffic_allocation": 0, "status": "stopped"}
@@ -688,10 +688,10 @@
     "expected": null
   },
   {
-    "description": "[total-weight-zero] v8, SAME two zero-allocation arms: packed path filters both out entirely (empty bucket set) -> not bucketed",
+    "description": "[total-weight-zero] v11, SAME two zero-allocation arms: packed path filters both out entirely (empty bucket set) -> not bucketed",
     "experienceId": "900000001",
     "visitorId": "anchor-gate-visitor-106",
-    "version": 8,
+    "version": 11,
     "variations": [
       {"id": "A", "traffic_allocation": 0, "status": "running"},
       {"id": "B", "traffic_allocation": 0, "status": "stopped"}

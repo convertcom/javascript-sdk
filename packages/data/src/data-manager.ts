@@ -548,7 +548,10 @@ export class DataManager implements DataManagerInterface {
 
   /**
    * Build buckets where key is variation id and value is traffic distribution
-   * (existing packed layout, contract v8 and below; byte-for-byte unchanged).
+   * (existing packed layout, experience version <= 11, missing, or non-numeric;
+   * byte-for-byte unchanged). Version 11 is the version stamped on every experience
+   * currently served in production (backend `CURRENT_EXPERIENCE_VERSION`), so this
+   * is the active path for all currently-running experiments.
    * @param {ExperienceVariationConfig[]} variations
    * @return {Record<string, number>}
    * @private
@@ -576,6 +579,8 @@ export class DataManager implements DataManagerInterface {
 
   /**
    * Build variation allocations for the anchored layout (qs-01 / DATA-1, contract v9).
+   * Activates only once the served experience version is > 11 (i.e. >= 12, once the
+   * backend bumps `CURRENT_EXPERIENCE_VERSION` past its current value of 11).
    * Inactive arms (stopped, or explicit zero traffic_allocation) keep their weight for
    * anchor stability but are marked inactive so {@link BucketingManagerInterface.getBucketRanges}
    * gives them zero width. See qs-01-anchored-bucketing-layout.md "The contract (normative)".
@@ -678,11 +683,16 @@ export class DataManager implements DataManagerInterface {
         })
       );
     } else {
-      // qs-01 / DATA-1: anchored-vs-packed GATE. `experience.version > 8` (contract v9)
-      // runs the anchored layout; missing/undefined/non-numeric version keeps the
-      // existing packed cumulative walk unchanged. See qs-01-anchored-bucketing-layout.md
+      // qs-01 / DATA-1: anchored-vs-packed GATE. `experience.version > 11` runs the
+      // anchored (contract v9) layout; the anchored contract activates starting at
+      // experience version 12. Version <= 11, missing, or non-numeric keeps the
+      // existing packed cumulative walk unchanged -- this is every currently-served
+      // production experience, all stamped version 11 (backend
+      // `CURRENT_EXPERIENCE_VERSION`). Raising the gate to 12 is a deliberate,
+      // separate backend rollout step; the SDK must never infer the layout from
+      // anything but this field. See qs-01-anchored-bucketing-layout.md
       // "The contract (normative)" for the gate and the allocation-build mapping.
-      const isAnchoredLayout = Number(experience.version) > 8;
+      const isAnchoredLayout = Number(experience.version) > 11;
       const bucketingHashOptions = this._config?.bucketing
         ?.excludeExperienceIdHash
         ? null

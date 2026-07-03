@@ -31,7 +31,7 @@
  *
  * Each vector is driven through DataManager.getBucketingById -- the exact same public seam
  * DATA-1's gate tests use -- so every vector exercises the REAL gate
- * (`Number(experience.version) > 8`), the real allocation-build mapping, and the real
+ * (`Number(experience.version) > 11`), the real allocation-build mapping, and the real
  * bucketing managers, not a re-implementation of the algorithm.
  */
 import 'mocha';
@@ -157,8 +157,8 @@ describe('Cross-SDK golden-vector bucketing contract (qs-01 / GOLD-1, AC7)', fun
       '[stopped-arm-stability]',
       '[ta-zero-width]',
       '[nan-default]',
-      '[single-arm-v8-eq-v9]',
-      '[100pct-total-v8-eq-v9]',
+      '[single-arm-v11-eq-v12]',
+      '[100pct-total-v11-eq-v12]',
       '[boundary-hit]',
       '[total-weight-zero]'
     ].forEach((tag) => {
