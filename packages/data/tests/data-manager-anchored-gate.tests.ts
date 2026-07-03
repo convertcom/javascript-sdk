@@ -398,8 +398,10 @@ describe('DataManager anchored-vs-packed GATE tests (qs-01 / DATA-1)', function 
 
       expect(resultV8).to.be.an('object');
       expect(resultV9).to.be.an('object');
-      expect(Object.keys(resultV9 as object).sort()).to.deep.equal(
-        Object.keys(resultV8 as object).sort()
+      expect(
+        Object.keys(resultV9 as object).sort((a, b) => a.localeCompare(b))
+      ).to.deep.equal(
+        Object.keys(resultV8 as object).sort((a, b) => a.localeCompare(b))
       );
     });
   });
