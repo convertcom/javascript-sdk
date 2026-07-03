@@ -25,5 +25,6 @@ export * from './src/SegmentsAttributes';
 export * from './src/StoreData';
 export * from './src/TrackingEvent';
 export * from './src/VariableType';
+export * from './src/VariationAllocation';
 export * from './src/VisitorsQueue';
 export * from './src/Visitor';
