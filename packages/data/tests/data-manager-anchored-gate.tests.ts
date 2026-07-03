@@ -6,41 +6,43 @@
  */
 
 /**
- * qs-01 (DATA-1) — anchored-vs-packed GATE tests in DataManager._retrieveBucketing.
+ * qs-01 — anchored-vs-packed GATE tests in DataManager._retrieveBucketing.
  *
  * Spec of record: _bmad-output/planning-artifacts/2026-07-02-convert-js-sdk/qs-01-anchored-bucketing-layout.md
  * "The contract (normative)" section (the Gate paragraph + the allocation-build mapping),
  * AC1, AC4, AC8, AC9.
  *
- * The gate ("run anchored iff Number(experience.version) > 8") does not exist yet in
- * DataManager._retrieveBucketing's fresh-bucketing branch (packages/data/src/data-manager.ts:620-637)
- * -- every experience, regardless of `version`, currently goes through the existing packed
- * cumulative walk. The AC1 and AC4 assertions below therefore FAIL today (RED) because the
- * disagreement they assert between "what a version-9 experience should do" (anchored) and
- * "what it actually does" (still packed, pre-implementation) is real. AC8/AC9 protect
- * EXISTING behavior that runs entirely before/independently of the gate (the stored-decision
- * guard short-circuits before the version check is ever reached; the returned object's shape
- * doesn't change with the algorithm) -- those are expected to already PASS, and are included
- * as regression locks for after the gate lands. See this feature's decision log for why each
- * fixture is (or isn't) expected to fail pre-implementation.
+ * These tests lock the shipped gate in DataManager._retrieveBucketing's fresh-bucketing
+ * branch (packages/data/src/data-manager.ts:685): `Number(experience.version) > 8` routes
+ * fresh bucketing through the anchored layout (built by `_buildVariationAllocations`,
+ * data-manager.ts:586, and resolved via `BucketingManager.getBucketForVisitorAnchored`);
+ * version <= 8, missing/undefined, or non-numeric version keeps the existing packed
+ * cumulative walk unchanged (built by `_buildPackedBuckets`, data-manager.ts:556, and
+ * resolved via `BucketingManager.getBucketForVisitor`). AC1 asserts the gate actually
+ * branches by exploiting a real packed-vs-anchored disagreement on the same fixture (see
+ * below). AC4 asserts stops only zero their own width under the anchored path and never
+ * move neighboring arms' anchors. AC8/AC9 protect existing behavior that runs entirely
+ * before/independently of the gate: the stored-decision guard (data-manager.ts:658-665)
+ * short-circuits before the version check is ever reached, and the returned
+ * BucketedVariation shape is unchanged across versions.
  *
  * Fixture derivation methodology: every raw bucket VALUE used below (e.g. 4957, 9807, 102)
  * is a real MurmurHash3 output from BucketingManager.getValueVisitorBased -- the same,
  * already-implemented, already-unit-tested hash oracle the packed and anchored paths both
- * call unmodified (packages/bucketing/src/bucketing-manager.ts:95-108; see
+ * call unmodified (packages/bucketing/src/bucketing-manager.ts:91-112; see
  * packages/bucketing/tests/bucketing-manager.tests.ts for its own tests). Values were
  * derived once (for the fixed (visitorId, experienceId) string pairs used below, with the
  * default hash seed) via that exact method, then frozen as literal numbers so every
  * packed/anchored expectation in this file is independently re-derivable by hand from the
  * spec's normative formulas (anchor = (cumWeight / totalWeight) * 10000; width = active ?
  * allocation * 100 : 0) against the fixed traffic_allocation values declared alongside them,
- * without needing to re-run any tool. This is the same class of technique BUCK-2 used to
- * freeze its THIRDS_15/THIRDS_25 expected ranges from the spec's own pseudocode, applied one
- * level up (the raw hash value is looked up from the hash oracle instead of hand-computed,
- * since MurmurHash3 output cannot reasonably be hand-derived; everything downstream of that
- * single looked-up number -- which bucket it falls into under each layout -- is plain
- * arithmetic against the fixed weights, independently checkable inline in each fixture's
- * comment).
+ * without needing to re-run any tool. This is the same class of technique used in
+ * bucketing-manager-anchored.tests.ts to freeze its THIRDS_15/THIRDS_25 expected ranges
+ * from the spec's own pseudocode, applied one level up (the raw hash value is looked up
+ * from the hash oracle instead of hand-computed, since MurmurHash3 output cannot reasonably
+ * be hand-derived; everything downstream of that single looked-up number -- which bucket it
+ * falls into under each layout -- is plain arithmetic against the fixed weights,
+ * independently checkable inline in each fixture's comment).
  */
 import 'mocha';
 import {expect} from 'chai';

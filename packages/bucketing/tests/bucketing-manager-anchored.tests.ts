@@ -7,19 +7,34 @@
  */
 
 /**
- * qs-01 (BUCK-2) — anchored bucketing algorithm tests.
+ * qs-01 — anchored bucketing algorithm tests.
  *
  * Spec of record: _bmad-output/planning-artifacts/2026-07-02-convert-js-sdk/qs-01-anchored-bucketing-layout.md
  * "The contract (normative)" section, AC2/AC3/AC4/AC5.
+ *
+ * These tests lock the shipped behavior of the three anchored bucketing methods on
+ * BucketingManager (packages/bucketing/src/bucketing-manager.ts): `getBucketRanges`
+ * (builds the anchor/width layout from a set of variation allocations), `selectBucketAnchored`
+ * (resolves a raw bucket value against that layout via a half-open [anchor, anchor + width)
+ * interval), and `getBucketForVisitorAnchored` (reuses the existing visitor-based hash,
+ * unmodified, and routes it through the two methods above). Together the suites below verify:
+ *   - the raise-superset property: anchors are computed over the total weight of ALL
+ *     entries so growing an experience's total allocation only ever grows arms and never
+ *     reshuffles an already-bucketed visitor into a different arm (AC2 thirds/superset
+ *     fixtures);
+ *   - half-open boundary semantics at the anchor and anchor + width edges (AC5);
+ *   - zero/inactive-arm handling: stopped or explicit zero-allocation entries keep their
+ *     weight for anchor stability but get a zero-width range so they can never be selected,
+ *     and a totalWeight <= 0 layout yields no bucketing (AC4/AC5);
+ *   - determinism: getBucketForVisitorAnchored returns the same result for the same
+ *     (visitorId, experienceId) and matches selectBucketAnchored(getBucketRanges(...), hash)
+ *     composed directly from the existing hash oracle.
  *
  * Expected numbers below are derived BY HAND directly from the spec's normative
  * pseudocode (anchor = (cumWeight / totalWeight) * 10000; width = active ? allocation * 100 : 0),
  * written as literal arithmetic expressions so the doubles are IEEE754-exact and
  * independently verifiable against the spec's layout table — never computed by calling
- * the SUT. `getBucketRanges`, `selectBucketAnchored` and `getBucketForVisitorAnchored`
- * are declared on BucketingManagerInterface (packages/bucketing/src/interfaces/bucketing-manager.ts)
- * but are NOT YET implemented on the BucketingManager class — every assertion below is
- * expected to FAIL (RED) until BUCK-3 implements them.
+ * the SUT.
  */
 import 'mocha';
 import {expect} from 'chai';
@@ -154,9 +169,9 @@ const ZERO_TOTAL_WEIGHT_CASES: Array<{
 ];
 
 describe('BucketingManager anchored tests (qs-01 / BUCK-2 — contract v9 anchored algorithm)', function () {
-  // Matches the existing packed-path suite's convention: no explicit type annotation,
-  // so calls to the not-yet-implemented anchored methods do not introduce additional
-  // (pre-implementation) compile errors beyond the ones already tracked separately.
+  // Matches the existing packed-path suite's convention: no explicit type annotation
+  // is needed since the anchored methods are implemented directly on the
+  // BucketingManager class.
   let bucketingManager;
 
   beforeEach(function () {
