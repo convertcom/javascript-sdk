@@ -944,7 +944,8 @@ export class DataManager implements DataManagerInterface {
       })
     );
     // Get locations from DataStore
-    const {locations = []} = this.getData(visitorId) || {};
+    const {locations: storedLocations = []} = this.getData(visitorId) || {};
+    const locations = enableStorage ? storedLocations : [...storedLocations];
     const matchedRecords = [];
     let match;
     if (arrayNotEmpty(items)) {

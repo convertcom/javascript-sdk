@@ -633,6 +633,59 @@ describe('Context.setPreview() preview integration (RED)', function () {
       );
     });
 
+    // Zero-trace IN-PLACE MUTATION (RED): even with `putData()` now gated by
+    // `enableStorage`, `selectLocations()` (data-manager.ts) destructures
+    // `locations` straight off the object `getData()` returns and then
+    // `push`/`splice`s it directly. On the memory-only path (no DataStore
+    // configured, as in every scenario in this file) `getData()` returns the
+    // SAME object reference stored in `_bucketedVisitors` -- so for a
+    // visitorId that already has stored locations, this mutates that live,
+    // shared array in place BEFORE `enableStorage` is ever consulted. A
+    // preview context therefore corrupts a real visitor's stored data with
+    // zero store-write trace. The case above only proves this on a FRESH
+    // visitorId, where `getData()` returns `null` and the `{locations = []}`
+    // destructure default creates a brand-new, unaliased array -- masking
+    // this exact defect.
+    it("runExperience() on a location-targeted NON-target experience mutates an ALREADY-STORED visitor's `locations` array in place, bypassing the `enableStorage` gate entirely", async function () {
+      this.timeout(test_timeout);
+      const locationTargetedExperienceKey = 'zt-mutate-loc-exp-key';
+      const locationTargetedExperience = makeExperience(
+        'zt-mutate-loc-exp',
+        locationTargetedExperienceKey,
+        ['zt-mutate-loc-var-a', 'zt-mutate-loc-var-b'],
+        {locations: ['zt-mutate-loc']}
+      );
+      const scenario = buildScenario('zt-mutate-loc', previewResponses, {
+        extraExperiences: [locationTargetedExperience],
+        locations: [
+          makeLocation('zt-mutate-loc', 'zt-mutate-loc-key', MATCH_KEY, MATCH_VALUE)
+        ]
+      });
+      const visitorId = 'visitor-zt-mutate-loc';
+
+      // Seed this visitor's REAL stored `locations` array on the shared
+      // dataManager BEFORE any preview activity, then snapshot it (deep
+      // copy) so mutation of the live array is unambiguously observable.
+      scenario.sdk.dataManager.putData(visitorId, {locations: ['seed-other-loc']});
+      const storedLocationsBeforePreview = JSON.parse(
+        JSON.stringify(scenario.sdk.dataManager.getData(visitorId).locations)
+      );
+
+      const context = makeContext(scenario.sdk, visitorId);
+      await context.setPreview({
+        experienceId: scenario.previewExperienceId,
+        variationId: scenario.targetVariationId
+      });
+      context.runExperience(locationTargetedExperienceKey, {
+        locationProperties: {[MATCH_KEY]: MATCH_VALUE}
+      });
+
+      expect(
+        scenario.sdk.dataManager.getData(visitorId).locations,
+        "visitor's real stored `locations` array, read back after the preview run"
+      ).to.deep.equal(storedLocationsBeforePreview);
+    });
+
     it('runCustomSegments() on a preview context still writes matched custom segments to storage (no `_preview` guard)', async function () {
       this.timeout(test_timeout);
       const dataStore = new SpyDataStore();
