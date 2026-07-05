@@ -62,6 +62,7 @@ export class ApiManager implements ApiManagerInterface {
   private _trackingEnabled: boolean;
   private _trackingSource: string;
   private _cacheLevel: string;
+  private _debugToken?: string;
   private _mapper: (...args: any) => any;
 
   readonly batchSize: number = DEFAULT_BATCH_SIZE;
@@ -114,6 +115,7 @@ export class ApiManager implements ApiManagerInterface {
     this._trackingEnabled = config?.network?.tracking;
     this._trackingSource = config?.network?.source || 'js-sdk';
     this._cacheLevel = config?.network?.cacheLevel;
+    this._debugToken = config?.debugToken;
     this._requestsQueue = {
       length: 0,
       items: [],
@@ -299,9 +301,12 @@ export class ApiManager implements ApiManagerInterface {
    */
   getConfig(): Promise<ConfigResponseData> {
     this._loggerManager?.trace?.('ApiManager.getConfig()');
-    let query = this._cacheLevel === 'low' || this._environment ? '?' : '';
-    if (this._environment) query += `environment=${this._environment}`;
-    if (this._cacheLevel === 'low') query += '_conv_low_cache=1';
+    const params: string[] = [];
+    if (this._environment) params.push(`environment=${this._environment}`);
+    if (this._cacheLevel === 'low' || this._debugToken)
+      params.push('_conv_low_cache=1');
+    if (this._debugToken) params.push(`debug_token=${this._debugToken}`);
+    const query = params.length ? `?${params.join('&')}` : '';
     return new Promise((resolve, reject) => {
       this.request('get', {
         base: this._configEndpoint,
