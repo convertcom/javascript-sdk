@@ -1040,6 +1040,34 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
+   * qs-02 / SDK-4: resolve a preview decision directly from the passed-in experience,
+   * bypassing audiences/segments/locations, the environment check, experience status,
+   * variation status/traffic filters, stored decisions, and the bucketing hash entirely.
+   * PURE -- reads only `experience.variations`; never touches shared config (a preview
+   * experience fetched via `?exp=` may not be registered there), never calls `putData`,
+   * and never calls `_apiManager.enqueue`.
+   * @param {ConfigExperience} experience
+   * @param {string} variationId
+   * @return {BucketedVariation | null}
+   */
+  getPreviewDecision(
+    experience: ConfigExperience,
+    variationId: string
+  ): BucketedVariation | null {
+    const variation = experience?.variations?.find(
+      (candidate: ExperienceVariationConfig) =>
+        String(candidate?.id) === String(variationId)
+    );
+    if (!variation) return null;
+    return {
+      experienceId: experience?.id,
+      experienceName: experience?.name,
+      experienceKey: experience?.key,
+      ...variation
+    } as BucketedVariation;
+  }
+
+  /**
    * Process conversion event
    * @param {string} visitorId
    * @param {string} goalId
