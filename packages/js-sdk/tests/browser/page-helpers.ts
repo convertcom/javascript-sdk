@@ -54,11 +54,16 @@ export async function injectHelpers(page: Page): Promise<void> {
       w.__createContext('XXX', {browser: 'chrome'}, extraConfig);
     w.__makeDataStore = () => ({
       data: {} as Record<string, any>,
+      // Mirrors the Node-side `SpyDataStore` in context-preview.tests.ts --
+      // lets browser specs assert "zero store writes" the same way the
+      // Node zero-trace STORAGE tests do.
+      setCallCount: 0,
       get(key: string) {
         if (!key) return this.data;
         return this.data[key.toString()];
       },
       set(key: string, value: any) {
+        this.setCallCount++;
         if (!key) throw new Error('Invalid DataStore key!');
         this.data[key.toString()] = value;
       }

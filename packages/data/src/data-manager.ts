@@ -198,6 +198,9 @@ export class DataManager implements DataManagerInterface {
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
+   * @param {boolean=} attributes.enableStorage Defaults to `true`. Gates the
+   *  location-match persistence write in `selectLocations()`; matching itself
+   *  is always performed regardless of this flag.
    * @param {string=} attributes.environment
    * @return {ConfigExperience | RuleError}
    */
@@ -211,6 +214,7 @@ export class DataManager implements DataManagerInterface {
       visitorProperties,
       locationProperties,
       ignoreLocationProperties,
+      enableStorage = true,
       environment = this._environment
     } = attributes;
     this._loggerManager?.trace?.(
@@ -306,7 +310,8 @@ export class DataManager implements DataManagerInterface {
           // and trigger activated/deactivated events
           matchedLocations = this.selectLocations(visitorId, locations, {
             locationProperties,
-            identityField
+            identityField,
+            enableStorage
           });
           // Return rule errors if present
           matchedErrors = matchedLocations.filter((match) =>
@@ -530,6 +535,7 @@ export class DataManager implements DataManagerInterface {
         visitorProperties,
         locationProperties,
         ignoreLocationProperties,
+        enableStorage,
         environment
       }
     );
@@ -914,6 +920,9 @@ export class DataManager implements DataManagerInterface {
    * @param {Record<string, any>} attributes.locationProperties
    * @param {IdentityField=} attributes.identityField
    * @param {boolean=} attributes.forceEvent
+   * @param {boolean=} attributes.enableStorage Defaults to `true`. Gates only
+   *  the persistence write below; location matching and the
+   *  LOCATION_ACTIVATED/LOCATION_DEACTIVATED events always fire regardless.
    * @returns {Array<Record<string, any> | RuleError>}
    */
   selectLocations(
@@ -921,7 +930,12 @@ export class DataManager implements DataManagerInterface {
     items: Array<Record<string, any>>,
     attributes: LocationAttributes
   ): Array<Record<string, any> | RuleError> {
-    const {locationProperties, identityField = 'key', forceEvent} = attributes;
+    const {
+      locationProperties,
+      identityField = 'key',
+      forceEvent,
+      enableStorage = true
+    } = attributes;
     this._loggerManager?.trace?.(
       'DataManager.selectLocations()',
       this._mapper({
@@ -997,9 +1011,11 @@ export class DataManager implements DataManagerInterface {
       }
     }
     // Store the data
-    this.putData(visitorId, {
-      locations
-    });
+    if (enableStorage) {
+      this.putData(visitorId, {
+        locations
+      });
+    }
     this._loggerManager?.debug?.(
       'DataManager.selectLocations()',
       this._mapper({

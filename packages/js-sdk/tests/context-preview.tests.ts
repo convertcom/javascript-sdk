@@ -38,6 +38,8 @@ import {SystemEvents} from '@convertcom/js-sdk-enums';
 import {
   Config as ConfigType,
   ConfigExperience,
+  ConfigLocation,
+  ConfigSegment,
   ExperienceVariationConfig,
   ExperienceStatuses,
   VariationStatuses
@@ -100,6 +102,59 @@ function makeExperience(
 
 function makeGoal(): Record<string, any> {
   return {id: GOAL_ID, key: GOAL_KEY, name: 'Preview Context Goal'};
+}
+
+// Shared by makeLocation()/makeSegment() below -- both ConfigLocation and
+// ConfigSegment are {id, key, name, rules} shaped, and both are matched via
+// RuleManager.isRuleMatched() against a single `{[matchKey]: matchValue}`
+// property. One rule-tree builder for both keeps the zero-trace STORAGE
+// tests parameterizable and avoids copy-pasting the OR/AND/OR_WHEN tree.
+function makeRuleMatchedEntity<T>(
+  id: string,
+  key: string,
+  matchKey: string,
+  matchValue: string
+): T {
+  return {
+    id,
+    key,
+    name: `Entity ${key}`,
+    rules: {
+      OR: [
+        {
+          AND: [
+            {
+              OR_WHEN: [
+                {
+                  key: matchKey,
+                  matching: {match_type: 'equals', negated: false},
+                  value: matchValue
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  } as unknown as T;
+}
+
+function makeLocation(
+  id: string,
+  key: string,
+  matchKey: string,
+  matchValue: string
+): ConfigLocation {
+  return makeRuleMatchedEntity<ConfigLocation>(id, key, matchKey, matchValue);
+}
+
+function makeSegment(
+  id: string,
+  key: string,
+  matchKey: string,
+  matchValue: string
+): ConfigSegment {
+  return makeRuleMatchedEntity<ConfigSegment>(id, key, matchKey, matchValue);
 }
 
 class SpyDataStore {
@@ -233,6 +288,31 @@ function wrapPutData(dataManager: InstanceType<typeof dm>): {calls: number} {
   return tracker;
 }
 
+// Zero-trace STORAGE (RED): runs `act()` against a freshly wrapped
+// `putData` and asserts no store write happened at all, on any of the three
+// observable surfaces this repo already uses for AC5 (dataManager.putData()
+// call count, DataStore.set() call count, in-memory `_bucketedVisitors`
+// size). Shared by every zero-trace STORAGE case below so each `it()` only
+// supplies the scenario-specific `act` closure (SonarCloud 3% gate).
+function expectZeroStorageWrites(
+  sdk: Sdk,
+  dataStore: SpyDataStore,
+  act: () => void
+): void {
+  const putDataTracker = wrapPutData(sdk.dataManager);
+  const bucketedVisitorsBefore = (sdk.dataManager as any)._bucketedVisitors
+    .size;
+
+  act();
+
+  expect(putDataTracker.calls, 'dataManager.putData() calls').to.equal(0);
+  expect(dataStore.setCallCount, 'DataStore.set() calls').to.equal(0);
+  expect(
+    (sdk.dataManager as any)._bucketedVisitors.size,
+    'in-memory visitor store size'
+  ).to.equal(bucketedVisitorsBefore);
+}
+
 function countEventFires(
   eventManager: InstanceType<typeof em>,
   eventName: SystemEvents
@@ -262,7 +342,17 @@ interface Scenario {
 function buildScenario(
   prefix: string,
   previewResponses: Map<string, Record<string, any>>,
-  options: {dataStore?: SpyDataStore; registerPreview?: boolean} = {}
+  options: {
+    dataStore?: SpyDataStore;
+    registerPreview?: boolean;
+    // Zero-trace STORAGE (RED): lets a scenario carry an extra, real,
+    // NON-target experience (e.g. location-targeted) plus the top-level
+    // `data.locations`/`data.segments` entities it resolves against,
+    // without duplicating the rest of buildScenario() per test case.
+    extraExperiences?: Array<ConfigExperience>;
+    locations?: Array<ConfigLocation>;
+    segments?: Array<ConfigSegment>;
+  } = {}
 ): Scenario {
   const previewExperienceId = `${prefix}-preview-exp`;
   const previewExperienceKey = `${prefix}-preview-exp-key`;
@@ -294,8 +384,10 @@ function buildScenario(
     {
       account_id: ACCOUNT_ID,
       project: {id: PROJECT_ID},
-      experiences: [normalExperience],
-      goals: [makeGoal()]
+      experiences: [normalExperience, ...(options.extraExperiences || [])],
+      goals: [makeGoal()],
+      ...(options.locations ? {locations: options.locations} : {}),
+      ...(options.segments ? {segments: options.segments} : {})
     },
     {dataStore: options.dataStore}
   );
@@ -490,6 +582,119 @@ describe('Context.setPreview() preview integration (RED)', function () {
       expect(normalResult.experienceKey).to.equal(scenario.normalExperienceKey);
       expect(trackHits.length, '/track requests').to.be.greaterThan(0);
       expect(dataStore.setCallCount, 'DataStore.set() calls').to.be.greaterThan(0);
+    });
+  });
+
+  // Zero-trace STORAGE (RED): the decision audit found that AC5's zero-trace
+  // guarantee only covers `enableTracking`/`enableStorage` as forwarded into
+  // `ExperienceManager.selectVariation()` -- it does NOT cover the location
+  // rule-matching path (`matchRulesByField()` calls `selectLocations()`,
+  // which calls `putData()` unconditionally, *before* `enableStorage` is
+  // ever consulted) nor the segments/visitor-properties methods on Context,
+  // none of which check `this._preview` at all. Every case below MUST fail
+  // today: each currently performs at least one store write.
+  describe('Zero-trace STORAGE: ungated putData() reachable despite a preview context (RED)', function () {
+    const MATCH_KEY = 'country';
+    const MATCH_VALUE = 'US';
+
+    it('runExperience() on a location-targeted NON-target experience still writes to storage (matchRulesByField -> selectLocations -> putData, ungated by enableStorage)', async function () {
+      this.timeout(test_timeout);
+      const dataStore = new SpyDataStore();
+      const locationTargetedExperienceKey = 'zt-storage-loc-exp-key';
+      const locationTargetedExperience = makeExperience(
+        'zt-storage-loc-exp',
+        locationTargetedExperienceKey,
+        ['zt-storage-loc-var-a', 'zt-storage-loc-var-b'],
+        {locations: ['zt-storage-loc']}
+      );
+      const scenario = buildScenario('zt-storage-loc', previewResponses, {
+        dataStore,
+        extraExperiences: [locationTargetedExperience],
+        locations: [
+          makeLocation(
+            'zt-storage-loc',
+            'zt-storage-loc-key',
+            MATCH_KEY,
+            MATCH_VALUE
+          )
+        ]
+      });
+      const context = makeContext(scenario.sdk, 'visitor-zt-storage-loc');
+
+      await context.setPreview({
+        experienceId: scenario.previewExperienceId,
+        variationId: scenario.targetVariationId
+      });
+
+      expectZeroStorageWrites(scenario.sdk, dataStore, () =>
+        context.runExperience(locationTargetedExperienceKey, {
+          locationProperties: {[MATCH_KEY]: MATCH_VALUE}
+        })
+      );
+    });
+
+    it('runCustomSegments() on a preview context still writes matched custom segments to storage (no `_preview` guard)', async function () {
+      this.timeout(test_timeout);
+      const dataStore = new SpyDataStore();
+      const segmentKey = 'zt-storage-seg-key';
+      const scenario = buildScenario('zt-storage-seg', previewResponses, {
+        dataStore,
+        segments: [
+          makeSegment('zt-storage-seg', segmentKey, MATCH_KEY, MATCH_VALUE)
+        ]
+      });
+      const context = makeContext(scenario.sdk, 'visitor-zt-storage-seg');
+
+      await context.setPreview({
+        experienceId: scenario.previewExperienceId,
+        variationId: scenario.targetVariationId
+      });
+
+      expectZeroStorageWrites(scenario.sdk, dataStore, () =>
+        context.runCustomSegments([segmentKey], {
+          ruleData: {[MATCH_KEY]: MATCH_VALUE}
+        })
+      );
+    });
+
+    // setDefaultSegments() and updateVisitorProperties() both write straight
+    // to the store (segmentsManager.putSegments() / dataManager.putData())
+    // with no `_preview` check anywhere on either call path -- parameterized
+    // together since only the `act` closure differs between the two cases.
+    [
+      {
+        slug: 'default-segments',
+        name: 'setDefaultSegments()',
+        act: (context: any, visitorId: string) =>
+          context.setDefaultSegments({[MATCH_KEY]: MATCH_VALUE})
+      },
+      {
+        slug: 'update-visitor-properties',
+        name: 'updateVisitorProperties()',
+        act: (context: any, visitorId: string) =>
+          context.updateVisitorProperties(visitorId, {
+            [MATCH_KEY]: MATCH_VALUE
+          })
+      }
+    ].forEach(({slug, name, act}) => {
+      it(`${name} on a preview context still writes to storage (no \`_preview\` guard)`, async function () {
+        this.timeout(test_timeout);
+        const dataStore = new SpyDataStore();
+        const scenario = buildScenario(`zt-storage-${slug}`, previewResponses, {
+          dataStore
+        });
+        const visitorId = `visitor-zt-storage-${slug}`;
+        const context = makeContext(scenario.sdk, visitorId);
+
+        await context.setPreview({
+          experienceId: scenario.previewExperienceId,
+          variationId: scenario.targetVariationId
+        });
+
+        expectZeroStorageWrites(scenario.sdk, dataStore, () =>
+          act(context, visitorId)
+        );
+      });
     });
   });
 });

@@ -563,7 +563,13 @@ export class Context implements ContextInterface {
    * @param {VisitorSegments} segments A segment key
    */
   setDefaultSegments(segments: VisitorSegments): void {
-    this._segmentsManager.putSegments(this._visitorId, segments);
+    // qs-02: preview contexts must leave zero trace -- suppress the
+    // persistence write while preserving normal-context behavior exactly.
+    this._segmentsManager.putSegments(
+      this._visitorId,
+      segments,
+      !this._preview
+    );
   }
 
   /**
@@ -595,10 +601,13 @@ export class Context implements ContextInterface {
       return;
     }
     const segmentsRule = this.getVisitorProperties(attributes?.ruleData);
+    // qs-02: preview contexts must leave zero trace -- suppress the
+    // persistence write while preserving normal-context matching behavior.
     const error = this._segmentsManager.selectCustomSegments(
       this._visitorId,
       segmentKeys,
-      segmentsRule
+      segmentsRule,
+      !this._preview
     );
     if (error) return error as RuleError;
 
@@ -614,6 +623,9 @@ export class Context implements ContextInterface {
     visitorId: string,
     visitorProperties: Record<string, any>
   ): void {
+    // qs-02: preview contexts must leave zero trace -- skip the persistence
+    // write entirely (DataManager.putData() has no per-call storage gate).
+    if (this._preview) return;
     this._dataManager.putData(visitorId, {segments: visitorProperties});
   }
 

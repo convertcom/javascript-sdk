@@ -84,7 +84,19 @@ test.describe('Context.setPreview() zero-trace on the real browser transport (RE
     const result = await page.evaluate(
       async ({previewExperienceId, previewVariationId, previewKey, otherKey, goalKey, runProps}) => {
         const w = window as any;
-        const context = w.__defaultContext();
+        // Zero-trace STORAGE (browser hard gate): a real DataStore, wired the
+        // same way __createSegmentTestContext() wires one, so this in-page
+        // lifecycle also proves zero DataStore.set() calls -- not just zero
+        // /track requests -- exactly like the Node-side zero-trace STORAGE
+        // suite in context-preview.tests.ts. Deliberately built via
+        // __createContext() with NO initial visitorProps (unlike
+        // __defaultContext(), which always passes `{browser: 'chrome'}`) --
+        // Context's constructor unconditionally persists non-empty initial
+        // visitorProps as segments (a separate, pre-existing, non-preview
+        // code path), which would otherwise pollute this preview-lifecycle
+        // assertion with an unrelated write.
+        const dataStore = w.__makeDataStore();
+        const context = w.__createContext('XXX', undefined, {dataStore});
 
         await context.setPreview({
           experienceId: previewExperienceId,
@@ -102,7 +114,9 @@ test.describe('Context.setPreview() zero-trace on the real browser transport (RE
         return {
           previewVariationId: previewDecision?.id,
           otherExperienceKey: otherDecision?.experienceKey,
-          trackCalls: w.__trackCalls as Array<{transport: string; url: string}>
+          trackCalls: w.__trackCalls as Array<{transport: string; url: string}>,
+          dataStoreSetCallCount: dataStore.setCallCount as number,
+          dataStoreKeys: Object.keys(dataStore.data)
         };
       },
       {
@@ -122,5 +136,9 @@ test.describe('Context.setPreview() zero-trace on the real browser transport (RE
     expect(
       result.trackCalls.filter((call) => call.transport === 'fetch')
     ).toEqual([]);
+    // Zero-trace STORAGE (browser hard gate, augmentation): no DataStore
+    // write and no visitor-store growth across the entire lifecycle.
+    expect(result.dataStoreSetCallCount).toBe(0);
+    expect(result.dataStoreKeys).toEqual([]);
   });
 });

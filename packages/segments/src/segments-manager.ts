@@ -74,11 +74,18 @@ export class SegmentsManager implements SegmentsManagerInterface {
    * Update segments in DataStore
    * @param {string} visitorId
    * @param {VisitorSegments} segments
+   * @param {boolean=} enableStorage Defaults to `true`. Suppresses the
+   *  persistence write (in-memory map and/or configured DataStore) when
+   *  `false`. Used by preview contexts (qs-02) to guarantee zero store writes.
    */
-  putSegments(visitorId: string, segments: VisitorSegments): void {
+  putSegments(
+    visitorId: string,
+    segments: VisitorSegments,
+    enableStorage = true
+  ): void {
     const {segments: reportSegments} =
       this._dataManager.filterReportSegments(segments);
-    if (reportSegments) {
+    if (reportSegments && enableStorage) {
       // Store the data
       this._dataManager.putData(visitorId, {segments: reportSegments});
     }
@@ -87,7 +94,8 @@ export class SegmentsManager implements SegmentsManagerInterface {
   private setCustomSegments(
     visitorId: string,
     segments: Array<ConfigSegment>,
-    segmentRule?: Record<string, any>
+    segmentRule?: Record<string, any>,
+    enableStorage = true
   ): VisitorSegments | RuleError {
     const storeData: StoreData = this._dataManager.getData(visitorId) || {};
     // Get custom segments ID from DataStore
@@ -131,7 +139,7 @@ export class SegmentsManager implements SegmentsManagerInterface {
       };
 
       // Merge custom segments ID into DataStore
-      this.putSegments(visitorId, segmentsData);
+      this.putSegments(visitorId, segmentsData, enableStorage);
     } else {
       this._loggerManager?.warn?.(
         'SegmentsManager.setCustomSegments()',
@@ -148,19 +156,28 @@ export class SegmentsManager implements SegmentsManagerInterface {
    * @param {Array<string>} segmentKeys A list of segment keys
    * @param {Record<string, any>=} segmentRule An object of key-value pairs that are used for segments matching
    * @param {string=} environment
+   * @param {boolean=} enableStorage Defaults to `true`. Suppresses the
+   *  persistence write when `false`; matching itself is unaffected. Used by
+   *  preview contexts (qs-02) to guarantee zero store writes.
    * @return {VisitorSegments | RuleError}
    */
   selectCustomSegments(
     visitorId: string,
     segmentKeys: Array<string>,
-    segmentRule?: Record<string, any>
+    segmentRule?: Record<string, any>,
+    enableStorage = true
   ): VisitorSegments | RuleError {
     const segments = this._dataManager.getEntities(
       segmentKeys,
       'segments'
     ) as Array<ConfigSegment>;
 
-    return this.setCustomSegments(visitorId, segments, segmentRule);
+    return this.setCustomSegments(
+      visitorId,
+      segments,
+      segmentRule,
+      enableStorage
+    );
   }
 
   /**

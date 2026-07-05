@@ -23,7 +23,7 @@ const NUMERIC_ONLY = /^\d+$/;
  * Pure function: never throws, has no side effects, performs no logging.
  *
  * @param {string} value
- * @returns {{experienceId: string; variationId: string} | null}
+ * @returns {?{experienceId: string, variationId: string}}
  */
 export function parsePreviewParam(
   value: string
