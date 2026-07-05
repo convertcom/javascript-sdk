@@ -364,9 +364,13 @@ export class ApiManager implements ApiManagerInterface {
         .then(({data}) => resolve(data))
         .catch(reject);
     });
+    const now = Date.now();
+    for (const [key, entry] of configByExperienceCache) {
+      if (now >= entry.expiresAt) configByExperienceCache.delete(key);
+    }
     configByExperienceCache.set(cacheKey, {
       promise,
-      expiresAt: Date.now() + CONFIG_BY_EXPERIENCE_TTL
+      expiresAt: now + CONFIG_BY_EXPERIENCE_TTL
     });
     promise.catch(() => {
       if (configByExperienceCache.get(cacheKey)?.promise === promise) {

@@ -53,11 +53,15 @@ function assertConfigByExperienceQuery(
   const [path, queryString = ''] = requestUrl.split('?');
   expect(path).to.equal(`/config/${SDK_KEY}`);
 
-  const expectedKeys = Object.keys(expectedParams).sort();
+  const expectedKeys = Object.keys(expectedParams).sort((a, b) =>
+    a.localeCompare(b)
+  );
   expect(queryString.split('&')).to.have.lengthOf(expectedKeys.length);
 
   const params = new URLSearchParams(queryString);
-  expect(Array.from(params.keys()).sort()).to.deep.equal(expectedKeys);
+  expect(
+    Array.from(params.keys()).sort((a, b) => a.localeCompare(b))
+  ).to.deep.equal(expectedKeys);
   expectedKeys.forEach((key) => {
     expect(params.get(key)).to.equal(expectedParams[key]);
   });
