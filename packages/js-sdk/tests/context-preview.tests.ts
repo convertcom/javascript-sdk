@@ -6,18 +6,14 @@
  */
 
 /**
- * qs-02 -- Context.setPreview() integration tests (RED phase).
+ * qs-02 -- Context.setPreview() integration tests.
  *
  * Owns: AC3 (render half -- preview experience resolved only via the `?exp=` fetch),
  * AC5 (zero-trace, Node transport), AC6 (isolation across contexts on the same SDK
  * instance), AC7 (inert-on-bad-input, unknown-experience half).
  *
- * `Context.setPreview()` does not exist yet -- every call below is made through an
- * `as any` cast so the file compiles, and the calls themselves fail at runtime
- * (method undefined), which is the expected RED signal. `enableStorage` similarly
- * does not exist yet on `BucketingAttributes` / `DataManager` -- this file never sets
- * it directly; it is exercised indirectly, end-to-end, through `Context.setPreview()`
- * once implemented (see spec item 1 in the driving task).
+ * `enableStorage` (on `BucketingAttributes` / `DataManager`) is never set directly by
+ * this file; it is exercised indirectly, end-to-end, through `Context.setPreview()`.
  */
 import 'mocha';
 import {expect} from 'chai';
@@ -262,6 +258,11 @@ function makeSdk(
   };
 }
 
+// Returns `any`: callers access `.experienceId`/`.id`/etc directly off
+// `runExperience()`'s `BucketedVariation | RuleError | BucketingError` union
+// without narrowing, matching this file's established assertion style (see
+// `assertPreviewDecision`-style helpers elsewhere in this repo) -- not
+// related to `setPreview()`, which is a fully-typed public method already.
 function makeContext(sdk: Sdk, visitorId: string): any {
   return new c(sdk.config, visitorId, {
     eventManager: sdk.eventManager,

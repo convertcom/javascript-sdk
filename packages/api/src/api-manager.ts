@@ -368,6 +368,11 @@ export class ApiManager implements ApiManagerInterface {
       promise,
       expiresAt: Date.now() + CONFIG_BY_EXPERIENCE_TTL
     });
+    promise.catch(() => {
+      if (configByExperienceCache.get(cacheKey)?.promise === promise) {
+        configByExperienceCache.delete(cacheKey);
+      }
+    });
     return promise;
   }
 }

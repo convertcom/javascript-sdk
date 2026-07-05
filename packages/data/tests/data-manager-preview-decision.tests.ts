@@ -15,10 +15,6 @@
  * bypasses audiences/segments/locations, the environment check, experience status,
  * variation status/traffic filters, stored decisions, and the bucketing hash entirely, and
  * performs no `putData` and no `apiManager.enqueue`. An unknown variationId is inert (null).
- *
- * RED phase: `getPreviewDecision` does not exist yet on DataManager. Every call below is
- * cast `as any` so the file compiles; the calls themselves fail at runtime (method
- * undefined), which is the expected RED signal.
  */
 import 'mocha';
 import {expect} from 'chai';
@@ -156,7 +152,7 @@ function assertPreviewDecision(
   const storeSizeBefore = (dataManager as any)._bucketedVisitors.size;
   const enqueueCountBefore = enqueueCallCount;
 
-  const result = (dataManager as any).getPreviewDecision(
+  const result = dataManager.getPreviewDecision(
     experience,
     requestedVariationId
   );
@@ -263,7 +259,7 @@ describe('DataManager.getPreviewDecision() tests (SDK-4)', function () {
       const dataManager = makeDataManager();
       const {experience} = buildCaseExperience();
 
-      const result = (dataManager as any).getPreviewDecision(
+      const result = dataManager.getPreviewDecision(
         experience,
         UNKNOWN_VARIATION_ID
       );

@@ -35,12 +35,9 @@ function makeConfig(overrides: Record<string, any> = {}): ConfigType {
 }
 
 /**
- * Instantiates an ApiManager pointed at the shared test server. Cast to
- * `any` because `getConfigByExperience` does not exist on the class or its
- * interface yet (RED phase) — the file must compile, the calls must fail
- * at runtime (method undefined).
+ * Instantiates an ApiManager pointed at the shared test server.
  */
-function makeApiManager(overrides: Record<string, any> = {}): any {
+function makeApiManager(overrides: Record<string, any> = {}): InstanceType<typeof am> {
   return new am(makeConfig(overrides));
 }
 
@@ -228,6 +225,42 @@ describe('ApiManager getConfigByExperience', function () {
 
       expect(hitCounts.get(expId)).to.equal(2);
       expect(second).to.not.deep.equal(first);
+    });
+
+    it('does not memoize a rejected fetch, so a second call within the TTL window refetches and can resolve', async function () {
+      const expId = 'exp-memo-reject-then-refetch';
+      const apiManager = makeApiManager();
+
+      // Swap the shared success-only handler for one where the FIRST
+      // request for this id fails (500) and every subsequent request for
+      // it succeeds, still using the shared `hitCounts` map for tracking.
+      server.removeAllListeners('request');
+      server.on('request', (request, res) => {
+        const url = new URL(request.url, `${host}:${port}`);
+        const exp = url.searchParams.get('exp');
+        const count = (hitCounts.get(exp) || 0) + 1;
+        hitCounts.set(exp, count);
+        if (count === 1) {
+          res.writeHead(500, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({error: 'boom'}));
+          return;
+        }
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({exp, hitCount: count}));
+      });
+
+      let rejected = false;
+      try {
+        await apiManager.getConfigByExperience(expId);
+      } catch (error) {
+        rejected = true;
+      }
+      expect(rejected).to.equal(true);
+
+      const second = await apiManager.getConfigByExperience(expId);
+
+      expect(hitCounts.get(expId)).to.equal(2);
+      expect(second).to.deep.equal({exp: expId, hitCount: 2});
     });
   });
 });

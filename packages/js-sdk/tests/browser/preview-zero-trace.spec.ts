@@ -15,15 +15,10 @@
  * `/track` endpoint via EITHER transport the SDK's HttpClient can choose
  * (packages/utils/src/http-client.ts: sendBeacon for POST when available, else fetch).
  *
- * RED phase: `context.setPreview` does not exist yet. The in-page `page.evaluate()`
- * call throws (TypeError: context.setPreview is not a function), which Playwright
- * surfaces as a rejected promise -- the test fails for that reason. This is the
- * expected RED signal; do not attempt to make this test pass in this phase.
- *
  * Uses the same experiences/goal already proven to work end-to-end against the real
  * UMD bundle in umd-bundle.spec.ts's "Basic SDK methods" suite (same test-config.json,
- * same locationProperties/visitorProperties shape), so any failure once implemented is
- * attributable to preview behavior, not to unrelated rule-matching fixture drift.
+ * same locationProperties/visitorProperties shape), so any failure is attributable to
+ * preview behavior, not to unrelated rule-matching fixture drift.
  */
 import {test, expect} from '@playwright/test';
 import {setup} from './page-helpers';
@@ -74,7 +69,7 @@ function installTrackSpies(): void {
   }
 }
 
-test.describe('Context.setPreview() zero-trace on the real browser transport (RED)', () => {
+test.describe('Context.setPreview() zero-trace on the real browser transport', () => {
   test('sends ZERO /track requests via sendBeacon or fetch across the full preview-context lifecycle', async ({
     page
   }) => {
