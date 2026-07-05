@@ -483,6 +483,7 @@ export class DataManager implements DataManagerInterface {
    * @param {boolean=} attributes.updateVisitorProperties
    * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking Defaults to `true`
+   * @param {boolean=} attributes.enableStorage Defaults to `true`
    * @param {boolean=} attributes.asyncStorage Defaults to `true`
    * @param {string=} attributes.environment
    * @return {BucketedVariation | RuleError | BucketingError}
@@ -500,6 +501,7 @@ export class DataManager implements DataManagerInterface {
       updateVisitorProperties,
       forceVariationId,
       enableTracking = true,
+      enableStorage = true,
       ignoreLocationProperties,
       environment = this._environment
     } = attributes;
@@ -513,6 +515,7 @@ export class DataManager implements DataManagerInterface {
         locationProperties: locationProperties,
         forceVariationId: forceVariationId,
         enableTracking: enableTracking,
+        enableStorage: enableStorage,
         ignoreLocationProperties: ignoreLocationProperties,
         environment: environment
       })
@@ -540,7 +543,8 @@ export class DataManager implements DataManagerInterface {
         updateVisitorProperties,
         experience as ConfigExperience,
         forceVariationId,
-        enableTracking
+        enableTracking,
+        enableStorage
       );
     }
     return null;
@@ -617,6 +621,7 @@ export class DataManager implements DataManagerInterface {
    * @param {ConfigExperience} experience
    * @param {string=} forceVariationId
    * @param {boolean=} enableTracking Defaults to `true`
+   * @param {boolean=} enableStorage Defaults to `true`
    * @return {BucketedVariation | BucketingError}
    * @private
    */
@@ -626,7 +631,8 @@ export class DataManager implements DataManagerInterface {
     updateVisitorProperties: boolean,
     experience: ConfigExperience,
     forceVariationId?: string,
-    enableTracking = true
+    enableTracking = true,
+    enableStorage = true
   ): BucketedVariation | BucketingError {
     if (!visitorId || !experience) return null;
     if (!experience?.id) return null;
@@ -735,17 +741,19 @@ export class DataManager implements DataManagerInterface {
         MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
       );
       // Store the data
-      if (updateVisitorProperties) {
-        this.putData(visitorId, {
-          bucketing: {
-            [experience.id.toString()]: variationId
-          },
-          ...(visitorProperties ? {segments: visitorProperties} : {})
-        });
-      } else {
-        this.putData(visitorId, {
-          bucketing: {[experience.id.toString()]: variationId}
-        });
+      if (enableStorage) {
+        if (updateVisitorProperties) {
+          this.putData(visitorId, {
+            bucketing: {
+              [experience.id.toString()]: variationId
+            },
+            ...(visitorProperties ? {segments: visitorProperties} : {})
+          });
+        } else {
+          this.putData(visitorId, {
+            bucketing: {[experience.id.toString()]: variationId}
+          });
+        }
       }
       if (enableTracking) {
         // Enqueue bucketing event to api
@@ -880,10 +888,12 @@ export class DataManager implements DataManagerInterface {
     const storeKey = this.getStoreKey(visitorId);
     const memoryData = this._bucketedVisitors.get(storeKey) || null;
     if (this.dataStoreManager) {
-      return objectDeepMerge(
-        memoryData || {},
-        this.dataStoreManager.get(storeKey) || {}
-      );
+      const storedData = this.dataStoreManager.get(storeKey) || null;
+      // Neither the in-memory map nor the configured DataStore hold anything
+      // for this visitor -- report "no data" (null) rather than a misleading
+      // empty object (qs-02 zero-trace relies on this to be observable, AC5/AC6).
+      if (!memoryData && !storedData) return null;
+      return objectDeepMerge(memoryData || {}, storedData || {});
     }
     return memoryData;
   }

@@ -4,7 +4,7 @@
  * Copyright(c) 2020 Convert Insights, Inc
  * License Apache-2.0
  */
-import {ContextInterface} from './interfaces/context';
+import {ContextInterface, PreviewInput} from './interfaces/context';
 import {EventManagerInterface} from '@convertcom/js-sdk-event';
 import {ExperienceManagerInterface} from '@convertcom/js-sdk-experience';
 import {FeatureManagerInterface} from './interfaces/feature-manager';
@@ -54,6 +54,17 @@ export class Context implements ContextInterface {
   private _visitorId: string;
   private _visitorProperties: Record<string, any>;
   private _environment: string;
+  /**
+   * qs-02: preview state for this Context instance only. Never shared across
+   * Context instances on the same SDK instance (isolation, AC6). `null` means
+   * this context runs normally.
+   */
+  private _preview: {
+    experienceId: string;
+    variationId: string;
+    experience: ConfigExperience;
+    experienceKey: string;
+  } | null = null;
 
   /**
    * @param {Config} config
@@ -109,6 +120,91 @@ export class Context implements ContextInterface {
   }
 
   /**
+   * qs-02: put this Context into preview mode for a single experience/variation
+   * pair. Once set:
+   *  - `runExperience(experienceKey)` for the matching `experienceKey` returns
+   *    the forced preview decision directly (bypassing audiences/locations/
+   *    bucketing) and fires no `SystemEvents.BUCKETING` event.
+   *  - Every other `run*` call is suppressed from tracking/persisting
+   *    (`enableTracking: false`, `enableStorage: false`) and fires no
+   *    `SystemEvents.BUCKETING` event.
+   *  - `trackConversion()` is a full no-op (zero-trace, AC5).
+   * Preview state is local to THIS Context instance only (AC6 isolation) and
+   * never mutates shared `DataManager` config.
+   * Inert (leaves `_preview` unset) when `experienceId`/`variationId` are
+   * missing, when the experience cannot be resolved (neither via shared
+   * config nor via the `?exp=` low-cache fetch), or when the variation is not
+   * present on the resolved experience (AC7).
+   * @param {Object} input
+   * @param {string} input.experienceId
+   * @param {string} input.variationId
+   * @return {Promise<void>}
+   */
+  async setPreview(input: PreviewInput): Promise<void> {
+    const experienceId = input?.experienceId;
+    const variationId = input?.variationId;
+    if (!experienceId || !variationId) {
+      this._loggerManager?.warn?.(
+        'Context.setPreview()',
+        ERROR_MESSAGES.PREVIEW_INPUT_REQUIRED
+      );
+      return;
+    }
+
+    let experience = this._dataManager.getEntityById(
+      experienceId,
+      EntityType.EXPERIENCE
+    ) as ConfigExperience;
+
+    if (!experience) {
+      try {
+        const config =
+          await this._apiManager.getConfigByExperience(experienceId);
+        experience = (config?.experiences || []).find(
+          (candidate) => String(candidate?.id) === String(experienceId)
+        ) as ConfigExperience;
+      } catch (error) {
+        this._loggerManager?.warn?.(
+          'Context.setPreview()',
+          ERROR_MESSAGES.PREVIEW_EXPERIENCE_NOT_FOUND,
+          error
+        );
+        this._preview = null;
+        return;
+      }
+    }
+
+    if (!experience) {
+      this._loggerManager?.warn?.(
+        'Context.setPreview()',
+        ERROR_MESSAGES.PREVIEW_EXPERIENCE_NOT_FOUND
+      );
+      this._preview = null;
+      return;
+    }
+
+    const decision = this._dataManager.getPreviewDecision(
+      experience,
+      variationId
+    );
+    if (!decision) {
+      this._loggerManager?.warn?.(
+        'Context.setPreview()',
+        ERROR_MESSAGES.PREVIEW_VARIATION_NOT_FOUND
+      );
+      this._preview = null;
+      return;
+    }
+
+    this._preview = {
+      experienceId,
+      variationId,
+      experience,
+      experienceKey: experience.key
+    };
+  }
+
+  /**
    * Get variation from specific experience
    * @param {string} experienceKey An experience's key that should be activated
    * @param {BucketingAttributes=} attributes An object that specifies attributes for the visitor
@@ -129,6 +225,14 @@ export class Context implements ContextInterface {
       );
       return;
     }
+    // qs-02: force the preview decision for the previewed experience -- bypass
+    // audiences/locations/bucketing entirely and never fire BUCKETING (AC3, AC5).
+    if (this._preview && experienceKey === this._preview.experienceKey) {
+      return this._dataManager.getPreviewDecision(
+        this._preview.experience,
+        this._preview.variationId
+      );
+    }
     const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
@@ -138,7 +242,10 @@ export class Context implements ContextInterface {
       {
         ...attributes,
         visitorProperties, // represents audiences
-        environment: attributes?.environment || this._environment
+        environment: attributes?.environment || this._environment,
+        // qs-02: while previewing, every OTHER experience still decides but is
+        // fully suppressed from tracking/persisting (zero-trace, AC5).
+        ...(this._preview ? {enableTracking: false, enableStorage: false} : {})
       }
     );
     if (Object.values(RuleError).includes(bucketedVariation as RuleError))
@@ -150,16 +257,18 @@ export class Context implements ContextInterface {
     )
       return bucketedVariation as BucketingError;
     if (bucketedVariation) {
-      this._eventManager.fire(
-        SystemEvents.BUCKETING,
-        {
-          visitorId: this._visitorId,
-          experienceKey,
-          variationKey: (bucketedVariation as BucketedVariation).key
-        },
-        null,
-        true
-      );
+      if (!this._preview) {
+        this._eventManager.fire(
+          SystemEvents.BUCKETING,
+          {
+            visitorId: this._visitorId,
+            experienceKey,
+            variationKey: (bucketedVariation as BucketedVariation).key
+          },
+          null,
+          true
+        );
+      }
     }
     return bucketedVariation as BucketedVariation;
   }
@@ -191,7 +300,9 @@ export class Context implements ContextInterface {
       {
         ...attributes,
         visitorProperties, // represents audiences
-        environment: attributes?.environment || this._environment
+        environment: attributes?.environment || this._environment,
+        // qs-02: suppress tracking/persisting while previewing (AC5).
+        ...(this._preview ? {enableTracking: false, enableStorage: false} : {})
       }
     );
     // Return rule errors if present
@@ -206,20 +317,22 @@ export class Context implements ContextInterface {
     if (matchedBucketingErrors.length)
       return matchedBucketingErrors as Array<BucketingError>;
 
-    (bucketedVariations as Array<BucketedVariation>).forEach(
-      ({experienceKey, key}) => {
-        this._eventManager.fire(
-          SystemEvents.BUCKETING,
-          {
-            visitorId: this._visitorId,
-            experienceKey,
-            variationKey: key
-          },
-          null,
-          true
-        );
-      }
-    );
+    if (!this._preview) {
+      (bucketedVariations as Array<BucketedVariation>).forEach(
+        ({experienceKey, key}) => {
+          this._eventManager.fire(
+            SystemEvents.BUCKETING,
+            {
+              visitorId: this._visitorId,
+              experienceKey,
+              variationKey: key
+            },
+            null,
+            true
+          );
+        }
+      );
+    }
     return bucketedVariations as Array<BucketedVariation>;
   }
 
@@ -262,7 +375,9 @@ export class Context implements ContextInterface {
         )
           ? attributes.typeCasting
           : true,
-        environment: attributes?.environment || this._environment
+        environment: attributes?.environment || this._environment,
+        // qs-02: suppress tracking/persisting while previewing (AC5).
+        ...(this._preview ? {enableTracking: false, enableStorage: false} : {})
       },
       attributes?.experienceKeys
     );
@@ -273,26 +388,28 @@ export class Context implements ContextInterface {
       );
       if (matchedErrors.length) return matchedErrors as Array<RuleError>;
 
-      (bucketedFeature as Array<BucketedFeature>).forEach(
-        ({experienceKey, status}) => {
-          this._eventManager.fire(
-            SystemEvents.BUCKETING,
-            {
-              visitorId: this._visitorId,
-              experienceKey,
-              featureKey: key,
-              status
-            },
-            null,
-            true
-          );
-        }
-      );
+      if (!this._preview) {
+        (bucketedFeature as Array<BucketedFeature>).forEach(
+          ({experienceKey, status}) => {
+            this._eventManager.fire(
+              SystemEvents.BUCKETING,
+              {
+                visitorId: this._visitorId,
+                experienceKey,
+                featureKey: key,
+                status
+              },
+              null,
+              true
+            );
+          }
+        );
+      }
     } else {
       if (Object.values(RuleError).includes(bucketedFeature as RuleError))
         return bucketedFeature as RuleError;
 
-      if (bucketedFeature) {
+      if (bucketedFeature && !this._preview) {
         this._eventManager.fire(
           SystemEvents.BUCKETING,
           {
@@ -342,7 +459,9 @@ export class Context implements ContextInterface {
       )
         ? attributes.typeCasting
         : true,
-      environment: attributes?.environment || this._environment
+      environment: attributes?.environment || this._environment,
+      // qs-02: suppress tracking/persisting while previewing (AC5).
+      ...(this._preview ? {enableTracking: false, enableStorage: false} : {})
     });
     // Return rule errors if present
     const matchedErrors = bucketedFeatures.filter((match) =>
@@ -350,21 +469,23 @@ export class Context implements ContextInterface {
     );
     if (matchedErrors.length) return matchedErrors as Array<RuleError>;
 
-    (bucketedFeatures as Array<BucketedFeature>).forEach(
-      ({experienceKey, key, status}) => {
-        this._eventManager.fire(
-          SystemEvents.BUCKETING,
-          {
-            visitorId: this._visitorId,
-            experienceKey,
-            featureKey: key,
-            status
-          },
-          null,
-          true
-        );
-      }
-    );
+    if (!this._preview) {
+      (bucketedFeatures as Array<BucketedFeature>).forEach(
+        ({experienceKey, key, status}) => {
+          this._eventManager.fire(
+            SystemEvents.BUCKETING,
+            {
+              visitorId: this._visitorId,
+              experienceKey,
+              featureKey: key,
+              status
+            },
+            null,
+            true
+          );
+        }
+      );
+    }
     return bucketedFeatures as Array<BucketedFeature>;
   }
 
@@ -385,6 +506,16 @@ export class Context implements ContextInterface {
       this._loggerManager?.error?.(
         'Context.trackConversion()',
         ERROR_MESSAGES.VISITOR_ID_REQUIRED
+      );
+      return;
+    }
+    // qs-02: zero-trace -- a previewing context never converts (AC5). Return
+    // before calling dataManager.convert() so no store write / enqueue can occur.
+    if (this._preview) {
+      this._loggerManager?.trace?.(
+        'Context.trackConversion()',
+        'Skipped: Context is in preview mode',
+        {goalKey}
       );
       return;
     }
