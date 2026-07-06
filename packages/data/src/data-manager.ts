@@ -578,7 +578,7 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
-   * Build variation allocations for the anchored layout (qs-01 / DATA-1, contract v9).
+   * Build variation allocations for the anchored layout (qs-01 / DATA-1, contract v12).
    * Activates only once the served experience version is > 11 (i.e. >= 12, once the
    * backend bumps `CURRENT_EXPERIENCE_VERSION` past its current value of 11).
    * Inactive arms (stopped, or explicit zero traffic_allocation) keep their weight for
@@ -684,7 +684,7 @@ export class DataManager implements DataManagerInterface {
       );
     } else {
       // qs-01 / DATA-1: anchored-vs-packed GATE. `experience.version > 11` runs the
-      // anchored (contract v9) layout; the anchored contract activates starting at
+      // anchored (contract v12) layout; the anchored contract activates starting at
       // experience version 12. Version <= 11, missing, or non-numeric keeps the
       // existing packed cumulative walk unchanged -- this is every currently-served
       // production experience, all stamped version 11 (backend

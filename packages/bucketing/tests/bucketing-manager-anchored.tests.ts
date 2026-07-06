@@ -168,7 +168,7 @@ const ZERO_TOTAL_WEIGHT_CASES: Array<{
   }
 ];
 
-describe('BucketingManager anchored tests (qs-01 / BUCK-2 — contract v9 anchored algorithm)', function () {
+describe('BucketingManager anchored tests (qs-01 / BUCK-2 — contract v12 anchored algorithm)', function () {
   // Matches the existing packed-path suite's convention: no explicit type annotation
   // is needed since the anchored methods are implemented directly on the
   // BucketingManager class.
