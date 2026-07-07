@@ -38,10 +38,12 @@ import {
   GoalData,
   VisitorSegments,
   ConfigSegment,
+  BucketingAllocation,
   BucketingAttributes,
   LocationAttributes,
   ConfigAudienceTypes,
   VariationStatuses,
+  VariationAllocation,
   eventType,
   GenericListMatchingOptions
 } from '@convertcom/js-sdk-types';
@@ -545,6 +547,69 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
+   * Build buckets where key is variation id and value is traffic distribution
+   * (existing packed layout, experience version <= 11, missing, or non-numeric;
+   * byte-for-byte unchanged). Version 11 is the version stamped on every experience
+   * currently served in production (backend `CURRENT_EXPERIENCE_VERSION`), so this
+   * is the active path for all currently-running experiments.
+   * @param {ExperienceVariationConfig[]} variations
+   * @return {Record<string, number>}
+   * @private
+   */
+  private _buildPackedBuckets(
+    variations: ExperienceVariationConfig[]
+  ): Record<string, number> {
+    return variations
+      .filter((variation) =>
+        variation?.status
+          ? variation.status === VariationStatuses.RUNNING
+          : true
+      )
+      .filter(
+        (variation) =>
+          variation?.traffic_allocation > 0 || // zero-traffic means stopped variation
+          isNaN(variation?.traffic_allocation) // no allocation means 100% traffic
+      )
+      .reduce((bucket, variation) => {
+        if (variation?.id)
+          bucket[variation.id] = variation?.traffic_allocation || 100.0;
+        return bucket;
+      }, {}) as Record<string, number>;
+  }
+
+  /**
+   * Build variation allocations for the anchored layout (qs-01 / DATA-1, contract v12).
+   * Activates only once the served experience version is > 11 (i.e. >= 12, once the
+   * backend bumps `CURRENT_EXPERIENCE_VERSION` past its current value of 11).
+   * Inactive arms (stopped, or explicit zero traffic_allocation) keep their weight for
+   * anchor stability but are marked inactive so {@link BucketingManagerInterface.getBucketRanges}
+   * gives them zero width. See qs-01-anchored-bucketing-layout.md "The contract (normative)".
+   * @param {ExperienceVariationConfig[]} variations
+   * @return {VariationAllocation[]}
+   * @private
+   */
+  private _buildVariationAllocations(
+    variations: ExperienceVariationConfig[]
+  ): VariationAllocation[] {
+    return variations.reduce((allocations, variation) => {
+      if (!variation?.id) return allocations;
+      const trafficAllocation = variation.traffic_allocation;
+      allocations.push({
+        id: variation.id,
+        allocation: isNaN(trafficAllocation)
+          ? 100.0
+          : Number(trafficAllocation),
+        active:
+          (variation.status
+            ? variation.status === VariationStatuses.RUNNING
+            : true) &&
+          (trafficAllocation > 0 || isNaN(trafficAllocation))
+      });
+      return allocations;
+    }, [] as VariationAllocation[]);
+  }
+
+  /**
    * Retrieve bucketing for Visitor
    * @param {string} visitorId
    * @param {Record<string, any> | null} visitorProperties
@@ -618,31 +683,37 @@ export class DataManager implements DataManagerInterface {
         })
       );
     } else {
-      // Build buckets where key is variation id and value is traffic distribution
-      const buckets = experience.variations
-        .filter((variation) =>
-          variation?.status
-            ? variation.status === VariationStatuses.RUNNING
-            : true
-        )
-        .filter(
-          (variation) =>
-            variation?.traffic_allocation > 0 || // zero-traffic means stopped variation
-            isNaN(variation?.traffic_allocation) // no allocation means 100% traffic
-        )
-        .reduce((bucket, variation) => {
-          if (variation?.id)
-            bucket[variation.id] = variation?.traffic_allocation || 100.0;
-          return bucket;
-        }, {}) as Record<string, number>;
-      // Select bucket based for provided visitor id
-      const bucketing = this._bucketingManager.getBucketForVisitor(
-        buckets,
-        visitorId,
-        this._config?.bucketing?.excludeExperienceIdHash
-          ? null
-          : {experienceId: experience.id.toString()}
-      );
+      // qs-01 / DATA-1: anchored-vs-packed GATE. `experience.version > 11` runs the
+      // anchored (contract v12) layout; the anchored contract activates starting at
+      // experience version 12. Version <= 11, missing, or non-numeric keeps the
+      // existing packed cumulative walk unchanged -- this is every currently-served
+      // production experience, all stamped version 11 (backend
+      // `CURRENT_EXPERIENCE_VERSION`). Raising the gate to 12 is a deliberate,
+      // separate backend rollout step; the SDK must never infer the layout from
+      // anything but this field. See qs-01-anchored-bucketing-layout.md
+      // "The contract (normative)" for the gate and the allocation-build mapping.
+      const isAnchoredLayout = Number(experience.version) > 11;
+      const bucketingHashOptions = this._config?.bucketing
+        ?.excludeExperienceIdHash
+        ? null
+        : {experienceId: experience.id.toString()};
+      let buckets: VariationAllocation[] | Record<string, number>;
+      let bucketing: BucketingAllocation | null;
+      if (isAnchoredLayout) {
+        buckets = this._buildVariationAllocations(experience.variations);
+        bucketing = this._bucketingManager.getBucketForVisitorAnchored(
+          buckets,
+          visitorId,
+          bucketingHashOptions
+        );
+      } else {
+        buckets = this._buildPackedBuckets(experience.variations);
+        bucketing = this._bucketingManager.getBucketForVisitor(
+          buckets,
+          visitorId,
+          bucketingHashOptions
+        );
+      }
       variationId = variationId || bucketing?.variationId; // variation might be forced
       bucketingAllocation = bucketing?.bucketingAllocation;
       // Return bucketing errors if present
