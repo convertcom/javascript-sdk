@@ -45,7 +45,8 @@ import {
   VariationStatuses,
   VariationAllocation,
   eventType,
-  GenericListMatchingOptions
+  GenericListMatchingOptions,
+  RuleObjectAudience
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -54,6 +55,7 @@ import {
   DATA_ENTITIES_MAP,
   ERROR_MESSAGES,
   MESSAGES,
+  MutualExclusionRuleType,
   RuleError,
   SegmentsKeys,
   SystemEvents,
@@ -62,6 +64,23 @@ import {
 
 import {DataStoreManager} from './data-store-manager';
 const LOCAL_STORE_LIMIT = 10000;
+
+/**
+ * qs-03 / SDK-3: minimal shape of a single `bucketed_into_experience_key`
+ * mutual-exclusion rule element, covering only the fields `_resolveBucketingExclusion`
+ * reads. NOT part of the generated `RuleElement` union (`packages/types/src/config` is
+ * auto-generated from the OpenAPI spec and must never be hand-edited to add this rule
+ * type) -- rule items are matched against this local interface instead.
+ */
+interface BucketingExclusionRuleItem {
+  rule_type: string;
+  value: string;
+  matching?: {
+    match_type?: string;
+    negated?: boolean;
+  };
+}
+
 /**
  * Provides logic for data. Stores bucket with help of dataStore if it's provided
  * @category Modules
@@ -381,7 +400,8 @@ export class DataManager implements DataManagerInterface {
             audiencesToCheck,
             visitorProperties,
             'audience',
-            identityField
+            identityField,
+            visitorId
           );
           // Return rule errors if present
           matchedErrors = matchedAudiences.filter((match) =>
@@ -1214,16 +1234,92 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
+   * qs-03 / SDK-3: walk an audience's rule tree (same OR -> AND -> OR_WHEN traversal
+   * shape as `RuleManager.isRuleMatched`) looking for a `bucketed_into_experience_key`
+   * mutual-exclusion rule element. Documented assumption: at most one such rule per
+   * exclusion audience -- returns the first one found, or `null` if the audience
+   * carries no mutual-exclusion rule (the generic rule-matching path applies instead).
+   * @param {RuleObjectAudience} rules
+   * @return {BucketingExclusionRuleItem | null}
+   * @private
+   */
+  private _isBucketingExclusionRule(
+    rules: RuleObjectAudience
+  ): BucketingExclusionRuleItem | null {
+    if (!arrayNotEmpty(rules?.OR)) return null;
+    for (const andBlock of rules.OR) {
+      if (!arrayNotEmpty(andBlock?.AND)) continue;
+      for (const orWhenBlock of andBlock.AND) {
+        if (!arrayNotEmpty(orWhenBlock?.OR_WHEN)) continue;
+        for (const ruleItem of orWhenBlock.OR_WHEN) {
+          if (
+            (ruleItem as unknown as BucketingExclusionRuleItem)?.rule_type ===
+            MutualExclusionRuleType.BUCKETED_INTO_EXPERIENCE_KEY
+          ) {
+            return ruleItem as unknown as BucketingExclusionRuleItem;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * qs-03 / SDK-3: presence-only resolution of a `bucketed_into_experience_key`
+   * mutual-exclusion rule. Read-only -- resolves the rule's target experience by KEY
+   * via `getEntity` and checks ONLY whether the visitor's stored bucketing map
+   * (`getData().bucketing`) already carries an entry keyed by the target's id; it
+   * NEVER calls `retrieveVariation`/the BucketingManager, so evaluating this rule can
+   * never bucket the target experience as a side effect (AC5). If the target key does
+   * not resolve in the served config, warns naming the unresolved key and treats the
+   * visitor as not bucketed into it (`bucketedRaw = false`) rather than failing the
+   * whole audience evaluation. Negation is applied LAST, after the raw presence check.
+   * @param {BucketingExclusionRuleItem} rule
+   * @param {string} visitorId
+   * @return {boolean}
+   * @private
+   */
+  private _resolveBucketingExclusion(
+    rule: BucketingExclusionRuleItem,
+    visitorId: string
+  ): boolean {
+    const target = this.getEntity(
+      rule.value,
+      'experiences'
+    ) as ConfigExperience;
+    let bucketedRaw = false;
+    if (!target) {
+      this._loggerManager?.warn?.(
+        'DataManager._resolveBucketingExclusion()',
+        ERROR_MESSAGES.BUCKETING_EXCLUSION_TARGET_NOT_FOUND.replace(
+          '#',
+          rule.value
+        )
+      );
+    } else {
+      const {bucketing} = this.getData(visitorId) || {};
+      bucketedRaw = Boolean((bucketing || {})[String(target.id)]);
+    }
+    return rule.matching?.negated ? !bucketedRaw : bucketedRaw;
+  }
+
+  /**
    * Get audiences that meet the visitorProperties
    * @param {Array<Record<any, any>>} items
    * @param {Record<string, any>} visitorProperties
+   * @param {string} entityType
+   * @param {IdentityField=} field Defaults to 'id'
+   * @param {string=} visitorId Required only when an item's rules resolve to a
+   *  `bucketed_into_experience_key` mutual-exclusion rule (qs-03 / SDK-3); unused by
+   *  the generic rule-matching path.
    * @return {Array<Record<string, any> | RuleError>}
    */
   filterMatchedRecordsWithRule(
     items: Array<Record<string, any>>,
     visitorProperties: Record<string, any>,
     entityType: string,
-    field: IdentityField = 'id'
+    field: IdentityField = 'id',
+    visitorId?: string
   ): Array<Record<string, any> | RuleError> {
     this._loggerManager?.trace?.(
       'DataManager.filterMatchedRecordsWithRule()',
@@ -1237,11 +1333,16 @@ export class DataManager implements DataManagerInterface {
     if (arrayNotEmpty(items)) {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
-        match = this._ruleManager.isRuleMatched(
-          visitorProperties,
-          items[i].rules,
-          `${camelCase(entityType)} #${items[i][field]}`
-        );
+        const exclusionRule = this._isBucketingExclusionRule(items[i].rules);
+        if (exclusionRule) {
+          match = this._resolveBucketingExclusion(exclusionRule, visitorId);
+        } else {
+          match = this._ruleManager.isRuleMatched(
+            visitorProperties,
+            items[i].rules,
+            `${camelCase(entityType)} #${items[i][field]}`
+          );
+        }
         if (match === true) {
           matchedRecords.push(items[i]);
         } else if (match !== false) {
