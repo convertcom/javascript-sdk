@@ -259,6 +259,11 @@ test.describe('Mutual-exclusion audience rule end-to-end (qs-03 / SDK-3)', () =>
     );
     const decisionA = firstContext.runExperience(EXP_A_KEY, RUN_ATTRS);
     expect(decisionA).toBeTruthy();
+    // DataManager defaults to asyncStorage=true, so the DataStore write is queued
+    // rather than durable immediately. Flush it explicitly before constructing the
+    // second instance/context so the shared DataStore genuinely has the persisted
+    // decision to read -- this is what AC3 actually tests.
+    await firstContext.releaseQueues();
 
     // A brand-new SDK instance/context, sharing only the DataStore.
     const {context: secondContext} = await createReadyContext(
