@@ -26,7 +26,9 @@ export const ERROR_MESSAGES = {
   PREVIEW_EXPERIENCE_NOT_FOUND:
     'Context.setPreview() could not resolve the requested experience',
   PREVIEW_VARIATION_NOT_FOUND:
-    'Context.setPreview() could not resolve the requested variation on the experience'
+    'Context.setPreview() could not resolve the requested variation on the experience',
+  BUCKETING_EXCLUSION_TARGET_NOT_FOUND:
+    'Mutual-exclusion rule target experience key "#" not found in served config; treating visitor as not bucketed into it.'
 };
 export const MESSAGES = {
   CONFIG_DATA_UPDATED: 'Config Data updated',
