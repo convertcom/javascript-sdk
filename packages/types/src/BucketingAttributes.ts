@@ -14,5 +14,11 @@ export type BucketingAttributes = {
   updateVisitorProperties?: boolean;
   forceVariationId?: string;
   enableTracking?: boolean;
+  /**
+   * Suppress persisting the bucketing decision to the visitor store (in-memory
+   * map and/or configured DataStore). Defaults to `true`. Used by preview
+   * contexts (qs-02) to guarantee zero store writes.
+   */
+  enableStorage?: boolean;
   ignoreLocationProperties?: boolean;
 };

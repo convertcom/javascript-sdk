@@ -35,6 +35,19 @@ const DEFAULT_BATCH_SIZE = 10;
 const DEFAULT_RELEASE_INTERVAL = 10000;
 const DEFAULT_CONFIG_ENDPOINT = process.env.CONFIG_ENDPOINT;
 const DEFAULT_TRACK_ENDPOINT = process.env.TRACK_ENDPOINT;
+const CONFIG_BY_EXPERIENCE_TTL = 60000;
+
+/**
+ * Process-wide memoization cache for `getConfigByExperience()`, shared by
+ * every `ApiManager` instance in the process. Keyed by `${sdkKey}:${experienceId}`
+ * so identical lookups across instances (e.g. multiple `Context`s sharing an
+ * sdkKey) collapse into a single in-flight/settled fetch, while different
+ * sdkKeys never collide. Never persisted outside process memory.
+ */
+const configByExperienceCache = new Map<
+  string,
+  {promise: Promise<ConfigResponseData>; expiresAt: number}
+>();
 
 /**
  * Provides logic for network requests. Reads remote configuration and sends tracking events to Convert server.
@@ -62,6 +75,7 @@ export class ApiManager implements ApiManagerInterface {
   private _trackingEnabled: boolean;
   private _trackingSource: string;
   private _cacheLevel: string;
+  private _debugToken?: string;
   private _mapper: (...args: any) => any;
 
   readonly batchSize: number = DEFAULT_BATCH_SIZE;
@@ -114,6 +128,7 @@ export class ApiManager implements ApiManagerInterface {
     this._trackingEnabled = config?.network?.tracking;
     this._trackingSource = config?.network?.source || 'js-sdk';
     this._cacheLevel = config?.network?.cacheLevel;
+    this._debugToken = config?.debugToken;
     this._requestsQueue = {
       length: 0,
       items: [],
@@ -299,9 +314,12 @@ export class ApiManager implements ApiManagerInterface {
    */
   getConfig(): Promise<ConfigResponseData> {
     this._loggerManager?.trace?.('ApiManager.getConfig()');
-    let query = this._cacheLevel === 'low' || this._environment ? '?' : '';
-    if (this._environment) query += `environment=${this._environment}`;
-    if (this._cacheLevel === 'low') query += '_conv_low_cache=1';
+    const params: string[] = [];
+    if (this._environment) params.push(`environment=${this._environment}`);
+    if (this._cacheLevel === 'low' || this._debugToken)
+      params.push('_conv_low_cache=1');
+    if (this._debugToken) params.push(`debug_token=${this._debugToken}`);
+    const query = params.length ? `?${params.join('&')}` : '';
     return new Promise((resolve, reject) => {
       this.request('get', {
         base: this._configEndpoint,
@@ -310,5 +328,55 @@ export class ApiManager implements ApiManagerInterface {
         .then(({data}) => resolve(data))
         .catch(reject);
     });
+  }
+
+  /**
+   * Get config data scoped to a single experience, for preview/low-cache
+   * lookups. Always requests `_conv_low_cache=1` (bypassing the CDN cache)
+   * and scopes the response with `exp=<experienceId>`. Includes
+   * `debug_token` when configured. Results are memoized process-wide for
+   * `CONFIG_BY_EXPERIENCE_TTL` ms, keyed by sdkKey + experienceId, so
+   * repeated lookups within the window (including from other `ApiManager`
+   * instances sharing the same sdkKey) reuse the same fetch.
+   * @param {string} experienceId
+   * @return {Promise<ConfigResponseData>}
+   */
+  getConfigByExperience(experienceId: string): Promise<ConfigResponseData> {
+    this._loggerManager?.trace?.('ApiManager.getConfigByExperience()', {
+      experienceId
+    });
+    const cacheKey = `${this._sdkKey}:${experienceId}`;
+    const cached = configByExperienceCache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.promise;
+    }
+    const params: string[] = [];
+    if (this._environment) params.push(`environment=${this._environment}`);
+    params.push(`exp=${experienceId}`);
+    params.push('_conv_low_cache=1');
+    if (this._debugToken) params.push(`debug_token=${this._debugToken}`);
+    const query = `?${params.join('&')}`;
+    const promise = new Promise<ConfigResponseData>((resolve, reject) => {
+      this.request('get', {
+        base: this._configEndpoint,
+        route: `/config/${this._sdkKey}${query}`
+      })
+        .then(({data}) => resolve(data))
+        .catch(reject);
+    });
+    const now = Date.now();
+    for (const [key, entry] of configByExperienceCache) {
+      if (now >= entry.expiresAt) configByExperienceCache.delete(key);
+    }
+    configByExperienceCache.set(cacheKey, {
+      promise,
+      expiresAt: now + CONFIG_BY_EXPERIENCE_TTL
+    });
+    promise.catch(() => {
+      if (configByExperienceCache.get(cacheKey)?.promise === promise) {
+        configByExperienceCache.delete(cacheKey);
+      }
+    });
+    return promise;
   }
 }
