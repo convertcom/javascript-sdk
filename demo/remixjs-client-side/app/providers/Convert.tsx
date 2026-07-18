@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState, ReactNode} from 'react';
-import ConvertSDK, {LogLevel} from '@convertcom/js-sdk';
+import ConvertSDK, {LogLevel, parsePreviewParam} from '@convertcom/js-sdk';
 import {v4 as uuidv4} from 'uuid';
 import type {ContextInterface} from '@convertcom/js-sdk';
 interface ConvertProviderProps {
@@ -60,6 +60,14 @@ export function ConvertProvider({children}: Readonly<ConvertProviderProps>) {
           console.error('Failed to create context.');
           return;
         }
+
+        // Preview link support: ?convert_preview={experienceId}.{variationId}
+        // forces that decision on this context (zero-trace). [ConvertSDK]
+        const previewParam = new URLSearchParams(window.location.search).get(
+          'convert_preview'
+        );
+        const preview = previewParam ? parsePreviewParam(previewParam) : null;
+        if (preview) await context.setPreview(preview);
 
         setConvertContext(context);
       } catch (error) {
