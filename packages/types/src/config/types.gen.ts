@@ -11,7 +11,7 @@ export type ConfigAudience = {
     /**
      * Audience unique key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * Audience Name
      */
@@ -849,6 +849,12 @@ export type VisitorInsightsBase = {
      *
      */
     sampling_rate?: 5 | 10 | 20 | 30 | 40 | 50;
+    /**
+     * Maximum number of visits per variation used when generating a heatmap for this project.
+     * Applies to newly created heatmaps when an experience is activated.
+     *
+     */
+    heatmap_visits_limit?: 2500 | 5000 | 10000 | 15000;
 };
 
 /**
@@ -863,6 +869,18 @@ export enum sampling_rate {
     '_30' = 30,
     '_40' = 40,
     '_50' = 50
+}
+
+/**
+ * Maximum number of visits per variation used when generating a heatmap for this project.
+ * Applies to newly created heatmaps when an experience is activated.
+ *
+ */
+export enum heatmap_visits_limit {
+    '_2500' = 2500,
+    '_5000' = 5000,
+    '_10000' = 10000,
+    '_15000' = 15000
 }
 
 /**
@@ -1627,7 +1645,7 @@ export type ConfigExperience = {
     /**
      * Experience readable key that uniquely identifies this experience
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * List of locations IDs on which this experience is presented. Either this or **site_area** is given but should not be both.
      */
@@ -1769,7 +1787,7 @@ export type ExperienceVariationConfig = {
     /**
      * Variation Key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * Percentage of traffic allocation for this variation, as a number from 0 to 10000.
      * For an experience, the sum of the traffic allocations for all variations cannot be greater than 10000.
@@ -1827,7 +1845,7 @@ export type ConfigFeature = {
     /**
      * A unique per project level identifier
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * An array of user-defined variables of a feature.
      */
@@ -1874,7 +1892,7 @@ export type ConfigGoalBase = {
     /**
      * Goal Key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * List of goal types to be returned
      */
@@ -2165,7 +2183,7 @@ export type ConfigLocation = {
     /**
      * Location unique key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * Location Name
      */
@@ -2391,6 +2409,10 @@ export type ProjectGASettingsBase = GA_SettingsBase & {
      * Attempt to pull revenue data from Google Analytics Revenue Tracking code.
      */
     auto_revenue_tracking?: boolean;
+    /**
+     * When enabled, the experience_impression event is sent only the first time a visitor is exposed to an experience, instead of on every subsequent qualifying page view. Opt-in and disabled by default.
+     */
+    track_first_exposure_only?: boolean;
 };
 
 export type ProjectIntegrationGA3 = ProjectGASettingsBase & IntegrationGA3;
@@ -2415,7 +2437,7 @@ export type ConfigSegment = {
     /**
      * Segment unique key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * Segment Name
      */
@@ -2558,6 +2580,10 @@ export type VisitorSegments = {
      * Campaign string
      */
     campaign?: string;
+    /**
+     * Content string (ad-creative identifier from utm_content)
+     */
+    content?: string;
     /**
      * Type of the visitor
      */
