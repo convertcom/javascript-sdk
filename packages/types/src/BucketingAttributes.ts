@@ -21,4 +21,13 @@ export type BucketingAttributes = {
    */
   enableStorage?: boolean;
   ignoreLocationProperties?: boolean;
+  /**
+   * Suppress the `SystemEvents.LOCATION_ACTIVATED`/`LOCATION_DEACTIVATED`
+   * fires inside `selectLocations()` only -- location/audience matching is
+   * unaffected. Defaults to `false`. Independent of `enableTracking`/
+   * `enableStorage`: a normal silent run (`enableTracking: false`) must still
+   * fire these events. Used by preview contexts (qs-02) for zero-trace event
+   * suppression (AC5).
+   */
+  suppressEvents?: boolean;
 };

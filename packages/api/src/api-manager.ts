@@ -315,10 +315,12 @@ export class ApiManager implements ApiManagerInterface {
   getConfig(): Promise<ConfigResponseData> {
     this._loggerManager?.trace?.('ApiManager.getConfig()');
     const params: string[] = [];
-    if (this._environment) params.push(`environment=${this._environment}`);
+    if (this._environment)
+      params.push(`environment=${encodeURIComponent(this._environment)}`);
     if (this._cacheLevel === 'low' || this._debugToken)
       params.push('_conv_low_cache=1');
-    if (this._debugToken) params.push(`debug_token=${this._debugToken}`);
+    if (this._debugToken)
+      params.push(`debug_token=${encodeURIComponent(this._debugToken)}`);
     const query = params.length ? `?${params.join('&')}` : '';
     return new Promise((resolve, reject) => {
       this.request('get', {
@@ -351,10 +353,12 @@ export class ApiManager implements ApiManagerInterface {
       return cached.promise;
     }
     const params: string[] = [];
-    if (this._environment) params.push(`environment=${this._environment}`);
-    params.push(`exp=${experienceId}`);
+    if (this._environment)
+      params.push(`environment=${encodeURIComponent(this._environment)}`);
+    params.push(`exp=${encodeURIComponent(experienceId)}`);
     params.push('_conv_low_cache=1');
-    if (this._debugToken) params.push(`debug_token=${this._debugToken}`);
+    if (this._debugToken)
+      params.push(`debug_token=${encodeURIComponent(this._debugToken)}`);
     const query = `?${params.join('&')}`;
     const promise = new Promise<ConfigResponseData>((resolve, reject) => {
       this.request('get', {

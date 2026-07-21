@@ -404,6 +404,34 @@ function buildScenario(
   };
 }
 
+// Shared by every test needing a location-targeted, NON-target (real,
+// in-config) experience on top of a `buildScenario()` base -- the zero-trace
+// STORAGE tests and the LOCATION event-suppression tests below all need the
+// identical experience+location rule-matched fixture shape, differing only
+// in match key/value, prefix, and their own `act`/assertion (SonarCloud 3%
+// gate).
+function buildLocationTargetedScenario(
+  prefix: string,
+  previewResponses: Map<string, Record<string, any>>,
+  matchKey: string,
+  matchValue: string,
+  options: {dataStore?: SpyDataStore} = {}
+): Scenario & {locationExperienceKey: string} {
+  const locationExperienceKey = `${prefix}-exp-key`;
+  const locationExperience = makeExperience(
+    `${prefix}-exp`,
+    locationExperienceKey,
+    [`${prefix}-var-a`, `${prefix}-var-b`],
+    {locations: [prefix]}
+  );
+  const scenario = buildScenario(prefix, previewResponses, {
+    ...options,
+    extraExperiences: [locationExperience],
+    locations: [makeLocation(prefix, `${prefix}-key`, matchKey, matchValue)]
+  });
+  return {...scenario, locationExperienceKey};
+}
+
 describe('Context.setPreview() preview integration (RED)', function () {
   let server: http.Server;
   let previewResponses: Map<string, Record<string, any>>;
@@ -646,25 +674,13 @@ describe('Context.setPreview() preview integration (RED)', function () {
     it('runExperience() on a location-targeted NON-target experience still writes to storage (matchRulesByField -> selectLocations -> putData, ungated by enableStorage)', async function () {
       this.timeout(test_timeout);
       const dataStore = new SpyDataStore();
-      const locationTargetedExperienceKey = 'zt-storage-loc-exp-key';
-      const locationTargetedExperience = makeExperience(
-        'zt-storage-loc-exp',
-        locationTargetedExperienceKey,
-        ['zt-storage-loc-var-a', 'zt-storage-loc-var-b'],
-        {locations: ['zt-storage-loc']}
+      const scenario = buildLocationTargetedScenario(
+        'zt-storage-loc',
+        previewResponses,
+        MATCH_KEY,
+        MATCH_VALUE,
+        {dataStore}
       );
-      const scenario = buildScenario('zt-storage-loc', previewResponses, {
-        dataStore,
-        extraExperiences: [locationTargetedExperience],
-        locations: [
-          makeLocation(
-            'zt-storage-loc',
-            'zt-storage-loc-key',
-            MATCH_KEY,
-            MATCH_VALUE
-          )
-        ]
-      });
       const context = makeContext(scenario.sdk, 'visitor-zt-storage-loc');
 
       await context.setPreview({
@@ -673,7 +689,7 @@ describe('Context.setPreview() preview integration (RED)', function () {
       });
 
       expectZeroStorageWrites(scenario.sdk, dataStore, () =>
-        context.runExperience(locationTargetedExperienceKey, {
+        context.runExperience(scenario.locationExperienceKey, {
           locationProperties: {[MATCH_KEY]: MATCH_VALUE}
         })
       );
@@ -694,19 +710,12 @@ describe('Context.setPreview() preview integration (RED)', function () {
     // this exact defect.
     it("runExperience() on a location-targeted NON-target experience mutates an ALREADY-STORED visitor's `locations` array in place, bypassing the `enableStorage` gate entirely", async function () {
       this.timeout(test_timeout);
-      const locationTargetedExperienceKey = 'zt-mutate-loc-exp-key';
-      const locationTargetedExperience = makeExperience(
-        'zt-mutate-loc-exp',
-        locationTargetedExperienceKey,
-        ['zt-mutate-loc-var-a', 'zt-mutate-loc-var-b'],
-        {locations: ['zt-mutate-loc']}
+      const scenario = buildLocationTargetedScenario(
+        'zt-mutate-loc',
+        previewResponses,
+        MATCH_KEY,
+        MATCH_VALUE
       );
-      const scenario = buildScenario('zt-mutate-loc', previewResponses, {
-        extraExperiences: [locationTargetedExperience],
-        locations: [
-          makeLocation('zt-mutate-loc', 'zt-mutate-loc-key', MATCH_KEY, MATCH_VALUE)
-        ]
-      });
       const visitorId = 'visitor-zt-mutate-loc';
 
       // Seed this visitor's REAL stored `locations` array on the shared
@@ -722,7 +731,7 @@ describe('Context.setPreview() preview integration (RED)', function () {
         experienceId: scenario.previewExperienceId,
         variationId: scenario.targetVariationId
       });
-      context.runExperience(locationTargetedExperienceKey, {
+      context.runExperience(scenario.locationExperienceKey, {
         locationProperties: {[MATCH_KEY]: MATCH_VALUE}
       });
 
@@ -794,6 +803,103 @@ describe('Context.setPreview() preview integration (RED)', function () {
           act(context, visitorId)
         );
       });
+    });
+  });
+
+  // FIX B: LOCATION_ACTIVATED/LOCATION_DEACTIVATED must be suppressed on a
+  // preview context (zero-trace, AC5) -- but this suppression is
+  // PREVIEW-scoped, NOT enableTracking-scoped: a normal silent run
+  // (`enableTracking: false`) must still fire these events, exactly like
+  // `SystemEvents.BUCKETING` already does today. Location/audience matching
+  // itself is unaffected in every case below.
+  describe('LOCATION event suppression is preview-scoped, not enableTracking-scoped', function () {
+    const MATCH_KEY = 'country';
+    const MATCH_VALUE = 'US';
+
+    [
+      {
+        slug: 'preview-run',
+        name: 'a preview context fires ZERO LOCATION_ACTIVATED events for a matching location-targeted, NON-target experience',
+        preview: true,
+        expectedFires: 0
+      },
+      {
+        slug: 'normal-run',
+        name: 'a normal run (no preview) still fires LOCATION_ACTIVATED for a matching location-targeted experience',
+        preview: false,
+        expectedFires: 1
+      },
+      {
+        slug: 'silent-run',
+        name: 'a normal run with enableTracking:false still fires LOCATION_ACTIVATED (regression -- suppression is NOT enableTracking-scoped)',
+        preview: false,
+        enableTracking: false,
+        expectedFires: 1
+      }
+    ].forEach(({slug, name, preview, enableTracking, expectedFires}) => {
+      it(name, async function () {
+        this.timeout(test_timeout);
+        const scenario = buildLocationTargetedScenario(
+          `loc-evt-${slug}`,
+          previewResponses,
+          MATCH_KEY,
+          MATCH_VALUE
+        );
+        const context = makeContext(scenario.sdk, `visitor-loc-evt-${slug}`);
+        const activatedEvents = countEventFires(
+          scenario.sdk.eventManager,
+          SystemEvents.LOCATION_ACTIVATED
+        );
+
+        if (preview) {
+          await context.setPreview({
+            experienceId: scenario.previewExperienceId,
+            variationId: scenario.targetVariationId
+          });
+        }
+
+        context.runExperience(scenario.locationExperienceKey, {
+          locationProperties: {[MATCH_KEY]: MATCH_VALUE},
+          ...(enableTracking === false ? {enableTracking: false} : {})
+        });
+
+        expect(activatedEvents.count, 'LOCATION_ACTIVATED fires').to.equal(
+          expectedFires
+        );
+      });
+    });
+
+    it('a preview context fires ZERO LOCATION_DEACTIVATED events when a previously-matched location stops matching', async function () {
+      this.timeout(test_timeout);
+      const scenario = buildLocationTargetedScenario(
+        'loc-evt-deactivate',
+        previewResponses,
+        MATCH_KEY,
+        MATCH_VALUE
+      );
+      const visitorId = 'visitor-loc-evt-deactivate';
+      const context = makeContext(scenario.sdk, visitorId);
+
+      // Match once (normally, before preview) so the location is stored --
+      // required for a subsequent non-match to be a DEACTIVATION.
+      context.runExperience(scenario.locationExperienceKey, {
+        locationProperties: {[MATCH_KEY]: MATCH_VALUE}
+      });
+
+      await context.setPreview({
+        experienceId: scenario.previewExperienceId,
+        variationId: scenario.targetVariationId
+      });
+      const deactivatedEvents = countEventFires(
+        scenario.sdk.eventManager,
+        SystemEvents.LOCATION_DEACTIVATED
+      );
+
+      context.runExperience(scenario.locationExperienceKey, {
+        locationProperties: {[MATCH_KEY]: 'non-matching-value'}
+      });
+
+      expect(deactivatedEvents.count, 'LOCATION_DEACTIVATED fires').to.equal(0);
     });
   });
 });

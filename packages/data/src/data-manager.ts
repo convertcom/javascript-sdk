@@ -221,6 +221,10 @@ export class DataManager implements DataManagerInterface {
    *  location-match persistence write in `selectLocations()`; matching itself
    *  is always performed regardless of this flag.
    * @param {string=} attributes.environment
+   * @param {boolean=} attributes.suppressEvents Defaults to `false`. Threaded
+   *  to `selectLocations()` to suppress the LOCATION_ACTIVATED/
+   *  LOCATION_DEACTIVATED event fires only (qs-02 preview); matching is
+   *  unaffected.
    * @return {ConfigExperience | RuleError}
    */
   matchRulesByField(
@@ -234,7 +238,8 @@ export class DataManager implements DataManagerInterface {
       locationProperties,
       ignoreLocationProperties,
       enableStorage = true,
-      environment = this._environment
+      environment = this._environment,
+      suppressEvents = false
     } = attributes;
     this._loggerManager?.trace?.(
       'DataManager.matchRulesByField()',
@@ -330,7 +335,8 @@ export class DataManager implements DataManagerInterface {
           matchedLocations = this.selectLocations(visitorId, locations, {
             locationProperties,
             identityField,
-            enableStorage
+            enableStorage,
+            suppressEvents
           });
           // Return rule errors if present
           matchedErrors = matchedLocations.filter((match) =>
@@ -511,6 +517,9 @@ export class DataManager implements DataManagerInterface {
    * @param {boolean=} attributes.enableStorage Defaults to `true`
    * @param {boolean=} attributes.asyncStorage Defaults to `true`
    * @param {string=} attributes.environment
+   * @param {boolean=} attributes.suppressEvents Defaults to `false`. Threaded
+   *  to `matchRulesByField()` -> `selectLocations()` to suppress the
+   *  LOCATION_ACTIVATED/LOCATION_DEACTIVATED event fires only (qs-02 preview).
    * @return {BucketedVariation | RuleError | BucketingError}
    * @private
    */
@@ -528,7 +537,8 @@ export class DataManager implements DataManagerInterface {
       enableTracking = true,
       enableStorage = true,
       ignoreLocationProperties,
-      environment = this._environment
+      environment = this._environment,
+      suppressEvents = false
     } = attributes;
     this._loggerManager?.trace?.(
       'DataManager._getBucketingByField()',
@@ -556,7 +566,8 @@ export class DataManager implements DataManagerInterface {
         locationProperties,
         ignoreLocationProperties,
         enableStorage,
-        environment
+        environment,
+        suppressEvents
       }
     );
     if (experience) {
@@ -941,8 +952,13 @@ export class DataManager implements DataManagerInterface {
    * @param {IdentityField=} attributes.identityField
    * @param {boolean=} attributes.forceEvent
    * @param {boolean=} attributes.enableStorage Defaults to `true`. Gates only
-   *  the persistence write below; location matching and the
-   *  LOCATION_ACTIVATED/LOCATION_DEACTIVATED events always fire regardless.
+   *  the persistence write below; location matching always runs regardless.
+   * @param {boolean=} attributes.suppressEvents Defaults to `false`. Gates
+   *  only the LOCATION_ACTIVATED/LOCATION_DEACTIVATED event fires below;
+   *  location matching always runs regardless. Independent of
+   *  `enableTracking`/`enableStorage` -- a normal silent run
+   *  (`enableTracking: false`) must still fire these events. Used by preview
+   *  contexts (qs-02) for zero-trace event suppression (AC5).
    * @returns {Array<Record<string, any> | RuleError>}
    */
   selectLocations(
@@ -954,7 +970,8 @@ export class DataManager implements DataManagerInterface {
       locationProperties,
       identityField = 'key',
       forceEvent,
-      enableStorage = true
+      enableStorage = true,
+      suppressEvents = false
     } = attributes;
     this._loggerManager?.trace?.(
       'DataManager.selectLocations()',
@@ -983,19 +1000,21 @@ export class DataManager implements DataManagerInterface {
             MESSAGES.LOCATION_MATCH.replace('#', `#${identity}`)
           );
           if (!locations.includes(identity) || forceEvent) {
-            this._eventManager.fire(
-              SystemEvents.LOCATION_ACTIVATED,
-              {
-                visitorId,
-                location: {
-                  id: items?.[i]?.id,
-                  key: items?.[i]?.key,
-                  name: items?.[i]?.name
-                }
-              },
-              null,
-              true
-            );
+            if (!suppressEvents) {
+              this._eventManager.fire(
+                SystemEvents.LOCATION_ACTIVATED,
+                {
+                  visitorId,
+                  location: {
+                    id: items?.[i]?.id,
+                    key: items?.[i]?.key,
+                    name: items?.[i]?.name
+                  }
+                },
+                null,
+                true
+              );
+            }
             this._loggerManager?.info?.(
               'DataManager.selectLocations()',
               MESSAGES.LOCATION_ACTIVATED.replace('#', `#${identity}`)
@@ -1007,19 +1026,21 @@ export class DataManager implements DataManagerInterface {
           // catch rule errors
           matchedRecords.push(match);
         } else if (match === false && locations.includes(identity)) {
-          this._eventManager.fire(
-            SystemEvents.LOCATION_DEACTIVATED,
-            {
-              visitorId,
-              location: {
-                id: items?.[i]?.id,
-                key: items?.[i]?.key,
-                name: items?.[i]?.name
-              }
-            },
-            null,
-            true
-          );
+          if (!suppressEvents) {
+            this._eventManager.fire(
+              SystemEvents.LOCATION_DEACTIVATED,
+              {
+                visitorId,
+                location: {
+                  id: items?.[i]?.id,
+                  key: items?.[i]?.key,
+                  name: items?.[i]?.name
+                }
+              },
+              null,
+              true
+            );
+          }
           const locationIndex = locations.findIndex(
             (location) => location === identity
           );

@@ -72,6 +72,14 @@ type ExpectedQuery = {
   hasLowCache: boolean;
   hasEnvironment?: boolean;
   environment?: string;
+  /**
+   * When set, additionally asserts that the raw query string carries the
+   * debug token percent-encoded via `encodeURIComponent` -- proving the
+   * built fetch URL never embeds unsafe characters (`+`/`/`/`=`/`&`) raw,
+   * which would otherwise corrupt the query string or silently mangle the
+   * token on decode (e.g. a raw `+` is decoded back as a space).
+   */
+  debugTokenRequiresEncoding?: boolean;
 };
 
 /**
@@ -110,6 +118,11 @@ function assertQuery(requestUrl: string, expected: ExpectedQuery): void {
 
   if (expected.hasDebugToken) {
     expect(params.get('debug_token')).to.equal(expected.debugToken);
+    if (expected.debugTokenRequiresEncoding) {
+      expect(queryString).to.include(
+        `debug_token=${encodeURIComponent(expected.debugToken)}`
+      );
+    }
   } else {
     expect(params.has('debug_token')).to.equal(false);
   }
@@ -161,6 +174,16 @@ const debugTokenCases: Array<{
       hasLowCache: true,
       hasEnvironment: true,
       environment: 'staging'
+    }
+  },
+  {
+    name: 'debugToken containing characters requiring percent-encoding (+, /, =, &)',
+    overrides: {debugToken: 'tok+en/val=x&z'},
+    expected: {
+      hasDebugToken: true,
+      debugToken: 'tok+en/val=x&z',
+      hasLowCache: true,
+      debugTokenRequiresEncoding: true
     }
   }
 ];

@@ -127,7 +127,8 @@ export class Context implements ContextInterface {
    *    bucketing) and fires no `SystemEvents.BUCKETING` event.
    *  - Every other `run*` call is suppressed from tracking/persisting
    *    (`enableTracking: false`, `enableStorage: false`) and fires no
-   *    `SystemEvents.BUCKETING` event.
+   *    `SystemEvents.BUCKETING` event, nor `LOCATION_ACTIVATED`/
+   *    `LOCATION_DEACTIVATED` events (location/audience matching still runs).
    *  - `trackConversion()` is a full no-op (zero-trace, AC5).
    * Preview state is local to THIS Context instance only (AC6 isolation) and
    * never mutates shared `DataManager` config.
@@ -244,8 +245,11 @@ export class Context implements ContextInterface {
         visitorProperties, // represents audiences
         environment: attributes?.environment || this._environment,
         // qs-02: while previewing, every OTHER experience still decides but is
-        // fully suppressed from tracking/persisting (zero-trace, AC5).
-        ...(this._preview ? {enableTracking: false, enableStorage: false} : {})
+        // fully suppressed from tracking/persisting and LOCATION events
+        // (zero-trace, AC5).
+        ...(this._preview
+          ? {enableTracking: false, enableStorage: false, suppressEvents: true}
+          : {})
       }
     );
     if (Object.values(RuleError).includes(bucketedVariation as RuleError))
@@ -301,8 +305,11 @@ export class Context implements ContextInterface {
         ...attributes,
         visitorProperties, // represents audiences
         environment: attributes?.environment || this._environment,
-        // qs-02: suppress tracking/persisting while previewing (AC5).
-        ...(this._preview ? {enableTracking: false, enableStorage: false} : {})
+        // qs-02: suppress tracking/persisting and LOCATION events while
+        // previewing (AC5).
+        ...(this._preview
+          ? {enableTracking: false, enableStorage: false, suppressEvents: true}
+          : {})
       }
     );
     // Return rule errors if present
@@ -395,8 +402,11 @@ export class Context implements ContextInterface {
           ? attributes.typeCasting
           : true,
         environment: attributes?.environment || this._environment,
-        // qs-02: suppress tracking/persisting while previewing (AC5).
-        ...(this._preview ? {enableTracking: false, enableStorage: false} : {})
+        // qs-02: suppress tracking/persisting and LOCATION events while
+        // previewing (AC5).
+        ...(this._preview
+          ? {enableTracking: false, enableStorage: false, suppressEvents: true}
+          : {})
       },
       attributes?.experienceKeys
     );
@@ -479,8 +489,11 @@ export class Context implements ContextInterface {
         ? attributes.typeCasting
         : true,
       environment: attributes?.environment || this._environment,
-      // qs-02: suppress tracking/persisting while previewing (AC5).
-      ...(this._preview ? {enableTracking: false, enableStorage: false} : {})
+      // qs-02: suppress tracking/persisting and LOCATION events while
+      // previewing (AC5).
+      ...(this._preview
+        ? {enableTracking: false, enableStorage: false, suppressEvents: true}
+        : {})
     });
     // Return rule errors if present
     const matchedErrors = bucketedFeatures.filter((match) =>
