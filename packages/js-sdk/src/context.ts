@@ -332,8 +332,27 @@ export class Context implements ContextInterface {
           );
         }
       );
+      return bucketedVariations as Array<BucketedVariation>;
     }
-    return bucketedVariations as Array<BucketedVariation>;
+    // qs-02: preview forcing is API-agnostic -- the previewed experience must
+    // return its forced variation from run-all too, not only from
+    // runExperience(key) (parity with the PHP/Android/Python/iOS SDKs).
+    // Replace the previewed experience's normally-bucketed entry with the
+    // forced decision, or append it when the previewed experience is a draft
+    // absent from the run-all set (mirrors runExperience's getPreviewDecision
+    // path). No BUCKETING event fires and nothing persists -- zero-trace (AC5)
+    // is already guaranteed by the enableTracking/enableStorage:false forwarded
+    // into selectVariations above.
+    const preview = this._preview;
+    const forced = this._dataManager.getPreviewDecision(
+      preview.experience,
+      preview.variationId
+    );
+    if (!forced) return bucketedVariations as Array<BucketedVariation>;
+    const forcedRest = (bucketedVariations as Array<BucketedVariation>).filter(
+      (variation) => variation.experienceKey !== preview.experienceKey
+    );
+    return [...forcedRest, forced];
   }
 
   /**

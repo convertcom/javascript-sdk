@@ -466,6 +466,49 @@ describe('Context.setPreview() preview integration (RED)', function () {
     });
   });
 
+  describe('run-all forcing -- runExperiences() forces the preview target too (parity with runExperience)', function () {
+    it('forces the previewed (draft, ?exp=-only) experience into the runExperiences() result exactly once while other experiences decide normally, with zero trace', async function () {
+      this.timeout(test_timeout);
+      const dataStore = new SpyDataStore();
+      const scenario = buildScenario('runall', previewResponses, {dataStore});
+      const visitorId = 'visitor-runall';
+      const context = makeContext(scenario.sdk, visitorId);
+
+      await context.setPreview({
+        experienceId: scenario.previewExperienceId,
+        variationId: scenario.targetVariationId
+      });
+      const results = context.runExperiences({ignoreLocationProperties: true});
+
+      // The previewed (draft, ?exp=-only) experience is forced into the run-all
+      // result set with its requested variation -- exactly what
+      // runExperience(key) returns -- and appears EXACTLY ONCE (never both a
+      // normally-bucketed and a forced entry).
+      const forcedEntries = results.filter(
+        (r: any) => r.experienceKey === scenario.previewExperienceKey
+      );
+      expect(
+        forcedEntries,
+        'previewed experience entries in runExperiences()'
+      ).to.have.lengthOf(1);
+      expect(forcedEntries[0].experienceId).to.equal(scenario.previewExperienceId);
+      expect(forcedEntries[0].id).to.equal(scenario.targetVariationId);
+
+      // A non-previewed, in-config experience still decides normally in the
+      // same call (contract §2 "other experiences still decide normally").
+      const normalEntry = results.find(
+        (r: any) => r.experienceKey === scenario.normalExperienceKey
+      );
+      expect(normalEntry, 'non-previewed experience still decided in run-all').to.be
+        .an('object');
+
+      // Zero-trace holds for run-all too (AC5): no /track, no store writes.
+      await sleep(release_timeout + wait_margin);
+      expect(trackHits, '/track requests').to.have.lengthOf(0);
+      expect(dataStore.setCallCount, 'DataStore.set() calls').to.equal(0);
+    });
+  });
+
   describe('AC5 -- zero-trace: no /track requests and no store writes across the preview lifecycle (Node)', function () {
     it('produces zero track requests, zero store writes, and zero bucketing/conversion event fires', async function () {
       this.timeout(test_timeout);
@@ -586,15 +629,17 @@ describe('Context.setPreview() preview integration (RED)', function () {
     });
   });
 
-  // Zero-trace STORAGE (RED): the decision audit found that AC5's zero-trace
-  // guarantee only covers `enableTracking`/`enableStorage` as forwarded into
-  // `ExperienceManager.selectVariation()` -- it does NOT cover the location
-  // rule-matching path (`matchRulesByField()` calls `selectLocations()`,
-  // which calls `putData()` unconditionally, *before* `enableStorage` is
-  // ever consulted) nor the segments/visitor-properties methods on Context,
-  // none of which check `this._preview` at all. Every case below MUST fail
-  // today: each currently performs at least one store write.
-  describe('Zero-trace STORAGE: ungated putData() reachable despite a preview context (RED)', function () {
+  // Zero-trace STORAGE regression locks: AC5's zero-trace guarantee must also
+  // hold on the write paths that do NOT flow through
+  // `ExperienceManager.selectVariation()`'s `enableStorage` forwarding -- the
+  // location rule-matching path (`matchRulesByField()` -> `selectLocations()`,
+  // which on a preview context operates on a defensive COPY of the visitor's
+  // stored `locations` and gates `putData()` by `enableStorage`) and the
+  // Context segment / visitor-property methods (`setDefaultSegments`,
+  // `runCustomSegments`, `updateVisitorProperties`, each gated on
+  // `this._preview`). Each case below asserts a preview context performs zero
+  // store writes on one of those paths.
+  describe('Zero-trace STORAGE: a preview context performs zero store writes on the location and segment/visitor-property paths', function () {
     const MATCH_KEY = 'country';
     const MATCH_VALUE = 'US';
 

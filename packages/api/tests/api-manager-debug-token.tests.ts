@@ -225,7 +225,7 @@ describe('ApiManager debugToken config option', function () {
       server.close();
     });
 
-    it('should never leak the debug token in the /track request URL or body, nor in logger output', function (done) {
+    it('should never leak the debug token in the /track request URL or body, nor in logger output across the config, preview (?exp=), and track paths', function (done) {
       let finished = false;
       const finish = (err?: Error) => {
         if (finished) return;
@@ -270,6 +270,10 @@ describe('ApiManager debugToken config option', function () {
       });
       apiManager
         .getConfig()
+        // Also exercise the preview (?exp=) fetch path -- getConfigByExperience
+        // appends debug_token to its own config URL too -- so the logger-hygiene
+        // assertion below covers BOTH config-fetch seams, not just getConfig().
+        .then(() => apiManager.getConfigByExperience('exp-preview-1'))
         .then(() => {
           apiManager.enqueue('visitor-1', requestData);
           apiManager.releaseQueue('test');
