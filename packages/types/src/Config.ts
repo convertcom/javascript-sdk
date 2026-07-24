@@ -48,6 +48,13 @@ type ConfigBase = {
     cacheLevel?: string;
     source?: string;
   };
+  /**
+   * QA/debug secret used to request an uncached config fetch from a
+   * specific debug session. When set, the config request forces low-cache
+   * behavior regardless of `network.cacheLevel`. Never logged or sent to
+   * the tracking endpoint.
+   */
+  debugToken?: string;
   mapper?: (...args: any) => any;
 };
 

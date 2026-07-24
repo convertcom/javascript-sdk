@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.2.1...js-sdk-rules-v3.0.0) (2026-07-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bucketing:** bucketing layout is now selected by experience.version; experiences at version > 11 use the new anchored layout instead of the packed cumulative walk.
+
+### Features
+
+* **bucketing:** anchored (ramping) bucketing layout selected by experience version ([03bfb5e](https://github.com/convertcom/javascript-sdk/commit/03bfb5ef5d0568658d985ed962dd8f36d5d62214))
+* Full Stack v12 — safe traffic ramp-up, variation preview & experiment exclusion ([a0f4ac4](https://github.com/convertcom/javascript-sdk/commit/a0f4ac4f1583b435323fd43947a21f616343d67c))
+* **rules:** mutual-exclusion audience rule (bucketed_into_experience_key) — qs-03 ([fc54dc0](https://github.com/convertcom/javascript-sdk/commit/fc54dc07f2346b933f2abefd3c9c7ec266f467eb))
+
 ## [2.2.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-rules-v2.2.0...js-sdk-rules-v2.2.1) (2026-06-05)
 
 

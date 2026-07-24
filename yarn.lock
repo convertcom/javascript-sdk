@@ -3353,7 +3353,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@convertcom/js-sdk-cloudflare@npm:^1.0.0, @convertcom/js-sdk-cloudflare@workspace:packages/cloudflare":
+"@convertcom/js-sdk-cloudflare@npm:>=1.0.0, @convertcom/js-sdk-cloudflare@workspace:packages/cloudflare":
   version: 0.0.0-use.local
   resolution: "@convertcom/js-sdk-cloudflare@workspace:packages/cloudflare"
   dependencies:
@@ -3437,8 +3437,8 @@ __metadata:
   resolution: "@convertcom/js-sdk-demo-cloudflare-workers@workspace:demo/cloudflare-workers"
   dependencies:
     "@cloudflare/workers-types": "npm:^4.20241205.0"
-    "@convertcom/js-sdk": "npm:^4.3.4"
-    "@convertcom/js-sdk-cloudflare": "npm:^1.0.0"
+    "@convertcom/js-sdk": "npm:>=4.3.4"
+    "@convertcom/js-sdk-cloudflare": "npm:>=1.0.0"
     typescript: "npm:^5.9.3"
     wrangler: "npm:^3.99.0"
   languageName: unknown
@@ -3817,7 +3817,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@convertcom/js-sdk@npm:^4.3.4, @convertcom/js-sdk@workspace:packages/js-sdk":
+"@convertcom/js-sdk@npm:>=4.3.4, @convertcom/js-sdk@workspace:packages/js-sdk":
   version: 0.0.0-use.local
   resolution: "@convertcom/js-sdk@workspace:packages/js-sdk"
   dependencies:

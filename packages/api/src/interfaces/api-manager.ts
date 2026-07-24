@@ -42,4 +42,6 @@ export interface ApiManagerInterface {
   setData(data: ConfigResponseData): void;
 
   getConfig(): Promise<ConfigResponseData>;
+
+  getConfigByExperience(experienceId: string): Promise<ConfigResponseData>;
 }

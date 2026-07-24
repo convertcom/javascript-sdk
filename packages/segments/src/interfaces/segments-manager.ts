@@ -9,11 +9,16 @@ import {RuleError} from '@convertcom/js-sdk-enums';
 
 export interface SegmentsManagerInterface {
   getSegments(visitorId: string): VisitorSegments;
-  putSegments(visitorId: string, segments: VisitorSegments): void;
+  putSegments(
+    visitorId: string,
+    segments: VisitorSegments,
+    enableStorage?: boolean
+  ): void;
   selectCustomSegments(
     visitorId: string,
     segmentKeys: Array<string>,
-    segmentRule?: Record<string, any>
+    segmentRule?: Record<string, any>,
+    enableStorage?: boolean
   ): VisitorSegments | RuleError;
   selectCustomSegmentsByIds(
     visitorId: string,

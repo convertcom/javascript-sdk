@@ -38,12 +38,15 @@ import {
   GoalData,
   VisitorSegments,
   ConfigSegment,
+  BucketingAllocation,
   BucketingAttributes,
   LocationAttributes,
   ConfigAudienceTypes,
   VariationStatuses,
+  VariationAllocation,
   eventType,
-  GenericListMatchingOptions
+  GenericListMatchingOptions,
+  RuleObjectAudience
 } from '@convertcom/js-sdk-types';
 
 import {
@@ -52,6 +55,7 @@ import {
   DATA_ENTITIES_MAP,
   ERROR_MESSAGES,
   MESSAGES,
+  MutualExclusionRuleType,
   RuleError,
   SegmentsKeys,
   SystemEvents,
@@ -60,6 +64,23 @@ import {
 
 import {DataStoreManager} from './data-store-manager';
 const LOCAL_STORE_LIMIT = 10000;
+
+/**
+ * qs-03 / SDK-3: minimal shape of a single `bucketed_into_experience_key`
+ * mutual-exclusion rule element, covering only the fields `_resolveBucketingExclusion`
+ * reads. NOT part of the generated `RuleElement` union (`packages/types/src/config` is
+ * auto-generated from the OpenAPI spec and must never be hand-edited to add this rule
+ * type) -- rule items are matched against this local interface instead.
+ */
+interface BucketingExclusionRuleItem {
+  rule_type: string;
+  value: string;
+  matching?: {
+    match_type?: string;
+    negated?: boolean;
+  };
+}
+
 /**
  * Provides logic for data. Stores bucket with help of dataStore if it's provided
  * @category Modules
@@ -196,7 +217,14 @@ export class DataManager implements DataManagerInterface {
    * @param {BucketingAttributes} attributes
    * @param {Record<any, any>} attributes.locationProperties
    * @param {Record<any, any>} attributes.visitorProperties
+   * @param {boolean=} attributes.enableStorage Defaults to `true`. Gates the
+   *  location-match persistence write in `selectLocations()`; matching itself
+   *  is always performed regardless of this flag.
    * @param {string=} attributes.environment
+   * @param {boolean=} attributes.suppressEvents Defaults to `false`. Threaded
+   *  to `selectLocations()` to suppress the LOCATION_ACTIVATED/
+   *  LOCATION_DEACTIVATED event fires only (qs-02 preview); matching is
+   *  unaffected.
    * @return {ConfigExperience | RuleError}
    */
   matchRulesByField(
@@ -209,7 +237,9 @@ export class DataManager implements DataManagerInterface {
       visitorProperties,
       locationProperties,
       ignoreLocationProperties,
-      environment = this._environment
+      enableStorage = true,
+      environment = this._environment,
+      suppressEvents = false
     } = attributes;
     this._loggerManager?.trace?.(
       'DataManager.matchRulesByField()',
@@ -304,7 +334,9 @@ export class DataManager implements DataManagerInterface {
           // and trigger activated/deactivated events
           matchedLocations = this.selectLocations(visitorId, locations, {
             locationProperties,
-            identityField
+            identityField,
+            enableStorage,
+            suppressEvents
           });
           // Return rule errors if present
           matchedErrors = matchedLocations.filter((match) =>
@@ -374,7 +406,8 @@ export class DataManager implements DataManagerInterface {
             audiencesToCheck,
             visitorProperties,
             'audience',
-            identityField
+            identityField,
+            visitorId
           );
           // Return rule errors if present
           matchedErrors = matchedAudiences.filter((match) =>
@@ -481,8 +514,12 @@ export class DataManager implements DataManagerInterface {
    * @param {boolean=} attributes.updateVisitorProperties
    * @param {string=} attributes.forceVariationId
    * @param {boolean=} attributes.enableTracking Defaults to `true`
+   * @param {boolean=} attributes.enableStorage Defaults to `true`
    * @param {boolean=} attributes.asyncStorage Defaults to `true`
    * @param {string=} attributes.environment
+   * @param {boolean=} attributes.suppressEvents Defaults to `false`. Threaded
+   *  to `matchRulesByField()` -> `selectLocations()` to suppress the
+   *  LOCATION_ACTIVATED/LOCATION_DEACTIVATED event fires only (qs-02 preview).
    * @return {BucketedVariation | RuleError | BucketingError}
    * @private
    */
@@ -498,8 +535,10 @@ export class DataManager implements DataManagerInterface {
       updateVisitorProperties,
       forceVariationId,
       enableTracking = true,
+      enableStorage = true,
       ignoreLocationProperties,
-      environment = this._environment
+      environment = this._environment,
+      suppressEvents = false
     } = attributes;
     this._loggerManager?.trace?.(
       'DataManager._getBucketingByField()',
@@ -511,6 +550,7 @@ export class DataManager implements DataManagerInterface {
         locationProperties: locationProperties,
         forceVariationId: forceVariationId,
         enableTracking: enableTracking,
+        enableStorage: enableStorage,
         ignoreLocationProperties: ignoreLocationProperties,
         environment: environment
       })
@@ -525,7 +565,9 @@ export class DataManager implements DataManagerInterface {
         visitorProperties,
         locationProperties,
         ignoreLocationProperties,
-        environment
+        enableStorage,
+        environment,
+        suppressEvents
       }
     );
     if (experience) {
@@ -538,10 +580,74 @@ export class DataManager implements DataManagerInterface {
         updateVisitorProperties,
         experience as ConfigExperience,
         forceVariationId,
-        enableTracking
+        enableTracking,
+        enableStorage
       );
     }
     return null;
+  }
+
+  /**
+   * Build buckets where key is variation id and value is traffic distribution
+   * (existing packed layout, experience version <= 11, missing, or non-numeric;
+   * byte-for-byte unchanged). Version 11 is the version stamped on every experience
+   * currently served in production (backend `CURRENT_EXPERIENCE_VERSION`), so this
+   * is the active path for all currently-running experiments.
+   * @param {ExperienceVariationConfig[]} variations
+   * @return {Record<string, number>}
+   * @private
+   */
+  private _buildPackedBuckets(
+    variations: ExperienceVariationConfig[]
+  ): Record<string, number> {
+    return variations
+      .filter((variation) =>
+        variation?.status
+          ? variation.status === VariationStatuses.RUNNING
+          : true
+      )
+      .filter(
+        (variation) =>
+          variation?.traffic_allocation > 0 || // zero-traffic means stopped variation
+          isNaN(variation?.traffic_allocation) // no allocation means 100% traffic
+      )
+      .reduce((bucket, variation) => {
+        if (variation?.id)
+          bucket[variation.id] = variation?.traffic_allocation || 100.0;
+        return bucket;
+      }, {}) as Record<string, number>;
+  }
+
+  /**
+   * Build variation allocations for the anchored layout (qs-01 / DATA-1, contract v12).
+   * Activates only once the served experience version is > 11 (i.e. >= 12, once the
+   * backend bumps `CURRENT_EXPERIENCE_VERSION` past its current value of 11).
+   * Inactive arms (stopped, or explicit zero traffic_allocation) keep their weight for
+   * anchor stability but are marked inactive so {@link BucketingManagerInterface.getBucketRanges}
+   * gives them zero width. See qs-01-anchored-bucketing-layout.md "The contract (normative)".
+   * @param {ExperienceVariationConfig[]} variations
+   * @return {VariationAllocation[]}
+   * @private
+   */
+  private _buildVariationAllocations(
+    variations: ExperienceVariationConfig[]
+  ): VariationAllocation[] {
+    return variations.reduce((allocations, variation) => {
+      if (!variation?.id) return allocations;
+      const trafficAllocation = variation.traffic_allocation;
+      allocations.push({
+        id: variation.id,
+        allocation: isNaN(trafficAllocation)
+          ? 100.0
+          : Number(trafficAllocation),
+        active:
+          (variation.status
+            ? variation.status === VariationStatuses.RUNNING
+            : true) &&
+          (trafficAllocation > 0 || isNaN(trafficAllocation))
+      });
+      return allocations;
+    }, [] as VariationAllocation[]);
   }
 
   /**
@@ -552,6 +658,7 @@ export class DataManager implements DataManagerInterface {
    * @param {ConfigExperience} experience
    * @param {string=} forceVariationId
    * @param {boolean=} enableTracking Defaults to `true`
+   * @param {boolean=} enableStorage Defaults to `true`
    * @return {BucketedVariation | BucketingError}
    * @private
    */
@@ -561,7 +668,8 @@ export class DataManager implements DataManagerInterface {
     updateVisitorProperties: boolean,
     experience: ConfigExperience,
     forceVariationId?: string,
-    enableTracking = true
+    enableTracking = true,
+    enableStorage = true
   ): BucketedVariation | BucketingError {
     if (!visitorId || !experience) return null;
     if (!experience?.id) return null;
@@ -618,31 +726,37 @@ export class DataManager implements DataManagerInterface {
         })
       );
     } else {
-      // Build buckets where key is variation id and value is traffic distribution
-      const buckets = experience.variations
-        .filter((variation) =>
-          variation?.status
-            ? variation.status === VariationStatuses.RUNNING
-            : true
-        )
-        .filter(
-          (variation) =>
-            variation?.traffic_allocation > 0 || // zero-traffic means stopped variation
-            isNaN(variation?.traffic_allocation) // no allocation means 100% traffic
-        )
-        .reduce((bucket, variation) => {
-          if (variation?.id)
-            bucket[variation.id] = variation?.traffic_allocation || 100.0;
-          return bucket;
-        }, {}) as Record<string, number>;
-      // Select bucket based for provided visitor id
-      const bucketing = this._bucketingManager.getBucketForVisitor(
-        buckets,
-        visitorId,
-        this._config?.bucketing?.excludeExperienceIdHash
-          ? null
-          : {experienceId: experience.id.toString()}
-      );
+      // qs-01 / DATA-1: anchored-vs-packed GATE. `experience.version > 11` runs the
+      // anchored (contract v12) layout; the anchored contract activates starting at
+      // experience version 12. Version <= 11, missing, or non-numeric keeps the
+      // existing packed cumulative walk unchanged -- this is every currently-served
+      // production experience, all stamped version 11 (backend
+      // `CURRENT_EXPERIENCE_VERSION`). Raising the gate to 12 is a deliberate,
+      // separate backend rollout step; the SDK must never infer the layout from
+      // anything but this field. See qs-01-anchored-bucketing-layout.md
+      // "The contract (normative)" for the gate and the allocation-build mapping.
+      const isAnchoredLayout = Number(experience.version) > 11;
+      const bucketingHashOptions = this._config?.bucketing
+        ?.excludeExperienceIdHash
+        ? null
+        : {experienceId: experience.id.toString()};
+      let buckets: VariationAllocation[] | Record<string, number>;
+      let bucketing: BucketingAllocation | null;
+      if (isAnchoredLayout) {
+        buckets = this._buildVariationAllocations(experience.variations);
+        bucketing = this._bucketingManager.getBucketForVisitorAnchored(
+          buckets,
+          visitorId,
+          bucketingHashOptions
+        );
+      } else {
+        buckets = this._buildPackedBuckets(experience.variations);
+        bucketing = this._bucketingManager.getBucketForVisitor(
+          buckets,
+          visitorId,
+          bucketingHashOptions
+        );
+      }
       variationId = variationId || bucketing?.variationId; // variation might be forced
       bucketingAllocation = bucketing?.bucketingAllocation;
       // Return bucketing errors if present
@@ -664,17 +778,19 @@ export class DataManager implements DataManagerInterface {
         MESSAGES.BUCKETED_VISITOR.replace('#', `#${variationId}`)
       );
       // Store the data
-      if (updateVisitorProperties) {
-        this.putData(visitorId, {
-          bucketing: {
-            [experience.id.toString()]: variationId
-          },
-          ...(visitorProperties ? {segments: visitorProperties} : {})
-        });
-      } else {
-        this.putData(visitorId, {
-          bucketing: {[experience.id.toString()]: variationId}
-        });
+      if (enableStorage) {
+        if (updateVisitorProperties) {
+          this.putData(visitorId, {
+            bucketing: {
+              [experience.id.toString()]: variationId
+            },
+            ...(visitorProperties ? {segments: visitorProperties} : {})
+          });
+        } else {
+          this.putData(visitorId, {
+            bucketing: {[experience.id.toString()]: variationId}
+          });
+        }
       }
       if (enableTracking) {
         // Enqueue bucketing event to api
@@ -809,10 +925,12 @@ export class DataManager implements DataManagerInterface {
     const storeKey = this.getStoreKey(visitorId);
     const memoryData = this._bucketedVisitors.get(storeKey) || null;
     if (this.dataStoreManager) {
-      return objectDeepMerge(
-        memoryData || {},
-        this.dataStoreManager.get(storeKey) || {}
-      );
+      const storedData = this.dataStoreManager.get(storeKey) || null;
+      // Neither the in-memory map nor the configured DataStore hold anything
+      // for this visitor -- report "no data" (null) rather than a misleading
+      // empty object (qs-02 zero-trace relies on this to be observable, AC5/AC6).
+      if (!memoryData && !storedData) return null;
+      return objectDeepMerge(memoryData || {}, storedData || {});
     }
     return memoryData;
   }
@@ -833,6 +951,14 @@ export class DataManager implements DataManagerInterface {
    * @param {Record<string, any>} attributes.locationProperties
    * @param {IdentityField=} attributes.identityField
    * @param {boolean=} attributes.forceEvent
+   * @param {boolean=} attributes.enableStorage Defaults to `true`. Gates only
+   *  the persistence write below; location matching always runs regardless.
+   * @param {boolean=} attributes.suppressEvents Defaults to `false`. Gates
+   *  only the LOCATION_ACTIVATED/LOCATION_DEACTIVATED event fires below;
+   *  location matching always runs regardless. Independent of
+   *  `enableTracking`/`enableStorage` -- a normal silent run
+   *  (`enableTracking: false`) must still fire these events. Used by preview
+   *  contexts (qs-02) for zero-trace event suppression (AC5).
    * @returns {Array<Record<string, any> | RuleError>}
    */
   selectLocations(
@@ -840,7 +966,13 @@ export class DataManager implements DataManagerInterface {
     items: Array<Record<string, any>>,
     attributes: LocationAttributes
   ): Array<Record<string, any> | RuleError> {
-    const {locationProperties, identityField = 'key', forceEvent} = attributes;
+    const {
+      locationProperties,
+      identityField = 'key',
+      forceEvent,
+      enableStorage = true,
+      suppressEvents = false
+    } = attributes;
     this._loggerManager?.trace?.(
       'DataManager.selectLocations()',
       this._mapper({
@@ -849,7 +981,8 @@ export class DataManager implements DataManagerInterface {
       })
     );
     // Get locations from DataStore
-    const {locations = []} = this.getData(visitorId) || {};
+    const {locations: storedLocations = []} = this.getData(visitorId) || {};
+    const locations = enableStorage ? storedLocations : [...storedLocations];
     const matchedRecords = [];
     let match;
     if (arrayNotEmpty(items)) {
@@ -867,19 +1000,21 @@ export class DataManager implements DataManagerInterface {
             MESSAGES.LOCATION_MATCH.replace('#', `#${identity}`)
           );
           if (!locations.includes(identity) || forceEvent) {
-            this._eventManager.fire(
-              SystemEvents.LOCATION_ACTIVATED,
-              {
-                visitorId,
-                location: {
-                  id: items?.[i]?.id,
-                  key: items?.[i]?.key,
-                  name: items?.[i]?.name
-                }
-              },
-              null,
-              true
-            );
+            if (!suppressEvents) {
+              this._eventManager.fire(
+                SystemEvents.LOCATION_ACTIVATED,
+                {
+                  visitorId,
+                  location: {
+                    id: items?.[i]?.id,
+                    key: items?.[i]?.key,
+                    name: items?.[i]?.name
+                  }
+                },
+                null,
+                true
+              );
+            }
             this._loggerManager?.info?.(
               'DataManager.selectLocations()',
               MESSAGES.LOCATION_ACTIVATED.replace('#', `#${identity}`)
@@ -891,19 +1026,21 @@ export class DataManager implements DataManagerInterface {
           // catch rule errors
           matchedRecords.push(match);
         } else if (match === false && locations.includes(identity)) {
-          this._eventManager.fire(
-            SystemEvents.LOCATION_DEACTIVATED,
-            {
-              visitorId,
-              location: {
-                id: items?.[i]?.id,
-                key: items?.[i]?.key,
-                name: items?.[i]?.name
-              }
-            },
-            null,
-            true
-          );
+          if (!suppressEvents) {
+            this._eventManager.fire(
+              SystemEvents.LOCATION_DEACTIVATED,
+              {
+                visitorId,
+                location: {
+                  id: items?.[i]?.id,
+                  key: items?.[i]?.key,
+                  name: items?.[i]?.name
+                }
+              },
+              null,
+              true
+            );
+          }
           const locationIndex = locations.findIndex(
             (location) => location === identity
           );
@@ -916,9 +1053,11 @@ export class DataManager implements DataManagerInterface {
       }
     }
     // Store the data
-    this.putData(visitorId, {
-      locations
-    });
+    if (enableStorage) {
+      this.putData(visitorId, {
+        locations
+      });
+    }
     this._loggerManager?.debug?.(
       'DataManager.selectLocations()',
       this._mapper({
@@ -966,6 +1105,34 @@ export class DataManager implements DataManagerInterface {
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError | BucketingError {
     return this._getBucketingByField(visitorId, id, 'id', attributes);
+  }
+
+  /**
+   * qs-02 / SDK-4: resolve a preview decision directly from the passed-in experience,
+   * bypassing audiences/segments/locations, the environment check, experience status,
+   * variation status/traffic filters, stored decisions, and the bucketing hash entirely.
+   * PURE -- reads only `experience.variations`; never touches shared config (a preview
+   * experience fetched via `?exp=` may not be registered there), never calls `putData`,
+   * and never calls `_apiManager.enqueue`.
+   * @param {ConfigExperience} experience
+   * @param {string} variationId
+   * @return {BucketedVariation | null}
+   */
+  getPreviewDecision(
+    experience: ConfigExperience,
+    variationId: string
+  ): BucketedVariation | null {
+    const variation = experience?.variations?.find(
+      (candidate: ExperienceVariationConfig) =>
+        String(candidate?.id) === String(variationId)
+    );
+    if (!variation) return null;
+    return {
+      experienceId: experience?.id,
+      experienceName: experience?.name,
+      experienceKey: experience?.key,
+      ...variation
+    } as BucketedVariation;
   }
 
   /**
@@ -1088,16 +1255,92 @@ export class DataManager implements DataManagerInterface {
   }
 
   /**
+   * qs-03 / SDK-3: walk an audience's rule tree (same OR -> AND -> OR_WHEN traversal
+   * shape as `RuleManager.isRuleMatched`) looking for a `bucketed_into_experience_key`
+   * mutual-exclusion rule element. Documented assumption: at most one such rule per
+   * exclusion audience -- returns the first one found, or `null` if the audience
+   * carries no mutual-exclusion rule (the generic rule-matching path applies instead).
+   * @param {RuleObjectAudience} rules
+   * @return {BucketingExclusionRuleItem | null}
+   * @private
+   */
+  private _isBucketingExclusionRule(
+    rules: RuleObjectAudience
+  ): BucketingExclusionRuleItem | null {
+    if (!arrayNotEmpty(rules?.OR)) return null;
+    for (const andBlock of rules.OR) {
+      if (!arrayNotEmpty(andBlock?.AND)) continue;
+      for (const orWhenBlock of andBlock.AND) {
+        if (!arrayNotEmpty(orWhenBlock?.OR_WHEN)) continue;
+        for (const ruleItem of orWhenBlock.OR_WHEN) {
+          if (
+            (ruleItem as unknown as BucketingExclusionRuleItem)?.rule_type ===
+            MutualExclusionRuleType.BUCKETED_INTO_EXPERIENCE_KEY
+          ) {
+            return ruleItem as unknown as BucketingExclusionRuleItem;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * qs-03 / SDK-3: presence-only resolution of a `bucketed_into_experience_key`
+   * mutual-exclusion rule. Read-only -- resolves the rule's target experience by KEY
+   * via `getEntity` and checks ONLY whether the visitor's stored bucketing map
+   * (`getData().bucketing`) already carries an entry keyed by the target's id; it
+   * NEVER calls `retrieveVariation`/the BucketingManager, so evaluating this rule can
+   * never bucket the target experience as a side effect (AC5). If the target key does
+   * not resolve in the served config, warns naming the unresolved key and treats the
+   * visitor as not bucketed into it (`bucketedRaw = false`) rather than failing the
+   * whole audience evaluation. Negation is applied LAST, after the raw presence check.
+   * @param {BucketingExclusionRuleItem} rule
+   * @param {string} visitorId
+   * @return {boolean}
+   * @private
+   */
+  private _resolveBucketingExclusion(
+    rule: BucketingExclusionRuleItem,
+    visitorId: string
+  ): boolean {
+    const target = this.getEntity(
+      rule.value,
+      'experiences'
+    ) as ConfigExperience;
+    let bucketedRaw = false;
+    if (!target) {
+      this._loggerManager?.warn?.(
+        'DataManager._resolveBucketingExclusion()',
+        ERROR_MESSAGES.BUCKETING_EXCLUSION_TARGET_NOT_FOUND.replace(
+          '#',
+          rule.value
+        )
+      );
+    } else {
+      const {bucketing} = this.getData(visitorId) || {};
+      bucketedRaw = Boolean((bucketing || {})[String(target.id)]);
+    }
+    return rule.matching?.negated ? !bucketedRaw : bucketedRaw;
+  }
+
+  /**
    * Get audiences that meet the visitorProperties
    * @param {Array<Record<any, any>>} items
    * @param {Record<string, any>} visitorProperties
+   * @param {string} entityType
+   * @param {IdentityField=} field Defaults to 'id'
+   * @param {string=} visitorId Required only when an item's rules resolve to a
+   *  `bucketed_into_experience_key` mutual-exclusion rule (qs-03 / SDK-3); unused by
+   *  the generic rule-matching path.
    * @return {Array<Record<string, any> | RuleError>}
    */
   filterMatchedRecordsWithRule(
     items: Array<Record<string, any>>,
     visitorProperties: Record<string, any>,
     entityType: string,
-    field: IdentityField = 'id'
+    field: IdentityField = 'id',
+    visitorId?: string
   ): Array<Record<string, any> | RuleError> {
     this._loggerManager?.trace?.(
       'DataManager.filterMatchedRecordsWithRule()',
@@ -1111,11 +1354,16 @@ export class DataManager implements DataManagerInterface {
     if (arrayNotEmpty(items)) {
       for (let i = 0, length = items.length; i < length; i++) {
         if (!items?.[i]?.rules) continue;
-        match = this._ruleManager.isRuleMatched(
-          visitorProperties,
-          items[i].rules,
-          `${camelCase(entityType)} #${items[i][field]}`
-        );
+        const exclusionRule = this._isBucketingExclusionRule(items[i].rules);
+        if (exclusionRule) {
+          match = this._resolveBucketingExclusion(exclusionRule, visitorId);
+        } else {
+          match = this._ruleManager.isRuleMatched(
+            visitorProperties,
+            items[i].rules,
+            `${camelCase(entityType)} #${items[i][field]}`
+          );
+        }
         if (match === true) {
           matchedRecords.push(items[i]);
         } else if (match !== false) {

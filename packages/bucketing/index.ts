@@ -5,4 +5,7 @@
  * License Apache-2.0
  */
 export {BucketingManager} from './src/bucketing-manager';
-export {BucketingManagerInterface} from './src/interfaces/bucketing-manager';
+export {
+  BucketingManagerInterface,
+  BucketAnchoredRange
+} from './src/interfaces/bucketing-manager';
