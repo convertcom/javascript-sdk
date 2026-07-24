@@ -10,7 +10,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import DataStore from "./DataStore";
 import { UserContext } from "./Context";
-import ConvertSDK from "@convertcom/js-sdk"; // [ConvertSDK]
+import ConvertSDK, { parsePreviewParam } from "@convertcom/js-sdk"; // [ConvertSDK]
 
 const dataStore = new DataStore();
 
@@ -40,6 +40,12 @@ export default function App(props) {
           mobile: true,
         });
         context.setDefaultSegments({ country: "US" });
+        // Preview link support: ?convert_preview={experienceId}.{variationId}
+        // forces that decision on this context (zero-trace). [ConvertSDK]
+        const preview = parsePreviewParam(
+          new URLSearchParams(window.location.search).get("convert_preview")
+        );
+        if (preview) await context.setPreview(preview);
         setSdkContext(context);
       } catch (error) {
         console.error("SDK Error:", error);

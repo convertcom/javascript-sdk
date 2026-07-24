@@ -1,4 +1,4 @@
-import ConvertSDK, {LogLevel} from '@convertcom/js-sdk';
+import ConvertSDK, {LogLevel, parsePreviewParam} from '@convertcom/js-sdk';
 import {v4 as uuidv4} from 'uuid';
 import DataStore from './convert.datastore';
 
@@ -84,6 +84,13 @@ export async function getConvertContext(request) {
       `Retrieved existing context for userId (cookie _conv_uid): ${userId}`
     );
   }
+
+  // Preview link support: ?convert_preview={experienceId}.{variationId}
+  // forces that decision on this context (zero-trace). [ConvertSDK]
+  const preview = parsePreviewParam(
+    new URL(request.url).searchParams.get('convert_preview')
+  );
+  if (preview) await context.setPreview(preview);
 
   return {context, setCookieHeader};
 }

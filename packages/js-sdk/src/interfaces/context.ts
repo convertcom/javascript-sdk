@@ -17,7 +17,17 @@ import {
 } from '@convertcom/js-sdk-types';
 import {BucketingError, EntityType, RuleError} from '@convertcom/js-sdk-enums';
 
+/**
+ * qs-02: input to {@link ContextInterface.setPreview}.
+ */
+export interface PreviewInput {
+  experienceId: string;
+  variationId: string;
+}
+
 export interface ContextInterface {
+  setPreview(input: PreviewInput): Promise<void>;
+
   runExperience(
     experienceKey: string,
     attributes?: BucketingAttributes

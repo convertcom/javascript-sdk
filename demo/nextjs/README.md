@@ -20,6 +20,22 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Testing preview links
+
+Force a specific variation to render — regardless of bucketing, audience/segment/location rules, environment, experience/variation status, or traffic allocation, and even for **draft/paused** experiences (the SDK fetches them via `?exp=`). No tracking events or visitor-state writes happen on a preview context (zero-trace).
+
+**URL param format:** `?convert_preview={experienceId}.{variationId}` (dot-separated numeric ids — mirrors the web tracking script's force-param).
+
+**Example:**
+
+```
+http://localhost:3005/?convert_preview=100123.200456
+```
+
+Replace `100123.200456` with a real experience id / variation id pair from your Convert project. The param is read server-side in `src/app/api/convert/route.js`, where the visitor's Convert context is created.
+
+> The preview link is normally generated from the Convert UI's per-variation "Copy preview link". You can also construct it manually as `{experienceId}.{variationId}`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

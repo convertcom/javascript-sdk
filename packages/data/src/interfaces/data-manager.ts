@@ -52,6 +52,10 @@ export interface DataManagerInterface {
     experienceId: string,
     attributes: BucketingAttributes
   ): BucketedVariation | RuleError | BucketingError;
+  getPreviewDecision(
+    experience: ConfigExperience,
+    variationId: string
+  ): BucketedVariation | null;
   convert(
     visitorId: string,
     goalId: string,

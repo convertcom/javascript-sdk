@@ -15,7 +15,7 @@
  *   /pricing   - Runs all matching experiences + feature "feature-5"
  */
 
-import ConvertSDK, {BucketedVariation} from '@convertcom/js-sdk';
+import ConvertSDK, {BucketedVariation, parsePreviewParam} from '@convertcom/js-sdk';
 import {
   EdgeConfigCache,
   getVisitorId,
@@ -167,6 +167,12 @@ export default {
 
       // Set default segments (mirrors Node.js demo)
       context.setDefaultSegments({country: 'US'});
+
+      // Preview link support: ?convert_preview={experienceId}.{variationId}
+      // forces that decision on this context (zero-trace). [ConvertSDK]
+      const previewParam = url.searchParams.get('convert_preview');
+      const preview = previewParam ? parsePreviewParam(previewParam) : null;
+      if (preview) await context.setPreview(preview);
 
       // 4. Run experiments based on route
       const decisions = decideForRoute(context, route);

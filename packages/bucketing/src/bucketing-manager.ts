@@ -5,12 +5,16 @@
  * License Apache-2.0
  */
 
-import {BucketingManagerInterface} from './interfaces/bucketing-manager';
+import {
+  BucketAnchoredRange,
+  BucketingManagerInterface
+} from './interfaces/bucketing-manager';
 
 import {
   BucketingAllocation,
   BucketingHash,
-  Config
+  Config,
+  VariationAllocation
 } from '@convertcom/js-sdk-types';
 import {generateHash} from '@convertcom/js-sdk-utils';
 import {LogManagerInterface} from '@convertcom/js-sdk-logger';
@@ -127,6 +131,97 @@ export class BucketingManager implements BucketingManagerInterface {
       buckets,
       value,
       options?.redistribute
+    );
+    if (!selectedBucket) return null;
+    return {
+      variationId: selectedBucket,
+      bucketingAllocation: value
+    } as BucketingAllocation;
+  }
+
+  /**
+   * Build the anchored bucket layout for a set of variation allocations (qs-01 / BUCK-2).
+   * Anchors are computed over the total weight of ALL entries (active and inactive) so
+   * that raising an experience's total allocation only ever grows arms (superset property)
+   * and never reshuffles an already-bucketed visitor into a different arm. Inactive (or
+   * explicit zero-allocation) entries keep their weight for anchor stability but get a
+   * zero-width range so they can never be selected.
+   * @param {VariationAllocation[]} allocations Variation allocations in config order
+   * @return {BucketAnchoredRange[]}
+   */
+  getBucketRanges(allocations: VariationAllocation[]): BucketAnchoredRange[] {
+    const totalWeight = allocations.reduce(
+      (sum, {allocation}) => sum + allocation,
+      0
+    );
+    const ranges: BucketAnchoredRange[] = [];
+    if (totalWeight <= 0) {
+      this._loggerManager?.debug?.('BucketingManager.getBucketRanges()', {
+        allocations: allocations,
+        totalWeight: totalWeight
+      });
+      return ranges;
+    }
+    let cumWeight = 0;
+    allocations.forEach(({id, allocation, active}) => {
+      const anchor = (cumWeight / totalWeight) * DEFAULT_MAX_TRAFFIC;
+      const width = active ? allocation * 100 : 0;
+      ranges.push({id, anchor, width});
+      cumWeight += allocation;
+    });
+    this._loggerManager?.debug?.(
+      'BucketingManager.getBucketRanges()',
+      {allocations: allocations, totalWeight: totalWeight},
+      {ranges: ranges}
+    );
+    return ranges;
+  }
+
+  /**
+   * Select the variation whose anchored range contains the provided value.
+   * @param {BucketAnchoredRange[]} ranges Anchored bucket ranges (see {@link getBucketRanges})
+   * @param {number} value A bucket value
+   * @return {string | null}
+   */
+  selectBucketAnchored(
+    ranges: BucketAnchoredRange[],
+    value: number
+  ): string | null {
+    let variation = null;
+    ranges.some(({id, anchor, width}) => {
+      if (value >= anchor && value < anchor + width) {
+        variation = id;
+        return true;
+      }
+      return false;
+    });
+    this._loggerManager?.debug?.(
+      'BucketingManager.selectBucketAnchored()',
+      {ranges: ranges, value: value},
+      {variation: variation}
+    );
+    return variation;
+  }
+
+  /**
+   * Get an anchored bucket for the visitor (qs-01 / BUCK-2). Reuses the existing
+   * visitor-based hash value unchanged, then resolves it through the anchored layout.
+   * @param {VariationAllocation[]} allocations Variation allocations in config order
+   * @param {string} visitorId
+   * @param {BucketingHash=} options
+   * @param {number=} [options.seed=]
+   * @param {string=} [options.experienceId=]
+   * @return {BucketingAllocation | null}
+   */
+  getBucketForVisitorAnchored(
+    allocations: VariationAllocation[],
+    visitorId: string,
+    options?: BucketingHash
+  ): BucketingAllocation | null {
+    const value = this.getValueVisitorBased(visitorId, options);
+    const selectedBucket = this.selectBucketAnchored(
+      this.getBucketRanges(allocations),
+      value
     );
     if (!selectedBucket) return null;
     return {
