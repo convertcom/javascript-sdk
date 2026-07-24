@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-event-v2.1.4...js-sdk-event-v3.0.0) (2026-07-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bucketing:** bucketing layout is now selected by experience.version; experiences at version > 11 use the new anchored layout instead of the packed cumulative walk.
+
+### Features
+
+* **bucketing:** anchored (ramping) bucketing layout selected by experience version ([03bfb5e](https://github.com/convertcom/javascript-sdk/commit/03bfb5ef5d0568658d985ed962dd8f36d5d62214))
+
 ## [2.1.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-event-v2.1.3...js-sdk-event-v2.1.4) (2026-06-05)
 
 

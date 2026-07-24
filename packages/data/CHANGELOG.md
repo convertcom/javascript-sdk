@@ -1,5 +1,24 @@
 # Changelog
 
+## [4.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.3.4...js-sdk-data-v4.0.0) (2026-07-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bucketing:** bucketing layout is now selected by experience.version; experiences at version > 11 use the new anchored layout instead of the packed cumulative walk.
+
+### Features
+
+* **bucketing:** anchored (ramping) bucketing layout selected by experience version ([03bfb5e](https://github.com/convertcom/javascript-sdk/commit/03bfb5ef5d0568658d985ed962dd8f36d5d62214))
+* **bucketing:** anchored layout (contract v12) — JS SDK reference impl ([24ec631](https://github.com/convertcom/javascript-sdk/commit/24ec631373d969c47a33d3c94334dd22cbc50699))
+* Full Stack v12 — safe traffic ramp-up, variation preview & experiment exclusion ([a0f4ac4](https://github.com/convertcom/javascript-sdk/commit/a0f4ac4f1583b435323fd43947a21f616343d67c))
+* **rules:** mutual-exclusion audience rule (bucketed_into_experience_key) — qs-03 ([fc54dc0](https://github.com/convertcom/javascript-sdk/commit/fc54dc07f2346b933f2abefd3c9c7ec266f467eb))
+
+
+### Bug Fixes
+
+* **preview,api:** zero-trace location events + encode config-fetch params ([0cf6a10](https://github.com/convertcom/javascript-sdk/commit/0cf6a10e07050e7a093db500173e61756c7d2286))
+
 ## [3.3.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-data-v3.3.3...js-sdk-data-v3.3.4) (2026-06-05)
 
 
