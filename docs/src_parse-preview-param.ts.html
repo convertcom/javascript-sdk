@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Convert Insights, Inc JavaScript SDK Global</title>
+  <title>Convert Insights, Inc JavaScript SDK src/parse-preview-param.ts</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -129,428 +131,64 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p></p>
-                    <h1>Global</h1>
+                    <p>Source</p>
+                    <h1>src/parse-preview-param.ts</h1>
                 </header>
                 
 
 
 
-
-<section>
-
-<header>
-    
-        <h2></h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <div class='vertical-section'>
-            <h1>Members</h1>
-            <div class="members">
-            
-                <div class="member">
-
-<h4 class="name" id="Config">
-    <a class="href-link" href="#Config">#</a>
-    
-        
-            <span class='tag'>constant</span>
-        
-    
-    <span class="code-name">
-        Config
-    </span>
-    
-</h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="src_config.ts.html" class="button">View Source</a>
-            <span>
-                <a href="src_config.ts.html">src/config.ts</a>, <a href="src_config.ts.html#line18">line 18</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-<h4 class="name" id="NUMERIC_ONLY">
-    <a class="href-link" href="#NUMERIC_ONLY">#</a>
-    
-        
-            <span class='tag'>constant</span>
-        
-    
-    <span class="code-name">
-        NUMERIC_ONLY
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    Numeric-only segment pattern used to validate both the experienceId and
-variationId parts of a preview param value.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
     
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="src_parse-preview-param.ts.html" class="button">View Source</a>
-            <span>
-                <a href="src_parse-preview-param.ts.html">src/parse-preview-param.ts</a>, <a href="src_parse-preview-param.ts.html#line12">line 12</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-            </div>
-        </div>
-    
-
-    
-        <div class='vertical-section'>
-            <h1>Methods</h1>
-            <div class="members">
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="parsePreviewParam">
-        <a class="href-link" href="#parsePreviewParam">#</a>
-        
-        <span class="code-name">
-            
-                parsePreviewParam<span class="signature">(value)</span><span class="type-signature"> &rarr; (nullable) {Object}</span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        Parse a preview param value of the form `"{experienceId}.{variationId}"`
-(mirrors the web tracking script's force-param
-`_conv_eforce={experienceId}.{variationId}`).
-
-Splits on the first dot only; both segments must be non-empty,
-numeric-only strings. Any other shape (missing dot, extra dot, empty
-segment, non-numeric segment, non-string input) returns `null`.
-
-Pure function: never throws, has no side effects, performs no logging.
-    </div>
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>value</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="src_parse-preview-param.ts.html" class="button">View Source</a>
-            <span>
-                <a href="src_parse-preview-param.ts.html">src/parse-preview-param.ts</a>, <a href="src_parse-preview-param.ts.html#line27">line 27</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
-<code class="param-type">Object</code>
-
-
-    </div>
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-</div>
-            
-            </div>
-        </div>
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*!
+ * Convert JS SDK
+ * Version 1.0.0
+ * Copyright(c) 2020 Convert Insights, Inc
+ * License Apache-2.0
+ */
+
+/**
+ * Numeric-only segment pattern used to validate both the experienceId and
+ * variationId parts of a preview param value.
+ */
+const NUMERIC_ONLY = /^\d+$/;
+
+/**
+ * Parse a preview param value of the form `"{experienceId}.{variationId}"`
+ * (mirrors the web tracking script's force-param
+ * `_conv_eforce={experienceId}.{variationId}`).
+ *
+ * Splits on the first dot only; both segments must be non-empty,
+ * numeric-only strings. Any other shape (missing dot, extra dot, empty
+ * segment, non-numeric segment, non-string input) returns `null`.
+ *
+ * Pure function: never throws, has no side effects, performs no logging.
+ *
+ * @param {string} value
+ * @returns {?{experienceId: string, variationId: string}}
+ */
+export function parsePreviewParam(
+  value: string
+): {experienceId: string; variationId: string} | null {
+  if (typeof value !== 'string') return null;
+
+  const dotIndex = value.indexOf('.');
+  if (dotIndex === -1) return null;
+  if (value.indexOf('.', dotIndex + 1) !== -1) return null;
+
+  const experienceId = value.slice(0, dotIndex);
+  const variationId = value.slice(dotIndex + 1);
+
+  if (!NUMERIC_ONLY.test(experienceId) || !NUMERIC_ONLY.test(variationId)) {
+    return null;
+  }
+
+  return {experienceId, variationId};
+}
+</code></pre>
+        </article>
+    </section>
 
 
 
