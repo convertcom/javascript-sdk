@@ -1,3 +1,5 @@
+var { parsePreviewParam } = require("@convertcom/js-sdk"); // [ConvertSDK]
+
 module.exports = function (sdkInstance, dataStore) {
   return function (req, res, next) {
     if (dataStore.driver === "cookie") {
@@ -21,8 +23,16 @@ module.exports = function (sdkInstance, dataStore) {
           mobile: true,
         });
         context.setDefaultSegments({ country: "US" });
-        req.sdkContext = context;
-        next();
+        // Preview link support: ?convert_preview={experienceId}.{variationId}
+        // forces that decision on this context (zero-trace). [ConvertSDK]
+        var preview = parsePreviewParam(req.query.convert_preview); // [ConvertSDK]
+        var previewReady = preview
+          ? context.setPreview(preview)
+          : Promise.resolve();
+        return previewReady.then(function () {
+          req.sdkContext = context;
+          next();
+        });
       })
       .catch(function (error) {
         console.error("SDK Error:", error);

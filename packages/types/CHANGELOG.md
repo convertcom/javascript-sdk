@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.13.1...js-sdk-types-v4.0.0) (2026-07-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bucketing:** bucketing layout is now selected by experience.version; experiences at version > 11 use the new anchored layout instead of the packed cumulative walk.
+
+### Features
+
+* **bucketing:** anchored (ramping) bucketing layout selected by experience version ([03bfb5e](https://github.com/convertcom/javascript-sdk/commit/03bfb5ef5d0568658d985ed962dd8f36d5d62214))
+* **bucketing:** anchored layout (contract v12) — JS SDK reference impl ([24ec631](https://github.com/convertcom/javascript-sdk/commit/24ec631373d969c47a33d3c94334dd22cbc50699))
+* Full Stack v12 — safe traffic ramp-up, variation preview & experiment exclusion ([a0f4ac4](https://github.com/convertcom/javascript-sdk/commit/a0f4ac4f1583b435323fd43947a21f616343d67c))
+
+
+### Bug Fixes
+
+* **preview,api:** zero-trace location events + encode config-fetch params ([0cf6a10](https://github.com/convertcom/javascript-sdk/commit/0cf6a10e07050e7a093db500173e61756c7d2286))
+
+## [3.13.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.13.0...js-sdk-types-v3.13.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **js-sdk:** pick up Web Worker runtime detection fix from js-sdk-utils ([7d47d87](https://github.com/convertcom/javascript-sdk/commit/7d47d87a82b6797e7683205a26a5f60589d3c06e))
+
 ## [3.13.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-types-v3.12.0...js-sdk-types-v3.13.0) (2026-05-25)
 
 

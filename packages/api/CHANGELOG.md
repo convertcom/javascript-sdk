@@ -1,5 +1,31 @@
 # Changelog
 
+## [3.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.1.5...js-sdk-api-v3.0.0) (2026-07-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bucketing:** bucketing layout is now selected by experience.version; experiences at version > 11 use the new anchored layout instead of the packed cumulative walk.
+
+### Features
+
+* **bucketing:** anchored (ramping) bucketing layout selected by experience version ([03bfb5e](https://github.com/convertcom/javascript-sdk/commit/03bfb5ef5d0568658d985ed962dd8f36d5d62214))
+* Full Stack v12 — safe traffic ramp-up, variation preview & experiment exclusion ([a0f4ac4](https://github.com/convertcom/javascript-sdk/commit/a0f4ac4f1583b435323fd43947a21f616343d67c))
+
+
+### Bug Fixes
+
+* **api:** satisfy SonarCloud S2871 in preview-config tests + evict expired preview-config cache entries ([487f8f6](https://github.com/convertcom/javascript-sdk/commit/487f8f633f3788eab4264410e53aa9350665ce99))
+* **preview,api:** zero-trace location events + encode config-fetch params ([0cf6a10](https://github.com/convertcom/javascript-sdk/commit/0cf6a10e07050e7a093db500173e61756c7d2286))
+* **preview:** force the preview target in runExperiences() (run-all parity) ([a19840d](https://github.com/convertcom/javascript-sdk/commit/a19840d1deeb8882f6048b0f86cdb19ab1cdea9b))
+
+## [2.1.5](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.1.4...js-sdk-api-v2.1.5) (2026-06-05)
+
+
+### Bug Fixes
+
+* **js-sdk:** pick up Web Worker runtime detection fix from js-sdk-utils ([7d47d87](https://github.com/convertcom/javascript-sdk/commit/7d47d87a82b6797e7683205a26a5f60589d3c06e))
+
 ## [2.1.4](https://github.com/convertcom/javascript-sdk/compare/js-sdk-api-v2.1.3...js-sdk-api-v2.1.4) (2025-09-05)
 
 

@@ -1,0 +1,138 @@
+{
+  "specRef": "_bmad-output/planning-artifacts/2026-07-02-convert-js-sdk/qs-03-mutual-exclusion-rule.md#inline-cross-sdk-fixture",
+  "description": "qs-03 mutual-exclusion audience rule (bucketed_into_experience_key) cross-SDK fixture. The 8 rows and their expected values are the normative contract, identical across every sibling SDK spec (JS/PHP/Python/Ruby/Android/iOS). Consumed verbatim by packages/rules/tests, packages/data/tests, and packages/js-sdk/tests/browser via a relative filesystem read -- never duplicated. Changing an expected value here is a cross-SDK contract change, not a local test tweak.",
+  "config": {
+    "experiences": [
+      {
+        "id": "100111",
+        "name": "exp-a",
+        "key": "exp-a",
+        "type": "a/b_fullstack",
+        "status": "active",
+        "audiences": [],
+        "goals": [],
+        "variations": [
+          {
+            "id": "100901",
+            "name": "exp-a variation",
+            "status": "running",
+            "is_baseline": true
+          }
+        ]
+      },
+      {
+        "id": "100222",
+        "name": "exp-b",
+        "key": "exp-b",
+        "type": "a/b_fullstack",
+        "status": "active",
+        "audiences": [],
+        "goals": [],
+        "variations": [
+          {
+            "id": "100902",
+            "name": "exp-b variation",
+            "status": "running",
+            "is_baseline": true
+          }
+        ]
+      }
+    ]
+  },
+  "ruleDefaults": {
+    "rule_type": "bucketed_into_experience_key",
+    "matching": {
+      "match_type": "equals"
+    }
+  },
+  "rows": [
+    {
+      "row": 1,
+      "description": "empty stored bucketing, non-negated, target exp-a -> visitor not in exp-a -> not matched",
+      "storedBucketing": {},
+      "dataStoreOnly": false,
+      "ruleValue": "exp-a",
+      "negated": false,
+      "expectedMatched": false,
+      "expectWarn": false
+    },
+    {
+      "row": 2,
+      "description": "empty stored bucketing, negated, target exp-a -> visitor not in exp-a -> NOT-in-exp-a matches",
+      "storedBucketing": {},
+      "dataStoreOnly": false,
+      "ruleValue": "exp-a",
+      "negated": true,
+      "expectedMatched": true,
+      "expectWarn": false
+    },
+    {
+      "row": 3,
+      "description": "stored bucketing has exp-a's variation (in memory), non-negated, target exp-a -> matched",
+      "storedBucketing": {
+        "100111": "100901"
+      },
+      "dataStoreOnly": false,
+      "ruleValue": "exp-a",
+      "negated": false,
+      "expectedMatched": true,
+      "expectWarn": false
+    },
+    {
+      "row": 4,
+      "description": "stored bucketing has exp-a's variation (in memory), negated, target exp-a -> visitor IS in exp-a -> NOT-in-exp-a does not match",
+      "storedBucketing": {
+        "100111": "100901"
+      },
+      "dataStoreOnly": false,
+      "ruleValue": "exp-a",
+      "negated": true,
+      "expectedMatched": false,
+      "expectWarn": false
+    },
+    {
+      "row": 5,
+      "description": "stored bucketing has exp-b's variation only (in memory), negated, target exp-a -> visitor not in exp-a -> NOT-in-exp-a matches",
+      "storedBucketing": {
+        "100222": "100902"
+      },
+      "dataStoreOnly": false,
+      "ruleValue": "exp-a",
+      "negated": true,
+      "expectedMatched": true,
+      "expectWarn": false
+    },
+    {
+      "row": 6,
+      "description": "empty stored bucketing, non-negated, target exp-zz absent from config -> bucketedRaw resolves false -> not matched, warns naming the unresolved key",
+      "storedBucketing": {},
+      "dataStoreOnly": false,
+      "ruleValue": "exp-zz",
+      "negated": false,
+      "expectedMatched": false,
+      "expectWarn": true
+    },
+    {
+      "row": 7,
+      "description": "empty stored bucketing, negated, target exp-zz absent from config -> bucketedRaw resolves false -> NOT-in-exp-zz matches, warns naming the unresolved key",
+      "storedBucketing": {},
+      "dataStoreOnly": false,
+      "ruleValue": "exp-zz",
+      "negated": true,
+      "expectedMatched": true,
+      "expectWarn": true
+    },
+    {
+      "row": 8,
+      "description": "exp-a's variation stored ONLY in the configured DataStore (never written to the in-memory visitor store), negated, target exp-a -> getData() merges the DataStore in -> visitor IS in exp-a -> NOT-in-exp-a does not match",
+      "storedBucketing": {
+        "100111": "100901"
+      },
+      "dataStoreOnly": true,
+      "ruleValue": "exp-a",
+      "negated": true,
+      "expectedMatched": false,
+      "expectWarn": false
+    }
+  ]
+}

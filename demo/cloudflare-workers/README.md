@@ -223,6 +223,22 @@ Then deploy:
 yarn deploy
 ```
 
+## Testing preview links
+
+Force a specific variation to render — regardless of bucketing, audience/segment/location rules, environment, experience/variation status, or traffic allocation, and even for **draft/paused** experiences (the SDK fetches them via `?exp=`). No tracking events or visitor-state writes happen on a preview context (zero-trace).
+
+**URL param format:** `?convert_preview={experienceId}.{variationId}` (dot-separated numeric ids — mirrors the web tracking script's force-param).
+
+**Example:**
+
+```
+http://localhost:8787/events?convert_preview=100123.200456
+```
+
+Replace `100123.200456` with a real experience id / variation id pair from your Convert project.
+
+> The preview link is normally generated from the Convert UI's per-variation "Copy preview link". You can also construct it manually as `{experienceId}.{variationId}`.
+
 ## Optional: KV-Backed Persistence
 
 If you need to preserve bucketing across experience config changes or store custom visitor attributes, you can optionally add KV support. See the commented section at the bottom of `src/index.ts` for setup instructions.

@@ -7,6 +7,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   release:
@@ -17,3 +18,13 @@ jobs:
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+      - name: Dispatch npm publish for released packages
+        if: ${{ steps.release.outputs.releases_created == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_OUTPUTS: ${{ toJSON(steps.release.outputs) }}
+        run: |
+          for tag in $(echo "$RELEASE_OUTPUTS" | jq -r 'to_entries[] | select(.key | endswith("--tag_name")) | .value'); do
+            echo "Dispatching publish-package.yml for $tag"
+            gh workflow run publish-package.yml --repo "$GITHUB_REPOSITORY" -f tag="$tag"
+          done

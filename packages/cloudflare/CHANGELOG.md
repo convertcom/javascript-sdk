@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-cloudflare-v1.1.1...js-sdk-cloudflare-v2.0.0) (2026-07-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bucketing:** bucketing layout is now selected by experience.version; experiences at version > 11 use the new anchored layout instead of the packed cumulative walk.
+
+### Features
+
+* **bucketing:** anchored (ramping) bucketing layout selected by experience version ([03bfb5e](https://github.com/convertcom/javascript-sdk/commit/03bfb5ef5d0568658d985ed962dd8f36d5d62214))
+
+## [1.1.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-cloudflare-v1.1.0...js-sdk-cloudflare-v1.1.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **js-sdk:** pick up Web Worker runtime detection fix from js-sdk-utils ([7d47d87](https://github.com/convertcom/javascript-sdk/commit/7d47d87a82b6797e7683205a26a5f60589d3c06e))
+
 ## [1.1.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-cloudflare-v1.0.0...js-sdk-cloudflare-v1.1.0) (2026-04-06)
 
 

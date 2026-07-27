@@ -25,6 +25,7 @@ import {
 } from '@convertcom/js-sdk-experience';
 import {FeatureManager} from './src/feature-manager';
 import {FeatureManagerInterface} from './src/interfaces/feature-manager';
+import {parsePreviewParam} from './src/parse-preview-param';
 import {RuleManager, RuleManagerInterface} from '@convertcom/js-sdk-rules';
 import {
   SegmentsManager,
@@ -144,6 +145,8 @@ class ConvertSDK extends Core {
 }
 
 export default ConvertSDK;
+
+export {parsePreviewParam};
 
 export {
   ConfigResponseData,

@@ -20,7 +20,15 @@ export const ERROR_MESSAGES = {
   GOAL_DATA_NOT_VALID: 'GoalData object is not valid',
   UNABLE_TO_SELECT_BUCKET_FOR_VISITOR: 'Unable to bucket visitor',
   UNABLE_TO_PERFORM_NETWORK_REQUEST: 'Unable to perform network request',
-  UNSUPPORTED_RESPONSE_TYPE: 'Unsupported response type'
+  UNSUPPORTED_RESPONSE_TYPE: 'Unsupported response type',
+  PREVIEW_INPUT_REQUIRED:
+    'Context.setPreview() requires both experienceId and variationId',
+  PREVIEW_EXPERIENCE_NOT_FOUND:
+    'Context.setPreview() could not resolve the requested experience',
+  PREVIEW_VARIATION_NOT_FOUND:
+    'Context.setPreview() could not resolve the requested variation on the experience',
+  BUCKETING_EXCLUSION_TARGET_NOT_FOUND:
+    'Mutual-exclusion rule target experience key "#" not found in served config; treating visitor as not bucketed into it.'
 };
 export const MESSAGES = {
   CONFIG_DATA_UPDATED: 'Config Data updated',
