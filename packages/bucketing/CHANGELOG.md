@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-bucketing-v3.1.3...js-sdk-bucketing-v4.0.0) (2026-07-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bucketing:** bucketing layout is now selected by experience.version; experiences at version > 11 use the new anchored layout instead of the packed cumulative walk.
+
+### Features
+
+* **bucketing:** anchored (ramping) bucketing layout selected by experience version ([03bfb5e](https://github.com/convertcom/javascript-sdk/commit/03bfb5ef5d0568658d985ed962dd8f36d5d62214))
+* **bucketing:** anchored layout (contract v12) — JS SDK reference impl ([24ec631](https://github.com/convertcom/javascript-sdk/commit/24ec631373d969c47a33d3c94334dd22cbc50699))
+* Full Stack v12 — safe traffic ramp-up, variation preview & experiment exclusion ([a0f4ac4](https://github.com/convertcom/javascript-sdk/commit/a0f4ac4f1583b435323fd43947a21f616343d67c))
+
 ## [3.1.3](https://github.com/convertcom/javascript-sdk/compare/js-sdk-bucketing-v3.1.2...js-sdk-bucketing-v3.1.3) (2026-06-05)
 
 

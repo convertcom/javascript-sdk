@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-cloudflare-v1.1.1...js-sdk-cloudflare-v2.0.0) (2026-07-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bucketing:** bucketing layout is now selected by experience.version; experiences at version > 11 use the new anchored layout instead of the packed cumulative walk.
+
+### Features
+
+* **bucketing:** anchored (ramping) bucketing layout selected by experience version ([03bfb5e](https://github.com/convertcom/javascript-sdk/commit/03bfb5ef5d0568658d985ed962dd8f36d5d62214))
+
 ## [1.1.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-cloudflare-v1.1.0...js-sdk-cloudflare-v1.1.1) (2026-06-05)
 
 
