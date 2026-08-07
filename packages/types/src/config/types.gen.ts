@@ -11,7 +11,7 @@ export type ConfigAudience = {
     /**
      * Audience unique key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * Audience Name
      */
@@ -409,6 +409,10 @@ export enum SegmentBucketedMatchRulesTypes {
     BUCKETED_INTO_SEGMENT = 'bucketed_into_segment'
 }
 
+export enum ExperienceKeyBucketedMatchRulesTypes {
+    BUCKETED_INTO_EXPERIENCE_KEY = 'bucketed_into_experience_key'
+}
+
 export enum DayOfWeekMatchRulesTypes {
     LOCAL_TIME_DAY_OF_WEEK = 'local_time_day_of_week',
     PROJECT_TIME_DAY_OF_WEEK = 'project_time_day_of_week'
@@ -436,7 +440,7 @@ export enum WeatherConditionMatchRulesTypes {
     WEATHER_CONDITION = 'weather_condition'
 }
 
-export type RulesTypes = TextMatchRulesTypes & NumericMatchRulesTypes & BoolMatchRulesTypes & KeyValueMatchRulesTypes & VisitorDataExistsMatchRulesTypes & CookieMatchRulesTypes & CountryMatchRulesTypes & VisitorTypeMatchRulesTypes & LanguageMatchRulesTypes & GoalTriggeredMatchRulesTypes & SegmentBucketedMatchRulesTypes & DayOfWeekMatchRulesTypes & HourOfDayMatchRulesTypes & MinuteOfHourMatchRulesTypes & BrowserNameMatchRulesTypes & OsMatchRulesTypes & WeatherConditionMatchRulesTypes;
+export type RulesTypes = TextMatchRulesTypes & NumericMatchRulesTypes & BoolMatchRulesTypes & KeyValueMatchRulesTypes & VisitorDataExistsMatchRulesTypes & CookieMatchRulesTypes & CountryMatchRulesTypes & VisitorTypeMatchRulesTypes & LanguageMatchRulesTypes & GoalTriggeredMatchRulesTypes & SegmentBucketedMatchRulesTypes & ExperienceKeyBucketedMatchRulesTypes & DayOfWeekMatchRulesTypes & HourOfDayMatchRulesTypes & MinuteOfHourMatchRulesTypes & BrowserNameMatchRulesTypes & OsMatchRulesTypes & WeatherConditionMatchRulesTypes;
 
 export type GenericTextMatchRule = BaseRuleWithStringValue & {
     rule_type: TextMatchRulesTypes;
@@ -554,6 +558,13 @@ export type SegmentBucketedMatchRule = BaseRuleWithSegmentBucketedValue & {
 });
 };
 
+export type ExperienceKeyBucketedMatchRule = BaseRuleWithStringValue & {
+    rule_type: ExperienceKeyBucketedMatchRulesTypes;
+    matching?: (BaseMatch & {
+    match_type?: ChoiceMatchingOptions;
+});
+};
+
 export type ExperienceBucketedMatchRule = BaseRuleWithExperienceBucketedValue & {
     rule_type: string;
     matching?: (BaseMatch & {
@@ -603,11 +614,11 @@ export type WeatherConditionMatchRule = BaseRuleWithWeatherConditionValue & {
 });
 };
 
-export type RuleElementNoUrl = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | CookieMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule | VisitorDataExistsMatchRule;
+export type RuleElementNoUrl = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | CookieMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | ExperienceKeyBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule | VisitorDataExistsMatchRule;
 
-export type RuleElement = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CookieMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule;
+export type RuleElement = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CookieMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | ExperienceKeyBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule;
 
-export type RuleElementAudience = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CookieMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule | VisitorDataExistsMatchRule;
+export type RuleElementAudience = GenericTextMatchRule | GenericNumericMatchRule | GenericBoolMatchRule | GenericTextKeyValueMatchRule | GenericNumericKeyValueMatchRule | GenericBoolKeyValueMatchRule | CookieMatchRule | CountryMatchRule | LanguageMatchRule | GoalTriggeredMatchRule | SegmentBucketedMatchRule | ExperienceKeyBucketedMatchRule | DayOfWeekMatchRule | HourOfDayMatchRule | MinuteOfHourMatchRule | BrowserNameMatchRule | OsMatchRule | WeatherConditionMatchRule | VisitorTypeMatchRule | JsConditionMatchRule | VisitorDataExistsMatchRule;
 
 export enum TextMatchingOptions {
     MATCHES = 'matches',
@@ -849,6 +860,12 @@ export type VisitorInsightsBase = {
      *
      */
     sampling_rate?: 5 | 10 | 20 | 30 | 40 | 50;
+    /**
+     * Maximum number of visits per variation used when generating a heatmap for this project.
+     * Applies to newly created heatmaps when an experience is activated.
+     *
+     */
+    heatmap_visits_limit?: 2500 | 5000 | 10000 | 15000;
 };
 
 /**
@@ -863,6 +880,18 @@ export enum sampling_rate {
     '_30' = 30,
     '_40' = 40,
     '_50' = 50
+}
+
+/**
+ * Maximum number of visits per variation used when generating a heatmap for this project.
+ * Applies to newly created heatmaps when an experience is activated.
+ *
+ */
+export enum heatmap_visits_limit {
+    '_2500' = 2500,
+    '_5000' = 5000,
+    '_10000' = 10000,
+    '_15000' = 15000
 }
 
 /**
@@ -969,6 +998,11 @@ export type UploadedFileData = {
  * A server-generated hash that represents the object's state at the time of retrieval. When included in an update request, the operation will only succeed if the object hasn't been modified since this key was obtained. If another update has occurred in the meantime, the request will fail with a conflict error, requiring you to fetch the latest version and retry your update with the new concurrency_key. This implements optimistic concurrency control to prevent lost updates in concurrent scenarios.
  */
 export type ConcurrencyKey = (string) | null;
+
+/**
+ * Device fingerprint computed by client-side.
+ */
+export type UserAuthMetaData = string;
 
 /**
  * Response containing project's config data needed in order to serve experiences
@@ -1627,7 +1661,7 @@ export type ConfigExperience = {
     /**
      * Experience readable key that uniquely identifies this experience
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * List of locations IDs on which this experience is presented. Either this or **site_area** is given but should not be both.
      */
@@ -1769,7 +1803,7 @@ export type ExperienceVariationConfig = {
     /**
      * Variation Key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * Percentage of traffic allocation for this variation, as a number from 0 to 10000.
      * For an experience, the sum of the traffic allocations for all variations cannot be greater than 10000.
@@ -1827,7 +1861,7 @@ export type ConfigFeature = {
     /**
      * A unique per project level identifier
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * An array of user-defined variables of a feature.
      */
@@ -1874,7 +1908,7 @@ export type ConfigGoalBase = {
     /**
      * Goal Key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * List of goal types to be returned
      */
@@ -2165,7 +2199,7 @@ export type ConfigLocation = {
     /**
      * Location unique key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * Location Name
      */
@@ -2391,6 +2425,10 @@ export type ProjectGASettingsBase = GA_SettingsBase & {
      * Attempt to pull revenue data from Google Analytics Revenue Tracking code.
      */
     auto_revenue_tracking?: boolean;
+    /**
+     * When enabled, the experience_impression event is sent only the first time a visitor is exposed to an experience, instead of on every subsequent qualifying page view. Opt-in and disabled by default.
+     */
+    track_first_exposure_only?: boolean;
 };
 
 export type ProjectIntegrationGA3 = ProjectGASettingsBase & IntegrationGA3;
@@ -2415,7 +2453,7 @@ export type ConfigSegment = {
     /**
      * Segment unique key
      */
-    key?: string;
+    key?: (string) | null;
     /**
      * Segment Name
      */
@@ -2558,6 +2596,10 @@ export type VisitorSegments = {
      * Campaign string
      */
     campaign?: string;
+    /**
+     * Content string (ad-creative identifier from utm_content)
+     */
+    content?: string;
     /**
      * Type of the visitor
      */
