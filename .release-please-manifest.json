@@ -1,15 +1,15 @@
 {
-  "packages/js-sdk": "5.0.0",
-  "packages/enums": "3.0.0",
-  "packages/types": "4.0.0",
-  "packages/utils": "3.0.0",
-  "packages/event": "3.0.0",
-  "packages/bucketing": "4.0.0",
-  "packages/logger": "3.0.0",
-  "packages/rules": "3.0.0",
-  "packages/segments": "3.0.0",
-  "packages/api": "3.0.0",
-  "packages/data": "4.0.0",
-  "packages/experience": "3.0.0",
-  "packages/cloudflare": "2.0.0"
+  "packages/js-sdk": "5.0.1",
+  "packages/enums": "3.0.1",
+  "packages/types": "4.0.1",
+  "packages/utils": "3.0.1",
+  "packages/event": "3.0.1",
+  "packages/bucketing": "4.0.1",
+  "packages/logger": "3.0.1",
+  "packages/rules": "3.0.1",
+  "packages/segments": "3.0.1",
+  "packages/api": "3.0.1",
+  "packages/data": "4.0.1",
+  "packages/experience": "3.0.1",
+  "packages/cloudflare": "2.0.1"
 }

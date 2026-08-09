@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v5.0.0...js-sdk-v5.0.1) (2026-08-09)
+
+
+### Bug Fixes
+
+* **build:** bump rollup-plugin-typescript2 to 0.37 for picomatch 2.3.2 ([15633da](https://github.com/convertcom/javascript-sdk/commit/15633daef67aeb13f4f8f0b48b4d3e9df3c30264))
+* **deps:** drop build-generated peerDependency churn from the diff ([4b6bbdd](https://github.com/convertcom/javascript-sdk/commit/4b6bbdda5059bc6d9b4163f8a0bbc7e613c6e5ea))
+
 ## [5.0.0](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v4.4.3...js-sdk-v5.0.0) (2026-07-24)
 
 
