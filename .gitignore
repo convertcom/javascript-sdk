@@ -23,3 +23,7 @@ demo/remixjs-client-side/build
 demo/remixjs-client-side/public
 demo/remixjs-client-side/workspace
 demo/remixjs-client-side/.cache
+demo/reactjs/build
+demo/remixjs-client-side/.react-router
+demo/remixjs-server-side/.react-router
+demo/cloudflare-workers/.wrangler

@@ -40,13 +40,14 @@
     "sdk:test": "cd packages/js-sdk && yarn test",
     "test": "yarn utils:test && yarn event:test && yarn bucketing:test && yarn logger:test && yarn rules:test && yarn segments:test && yarn api:test && yarn data:test && yarn experience:test && yarn sdk:test",
     "sdk:docs": "cd packages/js-sdk/docs && yarn docs",
-    "demo:reactjs:start": "cd demo/reactjs && yarn start",
-    "demo:nodejs:start": "cd demo/nodejs && yarn start",
-    "demo:nestjs:start": "cd demo/nestjs && yarn start",
-    "demo:nextjs:start": "cd demo/nextjs && yarn start",
-    "demo:remixjs:client:start": "cd demo/remixjs-client-side && yarn dev",
-    "demo:remixjs:server:start": "cd demo/remixjs-server-side && yarn dev",
-    "demo:cloudflare:start": "cd demo/cloudflare-workers && yarn dev"
+    "demo:reactjs:start": "yarn demo:prepare && cd demo/reactjs && yarn start",
+    "demo:nodejs:start": "yarn demo:prepare && cd demo/nodejs && yarn start",
+    "demo:nestjs:start": "yarn demo:prepare && cd demo/nestjs && yarn start",
+    "demo:nextjs:start": "yarn demo:prepare && cd demo/nextjs && yarn start",
+    "demo:remixjs:client:start": "yarn demo:prepare && cd demo/remixjs-client-side && yarn dev",
+    "demo:remixjs:server:start": "yarn demo:prepare && cd demo/remixjs-server-side && yarn dev",
+    "demo:cloudflare:start": "yarn demo:prepare && cd demo/cloudflare-workers && yarn start",
+    "demo:prepare": "node scripts/ensure-sdk-built.mjs"
   },
   "private": true,
   "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f",
@@ -69,7 +70,6 @@
     "body-parser": ">=1.20.3",
     "rollup": ">=2.79.2",
     "cross-spawn": ">=7.0.5",
-    "path-to-regexp": "^0.1.12",
     "braces": ">=3.0.3",
     "http-proxy-middleware": ">=2.0.9",
     "nth-check": ">=2.0.1",
@@ -81,6 +81,7 @@
     "diff": ">=8.0.3",
     "pug": ">=3.0.3",
     "pug-code-gen": ">=3.0.3",
-    "underscore": ">=1.13.8"
+    "underscore": ">=1.13.8",
+    "undici": ">=7.29.0 <8"
   }
 }
