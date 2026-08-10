@@ -16,7 +16,7 @@ export default function Index() {
     try {
       if (convertContext) {
         const convertVariations = convertContext.runExperiences({
-          locationProperties: { location: "global" },
+          locationProperties: { location: "statistics" },
         });
         console.log("convertVariations:", convertVariations);
       }

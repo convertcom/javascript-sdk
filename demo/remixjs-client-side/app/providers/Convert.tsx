@@ -9,7 +9,10 @@ interface ConvertProviderProps {
 // Define the interfaces for the SDK instance and constructor
 interface ConvertSDKInstance {
   onReady(): Promise<void>;
-  createContext(userId: string): ContextInterface | null;
+  createContext(
+    userId: string,
+    visitorProperties?: Record<string, unknown>
+  ): ContextInterface | null;
 }
 
 interface ConvertSDKConstructor {
@@ -54,12 +57,19 @@ export function ConvertProvider({children}: Readonly<ConvertProviderProps>) {
         await convertSDK.onReady();
 
         const convertUserId = uuidv4();
-        const context = convertSDK.createContext(convertUserId);
+        // Visitor properties and default segments must be supplied, or any
+        // audience-gated experience is filtered out and runExperiences()
+        // returns []. Mirrors the nodejs and server-side demos.
+        const context = convertSDK.createContext(convertUserId, {
+          mobile: true
+        });
 
         if (!context) {
           console.error('Failed to create context.');
           return;
         }
+
+        context.setDefaultSegments({country: 'US'});
 
         // Preview link support: ?convert_preview={experienceId}.{variationId}
         // forces that decision on this context (zero-trace). [ConvertSDK]

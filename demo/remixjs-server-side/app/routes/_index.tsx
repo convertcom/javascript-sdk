@@ -14,7 +14,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   try {
     const { context, setCookieHeader } = await getConvertContext(request);
     const convertVariations = context.runExperiences({
-      locationProperties: { location: "global" },
+      locationProperties: { location: "statistics" },
     });
 
     const headers = new Headers();
@@ -114,7 +114,7 @@ export default function Index() {
     e.preventDefault();
     const payload: SubmitPayload = {
       action: "trackConversion",
-      goalId: "add-to-cart",
+      goalId: "button-primary-click",
       // goalRule: { action: "buy" }, // Uncomment to pass goal rules
       // goalData: [
       //   { key: "amount", value: 10.3 },

@@ -46,7 +46,8 @@ export default defineConfig({
   optimizeDeps: {
     esbuildOptions: {loader: {'.js': 'jsx'}}
   },
-  server: {port: 3000},
-  preview: {port: 3000},
+  // README documents http://localhost:3002 for this demo.
+  server: {port: Number(process.env.PORT) || 3002},
+  preview: {port: Number(process.env.PORT) || 3002},
   build: {outDir: 'build'}
 });
