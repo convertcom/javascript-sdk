@@ -54,7 +54,6 @@
     "@typescript-eslint/parser": "^8.46.4",
     "assert": "^2.1.0",
     "better-docs": "^2.7.3",
-    "browserify": "^17.0.1",
     "chai": "^6",
     "chai-spies": "^1.1.0",
     "chai-string": "^1.6.0",
@@ -82,7 +81,6 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.4",
-    "watchify": "^4.0.0",
     "webpack": "^5.102.1"
   },
   "version": "5.0.1",
