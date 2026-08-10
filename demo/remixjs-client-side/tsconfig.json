@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "target": "ES2022",
     "strict": true,
@@ -21,10 +21,19 @@
         "./app/*"
       ]
     },
-    "noEmit": true
+    "noEmit": true,
+    "types": [
+      "@react-router/node",
+      "vite/client"
+    ],
+    "module": "ESNext",
+    "rootDirs": [
+      ".",
+      "./.react-router/types"
+    ]
   },
   "include": [
-    "remix.env.d.ts",
+    ".react-router/types/**/*",
     "**/*.ts",
     "**/*.tsx"
   ]

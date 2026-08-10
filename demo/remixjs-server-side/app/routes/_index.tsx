@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import type { MetaFunction, LoaderFunction, ActionFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useLoaderData, useFetcher } from "@remix-run/react";
+import type { MetaFunction, LoaderFunction, ActionFunction } from "react-router";
+import { data } from "react-router";
+import { useLoaderData, useFetcher } from "react-router";
 import { getConvertContext } from "../api/convert.server";
 import type { BucketedVariation, ConversionAttributes } from "@convertcom/js-sdk";
 import { RuleError, BucketingError } from "@convertcom/js-sdk";
@@ -22,7 +22,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       headers.append("Set-Cookie", setCookieHeader);
     }
 
-    return json({ convertVariations }, { headers });
+    return data({ convertVariations }, { headers });
   } catch (error) {
     console.error("Error in loader:", error);
     throw new Response("Server Error", { status: 500 });
@@ -63,7 +63,7 @@ export const action: ActionFunction = async ({ request }) => {
       headers.append("Set-Cookie", setCookieHeader);
     }
 
-    return json(null, { headers });
+    return data(null, { headers });
   } catch (error) {
     console.error("Error in action:", error);
     throw new Response("Server Error", { status: 500 });

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "react-router";
 import { useConvertContext } from "../providers/Convert";
 
 export const meta: MetaFunction = () => {

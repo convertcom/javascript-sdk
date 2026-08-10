@@ -35,12 +35,12 @@ export function ConvertProvider({children}: Readonly<ConvertProviderProps>) {
   useEffect(() => {
     async function initializeConvert() {
       try {
-        // Access the ConvertSDK constructor from the module
-        const ConvertInstance = (
-          ConvertSDK as unknown as {
-            default: ConvertSDKConstructor;
-          }
-        ).default;
+        // Depending on how the bundler interops the SDK's CJS build, the default
+        // import is either the constructor itself or a wrapper holding it on
+        // `.default`. Accept both so this works under any bundler.
+        const ConvertInstance = ((
+          ConvertSDK as unknown as {default?: ConvertSDKConstructor}
+        ).default ?? ConvertSDK) as unknown as ConvertSDKConstructor;
         // Instantiate the SDK
         const convertSDK = new ConvertInstance({
           sdkKey: '10035569/10034190',

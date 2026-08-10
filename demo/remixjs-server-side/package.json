@@ -4,27 +4,26 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix build",
-    "dev": "dotenv remix dev --manual",
+    "build": "react-router build",
+    "dev": "dotenv react-router dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "dotenv remix-serve ./build/index.js",
-    "typecheck": "tsc"
+    "start": "dotenv react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@remix-run/css-bundle": "^2.17.5",
-    "@remix-run/node": "^2.17.5",
-    "@remix-run/react": "^2.17.5",
-    "@remix-run/serve": "^2.17.5",
+    "@react-router/node": "^8.3.0",
+    "@react-router/serve": "^8.3.0",
     "isbot": "^5.1.32",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-router": "^8.3.0",
     "uuid": "^13.0.0"
   },
   "peerDependencies": {
     "@convertcom/js-sdk": ">=2.0.0"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.17.5",
+    "@react-router/dev": "^8.3.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@typescript-eslint/eslint-plugin": "^8.46.4",
@@ -36,7 +35,9 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^7.3.5",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "engines": {
     "node": ">=18.0.0"
