@@ -17,7 +17,10 @@ async function initializeConvertSDK(request) {
   const cookieHeader = request.headers.get('Cookie') || '';
   dataStore.parseCookies(cookieHeader);
 
-  const ConvertModule = ConvertSDK.default;
+  // Depending on how the bundler interops the SDK's CJS build, the default
+  // import is either the constructor itself or a wrapper holding it on
+  // `.default`. Accept both so this works under any bundler.
+  const ConvertModule = ConvertSDK.default ?? ConvertSDK;
   if (!sdkInstance) {
     sdkInstance = new ConvertModule({
       environment: 'staging',

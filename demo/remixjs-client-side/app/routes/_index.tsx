@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "react-router";
 import { useConvertContext } from "../providers/Convert";
 
 export const meta: MetaFunction = () => {
@@ -16,7 +16,7 @@ export default function Index() {
     try {
       if (convertContext) {
         const convertVariations = convertContext.runExperiences({
-          locationProperties: { location: "global" },
+          locationProperties: { location: "statistics" },
         });
         console.log("convertVariations:", convertVariations);
       }

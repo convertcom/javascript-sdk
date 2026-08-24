@@ -6,7 +6,7 @@ import {
   Subheading as SubheadingBase
 } from 'components/misc/Headings.js';
 import {PrimaryButton as PrimaryButtonBase} from 'components/misc/Buttons.js';
-import TeamIllustrationSrc from 'images/team-illustration-2.svg';
+import TeamIllustrationSrc from 'images/team-illustration-2.svg?url';
 import {ReactComponent as SvgDotPattern} from 'images/dot-pattern.svg';
 
 const Container = tw.div`relative`;
