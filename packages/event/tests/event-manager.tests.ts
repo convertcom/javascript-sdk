@@ -1,16 +1,17 @@
 /* eslint-disable mocha/consistent-spacing-between-blocks */
 import 'mocha';
-// import * as chai from 'chai';
-import chai from 'chai';
+import * as chaiNamespace from 'chai';
 import spies from 'chai-spies';
 
 import {EventManager as em} from '../src/event-manager';
 import {Config} from '@convertcom/js-sdk-types';
 import configuration from './test-config.json';
 
+// chai >=5 exports a sealed ES module namespace, so `use()` can no longer
+// mutate it in place — it returns the extended instance instead.
+const chai = chaiNamespace.use(spies);
 const {expect, assert: ChaiAssert} = chai;
 const assert: Chai.Assert = ChaiAssert; // to avoid error: Assertions require every name in the call target to be declared with an explicit type annotation.
-chai.use(spies);
 
 describe('EventManager tests', function () {
   let eventManager;
