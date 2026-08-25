@@ -2391,6 +2391,10 @@ export type ProjectGASettingsBase = GA_SettingsBase & {
      * Attempt to pull revenue data from Google Analytics Revenue Tracking code.
      */
     auto_revenue_tracking?: boolean;
+    /**
+     * When enabled, the experience_impression event is sent only the first time a visitor is exposed to an experience, instead of on every subsequent qualifying page view. Opt-in and disabled by default.
+     */
+    track_first_exposure_only?: boolean;
 };
 
 export type ProjectIntegrationGA3 = ProjectGASettingsBase & IntegrationGA3;
