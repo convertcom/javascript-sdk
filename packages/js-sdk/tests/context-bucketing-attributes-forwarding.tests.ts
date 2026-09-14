@@ -279,4 +279,111 @@ describe('Context bucketing-attributes forwarding (engine boundary)', function (
       });
     });
   });
+
+  // CAP-2 (SPEC-per-call-bucketing-attributes): runFeatures() must forward
+  // attributes.experienceKeys as FeatureManager.runFeatures()'s `experiences`
+  // filter, the same narrowing runFeature() already applies.
+  describe('runFeatures() forwards attributes.experienceKeys to FeatureManager as the experiences filter', function () {
+    const secondExperienceKey = 'test-experience-ab-fullstack-3';
+    const fourthExperienceKey = 'test-experience-ab-fullstack-4';
+    const sharedFeatureKey = 'feature-1';
+
+    function locationAndAudienceAttrs(
+      extra?: Partial<BucketingAttributes>
+    ): BucketingAttributes {
+      return {
+        locationProperties: {url: 'https://convert.com/'},
+        visitorProperties: {varName3: 'something'},
+        ...extra
+      };
+    }
+
+    function withGetBucketingSpy<T>(
+      fn: (spy: ReturnType<typeof spyGetBucketing>) => T
+    ): T {
+      const spy = spyGetBucketing(dataManager);
+      try {
+        return fn(spy);
+      } finally {
+        spy.restore();
+      }
+    }
+
+    function identitiesCalled(
+      spy: ReturnType<typeof spyGetBucketing>
+    ): Array<string> {
+      return spy.calls.map((call) => call.identity);
+    }
+
+    it('an absent experienceKeys still runs every experience (guard: already true before CAP-2)', function () {
+      withGetBucketingSpy((spy) => {
+        const features: any = context.runFeatures(locationAndAudienceAttrs());
+        expect(identitiesCalled(spy)).to.have.members([
+          experienceKey,
+          secondExperienceKey,
+          fourthExperienceKey
+        ]);
+        expect(features).to.have.length(4);
+      });
+    });
+
+    it('an empty experienceKeys array runs every experience too -- [] means no filter (guard: already true before CAP-2)', function () {
+      withGetBucketingSpy((spy) => {
+        const features: any = context.runFeatures(
+          locationAndAudienceAttrs({experienceKeys: []})
+        );
+        expect(identitiesCalled(spy)).to.have.members([
+          experienceKey,
+          secondExperienceKey,
+          fourthExperienceKey
+        ]);
+        expect(features).to.have.length(4);
+      });
+    });
+
+    it('an unknown key alongside a known one is skipped, and the known experience still resolves', function () {
+      withGetBucketingSpy((spy) => {
+        const features: any = context.runFeatures(
+          locationAndAudienceAttrs({
+            experienceKeys: ['not-a-real-experience', secondExperienceKey]
+          })
+        );
+        expect(identitiesCalled(spy)).to.deep.equal([secondExperienceKey]);
+        expect(features).to.have.length(3);
+        const resolved = features.find((f: any) => f.key === sharedFeatureKey);
+        expect(resolved.status).to.equal(FeatureStatus.ENABLED);
+        expect(resolved.experienceKey).to.equal(secondExperienceKey);
+      });
+    });
+
+    it('every key unknown resolves zero experiences, so every declared feature is reported disabled', function () {
+      withGetBucketingSpy((spy) => {
+        const features: any = context.runFeatures(
+          locationAndAudienceAttrs({experienceKeys: ['not-a-real-experience']})
+        );
+        expect(identitiesCalled(spy)).to.deep.equal([]);
+        expect(features).to.have.length(3);
+        features.forEach((f: any) => {
+          expect(f.status).to.equal(FeatureStatus.DISABLED);
+        });
+      });
+    });
+
+    it("narrows to one experience: that experience's feature is enabled, and the excluded experience's feature is reported disabled -- not omitted from the array", function () {
+      withGetBucketingSpy((spy) => {
+        const features: any = context.runFeatures(
+          locationAndAudienceAttrs({experienceKeys: [secondExperienceKey]})
+        );
+        expect(identitiesCalled(spy)).to.deep.equal([secondExperienceKey]);
+        expect(features).to.have.length(3);
+        const narrowedIn = features.find(
+          (f: any) => f.key === sharedFeatureKey
+        );
+        const narrowedOut = features.find((f: any) => f.key === featureKey);
+        expect(narrowedIn.status).to.equal(FeatureStatus.ENABLED);
+        expect(narrowedIn.experienceKey).to.equal(secondExperienceKey);
+        expect(narrowedOut.status).to.equal(FeatureStatus.DISABLED);
+      });
+    });
+  });
 });
