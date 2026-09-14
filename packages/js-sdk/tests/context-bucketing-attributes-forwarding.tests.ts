@@ -287,6 +287,13 @@ describe('Context bucketing-attributes forwarding (engine boundary)', function (
     const secondExperienceKey = 'test-experience-ab-fullstack-3';
     const fourthExperienceKey = 'test-experience-ab-fullstack-4';
     const sharedFeatureKey = 'feature-1';
+    const unattachedFeatureKey = 'not-attached-feature-3';
+
+    function statusesFor(features: any, key: string): Array<string> {
+      return features
+        .filter((f: any) => f.key === key)
+        .map((f: any) => f.status);
+    }
 
     function locationAndAudienceAttrs(
       extra?: Partial<BucketingAttributes>
@@ -324,6 +331,17 @@ describe('Context bucketing-attributes forwarding (engine boundary)', function (
           fourthExperienceKey
         ]);
         expect(features).to.have.length(4);
+        // CAP-2: both experiences' features are enabled, unattached is not.
+        expect(statusesFor(features, sharedFeatureKey)).to.deep.equal([
+          FeatureStatus.ENABLED,
+          FeatureStatus.ENABLED
+        ]);
+        expect(statusesFor(features, featureKey)).to.deep.equal([
+          FeatureStatus.ENABLED
+        ]);
+        expect(statusesFor(features, unattachedFeatureKey)).to.deep.equal([
+          FeatureStatus.DISABLED
+        ]);
       });
     });
 
