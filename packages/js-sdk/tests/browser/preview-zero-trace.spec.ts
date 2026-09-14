@@ -20,7 +20,7 @@
  * same locationProperties/visitorProperties shape), so any failure is attributable to
  * preview behavior, not to unrelated rule-matching fixture drift.
  */
-import {test, expect} from '@playwright/test';
+import {test, expect, Page} from '@playwright/test';
 import {setup} from './page-helpers';
 
 const PREVIEW_EXPERIENCE_KEY = 'test-experience-ab-fullstack-2';
@@ -69,54 +69,89 @@ function installTrackSpies(): void {
   }
 }
 
+interface PreviewLifecycleResult {
+  trackCalls: Array<{transport: string; url: string}>;
+  dataStoreSetCallCount: number;
+  dataStoreKeys: string[];
+}
+
+/**
+ * Arms transport spies (before the UMD bundle loads), builds a real DataStore
+ * + Context via the shared page-helpers factories, and calls
+ * `Context.setPreview()` -- exposing the context on `window.__previewContext`
+ * so later `page.evaluate()` calls in the test body can drive it directly.
+ */
+async function armPreviewLifecycle(
+  page: Page,
+  {experienceId, variationId}: {experienceId: string; variationId: string}
+): Promise<void> {
+  await page.addInitScript(installTrackSpies);
+  await setup(page);
+  await page.evaluate(
+    async ({experienceId, variationId}) => {
+      const w = window as any;
+      // Real DataStore (see context-preview.tests.ts's zero-trace STORAGE
+      // suite) with NO initial visitorProps -- unlike __defaultContext(),
+      // whose {browser: 'chrome'} would persist as a segment write and
+      // pollute this assertion.
+      const dataStore = w.__makeDataStore();
+      const context = w.__createContext('XXX', undefined, {dataStore});
+      w.__previewContext = context;
+      w.__previewDataStore = dataStore;
+      await context.setPreview({experienceId, variationId});
+    },
+    {experienceId, variationId}
+  );
+}
+
+/**
+ * Gives any batched/timer-based tracking (release_interval: 1000ms per
+ * __createSdk()) a real chance to fire, then returns the fixed shape every
+ * zero-trace assertion below reads.
+ */
+async function settlePreviewLifecycle(page: Page): Promise<PreviewLifecycleResult> {
+  return page.evaluate(async () => {
+    const w = window as any;
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    return {
+      trackCalls: w.__trackCalls as Array<{transport: string; url: string}>,
+      dataStoreSetCallCount: w.__previewDataStore.setCallCount as number,
+      dataStoreKeys: Object.keys(w.__previewDataStore.data)
+    };
+  });
+}
+
+function assertZeroTrace(result: PreviewLifecycleResult): void {
+  expect(result.trackCalls).toEqual([]);
+  expect(
+    result.trackCalls.filter((call) => call.transport === 'sendBeacon')
+  ).toEqual([]);
+  expect(
+    result.trackCalls.filter((call) => call.transport === 'fetch')
+  ).toEqual([]);
+  // Zero-trace STORAGE (browser hard gate, augmentation): no DataStore
+  // write and no visitor-store growth across the entire lifecycle.
+  expect(result.dataStoreSetCallCount).toBe(0);
+  expect(result.dataStoreKeys).toEqual([]);
+}
+
 test.describe('Context.setPreview() zero-trace on the real browser transport', () => {
   test('sends ZERO /track requests via sendBeacon or fetch across the full preview-context lifecycle', async ({
     page
   }) => {
-    await page.addInitScript(installTrackSpies);
-    await setup(page);
+    await armPreviewLifecycle(page, {
+      experienceId: PREVIEW_EXPERIENCE_ID,
+      variationId: PREVIEW_VARIATION_ID
+    });
 
-    const result = await page.evaluate(
-      async ({previewExperienceId, previewVariationId, previewKey, otherKey, goalKey, runProps}) => {
-        const w = window as any;
-        // Zero-trace STORAGE (browser hard gate): a real DataStore, wired the
-        // same way __createSegmentTestContext() wires one, so this in-page
-        // lifecycle also proves zero DataStore.set() calls -- not just zero
-        // /track requests -- exactly like the Node-side zero-trace STORAGE
-        // suite in context-preview.tests.ts. Deliberately built via
-        // __createContext() with NO initial visitorProps (unlike
-        // __defaultContext(), which always passes `{browser: 'chrome'}`) --
-        // Context's constructor unconditionally persists non-empty initial
-        // visitorProps as segments (a separate, pre-existing, non-preview
-        // code path), which would otherwise pollute this preview-lifecycle
-        // assertion with an unrelated write.
-        const dataStore = w.__makeDataStore();
-        const context = w.__createContext('XXX', undefined, {dataStore});
-
-        await context.setPreview({
-          experienceId: previewExperienceId,
-          variationId: previewVariationId
-        });
-
-        const previewDecision = context.runExperience(previewKey, runProps);
-        const otherDecision = context.runExperience(otherKey, runProps);
+    await page.evaluate(
+      ({previewKey, otherKey, goalKey, runProps}) => {
+        const context = (window as any).__previewContext;
+        context.runExperience(previewKey, runProps);
+        context.runExperience(otherKey, runProps);
         context.trackConversion(goalKey, {ruleData: {action: 'buy'}});
-
-        // Give any batched/timer-based tracking (release_interval: 1000ms per
-        // __createSdk()) a real chance to fire before we assert on zero.
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        return {
-          previewVariationId: previewDecision?.id,
-          otherExperienceKey: otherDecision?.experienceKey,
-          trackCalls: w.__trackCalls as Array<{transport: string; url: string}>,
-          dataStoreSetCallCount: dataStore.setCallCount as number,
-          dataStoreKeys: Object.keys(dataStore.data)
-        };
       },
       {
-        previewExperienceId: PREVIEW_EXPERIENCE_ID,
-        previewVariationId: PREVIEW_VARIATION_ID,
         previewKey: PREVIEW_EXPERIENCE_KEY,
         otherKey: OTHER_EXPERIENCE_KEY,
         goalKey: GOAL_KEY,
@@ -124,16 +159,7 @@ test.describe('Context.setPreview() zero-trace on the real browser transport', (
       }
     );
 
-    expect(result.trackCalls).toEqual([]);
-    expect(
-      result.trackCalls.filter((call) => call.transport === 'sendBeacon')
-    ).toEqual([]);
-    expect(
-      result.trackCalls.filter((call) => call.transport === 'fetch')
-    ).toEqual([]);
-    // Zero-trace STORAGE (browser hard gate, augmentation): no DataStore
-    // write and no visitor-store growth across the entire lifecycle.
-    expect(result.dataStoreSetCallCount).toBe(0);
-    expect(result.dataStoreKeys).toEqual([]);
+    const result = await settlePreviewLifecycle(page);
+    assertZeroTrace(result);
   });
 });
