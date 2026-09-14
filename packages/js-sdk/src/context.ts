@@ -372,6 +372,8 @@ export class Context implements ContextInterface {
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
    * @param {Array<string>=} attributes.experienceKeys Use only specific experiences
+   * Also forwards enableTracking, enableStorage, suppressEvents, forceVariationId,
+   * ignoreLocationProperties to the engine (CAP-1 (SPEC-per-call-bucketing-attributes)).
    * @return {BucketedFeature | RuleError | Array<BucketedFeature | RuleError>}
    */
   runFeature(
@@ -392,16 +394,18 @@ export class Context implements ContextInterface {
       this._visitorId,
       key,
       {
+        // CAP-1: forward every BucketingAttributes control field, not a
+        // hand-listed subset -- then let the Context-computed transforms
+        // below override, with preview applied last (CAP-3).
+        ...attributes,
         visitorProperties,
-        locationProperties: attributes?.locationProperties,
-        updateVisitorProperties: attributes?.updateVisitorProperties,
+        environment: attributes?.environment || this._environment,
         typeCasting: Object.prototype.hasOwnProperty.call(
           attributes || {},
           'typeCasting'
         )
           ? attributes.typeCasting
           : true,
-        environment: attributes?.environment || this._environment,
         // qs-02: suppress tracking/persisting and LOCATION events while
         // previewing (AC5).
         ...(this._preview
@@ -463,6 +467,8 @@ export class Context implements ContextInterface {
    * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
+   * Also forwards enableTracking, enableStorage, suppressEvents, forceVariationId,
+   * ignoreLocationProperties to the engine (CAP-1 (SPEC-per-call-bucketing-attributes)).
    * @return {Array<BucketedFeature | RuleError>}
    */
   runFeatures(
@@ -479,16 +485,18 @@ export class Context implements ContextInterface {
       attributes?.visitorProperties
     );
     const bucketedFeatures = this._featureManager.runFeatures(this._visitorId, {
+      // CAP-1: forward every BucketingAttributes control field, not a
+      // hand-listed subset -- then let the Context-computed transforms
+      // below override, with preview applied last (CAP-3).
+      ...attributes,
       visitorProperties,
-      locationProperties: attributes?.locationProperties,
-      updateVisitorProperties: attributes?.updateVisitorProperties,
+      environment: attributes?.environment || this._environment,
       typeCasting: Object.prototype.hasOwnProperty.call(
         attributes || {},
         'typeCasting'
       )
         ? attributes.typeCasting
         : true,
-      environment: attributes?.environment || this._environment,
       // qs-02: suppress tracking/persisting and LOCATION events while
       // previewing (AC5).
       ...(this._preview
