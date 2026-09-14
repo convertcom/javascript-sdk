@@ -163,3 +163,96 @@ test.describe('Context.setPreview() zero-trace on the real browser transport', (
     assertZeroTrace(result);
   });
 });
+
+// CAP-3 (SPEC-per-call-bucketing-attributes): browser gate for the Node
+// guard in context-preview.tests.ts -- a caller passing
+// {enableTracking: true, enableStorage: true} to the feature entry points
+// on a previewing context must not defeat zero-trace on the real transport.
+const CAP3_FEATURE_KEY = 'feature-1';
+
+interface Cap3GuardResult {
+  forcedEntryAttributes?: Record<string, any>;
+}
+
+/**
+ * Spies `DataManager.getBucketing()` -- the identical call the Node CAP-3
+ * guard inspects -- around one call to `method`, made with the caller
+ * override, then restores it before returning. Proves the previewed
+ * experience's feature is still bucketed through the suppress-only path
+ * (never `getPreviewDecision`'s forced short-circuit).
+ */
+async function callFeatureEntryPointWithOverride(
+  page: Page,
+  {
+    method,
+    featureKey,
+    previewExperienceKey,
+    runProps
+  }: {
+    method: 'runFeature' | 'runFeatures';
+    featureKey: string;
+    previewExperienceKey: string;
+    runProps: Record<string, any>;
+  }
+): Promise<Cap3GuardResult> {
+  return page.evaluate(
+    ({method, featureKey, previewExperienceKey, runProps}) => {
+      const context = (window as any).__previewContext;
+      const dataManager = (context as any)._dataManager;
+      const original = dataManager.getBucketing.bind(dataManager);
+      const calls: Array<{identity: string; attributes: any}> = [];
+      dataManager.getBucketing = (
+        visitorId: string,
+        identity: string,
+        attributes: any
+      ) => {
+        calls.push({identity, attributes});
+        return original(visitorId, identity, attributes);
+      };
+      const overrides = {...runProps, enableTracking: true, enableStorage: true};
+      if (method === 'runFeature') {
+        context.runFeature(featureKey, overrides);
+      } else {
+        context.runFeatures(overrides);
+      }
+      dataManager.getBucketing = original;
+      const forcedEntry = calls.find(
+        (call) => call.identity === previewExperienceKey
+      );
+      return {forcedEntryAttributes: forcedEntry?.attributes};
+    },
+    {method, featureKey, previewExperienceKey, runProps}
+  );
+}
+
+test.describe('CAP-3 (SPEC-per-call-bucketing-attributes): feature entry points stay suppress-only against a caller override', () => {
+  (['runFeature', 'runFeatures'] as const).forEach((method) => {
+    test(`${method} produces ZERO /track requests and ZERO store writes when the caller passes {enableTracking: true, enableStorage: true} on a previewing context`, async ({
+      page
+    }) => {
+      await armPreviewLifecycle(page, {
+        experienceId: PREVIEW_EXPERIENCE_ID,
+        variationId: PREVIEW_VARIATION_ID
+      });
+
+      const guard = await callFeatureEntryPointWithOverride(page, {
+        method,
+        featureKey: CAP3_FEATURE_KEY,
+        previewExperienceKey: PREVIEW_EXPERIENCE_KEY,
+        runProps: RUN_PROPS
+      });
+
+      // The previewed experience's feature is still bucketed via the
+      // suppress-only path, not `getPreviewDecision`'s forced short-circuit.
+      expect(guard.forcedEntryAttributes).toBeTruthy();
+      expect(guard.forcedEntryAttributes).toMatchObject({
+        enableTracking: false,
+        enableStorage: false,
+        suppressEvents: true
+      });
+
+      const result = await settlePreviewLifecycle(page);
+      assertZeroTrace(result);
+    });
+  });
+});
