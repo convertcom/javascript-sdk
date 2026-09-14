@@ -467,6 +467,7 @@ export class Context implements ContextInterface {
    * @param {boolean=} attributes.updateVisitorProperties Decide whether to update visitor properties upon bucketing
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
+   * @param {Array<string>=} attributes.experienceKeys Use only specific experiences (CAP-2 (SPEC-per-call-bucketing-attributes))
    * Also forwards enableTracking, enableStorage, suppressEvents, forceVariationId,
    * ignoreLocationProperties to the engine (CAP-1 (SPEC-per-call-bucketing-attributes)).
    * @return {Array<BucketedFeature | RuleError>}
@@ -484,25 +485,31 @@ export class Context implements ContextInterface {
     const visitorProperties = this.getVisitorProperties(
       attributes?.visitorProperties
     );
-    const bucketedFeatures = this._featureManager.runFeatures(this._visitorId, {
-      // CAP-1: forward every BucketingAttributes control field, not a
-      // hand-listed subset -- then let the Context-computed transforms
-      // below override, with preview applied last (CAP-3).
-      ...attributes,
-      visitorProperties,
-      environment: attributes?.environment || this._environment,
-      typeCasting: Object.prototype.hasOwnProperty.call(
-        attributes || {},
-        'typeCasting'
-      )
-        ? attributes.typeCasting
-        : true,
-      // qs-02: suppress tracking/persisting and LOCATION events while
-      // previewing (AC5).
-      ...(this._preview
-        ? {enableTracking: false, enableStorage: false, suppressEvents: true}
-        : {})
-    });
+    const bucketedFeatures = this._featureManager.runFeatures(
+      this._visitorId,
+      {
+        // CAP-1: forward every BucketingAttributes control field, not a
+        // hand-listed subset -- then let the Context-computed transforms
+        // below override, with preview applied last (CAP-3).
+        ...attributes,
+        visitorProperties,
+        environment: attributes?.environment || this._environment,
+        typeCasting: Object.prototype.hasOwnProperty.call(
+          attributes || {},
+          'typeCasting'
+        )
+          ? attributes.typeCasting
+          : true,
+        // qs-02: suppress tracking/persisting and LOCATION events while
+        // previewing (AC5).
+        ...(this._preview
+          ? {enableTracking: false, enableStorage: false, suppressEvents: true}
+          : {})
+      },
+      {
+        experiences: attributes?.experienceKeys
+      }
+    );
     // Return rule errors if present
     const matchedErrors = bucketedFeatures.filter((match) =>
       Object.values(RuleError).includes(match as RuleError)
