@@ -32,6 +32,7 @@ import {defaultConfig} from '../src/config/default';
 import {objectDeepMerge} from '@convertcom/js-sdk-utils';
 import {SystemEvents} from '@convertcom/js-sdk-enums';
 import {VariationChangeType} from '@convertcom/js-sdk-enums';
+import {FeatureStatus} from '@convertcom/js-sdk-enums';
 import {
   Config as ConfigType,
   ConfigExperience,
@@ -448,6 +449,7 @@ function buildFeatureScenario(
   targetVariationId: string;
   otherVariationId: string;
   featureKey: string;
+  variationMarkers: {target: string; other: string};
 } {
   const previewExperienceId = `${prefix}-preview-exp`;
   const previewExperienceKey = `${prefix}-preview-exp-key`;
@@ -456,23 +458,33 @@ function buildFeatureScenario(
   featureIdCounter += 1;
   const featureId = 9000000 + featureIdCounter;
   const featureKey = `${prefix}-feature-key`;
+  // CAP-3 (SPEC-per-call-bucketing-attributes): distinct variables_data plus
+  // a zero-traffic target arm make the naturally-bucketed variation and the
+  // forced preview target observably different.
+  const variationMarkers = {target: `${prefix}-target-marker`, other: `${prefix}-other-marker`};
 
   const previewExperience = makeExperience(previewExperienceId, previewExperienceKey, [
     targetVariationId,
     otherVariationId
   ]);
-  previewExperience.variations = previewExperience.variations.map(
-    (variation) =>
-      ({
-        ...variation,
-        changes: [
-          {
-            type: VariationChangeType.FULLSTACK_FEATURE,
-            data: {feature_id: featureId, variables_data: {}}
+  previewExperience.variations = previewExperience.variations.map((variation) => {
+    const isTarget = variation.id === targetVariationId;
+    return {
+      ...variation,
+      traffic_allocation: isTarget ? 0 : 100,
+      changes: [
+        {
+          type: VariationChangeType.FULLSTACK_FEATURE,
+          data: {
+            feature_id: featureId,
+            variables_data: {
+              marker: isTarget ? variationMarkers.target : variationMarkers.other
+            }
           }
-        ]
-      }) as unknown as ExperienceVariationConfig
-  );
+        }
+      ]
+    } as unknown as ExperienceVariationConfig;
+  });
 
   const sdk = makeSdk(
     {
@@ -491,7 +503,8 @@ function buildFeatureScenario(
     previewExperienceKey,
     targetVariationId,
     otherVariationId,
-    featureKey
+    featureKey,
+    variationMarkers
   };
 }
 
@@ -1012,12 +1025,20 @@ describe('Context.setPreview() preview integration (RED)', function () {
       {
         name: 'runFeature',
         call: (context: any, featureKey: string) =>
-          context.runFeature(featureKey, {enableTracking: true, enableStorage: true})
+          context.runFeature(featureKey, {
+            enableTracking: true,
+            enableStorage: true,
+            ignoreLocationProperties: true
+          })
       },
       {
         name: 'runFeatures',
         call: (context: any, _featureKey: string) =>
-          context.runFeatures({enableTracking: true, enableStorage: true})
+          context.runFeatures({
+            enableTracking: true,
+            enableStorage: true,
+            ignoreLocationProperties: true
+          })
       }
     ].forEach(({name, call}) => {
       it(`${name} stays suppress-only and resolves the previewed experience's feature from NATURAL bucketing, never a forced decision`, async function () {
@@ -1032,7 +1053,7 @@ describe('Context.setPreview() preview integration (RED)', function () {
           experienceId: scenario.previewExperienceId,
           variationId: scenario.targetVariationId
         });
-        call(context, scenario.featureKey);
+        const featureResult = call(context, scenario.featureKey);
 
         const forcedEntry = bucketingSpy.calls.find(
           (entry) => entry.identity === scenario.previewExperienceKey
@@ -1047,6 +1068,25 @@ describe('Context.setPreview() preview integration (RED)', function () {
           suppressEvents: true
         });
         bucketingSpy.restore();
+
+        const entries = Array.isArray(featureResult)
+          ? featureResult
+          : [featureResult];
+        const bucketedFeature: any = entries.find(
+          (entry: any) => entry?.key === scenario.featureKey
+        );
+        expect(bucketedFeature, 'bucketed feature for the previewed experience')
+          .to.exist;
+        expect(bucketedFeature.status).to.equal(FeatureStatus.ENABLED);
+        // The target variation carries zero traffic allocation, so this can
+        // only be populated by the naturally-bucketed OTHER variation --
+        // never by `getPreviewDecision`'s forced target.
+        expect(bucketedFeature.variables).to.deep.equal({
+          marker: scenario.variationMarkers.other
+        });
+        expect(bucketedFeature.variables).to.not.deep.equal({
+          marker: scenario.variationMarkers.target
+        });
 
         expect(enqueueTracker.calls, 'ApiManager.enqueue() calls').to.equal(0);
         expect(dataStore.setCallCount, 'DataStore.set() calls').to.equal(0);
