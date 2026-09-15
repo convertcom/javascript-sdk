@@ -372,8 +372,6 @@ export class Context implements ContextInterface {
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
    * @param {Array<string>=} attributes.experienceKeys Use only specific experiences
-   * Also forwards enableTracking, enableStorage, suppressEvents, forceVariationId,
-   * ignoreLocationProperties to the engine (CAP-1 (SPEC-per-call-bucketing-attributes)).
    * @return {BucketedFeature | RuleError | Array<BucketedFeature | RuleError>}
    */
   runFeature(
@@ -394,9 +392,7 @@ export class Context implements ContextInterface {
       this._visitorId,
       key,
       {
-        // CAP-1: forward every BucketingAttributes control field, not a
-        // hand-listed subset -- then let the Context-computed transforms
-        // below override, with preview applied last (CAP-3).
+        // CAP-1, CAP-3 (SPEC-per-call-bucketing-attributes): preview override applied last.
         ...attributes,
         visitorProperties,
         environment: attributes?.environment || this._environment,
@@ -468,8 +464,6 @@ export class Context implements ContextInterface {
    * @param {string=} attributes.environment Overwrite the environment
    * @param {boolean=} attributes.typeCasting Control automatic type conversion to the variable's defined type. Does not do any JSON validation. Defaults to `true`
    * @param {Array<string>=} attributes.experienceKeys Use only specific experiences (CAP-2 (SPEC-per-call-bucketing-attributes))
-   * Also forwards enableTracking, enableStorage, suppressEvents, forceVariationId,
-   * ignoreLocationProperties to the engine (CAP-1 (SPEC-per-call-bucketing-attributes)).
    * @return {Array<BucketedFeature | RuleError>}
    */
   runFeatures(
@@ -488,9 +482,7 @@ export class Context implements ContextInterface {
     const bucketedFeatures = this._featureManager.runFeatures(
       this._visitorId,
       {
-        // CAP-1: forward every BucketingAttributes control field, not a
-        // hand-listed subset -- then let the Context-computed transforms
-        // below override, with preview applied last (CAP-3).
+        // CAP-1, CAP-3 (SPEC-per-call-bucketing-attributes): preview override applied last.
         ...attributes,
         visitorProperties,
         environment: attributes?.environment || this._environment,
