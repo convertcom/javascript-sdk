@@ -392,7 +392,6 @@ export class Context implements ContextInterface {
       this._visitorId,
       key,
       {
-        // CAP-1, CAP-3 (SPEC-per-call-bucketing-attributes): preview override applied last.
         ...attributes,
         visitorProperties,
         environment: attributes?.environment || this._environment,
@@ -482,7 +481,6 @@ export class Context implements ContextInterface {
     const bucketedFeatures = this._featureManager.runFeatures(
       this._visitorId,
       {
-        // CAP-1, CAP-3 (SPEC-per-call-bucketing-attributes): preview override applied last.
         ...attributes,
         visitorProperties,
         environment: attributes?.environment || this._environment,
