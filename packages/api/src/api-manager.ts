@@ -58,6 +58,8 @@ const configByExperienceCache = new Map<
 export class ApiManager implements ApiManagerInterface {
   private _requestsQueue: VisitorsQueue;
   private _requestsQueueTimerID: number;
+  private _releaseQueuePromise: Promise<any> | null = null;
+  private _pendingTrackingBatch: TrackingEvent | null = null;
 
   private readonly _configEndpoint: string = DEFAULT_CONFIG_ENDPOINT;
   private readonly _trackEndpoint: string = DEFAULT_TRACK_ENDPOINT;
@@ -221,7 +223,8 @@ export class ApiManager implements ApiManagerInterface {
    * @return {Promise<any>}
    */
   releaseQueue(reason?: string): Promise<any> {
-    if (!this._requestsQueue.length) return;
+    if (this._releaseQueuePromise) return this._releaseQueuePromise;
+    if (!this._pendingTrackingBatch && !this._requestsQueue.length) return;
     this._loggerManager?.info?.(
       'ApiManager.releaseQueue()',
       MESSAGES.RELEASING_QUEUE
@@ -230,10 +233,26 @@ export class ApiManager implements ApiManagerInterface {
       reason: reason || ''
     });
     this.stopQueue();
-    const payload: TrackingEvent = this._trackingEvent;
-    payload.visitors = this._requestsQueue.items.slice();
-    payload.source = this._trackingSource;
-    return this.request(
+    if (!this._pendingTrackingBatch) {
+      // Keep the sent batch separate from events arriving during the request.
+      // Make a deep copy to prevent later mutations.
+      this._pendingTrackingBatch = JSON.parse(
+        JSON.stringify({
+          ...this._trackingEvent,
+          visitors: this._requestsQueue.items,
+          source: this._trackingSource
+        })
+      );
+      this._requestsQueue.reset();
+    }
+    const payload = this._pendingTrackingBatch;
+    const finish = () => {
+      this._releaseQueuePromise = null;
+      if (!this._trackingEnabled) return;
+      if (this._pendingTrackingBatch) this.startQueue();
+      else if (this._requestsQueue.length) return this.releaseQueue(reason);
+    };
+    this._releaseQueuePromise = this.request(
       'post',
       {
         base: this._trackEndpoint.replace(
@@ -245,7 +264,7 @@ export class ApiManager implements ApiManagerInterface {
       this._mapper(payload)
     )
       .then((result) => {
-        this._requestsQueue.reset();
+        this._pendingTrackingBatch = null;
         this._eventManager?.fire?.(SystemEvents.API_QUEUE_RELEASED, {
           reason: reason,
           result: result,
@@ -257,13 +276,14 @@ export class ApiManager implements ApiManagerInterface {
         this._loggerManager?.error?.('ApiManager.releaseQueue()', {
           error: error.message
         });
-        this.startQueue();
         this._eventManager?.fire?.(
           SystemEvents.API_QUEUE_RELEASED,
           {reason: reason},
           error
         );
-      });
+      })
+      .then(finish, finish);
+    return this._releaseQueuePromise;
   }
 
   /**
@@ -277,6 +297,8 @@ export class ApiManager implements ApiManagerInterface {
    * Start queue timer
    */
   startQueue(): void {
+    this.stopQueue();
+    if (!this._trackingEnabled || this._releaseQueuePromise) return;
     this._requestsQueueTimerID = setTimeout(() => {
       this.releaseQueue('timeout');
     }, this.releaseInterval) as any;
@@ -295,6 +317,7 @@ export class ApiManager implements ApiManagerInterface {
    */
   disableTracking(): void {
     this._trackingEnabled = false;
+    this.stopQueue();
   }
 
   /**
