@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.0.2](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v5.0.1...js-sdk-v5.0.2) (2026-09-17)
+
+
+### Bug Fixes
+
+* **js-sdk:** forward every per-call bucketing attribute on the feature entry points ([57ee408](https://github.com/convertcom/javascript-sdk/commit/57ee4081f16e7552c61d0ea34a5625231973b44a))
+* **js-sdk:** forward every per-call bucketing attribute on the feature entry points ([ae60d19](https://github.com/convertcom/javascript-sdk/commit/ae60d19bda638c5a3da686f6ad568d99fffa02ea))
+* **js-sdk:** let experienceKeys narrow runFeatures ([e826055](https://github.com/convertcom/javascript-sdk/commit/e8260551dbcd1f7a6ae925ea0b0e036218af4e5a))
+
 ## [5.0.1](https://github.com/convertcom/javascript-sdk/compare/js-sdk-v5.0.0...js-sdk-v5.0.1) (2026-08-09)
 
 
